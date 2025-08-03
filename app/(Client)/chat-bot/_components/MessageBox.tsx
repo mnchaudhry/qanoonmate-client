@@ -1,0 +1,403 @@
+"use client";
+
+import { AIChatMessage, MessageItemProps } from "@/lib/interfaces";
+import React, { useEffect, useState, useRef, memo } from "react";
+import ReactMarkdown from "react-markdown";
+import { Button } from "@/components/ui/button";
+import { Bookmark, ThumbsUp, ThumbsDown, Flag, Save, Copy, MessageSquare, User, Bot, Clock } from "lucide-react";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import Hint from "@/components/Hint";
+import { toast } from "sonner";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { parseAIResponse } from '@/utils/parseAIResponse';
+import Link from "next/link";
+interface MessageBoxProps {
+  chatViewMode?: 'compact' | 'card' | 'timeline';
+  textSize?: number;
+  messages: AIChatMessage[];
+}
+
+const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', textSize = 16, messages, }) => {
+
+  ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////
+  const streamingMessage = useSelector((state: RootState) => state.aiSession.streamingMessage);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  ///////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const getMessageTime = (timestamp: string) => {
+    try {
+      return new Date(timestamp).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return '';
+    }
+  };
+
+  const onBookmark = (messageId: string) => {
+    toast.success("Message bookmarked! " + messageId);
+  };
+
+  const onRate = (messageId: string, rating: 'good' | 'bad') => {
+    toast.success(`Response rated as ${rating} for message ${messageId}`);
+  };
+
+  const onFeedback = (messageId: string) => {
+    toast.success("Feedback submitted for message " + messageId);
+  };
+
+  const onSaveToNotes = (messageId: string) => {
+    toast.success("Saved to notes for message " + messageId);
+  };
+
+  const onCopy = (content: string) => {
+    navigator.clipboard.writeText(content);
+    toast.success("Message copied! " + content);
+  };
+
+  const onFlag = (messageId: string) => {
+    toast.success("Response flagged for review for message " + messageId);
+  };
+
+  const buildMarkdown = (parsed: any) => {
+    const md = parsed.main || '';
+    return md;
+  };
+
+
+  ///////////////////////////////////////////////// COMPONENTS ///////////////////////////////////////////////////
+  const renderMessageActions = (message: AIChatMessage) => {
+    if (message.sender === 'bot') {
+      return (
+        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <Hint label="Bookmark message" >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onBookmark(message._id)}
+              className="p-1.5 rounded-full"
+            >
+              <Bookmark className="w-5 h-5" />
+            </Button>
+          </Hint>
+
+          <Hint label="Rate as helpful" >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onRate(message._id, 'good')}
+              className="p-1.5 rounded-full text-green-600 hover:text-green-700"
+            >
+              <ThumbsUp className="w-5 h-5" />
+            </Button>
+          </Hint>
+
+          <Hint label="Rate as unhelpful" >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onRate(message._id, 'bad')}
+              className="p-1.5 rounded-full text-red-600 hover:text-red-700"
+            >
+              <ThumbsDown className="w-5 h-5" />
+            </Button>
+          </Hint>
+
+          <Hint label="Copy message" >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onCopy(message.content)}
+              className="p-1.5 rounded-full"
+            >
+              <Copy className="w-5 h-5" />
+            </Button>
+          </Hint>
+
+          <Hint label="Save to notes" >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onSaveToNotes(message._id)}
+              className="p-1.5 rounded-full"
+            >
+              <Save className="w-5 h-5" />
+            </Button>
+          </Hint>
+
+          <Hint label="Flag for review" >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onFlag(message._id)}
+              className="p-1.5 rounded-full text-orange-600 hover:text-orange-700"
+            >
+              <Flag className="w-5 h-5" />
+            </Button>
+          </Hint>
+
+          <Hint label="Send feedback" >
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onFeedback(message._id)}
+              className="p-1.5 rounded-full"
+            >
+              <MessageSquare className="w-5 h-5" />
+            </Button>
+          </Hint>
+        </div>
+      );
+    }
+    return null;
+  };
+  // Memoized MessageItem component
+  const MessageItem = React.memo(function MessageItem({ message, index, chatViewMode, textSize }: MessageItemProps) {
+    // Defensive: default sender to 'bot' if missing
+    const isModel = (message.sender ?? 'bot') === 'bot';
+    const messageTime = getMessageTime(message.createdAt);
+
+    // True character-by-character streaming
+    const [displayedContent, setDisplayedContent] = useState(message.content);
+    console.log('displayedContent', displayedContent);
+    const bufferRef = useRef('');
+    const prevContentRef = useRef(message.content);
+
+    useEffect(() => {
+      // Only buffer new characters
+      const prev = prevContentRef.current;
+      const next = message.content;
+      if (next.startsWith(prev)) {
+        bufferRef.current += next.slice(prev.length);
+      } else {
+        // If content resets (e.g., new message), reset everything
+        bufferRef.current = next;
+        setDisplayedContent('');
+      }
+      prevContentRef.current = next;
+    }, [message.content]);
+
+    useEffect(() => {
+      if (!message.isStreaming) {
+        setDisplayedContent(message.content);
+        bufferRef.current = '';
+        return;
+      }
+      let timer: number;
+      function tick() {
+        if (bufferRef.current.length > 0) {
+          setDisplayedContent(prev => {
+            const nextChar = bufferRef.current[0];
+            bufferRef.current = bufferRef.current.slice(1);
+            return prev + nextChar;
+          });
+          timer = window.setTimeout(tick, 12); // ~80 chars/sec, adjust as desired
+        }
+      }
+      tick();
+      return () => clearTimeout(timer);
+    }, [message.isStreaming, message]);
+
+    const parsed = parseAIResponse(message.content);
+
+    if (chatViewMode === 'compact') {
+      return (
+        <div
+          key={index}
+          className={cn(
+            "group flex items-start gap-3 p-3 hover:bg-accent/50 rounded-lg transition-colors",
+            isModel ? "justify-start" : "justify-end"
+          )}
+        >
+          {isModel && (
+            <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+              <Bot className="w-4 h-4 text-primary" />
+            </div>
+          )}
+
+          <div className={cn(
+            "flex-1 max-w-[75%]",
+            isModel ? "order-2" : "order-1"
+          )}>
+            <div className={cn(
+              "px-4 py-3 rounded-lg shadow-sm border",
+              isModel
+                ? "bg-primary/10 text-foreground border-primary/10"
+                : "bg-muted text-foreground border-border"
+            )}>
+              <div style={{ fontSize: `${textSize}px` }}>
+                <ReactMarkdown>
+                  {buildMarkdown(parsed)}
+                </ReactMarkdown>
+                {parsed.quickAction &&
+                  <div className="text-gray-500">
+                    Quick Action : {parsed.quickAction} {(parsed.quickAction.includes("Consult") || parsed.quickAction.includes("consult")) ? <Link href="/lawyers" className=" underline">here</Link> : ""}
+                  </div>
+                }
+              </div>
+              {message.isStreaming && (
+                <div className="mt-1">
+                  <span className="animate-pulse">▌</span>
+                </div>
+              )}
+            </div>
+            {messageTime && (
+              <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {messageTime}
+              </div>
+            )}
+          </div>
+
+          {!isModel && (
+            <div className="flex-shrink-0 w-8 h-8 bg-success/10 rounded-full flex items-center justify-center order-2">
+              <User className="w-4 h-4 text-success" />
+            </div>
+          )}
+
+          {renderMessageActions(message)}
+        </div>
+      );
+    }
+
+    if (chatViewMode === 'timeline') {
+      return (
+        <div
+          key={index}
+          className={cn(
+            "group relative flex items-start gap-4 p-4",
+            isModel ? "justify-start" : "justify-end"
+          )}
+        >
+          {/* Timeline line */}
+          <div className="absolute left-8 top-10 w-0.5 h-full bg-border"></div>
+
+          {isModel && (
+            <div className="flex-shrink-0 w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center z-10">
+              <Bot className="w-5 h-5 text-primary" />
+            </div>
+          )}
+
+          <div className={cn(
+            "flex-1 max-w-[70%]",
+            isModel ? "order-2" : "order-1"
+          )}>
+            <div className={cn(
+              "px-4 py-3 rounded-lg shadow-sm border",
+              isModel
+                ? "bg-primary/10 text-foreground border-primary/10"
+                : "bg-muted text-foreground border-border"
+            )}>
+              <div style={{ fontSize: `${textSize}px` }}>
+                <ReactMarkdown>
+                  {buildMarkdown(parsed)}
+                </ReactMarkdown>
+                {parsed.quickAction &&
+                  <div className="text-gray-500">
+                    Quick Action : {parsed.quickAction} {(parsed.quickAction.includes("Consult") || parsed.quickAction.includes("consult")) ? <Link href="/lawyers" className=" underline">here</Link> : ""}
+                  </div>
+                }
+              </div>
+              {message.isStreaming && (
+                <div className="mt-1">
+                  <span className="animate-pulse">▌</span>
+                </div>
+              )}
+            </div>
+            {messageTime && (
+              <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {messageTime}
+              </div>
+            )}
+          </div>
+
+          {!isModel && (
+            <div className="flex-shrink-0 w-10 h-10 bg-success/10 rounded-full flex items-center justify-center z-10 order-2">
+              <User className="w-5 h-5 text-success" />
+            </div>
+          )}
+
+          {renderMessageActions(message)}
+        </div>
+      );
+    }
+
+    // Default card view (enhanced)
+    return (
+      <div
+        key={index}
+        className={cn(
+          "group flex flex-col gap-2 mb-6",
+          isModel ? "items-start justify-start" : "items-end justify-end"
+        )}
+      >
+        {/* Message Bubble */}
+        <div
+          className={cn(
+            "px-4 py-3 rounded-lg w-fit max-w-[80%] shadow-sm border",
+            isModel
+              ? "bg-primary/10 text-foreground border-primary/10"
+              : "bg-muted text-foreground border-border"
+          )}
+        >
+          <div style={{ fontSize: `${textSize}px` }}>
+            <ReactMarkdown>
+              {buildMarkdown(parsed)}
+            </ReactMarkdown>
+            {parsed.quickAction &&
+              <div className="text-gray-500">
+                Quick Action : {parsed.quickAction} {(parsed.quickAction.includes("Consult") || parsed.quickAction.includes("consult")) ? <Link href="/lawyers" className=" underline">here</Link> : ""}
+              </div>
+            }
+          </div>
+          {message.isStreaming && (
+            <div className="mt-1">
+              <span className="animate-pulse">▌</span>
+            </div>
+          )}
+        </div>
+
+        {/* Message Actions */}
+        <div className={cn(
+          "flex flex-col",
+          isModel ? "justify-start items-start" : "justify-end items-end"
+        )}>
+          {renderMessageActions(message)}
+        </div>
+      </div>
+    );
+  });
+
+  ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////
+  return (
+    <TooltipProvider>
+      <div className="flex-1 overflow-y-auto py-6 space-y-4 px-6">
+        <div className="max-w-4xl mx-auto">
+          {messages && messages.length > 0 && messages.map((message, index) =>
+            <MessageItem key={index} message={message} index={index} chatViewMode={chatViewMode} textSize={textSize} />
+          )}
+          {streamingMessage && (
+            <MessageItem key={streamingMessage._id} message={streamingMessage} index={messages.length} chatViewMode={chatViewMode} textSize={textSize} />
+          )}
+        </div>
+        <div ref={messagesEndRef} />
+      </div>
+    </TooltipProvider>
+  );
+});
+
+MessageBox.displayName = 'MessageBox'; // For better debugging
+
+export default MessageBox;

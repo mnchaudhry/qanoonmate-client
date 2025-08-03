@@ -1,0 +1,230 @@
+import { AppDispatch } from '../store';
+import store from '../store';
+import { handleSummaryProgress, handleSummaryComplete, handleSummaryError, handleSummaryStream } from '../reducers/summarySlice';
+import { addAIMessage, incrementInteractionCount, setCurrentSessionId, setIsStreaming, updateAIMessageLocal, updateLastModified } from '../reducers/aiSessionSlice';
+import { addMessage, setUnreadCount, setTypingStatus, setOnlineStatus, updateRoomState } from '../reducers/chatSlice';
+import { setStreamingMessage, finalizeStreamingMessage } from '../reducers/aiSessionSlice';
+import type {
+  ModelStartChatEmit, ModelUpdateTitleEmit, ModelChatMessageEmit, SummarySubmitEmit, AuthAuthenticateEmit,
+  SummaryProgress, SummaryError, SummaryComplete, ModelMessageReceived, ModelSessionStarted, ModelMessageStream, ModelError,
+  ChatJoinRoomEmit, ChatLeaveRoomEmit, ChatSendMessageEmit, ChatTypingEmit, ChatStopTypingEmit, ChatMarkReadEmit,
+  ChatJoinRoomAck, ChatLeaveRoomAck, ChatUserJoined, ChatNewMessage, ChatUserTyping, ChatUserStopTyping, ChatMessageRead, ChatMessageSentAck, ChatError
+} from '../types/socket';
+
+///////////////////////////////////////////////// EMITTING EVENTS (Client to Server) /////////////////////////////////////////////////
+
+export const socketEvents = {
+  auth: {
+    authenticate: (socket: any, data: AuthAuthenticateEmit) => { socket && socket.emit('auth:authenticate', data); },
+  },
+  summary: {
+    submit: (socket: any, data: SummarySubmitEmit) => { socket && socket.emit('summary:submit', data); },
+    retry: (socket: any, summaryId: string) => { socket && socket.emit('summary:retry', { summaryId }); },
+    abort: (socket: any, summaryId: string) => { socket && socket.emit('summary:abort', { summaryId }); },
+  },
+  model: {
+    startChat: (socket: any, data: ModelStartChatEmit) => { socket && socket.emit('model:start-chat', data); },
+    updateTitle: (socket: any, data: ModelUpdateTitleEmit) => { socket && socket.emit('model:update-title', data); },
+    chatMessage: (socket: any, data: ModelChatMessageEmit) => { socket && socket.emit('model:chat-message', data); },
+  },
+  chat: {
+    joinRoom: (socket: any, data: ChatJoinRoomEmit) => { socket && socket.emit('chat:join-room', data); },
+    leaveRoom: (socket: any, data: ChatLeaveRoomEmit) => { socket && socket.emit('chat:leave-room', data); },
+    sendMessage: (socket: any, data: ChatSendMessageEmit) => { socket && socket.emit('chat:send-message', data); },
+    typing: (socket: any, data: ChatTypingEmit) => { socket && socket.emit('chat:typing', data); },
+    stopTyping: (socket: any, data: ChatStopTypingEmit) => { socket && socket.emit('chat:stop-typing', data); },
+    markRead: (socket: any, data: ChatMarkReadEmit) => { socket && socket.emit('chat:mark-read', data); },
+  }
+}
+
+///////////////////////////////////////////////// LISTENING EVENTS (Server to Client) /////////////////////////////////////////////////
+export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
+
+  // Summary events
+  socket.on('summary:progress', (data: SummaryProgress) => { dispatch(handleSummaryProgress(data)); });
+  socket.on('summary:complete', (data: SummaryComplete) => { dispatch(handleSummaryComplete(data)); });
+  socket.on('summary:error', (data: SummaryError) => { dispatch(handleSummaryError({ summaryId: data.summaryId || '', error: data.error || data.message || 'Unknown error' })); });
+  socket.on('summary:stream', (data: { summaryId: string, content: string }) => { dispatch(handleSummaryStream(data)); });
+
+  // Model events
+  socket.on('model:message-received', (data: ModelMessageReceived) => {
+    dispatch(addAIMessage(data));
+    dispatch(incrementInteractionCount());
+    dispatch(updateLastModified());
+  });
+  socket.on('model:session-started', (data: ModelSessionStarted) => { dispatch(setCurrentSessionId(data.sessionId)); });
+
+  // Add streaming buffer and animation frame batching variables at the top of the file
+  let streamingBuffer = '';
+  let streamingId: string | null = null;
+  let rafId: number | null = null;
+  socket.on('model:message-stream', (data: ModelMessageStream) => {
+
+    if (streamingId !== data.id) {
+      streamingBuffer = '';
+      streamingId = data.id;
+    }
+    streamingBuffer = data.content;
+
+    if (!rafId) {
+      rafId = requestAnimationFrame(function flush() {
+        dispatch(setStreamingMessage({ _id: streamingId, content: streamingBuffer, isStreaming: !data.done, sender: 'bot' }));
+        rafId = null;
+      });
+    }
+
+    if (data.done) {
+      dispatch(setStreamingMessage({ _id: data.id, content: data.content, isStreaming: false, sender: 'bot' }));
+      dispatch(finalizeStreamingMessage());
+      dispatch(setIsStreaming(false));
+      streamingBuffer = '';
+      streamingId = null;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    }
+  });
+
+  socket.on('model:error', (data: ModelError) => {
+    dispatch(addAIMessage({ _id: Date.now().toString(), sender: "model", content: "Sorry, there was an error processing your request.", createdAt: new Date().toISOString(), session: null, updatedAt: new Date().toISOString(), isStreaming: false, }));
+    dispatch(setIsStreaming(false));
+  });
+
+  // Chat events
+  socket.on('chat:join-room-ack', (data: ChatJoinRoomAck) => { console.log('chat:join-room-ack', data); });
+  socket.on('chat:leave-room-ack', (data: ChatLeaveRoomAck) => { });
+  socket.on('chat:user-joined', (data: ChatUserJoined) => {
+    console.log('chat:user-joined', data);
+    dispatch(setOnlineStatus({ roomId: data.roomId, userId: data.userId, isOnline: true }));
+  });
+  socket.on('chat:new-message', (data: ChatNewMessage) => {
+    console.log('chat:new-message', data);
+
+    // Check if this message is already in our state to prevent duplicates
+    const state = store.getState();
+    const roomMessages = state.chat.messages[data.chatRoomId] || [];
+    const messageExists = roomMessages.some(msg => msg._id === data._id);
+
+    if (!messageExists) {
+    dispatch(addMessage(data));
+      dispatch(updateRoomState({ roomId: data.chatRoomId, updates: { lastActivity: Date.now() } }));
+    }
+
+    // Handle unread count logic
+    const currentRoom = state.chat.currentRoom;
+    const currentUser = state.auth.user;
+
+    // Check if message is from another user and not in the currently selected room
+    const isFromCurrentUser = data.sender._id === currentUser?._id;
+    const isInCurrentRoom = currentRoom?._id === data.chatRoomId;
+
+    if (!isFromCurrentUser && !isInCurrentRoom) {
+      const currentCount = state.chat.unreadCounts[data.chatRoomId] || 0;
+      dispatch(setUnreadCount({ roomId: data.chatRoomId, count: currentCount + 1 }));
+      console.log('Incremented unread count for room:', data.chatRoomId, 'New count:', currentCount + 1);
+    } else {
+      console.log('Not incrementing unread count - from current user or in current room');
+    }
+  });
+
+  socket.on('chat:message-sent-ack', (data: ChatMessageSentAck) => {
+    console.log('chat:message-sent-ack', data);
+    // Message was successfully sent and saved by the server
+  });
+  socket.on('chat:user-typing', (data: ChatUserTyping) => {
+    console.log('User typing event received:', data);
+    dispatch(setTypingStatus({ roomId: data.roomId, userId: data.userId, isTyping: true }));
+  });
+  socket.on('chat:user-stop-typing', (data: ChatUserStopTyping) => {
+    console.log('User stopped typing event received:', data);
+    dispatch(setTypingStatus({ roomId: data.roomId, userId: data.userId, isTyping: false }));
+  });
+  socket.on('chat:message-read', (data: ChatMessageRead) => {
+    dispatch(setUnreadCount({ roomId: data.roomId, count: 0 }));
+  });
+  socket.on('chat:error', (data: ChatError) => {
+    console.error('chat:error', data);
+  });
+  socket.on('user-online', (data: any) => {
+    console.log('user-online', data);
+    dispatch(setOnlineStatus({ roomId: data.roomId || 'global', userId: data.userId, isOnline: true }));
+  });
+  socket.on('user-offline', (data: any) => {
+    console.log('user-offline', data);
+    dispatch(setOnlineStatus({ roomId: data.roomId || 'global', userId: data.userId, isOnline: false }));
+  });
+  socket.on('chat:online-status', (data: any) => {
+    console.log('chat:online-status', data);
+    if (data.onlineUserIds && Array.isArray(data.onlineUserIds)) {
+      dispatch(updateRoomState({ roomId: data.roomId, updates: { onlineUsers: data.onlineUserIds, lastActivity: Date.now() } }));
+    }
+  });
+
+  // Consultation reschedule events
+  socket.on('consultation:reschedule-requested', (data: any) => {
+    console.log('Reschedule request received:', data);
+    // toast.success(data.message); // Assuming toast is available globally or imported
+    // You can dispatch an action to update consultation state if needed
+  });
+
+  socket.on('consultation:reschedule-approved', (data: any) => {
+    console.log('Reschedule request approved:', data);
+    // toast.success(data.message); // Assuming toast is available globally or imported
+    // You can dispatch an action to update consultation state if needed
+  });
+
+  socket.on('consultation:reschedule-rejected', (data: any) => {
+    console.log('Reschedule request rejected:', data);
+    // toast.error(data.message); // Assuming toast is available globally or imported
+    // You can dispatch an action to update consultation state if needed
+  });
+
+  // Connect and disconnect events
+  socket.on('connect', () => {
+    console.log('Socket connected for chat events, ID:', socket?.id);
+  });
+  socket.on('disconnect', () => {
+    console.log('Socket disconnected from chat events, ID:', socket?.id);
+  });
+
+  // Cleanup typing users periodically
+  const cleanupInterval = setInterval(() => {
+    const now = Date.now();
+    const timeout = 5000; // 5 seconds timeout for typing indicators
+
+    // This would be handled by the backend, but we can also clean up stale typing indicators
+    // dispatch(cleanupTypingUsers({ roomId: 'all', userId: 'all' }));
+  }, 10000); // Check every 10 seconds
+
+  return () => {
+    socket.off('summary:progress');
+    socket.off('summary:complete');
+    socket.off('summary:error');
+    socket.off('summary:stream');
+    socket.off('model:message-received');
+    socket.off('model:session-started');
+    socket.off('model:message-stream');
+    socket.off('model:error');
+    socket.off('chat:join-room-ack');
+    socket.off('chat:leave-room-ack');
+    socket.off('chat:user-joined');
+    socket.off('chat:new-message');
+    socket.off('chat:message-sent-ack');
+    socket.off('chat:user-typing');
+    socket.off('chat:user-stop-typing');
+    socket.off('chat:message-read');
+    socket.off('chat:error');
+    socket.off('user-online');
+    socket.off('user-offline');
+    socket.off('chat:online-status');
+    socket.off('consultation:reschedule-requested');
+    socket.off('consultation:reschedule-approved');
+    socket.off('consultation:reschedule-rejected');
+    socket.off('connect');
+    socket.off('disconnect');
+
+    // Clear cleanup interval
+    clearInterval(cleanupInterval);
+  };
+};
