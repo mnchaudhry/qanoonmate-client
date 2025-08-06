@@ -13,7 +13,7 @@ const mockAdmins: Admin[] = [
   {
     id: 1,
     name: 'Arham Khan',
-    email: 'arham@verdictai.legal',
+    email: 'arham@qanoonmate.legal',
     role: 'SuperAdmin',
     status: 'active',
     createdDate: '2023-01-15',
@@ -30,7 +30,7 @@ const mockAdmins: Admin[] = [
   {
     id: 2,
     name: 'Hina Shafi',
-    email: 'hina@verdictai.legal',
+    email: 'hina@qanoonmate.legal',
     role: 'Moderator',
     status: 'active',
     createdDate: '2023-02-10',
@@ -45,7 +45,7 @@ const mockAdmins: Admin[] = [
   {
     id: 3,
     name: 'Osama Zafar',
-    email: 'osama@verdictai.legal',
+    email: 'osama@qanoonmate.legal',
     role: 'Support',
     status: 'suspended',
     createdDate: '2023-03-05',
@@ -58,7 +58,7 @@ const mockAdmins: Admin[] = [
   {
     id: 4,
     name: 'Zara Ahmed',
-    email: 'zara@verdictai.legal',
+    email: 'zara@qanoonmate.legal',
     role: 'Analyst',
     status: 'active',
     createdDate: '2023-04-20',
@@ -70,7 +70,7 @@ const mockAdmins: Admin[] = [
   {
     id: 5,
     name: 'Ahmed Hassan',
-    email: 'ahmed@verdictai.legal',
+    email: 'ahmed@qanoonmate.legal',
     role: 'Moderator',
     status: 'active',
     createdDate: '2023-05-12',
@@ -85,7 +85,7 @@ const mockAdmins: Admin[] = [
   {
     id: 6,
     name: 'Fatima Ali',
-    email: 'fatima@verdictai.legal',
+    email: 'fatima@qanoonmate.legal',
     role: 'Support',
     status: 'active',
     createdDate: '2023-06-08',
