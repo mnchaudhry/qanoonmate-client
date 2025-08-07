@@ -19,7 +19,7 @@ export const pricingPlans = [
     name: "Free Plan",
     price: 0,
     description:
-      "Test LegalEase: get a taste of our AI, guides, and core legal resources.",
+      "Test QanoonMate: get a taste of our AI, guides, and core legal resources.",
     features: [
       "Basic AI chatbot support (up to 5 queries/day)",
       "Unlimited Legal Guides & Dictionary",

@@ -97,7 +97,7 @@ const LegalSummaries: React.FC = () => {
 
         {/* CTA */}
         <div className="text-center mt-16">
-          <Link href="/legal-summaries">
+          <Link href="../summarizers">
             <Button>Explore Legal Summaries</Button>
           </Link>
         </div>

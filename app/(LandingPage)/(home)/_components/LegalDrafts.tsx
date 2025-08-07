@@ -51,7 +51,7 @@ const LegalDrafts: React.FC = () => {
                 <SectionHeading
                     title='Legal Drafts'
                     topTitle='Professionally crafted legal documents at your fingertips'
-                    description='Access a comprehensive library of legal drafts—organized, editable, and easy to use. Whether you need a simple agreement or a detailed contract, LegalEase offers structured templates that save time and ensure quality.'
+                    description='Access a comprehensive library of legal drafts—organized, editable, and easy to use. Whether you need a simple agreement or a detailed contract, QanoonMate offers structured templates that save time and ensure quality.'
                 />
 
                 {/* Features Grid */}
@@ -70,7 +70,7 @@ const LegalDrafts: React.FC = () => {
 
                 {/* CTA */}
                 <div className="text-center mt-12">
-                    <Link href="/legal-drafts">
+                    <Link href="../knowledgebase/drafts">
                         <Button>Explore Draft Library</Button>
                     </Link>
                 </div>

@@ -6,9 +6,9 @@ const FAQ = () => {
 
     const faqs = [
         {
-            question: 'What is LegalEase?',
+            question: 'What is QanoonMate?',
             answer:
-                'LegalEase is an AI-powered legal solution offering resources like legal guides, templates, summaries, and direct access to professional legal consultations.',
+                'QanoonMate is an AI-powered legal solution offering resources like legal guides, templates, summaries, and direct access to professional legal consultations.',
         },
         {
             question: 'How can I use AI-Assisted Legal Query Support?',
@@ -41,7 +41,7 @@ const FAQ = () => {
                 <div className="text-center mb-12">
                     <h2 className="text-3xl font-bold">Frequently Asked Questions</h2>
                     <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-                        Find answers to some of the most common questions about LegalEase and its services.
+                        Find answers to some of the most common questions about QanoonMate and its services.
                     </p>
                 </div>
 

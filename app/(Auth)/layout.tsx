@@ -14,7 +14,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
                 <Button variant='ghost'><Home /> Back to home</Button>
             </Link>
 
-            {/* Left Side - LegalEase Info */}
+            {/* Left Side - QanoonMate Info */}
             <div className="hidden lg:flex flex-col items-center justify-center bg-gradient-to-r text-neutral px-10">
 
                 <div className="flex flex-col justify-center items-center gap-4 w-full max-w-md ">
@@ -29,7 +29,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
                 <div className="mt-12">
                     <Image
                         src={AuthImage}
-                        alt="LegalEase Illustration"
+                        alt="QanoonMate Illustration"
                         width={400}
                         height={600}
                         className=""

@@ -28,7 +28,7 @@ const ChatBotButton = () => {
                         transition={{ duration: 0.25 }}
                         className="fixed bottom-24 right-6 w-72 bg-neutral dark:bg-gray-900 border dark:border-gray-700 shadow-lg rounded-xl p-4 z-50"
                     >
-                        <p className="text-sm text-muted-foreground dark:text-gray-300 mb-1 font-semibold">LegalEase Bot 🤖</p>
+                        <p className="text-sm text-muted-foreground dark:text-gray-300 mb-1 font-semibold">QanoonMate Bot 🤖</p>
                         <p className="text-sm text-muted-foreground dark:text-gray-400">How can I assist you today?</p>
                     </motion.div>
                 )}

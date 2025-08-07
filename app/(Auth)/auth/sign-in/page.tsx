@@ -93,7 +93,7 @@ const SignIn: React.FC = () => {
       <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
 
         <h2 className="mb-9 text-2xl font-bold text-black dark:text-neutral sm:text-title-xl2">
-          Sign in{role in Object.values(UserRole) ? <> as a <span className="capitalize">{role}</span></> : ' to VerdictAI'}
+          Sign in{role in Object.values(UserRole) ? <> as a <span className="capitalize">{role}</span></> : ' to QanoonMate'}
         </h2>
 
         <form onSubmit={onSubmit}>

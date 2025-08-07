@@ -3,6 +3,7 @@ import { pricingPlans } from '@/constants'
 import React from 'react'
 import SectionHeading from './SectionHeading'
 import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 const PricingPlans = () => {
 
@@ -24,10 +25,11 @@ const PricingPlans = () => {
                         <Plan plan={plan} key={index} />
                     ))}
                 </div>
-
-                <Button className='mt-8 w-fit mx-auto' >
-                    View more plans
-                </Button>
+                <Link href="../pricing" className="text-primary hover:underline mt-8">
+                    <Button className='mt-8 w-fit mx-auto' >
+                        View more plans
+                    </Button>
+                </Link>
 
             </div>
 

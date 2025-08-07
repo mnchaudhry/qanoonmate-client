@@ -1,6 +1,6 @@
 # Schedule Conflicts Management
 
-This module provides comprehensive management for schedule conflicts in the VerdictAI admin panel.
+This module provides comprehensive management for schedule conflicts in the QanoonMate admin panel.
 
 ## Overview
 

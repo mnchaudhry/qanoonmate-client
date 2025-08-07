@@ -1,4 +1,5 @@
-import Link from 'next/link'
+"use client";
+
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { About as AboutImage } from '@/constants/images'
@@ -18,22 +19,25 @@ const About: React.FC = () => {
               Simplifying Legal Access for Everyone
             </h2>
             <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-              At <span className="font-medium text-foreground">LegalEase</span>, we&apos;re reimagining how people interact with the legal world. Our AI-powered platform offers instant legal insights, document analysis, and seamless access to verified legal professionals — all at your fingertips.
+              At <span className="font-medium text-foreground">QanoonMate</span>, we&apos;re reimagining how people interact with the legal world. Our AI-powered platform offers instant legal insights, document analysis, and seamless access to verified legal professionals — all at your fingertips.
               <br /><br />
               Whether you&apos;re an individual seeking clarity or a business managing legal complexities, we provide smart, affordable, and accessible solutions right when you need them. Headquartered in Islamabad, our mission is to empower informed legal decisions for everyone.
             </p>
-            <Link href="/contact">
-              <Button>
-                Get in Touch
-              </Button>
-            </Link>
+            <Button
+              onClick={() => {
+                const el = document.getElementById("Contact")
+                if (el) el.scrollIntoView({ behavior: "smooth" })
+              }}
+            >
+              Get in Touch
+            </Button>
           </div>
 
           {/* Image */}
           <div className="relative">
             <Image
               src={AboutImage}
-              alt="About LegalEase"
+              alt="About QanoonMate"
               height={400}
               width={400}
               objectFit="cover"

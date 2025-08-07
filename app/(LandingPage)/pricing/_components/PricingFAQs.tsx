@@ -9,7 +9,7 @@ import {
 
 const faqs = [
     {
-        question: "Can I cancel my LegalEase plan anytime?",
+        question: "Can I cancel my QanoonMate plan anytime?",
         answer:
             "Yes. You're free to cancel at any time — no hidden charges. Your plan will remain active until the end of the billing cycle."
     },
@@ -21,7 +21,7 @@ const faqs = [
     {
         question: "Is the Free Plan really free?",
         answer:
-            "Absolutely. The Free Plan gives you limited access to explore LegalEase, including basic AI queries and access to legal resources."
+            "Absolutely. The Free Plan gives you limited access to explore QanoonMate, including basic AI queries and access to legal resources."
     },
     {
         question: "Can I upgrade or downgrade my plan later?",
@@ -47,7 +47,7 @@ const PricingFAQs = () => {
                 <div className="text-center mb-12">
                     <div className="text-primary font-medium mb-2">FREQUENTLY ASKED QUESTIONS</div>
                     <h2 className="text-3xl font-bold">Pricing Questions — Answered</h2>
-                    <p className="text-muted-foreground mt-2 max-w-xl mx-auto">Here’s what you need to know before choosing a plan on LegalEase.</p>
+                    <p className="text-muted-foreground mt-2 max-w-xl mx-auto">Here’s what you need to know before choosing a plan on QanoonMate.</p>
                 </div>
                 <div className="max-w-3xl mx-auto">
                     <div className="space-y-6">

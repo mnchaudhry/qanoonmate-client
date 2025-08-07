@@ -153,7 +153,7 @@ const DocumentsSection = ({ }: Props) => {
 
         <div className="mt-6 p-4 bg-primary-50 rounded-lg">
           <p className="text-sm text-primary-800">
-            <strong>Note:</strong> All documents are verified by VerdictAI&apos;s verification team.
+            <strong>Note:</strong> All documents are verified by QanoonMate&apos;s verification team.
             Verified documents are marked with a shield icon.
           </p>
         </div>

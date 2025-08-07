@@ -1,6 +1,6 @@
 # Admin Users Management
 
-This module provides comprehensive user management functionality for the VerdictAI admin panel.
+This module provides comprehensive user management functionality for the QanoonMate admin panel.
 
 ## Features
 

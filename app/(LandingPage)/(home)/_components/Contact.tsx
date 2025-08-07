@@ -7,7 +7,7 @@ import SectionHeading from './SectionHeading';
 
 const Contact: React.FC = () => {
   return (
-    <section className="bg-surface">
+    <section id="Contact" className="bg-surface">
 
       <div className="container px-4 mx-auto max-w-7xl md:px-6 flex flex-col">
 

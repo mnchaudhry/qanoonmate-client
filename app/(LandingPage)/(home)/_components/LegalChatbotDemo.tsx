@@ -4,6 +4,7 @@ import Image from 'next/image'
 import React from 'react'
 import SectionHeading from './SectionHeading'
 import { About } from '@/constants/images'
+import Link from 'next/link'
 
 const features = [
     {
@@ -87,7 +88,9 @@ const LegalChatbotDemo = () => {
                             placeholder="Type your legal question here..."
                         ></textarea>
                     </div>
-                    <Button>Ask</Button>
+                    <Link href="../chatbot" className="text-primary hover:underline">
+                        <Button>Ask</Button>
+                    </Link>
                     <p className="mt-4 text-muted-foreground text-sm">
                         <span className="text-foreground">Note:</span> This AI chatbot is for informational purposes only and does not constitute legal advice.
                     </p>

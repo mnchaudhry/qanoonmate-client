@@ -30,7 +30,7 @@ const ConsultationService = () => {
                     <p className="text-primary font-medium mb-2">CONSULTATION PRICING</p>
                     <h2 className="text-3xl font-bold">Pay-as-you-go Legal Consultations</h2>
                     <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
-                        LegalEase connects you with verified lawyers across Pakistan.
+                        QanoonMate connects you with verified lawyers across Pakistan.
                         You choose who to consult — just like hiring a freelancer on platforms like Upwork.
                     </p>
                 </div>
@@ -55,7 +55,7 @@ const ConsultationService = () => {
                 </div>
 
                 <p className="mt-10 text-center text-muted-foreground max-w-2xl mx-auto">
-                    LegalEase does not charge commissions on lawyer consultations. All payments are handled securely through our platform.
+                    QanoonMate does not charge commissions on lawyer consultations. All payments are handled securely through our platform.
                 </p>
             </div>
         </section>

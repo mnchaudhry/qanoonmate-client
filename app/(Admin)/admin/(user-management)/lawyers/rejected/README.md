@@ -1,6 +1,6 @@
 # Rejected Lawyers Management
 
-This module provides comprehensive rejected lawyer management functionality for the VerdictAI admin panel.
+This module provides comprehensive rejected lawyer management functionality for the QanoonMate admin panel.
 
 ## Features
 

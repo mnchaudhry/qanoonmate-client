@@ -22,7 +22,7 @@ const Card: React.FC<CardProps> = ({ title, description, link, imageSrc, imageAl
       <div className="p-6">
         <h3 className="text-card-foreground font-bold text-lg mb-2">{title}</h3>
         <p className="text-muted-foreground mb-4">{description}</p>
-        <Link href={link} className="text-accent font-medium hover:underline">
+        <Link href={link} className="text-gray font-medium hover:underline">
           Learn more
         </Link>
       </div>
@@ -48,21 +48,21 @@ const LegalKnowledgeBase: React.FC = () => {
             imageSrc="/Pictures/instantlegalconsult.jpg"
             title="Acts & Statutes"
             description="Explore a categorized collection of national laws and legislative acts with detailed summaries, amendments, and interpretations."
-            link="./legal-knowledge/acts"
+            link="../knowledgebase/acts"
           />
 
           <Card
             imageSrc="/Pictures/docanalysis.jpg"
             title="Case Laws"
             description="Access landmark judgments, high court and supreme court decisions, all indexed and summarized for easier understanding."
-            link="./legal-knowledge/case-laws"
+            link="../knowledgebase/case-laws"
           />
 
           <Card
             imageSrc="/Pictures/lawyerconnection.jpg"
             title="Legal Guides & Dictionary"
             description="Understand complex legal jargon with simplified guides and a built-in legal dictionary designed for everyone — from students to professionals."
-            link="./legal-knowledge/guides-dictionary"
+            link="../knowledgebase/dictionary"
           />
         </div>
       </div>

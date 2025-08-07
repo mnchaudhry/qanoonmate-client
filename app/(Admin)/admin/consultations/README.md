@@ -1,7 +1,7 @@
 # Consultations Management - Admin Panel
 
 ## Overview
-The Consultations Management page provides comprehensive tools for admins to monitor, manage, and analyze all consultations across the VerdictAI platform. This page follows the modular architecture pattern used throughout the admin panel.
+The Consultations Management page provides comprehensive tools for admins to monitor, manage, and analyze all consultations across the QanoonMate platform. This page follows the modular architecture pattern used throughout the admin panel.
 
 ## Features
 

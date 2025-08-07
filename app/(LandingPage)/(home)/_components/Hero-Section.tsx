@@ -15,34 +15,40 @@ const HeroSection: React.FC = () => {
         {/* <BackgroundBeams /> */}
       </div>
 
-      <div className="container h-full relative z-10 px-4 mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+      <div className="container h-full relative z-10 px-4 mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-top">
 
         <div>
-          <h1 className="flex flex-col gap-2.5 text-5xl sm:text-6xl font-bold tracking-tight text-foreground leading-loose mb-6">
+          <h1 className="flex flex-col gap-2 text-5xl sm:text-5xl font-bold tracking-tight text-foreground leading-loose mb-6">
             <span className="block">Redefining Legal Access</span>
             <span className="text-primary drop-shadow-md">AI Meets Law in Pakistan</span>
           </h1>
 
           <p className="text-lg text-muted-foreground mb-8 max-w-lg">
             From instant legal insights to custom document generation and lawyer consultations —
-            LegalEase is your smart legal companion, accessible anywhere, anytime.
+            QanoonMate is your smart legal companion, accessible anywhere, anytime.
           </p>
 
           <div className="flex flex-wrap gap-4">
             {isAuthenticated && user ? (
-              <Link href="/dashboard">
+              <Link href="/client/dashboard">
                 <Button>
                   Go to Dashboard
                 </Button>
               </Link>
             ) : (
               <>
-                <Link href="/signup">
+                <Link href="/auth/sign-up">
                   <Button className="">
                     Get Started
                   </Button>
                 </Link>
-                <Button variant='outline' >
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const el = document.getElementById("core-features");
+                    if (el) el.scrollIntoView({ behavior: "smooth" })
+                  }}
+                >
                   Explore Features
                 </Button>
               </>
@@ -54,7 +60,7 @@ const HeroSection: React.FC = () => {
         <div className="relative rounded-lg overflow-hidden">
           <Image
             src="/Pictures/pk-map.svg"
-            alt="LegalEase preview"
+            alt="QanoonMate preview"
             width={600}
             height={600}
             className="object-cover wfit h-fit"

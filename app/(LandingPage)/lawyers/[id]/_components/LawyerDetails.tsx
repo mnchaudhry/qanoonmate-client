@@ -45,7 +45,7 @@ export default function LawyerDetails({ lawyer }: { lawyer: Lawyer }) {
                     clipRule="evenodd"
                   />
                 </svg>
-                Verified by VerdictAI
+                Verified by QanoonMate
               </span>
             </li>
           )}

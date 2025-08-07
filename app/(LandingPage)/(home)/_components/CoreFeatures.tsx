@@ -30,13 +30,13 @@ const CoreFeatures = () => {
     ]
 
     return (
-        <section className="bg-background">
+        <section id="core-features" className="bg-background">
 
             <div className="px-4 mx-auto max-w-7xl md:px-6">
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl md:text-4xl font-bold">Core Features of LegalEase</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold">Core Features of QanoonMate</h2>
                     <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
-                        LegalEase brings you a suite of smart legal tools, designed to empower individuals, professionals, and businesses at every stage of their legal journey.
+                        QanoonMate brings you a suite of smart legal tools, designed to empower individuals, professionals, and businesses at every stage of their legal journey.
                     </p>
                 </div>
 

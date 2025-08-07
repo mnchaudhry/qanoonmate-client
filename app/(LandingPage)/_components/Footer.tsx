@@ -33,14 +33,14 @@ const LandingPageFooter: React.FC = () => {
 
   /////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////////// 
   return (
-    <footer className="bg-primary-dark text-neutral pt-24 pb-8">
+    <footer className="bg-primary text-gray-600 pt-24 pb-8">
 
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Logo & About */}
         <div className='space-y-5'>
           <Logo type='white' />
           <p className="text-muted text-sm leading-relaxed">
-            LegalEase combines cutting-edge AI with expert legal knowledge to make law accessible, fast, and affordable for everyone.
+            QanoonMate combines cutting-edge AI with expert legal knowledge to make law accessible, fast, and affordable for everyone.
           </p>
         </div>
 
@@ -82,9 +82,9 @@ const LandingPageFooter: React.FC = () => {
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 px-4 py-2 rounded-md text-black text-sm"
+              className="flex-1 px-4 py-2 border border-black bg-white rounded-md text-black text-sm"
             />
-            <Button type="submit" className="py-2 px-5 text-sm">
+            <Button variant="outline" type="submit" className="py-2 px-5 text-sm">
               Subscribe
             </Button>
           </form>
@@ -92,8 +92,8 @@ const LandingPageFooter: React.FC = () => {
       </div>
 
       {/* Footer Bottom */}
-      <div className="text-center text-muted-foreground text-sm mt-16">
-        © 2025 LegalEase. All rights reserved.
+      <div className="text-center text-foreground text-sm mt-16">
+        © 2025 QanoonMate. All rights reserved.
       </div>
     </footer>
   );
