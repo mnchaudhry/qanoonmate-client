@@ -1,9 +1,9 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import * as api from '../api';
-import toast from 'react-hot-toast';
-import { AIChatSession } from '@/store/types/api';
-import { getErrorMessage, groupChatsByDate } from '@/lib/utils';
-import { AIChatMessage } from '@/lib/interfaces';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import * as api from "../api";
+import toast from "react-hot-toast";
+import { AIChatSession } from "@/store/types/api";
+import { getErrorMessage, groupChatsByDate } from "@/lib/utils";
+import { AIChatMessage } from "@/lib/interfaces";
 
 interface SessionState {
     aiConfidence: number;
@@ -25,122 +25,175 @@ interface SessionState {
 }
 
 export interface SidebarChatItem {
-    section: string,
-    items: AIChatSession[]
+    section: string;
+    items: AIChatSession[];
 }
 
-export const getChatSessions = createAsyncThunk('aiSessions/getChatSessions', async (_, { rejectWithValue }) => {
-    try {
-        const { data } = await api.getChatSessions();
-        if (!data?.success) toast.error(data?.message);
-        return data?.data;
-    } catch (error: any) {
-        const message = getErrorMessage(error, "Failed to fetch chat sessions.");
-        toast.error(message);
-        return rejectWithValue(message);
+export const getChatSessions = createAsyncThunk(
+    "aiSessions/getChatSessions",
+    async (_, { rejectWithValue }) => {
+        try {
+            const { data } = await api.getChatSessions();
+            if (!data?.success) toast.error(data?.message);
+            return data?.data;
+        } catch (error: any) {
+            const message = getErrorMessage(error, "Failed to fetch chat sessions.");
+            toast.error(message);
+            return rejectWithValue(message);
+        }
     }
-});
+);
 
-export const getChatSession = createAsyncThunk('aiSessions/getChatSession', async (id: string, { rejectWithValue }) => {
-    try {
-        const { data } = await api.getChatSession(id);
-        if (!data?.success) toast.error(data?.message);
-        return data?.data;
-    } catch (error: any) {
-        const message = getErrorMessage(error, `Failed to retrieve chat session with ID: ${id}.`);
-        toast.error(message);
-        return rejectWithValue(message);
+export const getChatSession = createAsyncThunk(
+    "aiSessions/getChatSession",
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const { data } = await api.getChatSession(id);
+            if (!data?.success) toast.error(data?.message);
+            return data?.data;
+        } catch (error: any) {
+            const message = getErrorMessage(
+                error,
+                `Failed to retrieve chat session with ID: ${id}.`
+            );
+            toast.error(message);
+            return rejectWithValue(message);
+        }
     }
-});
+);
 
-export const getMyChatSessions = createAsyncThunk('aiSessions/getMyChatSessions', async (_, { rejectWithValue }) => {
-    try {
-        const { data } = await api.getMyChatSessions();
-        if (!data?.success) toast.error(data?.message);
-        return data?.data;
-    } catch (error: any) {
-        const message = getErrorMessage(error, "Failed to fetch your chat sessions.");
-        toast.error(message);
-        return rejectWithValue(message);
+export const getMyChatSessions = createAsyncThunk(
+    "aiSessions/getMyChatSessions",
+    async (_, { rejectWithValue }) => {
+        try {
+            const { data } = await api.getMyChatSessions();
+            if (!data?.success) toast.error(data?.message);
+            return data?.data;
+        } catch (error: any) {
+            const message = getErrorMessage(
+                error,
+                "Failed to fetch your chat sessions."
+            );
+            toast.error(message);
+            return rejectWithValue(message);
+        }
     }
-});
+);
 
-export const renameSession = createAsyncThunk('aiSessions/renameSession', async (formData: { id: string, title: string }, { rejectWithValue }) => {
-    try {
-        const { data } = await api.renameSession(formData);
-        if (data?.success) toast.success(data?.message);
-        else toast.error(data?.message);
-        return data?.data;
-    } catch (error: any) {
-        const message = getErrorMessage(error, `Unable to rename session with ID: ${formData.id}.`);
-        toast.error(message);
-        return rejectWithValue(message);
+export const renameSession = createAsyncThunk(
+    "aiSessions/renameSession",
+    async (formData: { id: string; title: string }, { rejectWithValue }) => {
+        try {
+            const { data } = await api.renameSession(formData);
+            if (data?.success) toast.success(data?.message);
+            else toast.error(data?.message);
+            return data?.data;
+        } catch (error: any) {
+            const message = getErrorMessage(
+                error,
+                `Unable to rename session with ID: ${formData.id}.`
+            );
+            toast.error(message);
+            return rejectWithValue(message);
+        }
     }
-});
+);
 
-export const deleteSession = createAsyncThunk('aiSessions/deleteSession', async (id: string, { rejectWithValue }) => {
-    try {
-        const { data } = await api.deleteSession(id);
-        if (data?.success) toast.success(data?.message);
-        else toast.error(data?.message);
-        return id;
-    } catch (error: any) {
-        const message = getErrorMessage(error, `Failed to delete session with ID: ${id}.`);
-        toast.error(message);
-        return rejectWithValue(message);
+export const deleteSession = createAsyncThunk(
+    "aiSessions/deleteSession",
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const { data } = await api.deleteSession(id);
+            if (data?.success) toast.success(data?.message);
+            else toast.error(data?.message);
+            return id;
+        } catch (error: any) {
+            const message = getErrorMessage(
+                error,
+                `Failed to delete session with ID: ${id}.`
+            );
+            toast.error(message);
+            return rejectWithValue(message);
+        }
     }
-});
+);
 
-export const getMessage = createAsyncThunk('aiMessage/getAIMessage', async (messageId: string, { rejectWithValue }) => {
-    try {
-        const { data } = await api.getMessage(messageId);
-        if (!data?.success) toast.error(data?.message);
-        return data?.data;
-    } catch (error: any) {
-        const message = getErrorMessage(error, `Could not retrieve message with ID: ${messageId}.`);
-        toast.error(message);
-        return rejectWithValue(message);
+export const getMessage = createAsyncThunk(
+    "aiMessage/getAIMessage",
+    async (messageId: string, { rejectWithValue }) => {
+        try {
+            const { data } = await api.getMessage(messageId);
+            if (!data?.success) toast.error(data?.message);
+            return data?.data;
+        } catch (error: any) {
+            const message = getErrorMessage(
+                error,
+                `Could not retrieve message with ID: ${messageId}.`
+            );
+            toast.error(message);
+            return rejectWithValue(message);
+        }
     }
-});
+);
 
-export const getMessagesBySession = createAsyncThunk('aiMessage/getMessagesBySession', async (sessionId: string, { rejectWithValue }) => {
-    try {
-        const { data } = await api.getMessagesBySession(sessionId);
-        if (!data?.success) toast.error(data?.message);
-        return data?.data;
-    } catch (error: any) {
-        const message = getErrorMessage(error, `Unable to fetch messages for session ID: ${sessionId}.`);
-        toast.error(message);
-        return rejectWithValue(message);
+export const getMessagesBySession = createAsyncThunk(
+    "aiMessage/getMessagesBySession",
+    async (sessionId: string, { rejectWithValue }) => {
+        try {
+            const { data } = await api.getMessagesBySession(sessionId);
+            if (!data?.success) toast.error(data?.message);
+            return data?.data;
+        } catch (error: any) {
+            const message = getErrorMessage(
+                error,
+                `Unable to fetch messages for session ID: ${sessionId}.`
+            );
+            toast.error(message);
+            return rejectWithValue(message);
+        }
     }
-});
+);
 
-export const updateMessage = createAsyncThunk('aiMessage/updateMessage', async (formData: { id: string, content: string, isStreaming: boolean }, { rejectWithValue }) => {
-    try {
-        const { data } = await api.updateAIMessage(formData);
-        if (data?.success) toast.success(data?.message);
-        else toast.error(data?.message);
-        return data?.data;
-    } catch (error: any) {
-        const message = getErrorMessage(error, `Failed to update message with ID: ${formData.id}.`);
-        toast.error(message);
-        return rejectWithValue(message);
+export const updateMessage = createAsyncThunk(
+    "aiMessage/updateMessage",
+    async (
+        formData: { id: string; content: string; isStreaming: boolean },
+        { rejectWithValue }
+    ) => {
+        try {
+            const { data } = await api.updateAIMessage(formData);
+            if (data?.success) toast.success(data?.message);
+            else toast.error(data?.message);
+            return data?.data;
+        } catch (error: any) {
+            const message = getErrorMessage(
+                error,
+                `Failed to update message with ID: ${formData.id}.`
+            );
+            toast.error(message);
+            return rejectWithValue(message);
+        }
     }
-});
+);
 
-export const deleteMessage = createAsyncThunk('aiMessage/deleteMessage', async (messageId: string, { rejectWithValue }) => {
-    try {
-        const { data } = await api.deleteAIMessage(messageId);
-        if (data?.success) toast.success(data?.message);
-        else toast.error(data?.message);
-        return data?.data;
-    } catch (error: any) {
-        const message = getErrorMessage(error, `Could not delete message with ID: ${messageId}.`);
-        toast.error(message);
-        return rejectWithValue(message);
+export const deleteMessage = createAsyncThunk(
+    "aiMessage/deleteMessage",
+    async (messageId: string, { rejectWithValue }) => {
+        try {
+            const { data } = await api.deleteAIMessage(messageId);
+            if (data?.success) toast.success(data?.message);
+            else toast.error(data?.message);
+            return data?.data;
+        } catch (error: any) {
+            const message = getErrorMessage(
+                error,
+                `Could not delete message with ID: ${messageId}.`
+            );
+            toast.error(message);
+            return rejectWithValue(message);
+        }
     }
-});
-
+);
 
 ////////////////////////////////////////////////////////// REDUCER ////////////////////////////////////////////////////////////
 
@@ -164,7 +217,7 @@ const initialState: SessionState = {
 };
 
 const aiSessionSlice = createSlice({
-    name: 'aiSession',
+    name: "aiSession",
     initialState,
     reducers: {
         resetState: () => initialState,
@@ -193,14 +246,32 @@ const aiSessionSlice = createSlice({
                 state.messages[idx] = { ...state.messages[idx], ...action.payload };
             }
         },
+        updateBotMessage: (state, action) => {
+            // Update bot message with new responses (for regeneration)
+            const idx = state.messages.findIndex(
+                (msg) => msg._id === action.payload._id
+            );
+            if (idx !== -1) {
+                state.messages[idx] = { ...state.messages[idx], ...action.payload };
+            }
+        },
         removeAIMessage: (state, action) => {
-            state.messages = state.messages.filter(msg => msg._id !== action.payload);
+            state.messages = state.messages.filter(
+                (msg) => msg._id !== action.payload
+            );
         },
         setIsLoading: (state, action) => {
             state.isLoading = action.payload;
         },
         setIsStreaming: (state, action) => {
             state.isStreaming = action.payload;
+            console.log("setIsStreaming called with:", action.payload);
+
+            // Only clear streaming message when stopping, don't initialize empty one
+            if (action.payload === false) {
+                state.streamingMessage = null;
+                console.log("Cleared streaming message");
+            }
         },
         setError: (state, action) => {
             state.error = action.payload;
@@ -224,17 +295,35 @@ const aiSessionSlice = createSlice({
             state.sessionMetadata.sessionDuration += action.payload;
         },
         setStreamingMessage: (state, action) => {
+            console.log("setStreamingMessage called with:", action.payload);
+
             // Remove placeholder if present (same _id and empty content)
-            const idx = state.messages.findIndex(msg => msg._id === action.payload._id && (!msg.content || msg.content.trim() === ''));
+            const idx = state.messages.findIndex(
+                (msg) =>
+                    msg._id === action.payload._id &&
+                    (!msg.content || msg.content.trim() === "")
+            );
             if (idx !== -1) {
                 state.messages.splice(idx, 1);
             }
             state.streamingMessage = action.payload;
+            console.log("Updated streaming message:", state.streamingMessage);
         },
         finalizeStreamingMessage: (state) => {
+            console.log("finalizeStreamingMessage called");
             if (state.streamingMessage) {
+                console.log(
+                    "Adding streaming message to messages array:",
+                    state.streamingMessage
+                );
                 state.messages.push(state.streamingMessage);
                 state.streamingMessage = null;
+                console.log(
+                    "Finalized streaming message, total messages:",
+                    state.messages.length
+                );
+            } else {
+                console.log("No streaming message to finalize");
             }
         },
     },
@@ -259,8 +348,7 @@ const aiSessionSlice = createSlice({
             })
             .addCase(getChatSession.fulfilled, (state, action) => {
                 state.isLoading = false;
-                // TODO: 
-                // @ts-ignore
+                // @ts-expect-error 132 - TODO: fix this
                 state.currentSession = action.payload || null;
             })
             .addCase(getChatSession.rejected, (state, action) => {
@@ -273,7 +361,9 @@ const aiSessionSlice = createSlice({
             })
             .addCase(renameSession.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.sessions = state.sessions.map(s => s._id == action.payload?._id ? action.payload : s)
+                state.sessions = state.sessions.map((s) =>
+                    s._id == action.payload?._id ? action.payload : s
+                );
                 if (state.currentSession?._id === action.payload?._id) {
                     state.currentSession = action.payload || null;
                 }
@@ -289,7 +379,9 @@ const aiSessionSlice = createSlice({
             })
             .addCase(deleteSession.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.sessions = state.sessions.filter((aiSession) => aiSession._id !== action.payload);
+                state.sessions = state.sessions.filter(
+                    (aiSession) => aiSession._id !== action.payload
+                );
                 if (state.currentSession?._id === action.payload) {
                     state.currentSession = null;
                 }
@@ -299,8 +391,6 @@ const aiSessionSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
-
-
 
             //////////////////////////////////////////////////////// AI Messagess
             .addCase(getMessage.pending, (state) => {
@@ -332,7 +422,7 @@ const aiSessionSlice = createSlice({
             })
             .addCase(updateMessage.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.messages = state.messages.map(msg =>
+                state.messages = state.messages.map((msg) =>
                     msg._id === action.payload?._id ? action.payload : msg
                 );
                 if (state.currentMessage?._id === action.payload?._id) {
@@ -349,7 +439,9 @@ const aiSessionSlice = createSlice({
             })
             .addCase(deleteMessage.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.messages = state.messages.filter(msg => msg._id !== action.payload);
+                state.messages = state.messages.filter(
+                    (msg) => msg._id !== action.payload
+                );
                 if (state.currentMessage?._id === action.payload) {
                     state.currentMessage = null;
                 }
@@ -359,11 +451,30 @@ const aiSessionSlice = createSlice({
                 state.error = action.payload as string;
             })
 
-
             .addDefaultCase((state) => state);
     },
 });
 
 export default aiSessionSlice.reducer;
-export const { resetState, addAIMessage, clearError, removeAIMessage, setAIMessages, setCurrentMessage, setCurrentSession, setCurrentSessionId, setError, setIsLoading, setIsStreaming, setSessionMetadata, updateAIMessageLocal, incrementInteractionCount, updateLastModified, updateSessionDuration, setStreamingMessage, finalizeStreamingMessage, } = aiSessionSlice.actions;
+export const {
+    resetState,
+    addAIMessage,
+    clearError,
+    removeAIMessage,
+    setAIMessages,
+    setCurrentMessage,
+    setCurrentSession,
+    setCurrentSessionId,
+    setError,
+    setIsLoading,
+    setIsStreaming,
+    setSessionMetadata,
+    updateAIMessageLocal,
+    updateBotMessage,
+    incrementInteractionCount,
+    updateLastModified,
+    updateSessionDuration,
+    setStreamingMessage,
+    finalizeStreamingMessage,
+} = aiSessionSlice.actions;
 export const { actions: aiSessionActions } = aiSessionSlice;

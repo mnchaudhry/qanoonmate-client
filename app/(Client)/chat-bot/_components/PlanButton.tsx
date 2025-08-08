@@ -6,6 +6,7 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
+    navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { cn } from '@/lib/utils';
 
@@ -14,12 +15,12 @@ const PlanButton = () => {
 
     const components: { title: string; href: string; description: string }[] = [
         {
-            title: "QanoonMate Plus",
+            title: "LegalEase Plus",
             href: "/docs/primitives/alert-dialog",
             description: "Our smart model.",
         },
         {
-            title: "QanoonMate Standard",
+            title: "LegalEase Standard",
             href: "/docs/primitives/hover-card",
             description:
                 "Best for most users.",
@@ -32,7 +33,7 @@ const PlanButton = () => {
             <NavigationMenu>
                 <NavigationMenuList>
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger>QanoonMate</NavigationMenuTrigger>
+                        <NavigationMenuTrigger>LegalEase</NavigationMenuTrigger>
                         <NavigationMenuContent>
                             <ul className="grid w-[300px] gap-1 p-2">
                                 {components.map((component) => (
@@ -72,5 +73,3 @@ const ListItem = React.forwardRef<
         </li>
     )
 })
-
-ListItem.displayName = "ListItem"

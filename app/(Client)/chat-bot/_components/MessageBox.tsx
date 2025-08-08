@@ -4,30 +4,75 @@ import { AIChatMessage, MessageItemProps } from "@/lib/interfaces";
 import React, { useEffect, useState, useRef, memo } from "react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
-import { Bookmark, ThumbsUp, ThumbsDown, Flag, Save, Copy, MessageSquare, User, Bot, Clock } from "lucide-react";
+import {
+  Bookmark,
+  ThumbsUp,
+  ThumbsDown,
+  Flag,
+  Save,
+  Copy,
+  MessageSquare,
+  User,
+  Bot,
+  Clock,
+  RotateCcw,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import Hint from "@/components/Hint";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { parseAIResponse } from '@/utils/parseAIResponse';
+import { parseAIResponse } from "@/utils/parseAIResponse";
 import Link from "next/link";
 interface MessageBoxProps {
-  chatViewMode?: 'compact' | 'card' | 'timeline';
+  chatViewMode?: "compact" | "card" | "timeline";
   textSize?: number;
   messages: AIChatMessage[];
 }
 
-const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', textSize = 16, messages, }) => {
-
+const MessageBox: React.FC<
+  MessageBoxProps & {
+    onRegenerate: (botMessage: any, history: any[]) => Promise<void>;
+  }
+> = memo(({ chatViewMode = "card", textSize = 16, messages, onRegenerate }) => {
   ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////
-  const streamingMessage = useSelector((state: RootState) => state.aiSession.streamingMessage);
+  console.log("messages", messages);
+  const streamingMessage = useSelector(
+    (state: RootState) => state.aiSession.streamingMessage
+  );
+  console.log("streamingMessage", streamingMessage);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // Track current response index for each bot message
+  const [responseIndexes, setResponseIndexes] = useState<
+    Record<string, number>
+  >({});
+
+  const handleNavigate = (
+    messageId: string,
+    direction: "left" | "right",
+    responsesLength: number
+  ) => {
+    setResponseIndexes((prev) => {
+      const current = prev[messageId] || 0;
+      let next = direction === "left" ? current - 1 : current + 1;
+      if (next < 0) next = 0;
+      if (next >= responsesLength) next = responsesLength - 1;
+      return { ...prev, [messageId]: next };
+    });
+  };
   ///////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////
   useEffect(() => {
+    console.log(
+      "MessageBox useEffect triggered - messages:",
+      messages.length,
+      "streamingMessage:",
+      !!streamingMessage
+    );
     scrollToBottom();
-  }, [messages]);
+  }, [messages, streamingMessage]);
 
   ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////
   const scrollToBottom = () => {
@@ -37,51 +82,108 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
   const getMessageTime = (timestamp: string) => {
     try {
       return new Date(timestamp).toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit'
+        hour: "2-digit",
+        minute: "2-digit",
       });
     } catch {
-      return '';
+      return "";
     }
   };
 
   const onBookmark = (messageId: string) => {
-    toast.success("Message bookmarked! " + messageId);
+    toast.success("Message bookmarked!");
   };
 
-  const onRate = (messageId: string, rating: 'good' | 'bad') => {
-    toast.success(`Response rated as ${rating} for message ${messageId}`);
+  const onRate = (messageId: string, rating: "good" | "bad") => {
+    toast.success(`Response rated as ${rating}`);
   };
 
   const onFeedback = (messageId: string) => {
-    toast.success("Feedback submitted for message " + messageId);
+    toast.success("Feedback submitted!");
   };
 
   const onSaveToNotes = (messageId: string) => {
-    toast.success("Saved to notes for message " + messageId);
+    toast.success("Saved to notes!");
   };
 
   const onCopy = (content: string) => {
     navigator.clipboard.writeText(content);
-    toast.success("Message copied! " + content);
+    toast.success("Message copied!");
   };
 
   const onFlag = (messageId: string) => {
-    toast.success("Response flagged for review for message " + messageId);
+    toast.success("Response flagged for review");
   };
 
-  const buildMarkdown = (parsed: any) => {
-    const md = parsed.main || '';
+  const buildMarkdown = (parsed) => {
+    let md = parsed.main || "";
     return md;
   };
 
+  // Defensive extraction of responses for bot messages
+  const getBotResponses = (message: AIChatMessage) => {
+    if (
+      message.sender === "bot" &&
+      Array.isArray(message.responses) &&
+      message.responses.length > 0
+    ) {
+      return message.responses;
+    }
+    // fallback: treat content as the only response
+    return [{ type: "original", content: message.content }];
+  };
 
   ///////////////////////////////////////////////// COMPONENTS ///////////////////////////////////////////////////
-  const renderMessageActions = (message: AIChatMessage) => {
-    if (message.sender === 'bot') {
+  const renderMessageActions = (message: AIChatMessage, history: any[]) => {
+    if (message.sender === "bot") {
+      const responses = getBotResponses(message);
+      const currentIdx = responseIndexes[message._id] || 0;
       return (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Hint label="Bookmark message" >
+          {/* Regenerate Button */}
+          <Hint label="Regenerate response">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={async () => await onRegenerate(message, history)}
+              className="p-1.5 rounded-full"
+            >
+              <RotateCcw className="w-5 h-5" />
+            </Button>
+          </Hint>
+          {/* Navigation Arrows */}
+          {responses.length > 1 && (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  handleNavigate(message._id, "left", responses.length)
+                }
+                className="p-1.5 rounded-full"
+                disabled={currentIdx === 0}
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+              <span className="text-xs mx-1">
+                {responses[currentIdx].type.charAt(0).toUpperCase() +
+                  responses[currentIdx].type.slice(1)}{" "}
+                {currentIdx > 0 ? currentIdx : ""}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() =>
+                  handleNavigate(message._id, "right", responses.length)
+                }
+                className="p-1.5 rounded-full"
+                disabled={currentIdx === responses.length - 1}
+              >
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+            </>
+          )}
+          <Hint label="Bookmark message">
             <Button
               variant="ghost"
               size="sm"
@@ -92,29 +194,29 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
             </Button>
           </Hint>
 
-          <Hint label="Rate as helpful" >
+          <Hint label="Rate as helpful">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onRate(message._id, 'good')}
+              onClick={() => onRate(message._id, "good")}
               className="p-1.5 rounded-full text-green-600 hover:text-green-700"
             >
               <ThumbsUp className="w-5 h-5" />
             </Button>
           </Hint>
 
-          <Hint label="Rate as unhelpful" >
+          <Hint label="Rate as unhelpful">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onRate(message._id, 'bad')}
+              onClick={() => onRate(message._id, "bad")}
               className="p-1.5 rounded-full text-red-600 hover:text-red-700"
             >
               <ThumbsDown className="w-5 h-5" />
             </Button>
           </Hint>
 
-          <Hint label="Copy message" >
+          <Hint label="Copy message">
             <Button
               variant="ghost"
               size="sm"
@@ -125,7 +227,7 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
             </Button>
           </Hint>
 
-          <Hint label="Save to notes" >
+          <Hint label="Save to notes">
             <Button
               variant="ghost"
               size="sm"
@@ -136,7 +238,7 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
             </Button>
           </Hint>
 
-          <Hint label="Flag for review" >
+          <Hint label="Flag for review">
             <Button
               variant="ghost"
               size="sm"
@@ -147,7 +249,7 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
             </Button>
           </Hint>
 
-          <Hint label="Send feedback" >
+          <Hint label="Send feedback">
             <Button
               variant="ghost"
               size="sm"
@@ -163,41 +265,51 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
     return null;
   };
   // Memoized MessageItem component
-  const MessageItem = React.memo(function MessageItem({ message, index, chatViewMode, textSize }: MessageItemProps) {
+  const MessageItem = React.memo(function MessageItem({
+    message,
+    index,
+    chatViewMode,
+    textSize,
+    history,
+  }: MessageItemProps & { history: any[] }) {
     // Defensive: default sender to 'bot' if missing
-    const isModel = (message.sender ?? 'bot') === 'bot';
+    const isModel = (message.sender ?? "bot") === "bot";
+    const responses = getBotResponses(message);
+    const currentIdx = responseIndexes[message._id] || 0;
+    const currentResponse = responses[currentIdx] || responses[0];
     const messageTime = getMessageTime(message.createdAt);
 
     // True character-by-character streaming
-    const [displayedContent, setDisplayedContent] = useState(message.content);
-    console.log('displayedContent', displayedContent);
-    const bufferRef = useRef('');
-    const prevContentRef = useRef(message.content);
+    const [displayedContent, setDisplayedContent] = useState(
+      currentResponse.content
+    );
+    const bufferRef = useRef("");
+    const prevContentRef = useRef(currentResponse.content);
 
     useEffect(() => {
       // Only buffer new characters
       const prev = prevContentRef.current;
-      const next = message.content;
+      const next = currentResponse.content;
       if (next.startsWith(prev)) {
         bufferRef.current += next.slice(prev.length);
       } else {
         // If content resets (e.g., new message), reset everything
         bufferRef.current = next;
-        setDisplayedContent('');
+        setDisplayedContent("");
       }
       prevContentRef.current = next;
-    }, [message.content]);
+    }, [currentResponse.content]);
 
     useEffect(() => {
       if (!message.isStreaming) {
-        setDisplayedContent(message.content);
-        bufferRef.current = '';
+        setDisplayedContent(currentResponse.content);
+        bufferRef.current = "";
         return;
       }
       let timer: number;
       function tick() {
         if (bufferRef.current.length > 0) {
-          setDisplayedContent(prev => {
+          setDisplayedContent((prev) => {
             const nextChar = bufferRef.current[0];
             bufferRef.current = bufferRef.current.slice(1);
             return prev + nextChar;
@@ -207,11 +319,11 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
       }
       tick();
       return () => clearTimeout(timer);
-    }, [message.isStreaming, message]);
+    }, [message.isStreaming]);
 
-    const parsed = parseAIResponse(message.content);
+    const parsed = parseAIResponse(currentResponse.content);
 
-    if (chatViewMode === 'compact') {
+    if (chatViewMode === "compact") {
       return (
         <div
           key={index}
@@ -226,25 +338,35 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
             </div>
           )}
 
-          <div className={cn(
-            "flex-1 max-w-[75%]",
-            isModel ? "order-2" : "order-1"
-          )}>
-            <div className={cn(
-              "px-4 py-3 rounded-lg shadow-sm border",
-              isModel
-                ? "bg-primary/10 text-foreground border-primary/10"
-                : "bg-muted text-foreground border-border"
-            )}>
+          <div
+            className={cn(
+              "flex-1 max-w-[75%]",
+              isModel ? "order-2" : "order-1"
+            )}
+          >
+            <div
+              className={cn(
+                "px-4 py-3 rounded-lg shadow-sm border",
+                isModel
+                  ? "bg-primary/10 text-foreground border-primary/10"
+                  : "bg-muted text-foreground border-border"
+              )}
+            >
               <div style={{ fontSize: `${textSize}px` }}>
-                <ReactMarkdown>
-                  {buildMarkdown(parsed)}
-                </ReactMarkdown>
-                {parsed.quickAction &&
+                <ReactMarkdown>{buildMarkdown(parsed)}</ReactMarkdown>
+                {parsed.quickAction && (
                   <div className="text-gray-500">
-                    Quick Action : {parsed.quickAction} {(parsed.quickAction.includes("Consult") || parsed.quickAction.includes("consult")) ? <Link href="/lawyers" className=" underline">here</Link> : ""}
+                    Quick Action : {parsed.quickAction}{" "}
+                    {parsed.quickAction.includes("Consult") ||
+                    parsed.quickAction.includes("consult") ? (
+                      <Link href="/lawyers" className=" underline">
+                        here
+                      </Link>
+                    ) : (
+                      ""
+                    )}
                   </div>
-                }
+                )}
               </div>
               {message.isStreaming && (
                 <div className="mt-1">
@@ -266,12 +388,12 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
             </div>
           )}
 
-          {renderMessageActions(message)}
+          {renderMessageActions(message, history)}
         </div>
       );
     }
 
-    if (chatViewMode === 'timeline') {
+    if (chatViewMode === "timeline") {
       return (
         <div
           key={index}
@@ -289,25 +411,35 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
             </div>
           )}
 
-          <div className={cn(
-            "flex-1 max-w-[70%]",
-            isModel ? "order-2" : "order-1"
-          )}>
-            <div className={cn(
-              "px-4 py-3 rounded-lg shadow-sm border",
-              isModel
-                ? "bg-primary/10 text-foreground border-primary/10"
-                : "bg-muted text-foreground border-border"
-            )}>
+          <div
+            className={cn(
+              "flex-1 max-w-[70%]",
+              isModel ? "order-2" : "order-1"
+            )}
+          >
+            <div
+              className={cn(
+                "px-4 py-3 rounded-lg shadow-sm border",
+                isModel
+                  ? "bg-primary/10 text-foreground border-primary/10"
+                  : "bg-muted text-foreground border-border"
+              )}
+            >
               <div style={{ fontSize: `${textSize}px` }}>
-                <ReactMarkdown>
-                  {buildMarkdown(parsed)}
-                </ReactMarkdown>
-                {parsed.quickAction &&
+                <ReactMarkdown>{buildMarkdown(parsed)}</ReactMarkdown>
+                {parsed.quickAction && (
                   <div className="text-gray-500">
-                    Quick Action : {parsed.quickAction} {(parsed.quickAction.includes("Consult") || parsed.quickAction.includes("consult")) ? <Link href="/lawyers" className=" underline">here</Link> : ""}
+                    Quick Action : {parsed.quickAction}{" "}
+                    {parsed.quickAction.includes("Consult") ||
+                    parsed.quickAction.includes("consult") ? (
+                      <Link href="/lawyers" className=" underline">
+                        here
+                      </Link>
+                    ) : (
+                      ""
+                    )}
                   </div>
-                }
+                )}
               </div>
               {message.isStreaming && (
                 <div className="mt-1">
@@ -329,7 +461,7 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
             </div>
           )}
 
-          {renderMessageActions(message)}
+          {renderMessageActions(message, history)}
         </div>
       );
     }
@@ -353,14 +485,20 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
           )}
         >
           <div style={{ fontSize: `${textSize}px` }}>
-            <ReactMarkdown>
-              {buildMarkdown(parsed)}
-            </ReactMarkdown>
-            {parsed.quickAction &&
+            <ReactMarkdown>{buildMarkdown(parsed)}</ReactMarkdown>
+            {parsed.quickAction && (
               <div className="text-gray-500">
-                Quick Action : {parsed.quickAction} {(parsed.quickAction.includes("Consult") || parsed.quickAction.includes("consult")) ? <Link href="/lawyers" className=" underline">here</Link> : ""}
+                Quick Action : {parsed.quickAction}{" "}
+                {parsed.quickAction.includes("Consult") ||
+                parsed.quickAction.includes("consult") ? (
+                  <Link href="/lawyers" className=" underline">
+                    here
+                  </Link>
+                ) : (
+                  ""
+                )}
               </div>
-            }
+            )}
           </div>
           {message.isStreaming && (
             <div className="mt-1">
@@ -370,26 +508,51 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
         </div>
 
         {/* Message Actions */}
-        <div className={cn(
-          "flex flex-col",
-          isModel ? "justify-start items-start" : "justify-end items-end"
-        )}>
-          {renderMessageActions(message)}
+        <div
+          className={cn(
+            "flex flex-col",
+            isModel ? "justify-start items-start" : "justify-end items-end"
+          )}
+        >
+          {renderMessageActions(message, history)}
         </div>
       </div>
     );
   });
 
   ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////
+  console.log(
+    "MessageBox render - messages:",
+    messages.length,
+    "streamingMessage:",
+    !!streamingMessage
+  );
+
   return (
     <TooltipProvider>
       <div className="flex-1 overflow-y-auto py-6 space-y-4 px-6">
         <div className="max-w-4xl mx-auto">
-          {messages && messages.length > 0 && messages.map((message, index) =>
-            <MessageItem key={index} message={message} index={index} chatViewMode={chatViewMode} textSize={textSize} />
-          )}
+          {messages &&
+            messages.length > 0 &&
+            messages.map((message, index) => (
+              <MessageItem
+                key={index}
+                message={message}
+                index={index}
+                chatViewMode={chatViewMode}
+                textSize={textSize}
+                history={messages}
+              />
+            ))}
           {streamingMessage && (
-            <MessageItem key={streamingMessage._id} message={streamingMessage} index={messages.length} chatViewMode={chatViewMode} textSize={textSize} />
+            <MessageItem
+              key={streamingMessage._id}
+              message={streamingMessage}
+              index={messages.length}
+              chatViewMode={chatViewMode}
+              textSize={textSize}
+              history={messages}
+            />
           )}
         </div>
         <div ref={messagesEndRef} />
@@ -397,7 +560,5 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = 'card', tex
     </TooltipProvider>
   );
 });
-
-MessageBox.displayName = 'MessageBox'; // For better debugging
 
 export default MessageBox;

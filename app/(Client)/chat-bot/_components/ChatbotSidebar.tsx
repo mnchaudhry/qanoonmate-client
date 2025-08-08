@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Logo from "@/components/Logo";
 import { AIChatSession } from "@/store/types/api";
-import { deleteSession, getMyChatSessions, renameSession, setCurrentSession, setCurrentSessionId } from "@/store/reducers/aiSessionSlice";
+import { deleteSession, getMyChatSessions, renameSession, setCurrentSession, setCurrentSessionId, SidebarChatItem } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import AlertModal from "@/components/alert-modal";
 import toast from "react-hot-toast";
-import { cn } from "@/lib/utils";
+import { cn, groupChatsByDate } from "@/lib/utils";
 
 interface ChatSidebarProps {
   sessionMetadata?: {
@@ -43,7 +43,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
     if (paramSessionId) {
       dispatch(setCurrentSessionId(paramSessionId))
     }
-  }, [paramSessionId, dispatch])
+  }, [paramSessionId])
   useEffect(() => {
     setLoading(pre => ({ ...pre, fetch: true }))
     dispatch(getMyChatSessions())

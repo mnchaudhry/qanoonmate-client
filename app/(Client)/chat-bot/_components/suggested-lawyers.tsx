@@ -8,9 +8,8 @@ import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 import { Lawyer1 } from "@/constants/images";
 import { useStateContext } from "@/context/useStateContext";
-import Image from "next/image";
 
-const SuggestedLawyers = ({ }: { lawyers: Lawyer[] }) => {
+const SuggestedLawyers = ({ lawyers: inputLawyers }: { lawyers: Lawyer[] }) => {
 
     const router = useRouter();
     const { setSelectedLawyer } = useStateContext();
@@ -29,11 +28,9 @@ const SuggestedLawyers = ({ }: { lawyers: Lawyer[] }) => {
                     <Card key={lawyer._id} className="min-w-[200px] p-3 shadow-md">
                         <CardContent className="flex flex-col justify-between items-center gap-2 h-full p-0">
                             <div className="flex flex-col items-center text-center">
-                                <Image
+                                <img
                                     src={lawyer.profilePicture || Lawyer1}
                                     alt={lawyer.firstname}
-                                    width={64}
-                                    height={64}
                                     className="w-16 h-16 rounded-full mb-2 object-cover"
                                 />
                                 <h3 className="text-sm font-semibold">{lawyer.firstname}</h3>
