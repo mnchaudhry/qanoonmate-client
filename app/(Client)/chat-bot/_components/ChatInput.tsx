@@ -41,6 +41,7 @@ import { socketEvents } from "@/store/socket/events";
 import { AgentInputItem, assistant, user as userRes } from "@openai/agents";
 import { extractTextFromPDF } from "@/utils/extractFromPdf";
 import { jsPDF } from "jspdf";
+import { useRouter } from "next/navigation";
 
 interface Props {
   isConnected: boolean;
@@ -72,7 +73,7 @@ const ChatInput: React.FC<Props> = memo(
     } = useSocketContext();
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
-
+    const router = useRouter();
     ///////////////////////////////////////////////////////////// STATES //////////////////////////////////////////////////////////////////////
     const [isVoiceRecording, setIsVoiceRecording] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState<
@@ -99,7 +100,9 @@ const ChatInput: React.FC<Props> = memo(
         isStreaming,
         isLoading,
       });
-
+      if (!user?._id) {
+        router.push("/auth/sign-in");
+      }
       dispatch(setIsStreaming(true));
 
       // Get user message for sending
