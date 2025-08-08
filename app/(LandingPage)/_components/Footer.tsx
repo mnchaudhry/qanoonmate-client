@@ -33,13 +33,13 @@ const LandingPageFooter: React.FC = () => {
 
   /////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////////// 
   return (
-    <footer className="bg-primary text-gray-600 pt-24 pb-8">
+    <footer className="bg-neutral text-neutral-foreground pt-24 pb-8">
 
       <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Logo & About */}
         <div className='space-y-5'>
           <Logo type='white' />
-          <p className="text-muted text-sm leading-relaxed">
+          <p className="text-muted-foreground text-sm leading-relaxed">
             QanoonMate combines cutting-edge AI with expert legal knowledge to make law accessible, fast, and affordable for everyone.
           </p>
         </div>
@@ -47,7 +47,7 @@ const LandingPageFooter: React.FC = () => {
         {/* Services */}
         <div>
           <h4 className="font-semibold text-lg mb-4">Services</h4>
-          <ul className="space-y-3 text-sm text-muted">
+          <ul className="space-y-3 text-sm text-muted-foreground">
             {services.slice(0, 6).map((service) => (
               <li key={service.name} className="hover:text-green-400 transition">
                 {service.name}
@@ -59,7 +59,7 @@ const LandingPageFooter: React.FC = () => {
         {/* Company Links */}
         <div>
           <h4 className="font-semibold text-lg mb-4">Company</h4>
-          <ul className="space-y-3 text-sm text-muted">
+          <ul className="space-y-3 text-sm text-muted-foreground">
             {companyLinks.map((link) => (
               <li key={link.name}>
                 <a href={link.href} className="hover:text-green-400 transition">{link.name}</a>
@@ -71,7 +71,7 @@ const LandingPageFooter: React.FC = () => {
         {/* Social + Newsletter */}
         <div>
           <h4 className="font-semibold text-lg mb-4">Follow Us</h4>
-          <div className="flex space-x-4 mb-6 text-muted">
+          <div className="flex space-x-4 mb-6 text-muted-foreground">
             {socialLinks.map((social) => (
               <a key={social.name} href="#" className="hover:text-green-400 transition">{social.icon}</a>
             ))}

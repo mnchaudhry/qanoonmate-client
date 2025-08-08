@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 
 interface LogoProps {
     size?: 'lg' | 'md' | 'sm'
@@ -36,7 +37,7 @@ const Logo: React.FC<LogoProps> = ({
 
     // Render
     return (
-        <Link href={href || "/"} style={{ fontFamily: 'fantasy' }} className={cn('inline-block', containerClassName)}>
+        <Link href={href || "/"} style={{ fontFamily: 'fantasy' }} className={cn('flex shrink-0', containerClassName)}>
             {type === 'mini_green' || type === 'mini_white' ? (
                 <span
                     className={cn(
@@ -55,21 +56,13 @@ const Logo: React.FC<LogoProps> = ({
                     <span className="font-black text-primary" style={{ fontSize: 'inherit' }}>V</span>
                 </span>
             ) : (
-                <span
-                    className={cn(
-                        'relative top-1 font-extrabold rounded-lg tracking-tight flex items-center justify-center select-none transition-colors',
-                        sizeClass,
-                        colorClass,
-                        className
-                    )}
-                    style={{
-                        letterSpacing: '0.05em',
-                        minWidth: size === 'sm' ? 80 : size === 'lg' ? 180 : 120,
-                        minHeight: size === 'sm' ? 28 : size === 'lg' ? 48 : 36,
-                    }}
-                >
-                    <div className="font-bold text-lg md:text-xl lg:text-[30px] whitespace-nowrap ">Verdict AI</div>
-                </span>
+                <Image
+                    src={'/general/logo.png'}
+                    alt='logo'
+                    width={100}
+                    height={140}
+                    className='w-[13rem] h-8 object-contain shrink-0'
+                />
             )}
         </Link>
     )

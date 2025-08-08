@@ -47,13 +47,13 @@ const LandingPageNavbar: React.FC = () => {
   return (
     <nav
       className={cn(
-        "fixed top-0 z-50 w-full transition-all duration-300 ease-in-out",
+        "fixed top-0 z-[60] w-full transition-all duration-300 ease-in-out ",
         isScrolled
-          ? 'h-[80px] shadow-md bg-neutral text-neutral-foreground'
+          ? 'h-[80px] shadow-md bg-background text-neutral-foreground'
           : 'h-[100px] bg-transparent text-foreground'
       )}
     >
-      <div className="h-full w-full xl:container flex items-center justify-between px-4 mx-auto md:px-6">
+      <div className="h-full w-full flex items-center justify-between px-4 mx-auto md:px-6">
         <Logo size="md" />
 
         <ul className="hidden md:flex items-center space-x-6">

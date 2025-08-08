@@ -312,7 +312,7 @@ const SignUp: React.FC = () => {
               type="submit"
               value={loading ? "Processing..." : "Create account"}
               disabled={loading}
-              className="w-full cursor-pointer rounded-lg border border-primary bg-primary disabled:bg-primary/75 disabled:cursor-default p-4 text-neutral transition hover:bg-opacity-90"
+              className="w-full cursor-pointer rounded-lg border border-primary bg-primary text-primary-foreground disabled:bg-primary/75 disabled:cursor-default p-4 transition hover:bg-opacity-90"
             />
           </div>
 

@@ -6,6 +6,14 @@ import { hydrateAuth } from '@/store/reducers/authSlice';
 
 const publicRoutes = [
     '/',
+    '/blogs',
+    '/chatbot',
+    '/knowledgebase',
+    '/about',
+    '/contact',
+    '/terms',
+    '/privacy',
+    '/pricing',
     '/auth',
     '/auth/sign-in',
     '/auth/sign-up',
@@ -20,7 +28,7 @@ const HydrationProvider = ({ children }: { children: ReactNode }) => {
     const pathname = usePathname();
     const isPublic = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'));
     useEffect(() => {
-        dispatch(hydrateAuth({ silent: isPublic }));
+        dispatch(hydrateAuth({ silent: true }));
     }, [dispatch, isPublic]);
     return <>{children}</>;
 };

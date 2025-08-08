@@ -15,15 +15,15 @@ const HeroSection: React.FC = () => {
         {/* <BackgroundBeams /> */}
       </div>
 
-      <div className="container h-full relative z-10 px-4 mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-top">
+      <div className="container h-full relative z-10 px-4 mx-auto flex gap-10 items-center">
 
-        <div>
-          <h1 className="flex flex-col gap-2 text-5xl sm:text-5xl font-bold tracking-tight text-foreground leading-loose mb-6">
-            <span className="block">Redefining Legal Access</span>
-            <span className="text-primary drop-shadow-md">AI Meets Law in Pakistan</span>
+        <div className='flex-[6] '>
+          <h1 className="flex flex-col gap-8 text-7xl sm:text-6xl font-bold tracking-tight text-foreground leading-loose mb-6">
+            <span className="leading-[4rem] block">Legal Access Simplified</span>
+            <span className="leading-[4rem] text-primary drop-shadow-md">AI Meets Law in Pakistan</span>
           </h1>
 
-          <p className="text-lg text-muted-foreground mb-8 max-w-lg">
+          <p className="text-xl text-muted-foreground mb-8 max-w-lg">
             From instant legal insights to custom document generation and lawyer consultations —
             QanoonMate is your smart legal companion, accessible anywhere, anytime.
           </p>
@@ -39,7 +39,7 @@ const HeroSection: React.FC = () => {
               <>
                 <Link href="/auth/sign-up">
                   <Button className="">
-                    Get Started
+                    Try the Chatbot
                   </Button>
                 </Link>
                 <Button
@@ -49,7 +49,7 @@ const HeroSection: React.FC = () => {
                     if (el) el.scrollIntoView({ behavior: "smooth" })
                   }}
                 >
-                  Explore Features
+                  Book a Lawyer
                 </Button>
               </>
             )}
@@ -57,7 +57,7 @@ const HeroSection: React.FC = () => {
         </div>
 
         {/* Right Column: Image / Visual */}
-        <div className="relative rounded-lg overflow-hidden">
+        <div className="flex-[4] relative rounded-lg overflow-hidden">
           <Image
             src="/Pictures/pk-map.svg"
             alt="QanoonMate preview"

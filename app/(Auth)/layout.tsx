@@ -20,7 +20,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
                 <div className="flex flex-col justify-center items-center gap-4 w-full max-w-md ">
                     <Logo />
                     <p className="text-lg text-center text-foreground ">
-                        Your trusted AI-powered legal companion. Get expert advice, legal assistance, and more—all at your fingertips.
+                        Your trusted AI-powered legal companion. Get expert advice, legal assistance, and more - all at your fingertips.
                     </p>
                     <p className="mt-4 italic text-foreground">Bringing clarity to complexity</p>
                 </div>

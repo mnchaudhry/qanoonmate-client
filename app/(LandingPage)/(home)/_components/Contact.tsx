@@ -95,11 +95,11 @@ const Contact: React.FC = () => {
             <div>
               <h3 className="font-bold text-lg mb-2 text-foreground">Get in touch</h3>
               <Link
-                href="mailto:naumanch969@gmail.com"
+                href="mailto:contact@qanoonmate.com"
                 className="flex items-center space-x-2 text-muted-foreground hover:underline"
               >
                 <FaEnvelope className="text-neutral-foreground" />
-                <span>naumanch969@gmail.com</span>
+                <span>contact@qanoonmate.com</span>
               </Link>
             </div>
 
