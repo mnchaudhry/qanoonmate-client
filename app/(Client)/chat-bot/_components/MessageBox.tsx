@@ -27,6 +27,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { parseAIResponse } from "@/utils/parseAIResponse";
 import Link from "next/link";
+import { Nunito } from "next/font/google";
+import { Separator } from "@/components/ui/separator";
+const nunito = Nunito({ subsets: ["latin"] });
+
 interface MessageBoxProps {
   chatViewMode?: "compact" | "card" | "timeline";
   textSize?: number;
@@ -313,7 +317,7 @@ const MessageBox: React.FC<
             bufferRef.current = bufferRef.current.slice(1);
             return prev + nextChar;
           });
-          timer = window.setTimeout(tick, 12); // ~80 chars/sec, adjust as desired
+          timer = window.setTimeout(tick, 6);
         }
       }
       tick();
@@ -354,19 +358,21 @@ const MessageBox: React.FC<
                   : "bg-muted text-foreground border-border"
               )}
             >
-              <div style={{ fontSize: `${textSize}px` }}>
+              <div
+                className={nunito.className}
+                style={{ fontSize: `${textSize}px` }}
+              >
                 <ReactMarkdown>{buildMarkdown(parsed)}</ReactMarkdown>
                 {parsed.quickAction && (
                   <div className="text-gray-500">
-                    Quick Action : {parsed.quickAction}{" "}
-                    {parsed.quickAction.includes("Consult") ||
-                    parsed.quickAction.includes("consult") ? (
-                      <Link href="/lawyers" className=" underline">
-                        here
-                      </Link>
-                    ) : (
-                      ""
-                    )}
+                    Quick Action : {parsed.quickAction}
+                    <div className="flex h-5 items-center space-x-4 text-sm">
+                      <div>Blog</div>
+                      <Separator orientation="vertical" />
+                      <div>Docs</div>
+                      <Separator orientation="vertical" />
+                      <div>Source</div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -427,19 +433,21 @@ const MessageBox: React.FC<
                   : "bg-muted text-foreground border-border"
               )}
             >
-              <div style={{ fontSize: `${textSize}px` }}>
+              <div
+                className={nunito.className}
+                style={{ fontSize: `${textSize}px` }}
+              >
                 <ReactMarkdown>{buildMarkdown(parsed)}</ReactMarkdown>
                 {parsed.quickAction && (
                   <div className="text-gray-500">
-                    Quick Action : {parsed.quickAction}{" "}
-                    {parsed.quickAction.includes("Consult") ||
-                    parsed.quickAction.includes("consult") ? (
-                      <Link href="/lawyers" className=" underline">
-                        here
-                      </Link>
-                    ) : (
-                      ""
-                    )}
+                    Quick Action : {parsed.quickAction}
+                    <div className="flex h-5 items-center space-x-4 text-sm">
+                      <div>Blog</div>
+                      <Separator orientation="vertical" />
+                      <div>Docs</div>
+                      <Separator orientation="vertical" />
+                      <div>Source</div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -486,20 +494,17 @@ const MessageBox: React.FC<
               : "bg-muted text-foreground border-border"
           )}
         >
-          <div style={{ fontSize: `${textSize}px` }}>
+          <div
+            className={nunito.className}
+            style={{ fontSize: `${textSize}px` }}
+          >
             <ReactMarkdown>{buildMarkdown(parsed)}</ReactMarkdown>
             {parsed.quickAction && (
-              <div className="text-gray-500">
-                Quick Action : {parsed.quickAction}{" "}
-                {parsed.quickAction.includes("Consult") ||
-                parsed.quickAction.includes("consult") ? (
-                  <Link href="/lawyers" className=" underline">
-                    here
-                  </Link>
-                ) : (
-                  ""
-                )}
-              </div>
+              <>
+                <div className="text-gray-500">
+                  Quick Action : {parsed.quickAction}
+                </div>
+              </>
             )}
           </div>
           {message.isStreaming && (
