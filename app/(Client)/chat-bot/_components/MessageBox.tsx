@@ -524,7 +524,6 @@ const MessageBox: React.FC<
 
   MessageBox.displayName = "MessageBox";
 
-  
   return (
     <TooltipProvider>
       <div className="flex-1 overflow-y-auto py-6 space-y-4 px-6">
