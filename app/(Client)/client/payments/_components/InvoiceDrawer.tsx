@@ -42,7 +42,7 @@ const InvoiceDrawer: React.FC<InvoiceDrawerProps> = ({ isOpen, onClose, transact
   return (
     <Dialog open={isOpen} onOpenChange={v => { if (!v) onClose(); }}>
       <DialogContent className="max-w-md p-0 overflow-hidden">
-        <DialogHeader className="border-b border-border p-6 pb-4 flex flex-row items-center gap-3">
+        <DialogHeader className="border-b !border-border p-6 pb-4 flex flex-row items-center gap-3">
           <FileText className="w-6 h-6 text-primary" />
           <DialogTitle className="text-xl font-bold">Invoice #{transaction.invoiceNumber}</DialogTitle>
         </DialogHeader>
@@ -56,7 +56,7 @@ const InvoiceDrawer: React.FC<InvoiceDrawerProps> = ({ isOpen, onClose, transact
           </Card>
           {/* Service Details */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground border-b border-border pb-2">Service Details</h3>
+            <h3 className="font-semibold text-foreground border-b !border-border pb-2">Service Details</h3>
             <div className="grid grid-cols-1 gap-3">
               <div className="flex justify-between"><span className="text-muted-foreground">Service:</span><span className="font-medium">{transaction.service}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Date:</span><span className="font-medium">{formatDate(transaction.date)}</span></div>
@@ -68,15 +68,15 @@ const InvoiceDrawer: React.FC<InvoiceDrawerProps> = ({ isOpen, onClose, transact
           </div>
           {/* Amount Breakdown */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-foreground border-b border-border pb-2">Amount Breakdown</h3>
+            <h3 className="font-semibold text-foreground border-b !border-border pb-2">Amount Breakdown</h3>
             <div className="space-y-3">
               {transaction.serviceFee && <div className="flex justify-between text-sm"><span className="text-muted-foreground">├ Service Fee:</span><span className="font-medium">{formatCurrency(transaction.serviceFee)}</span></div>}
               {transaction.platformCharges && <div className="flex justify-between text-sm"><span className="text-muted-foreground">├ Platform Charges:</span><span className="font-medium">{formatCurrency(transaction.platformCharges)}</span></div>}
-              <div className="flex justify-between text-lg font-bold border-t border-border pt-3"><span className="text-foreground">└ Total:</span><span className="text-primary">{formatCurrency(transaction.amount)}</span></div>
+              <div className="flex justify-between text-lg font-bold border-t !border-border pt-3"><span className="text-foreground">└ Total:</span><span className="text-primary">{formatCurrency(transaction.amount)}</span></div>
             </div>
           </div>
         </div>
-        <div className="p-6 border-t border-border bg-muted flex gap-3">
+        <div className="p-6 border-t !border-border bg-muted flex gap-3">
           <Button variant="outline" className="flex-1"><Download className="w-4 h-4" />Download Invoice</Button>
           {transaction.status === 'pending' && (
             <Button variant="default" className="flex-1"><CreditCard className="w-4 h-4" />Pay Now</Button>

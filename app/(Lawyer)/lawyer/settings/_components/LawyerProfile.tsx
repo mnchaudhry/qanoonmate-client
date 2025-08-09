@@ -192,7 +192,7 @@ const LawyerProfile = () => {
 
     //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
     return (
-        <Card className="w-full mx-auto my-8 shadow-lg border border-border bg-background p-0 m-0 ">
+        <Card className="w-full mx-auto my-8 shadow-lg border !border-border bg-background p-0 m-0 ">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-2xl text-foreground"> <User className="h-6 w-6" /> Profile</CardTitle>
             </CardHeader>

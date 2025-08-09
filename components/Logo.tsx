@@ -24,18 +24,11 @@ const COLOR_MAP = {
     mini_white: 'text-white'
 }
 
-const Logo: React.FC<LogoProps> = ({
-    size = 'md',
-    type = 'green',
-    containerClassName,
-    className,
-    href
-}) => {
-    // Variables
+const Logo: React.FC<LogoProps> = ({ size = 'md', type = 'green', containerClassName, className, href }) => {
+
     const sizeClass = SIZE_MAP[size]
     const colorClass = COLOR_MAP[type]
 
-    // Render
     return (
         <Link href={href || "/"} style={{ fontFamily: 'fantasy' }} className={cn('flex shrink-0', containerClassName)}>
             {type === 'mini_green' || type === 'mini_white' ? (
@@ -53,7 +46,7 @@ const Logo: React.FC<LogoProps> = ({
                         fontSize: size === 'sm' ? '1.25rem' : size === 'lg' ? '2.25rem' : '1.5rem',
                     }}
                 >
-                    <span className="font-black text-primary" style={{ fontSize: 'inherit' }}>V</span>
+                    <span className="font-black text-primary" style={{ fontSize: 'inherit' }}>Q</span>
                 </span>
             ) : (
                 <Image

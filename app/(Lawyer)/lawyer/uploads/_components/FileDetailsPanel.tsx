@@ -106,7 +106,7 @@ const FileDetailsPanel: React.FC<FileDetailsPanelProps> = ({ file, formatFileSiz
     return (
         <div className="h-full flex flex-col">
             {/* Header */}
-            <CardHeader className="border-b border-border bg-muted/20">
+            <CardHeader className="border-b !border-border bg-muted/20">
                 <CardTitle className="flex items-center gap-4">
                     {getFileIcon(file)}
                     <div className="flex-1 min-w-0">

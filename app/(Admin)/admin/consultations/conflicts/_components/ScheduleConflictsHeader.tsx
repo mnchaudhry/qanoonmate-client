@@ -2,7 +2,7 @@ import { AlertTriangle } from 'lucide-react'
 
 const ScheduleConflictsHeader = () => {
   return (
-    <div className="bg-card border border-border rounded-lg p-6 shadow-sm">
+    <div className="bg-card border !border-border rounded-lg p-6 shadow-sm">
       <div className="text-center">
         <h1 className="text-2xl font-bold text-foreground flex items-center justify-center">
           <AlertTriangle className="h-8 w-8 mr-3 text-destructive" />

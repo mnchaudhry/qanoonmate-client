@@ -47,7 +47,7 @@ const RecentMessages = () => {
             return (
               <div
                 key={message._id}
-                className="p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors"
+                className="p-4 border !border-border rounded-lg hover:bg-accent/50 transition-colors"
               >
                 <div className="flex justify-between items-start mb-2">
                   <div className="flex items-center gap-2">

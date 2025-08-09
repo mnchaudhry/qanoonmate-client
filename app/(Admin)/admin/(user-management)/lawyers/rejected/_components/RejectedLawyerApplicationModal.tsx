@@ -82,7 +82,7 @@ const RejectedLawyerApplicationModal: React.FC<RejectedLawyerApplicationModalPro
     >
       <div className="bg-surface rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-6 border-b !border-border">
           <h2 className="text-xl font-semibold text-foreground">
             Rejected Application Details
           </h2>
@@ -95,7 +95,7 @@ const RejectedLawyerApplicationModal: React.FC<RejectedLawyerApplicationModalPro
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-border">
+        <div className="border-b !border-border">
           <nav className="flex space-x-8 px-6">
             <button
               onClick={() => setActiveTab('details')}
@@ -300,7 +300,7 @@ const RejectedLawyerApplicationModal: React.FC<RejectedLawyerApplicationModalPro
         </div>
 
         {/* Footer Actions */}
-        <div className="border-t border-border px-6 py-4">
+        <div className="border-t !border-border px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="flex space-x-3">
               <button
@@ -320,7 +320,7 @@ const RejectedLawyerApplicationModal: React.FC<RejectedLawyerApplicationModalPro
             </div>
             <button
               onClick={onClose}
-              className="inline-flex items-center px-4 py-2 border border-border rounded-md shadow-sm text-sm font-medium text-foreground hover:bg-surface dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
+              className="inline-flex items-center px-4 py-2 border !border-border rounded-md shadow-sm text-sm font-medium text-foreground hover:bg-surface dark:hover:bg-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary"
             >
               Close
             </button>

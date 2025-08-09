@@ -20,7 +20,7 @@ const statusColor: Record<string, string> = {
 
 export default function DraftsTable() {
   return (
-    <div className="w-full rounded-xl bg-background border border-border overflow-x-auto">
+    <div className="w-full rounded-xl bg-background border !border-border overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted">

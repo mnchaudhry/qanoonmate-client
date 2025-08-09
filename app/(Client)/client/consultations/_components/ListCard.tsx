@@ -57,7 +57,7 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
 
   /////////////////////////////////////////////// RETURN ///////////////////////////////////////////////
   return (
-    <Card className="mb-6 border border-border bg-background rounded-xl shadow-sm transition-transform duration-150 hover:shadow-lg hover:-translate-y-1">
+    <Card className="mb-6 border !border-border bg-background rounded-xl shadow-sm transition-transform duration-150 hover:shadow-lg hover:-translate-y-1">
       <CardContent className="p-5 space-y-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">

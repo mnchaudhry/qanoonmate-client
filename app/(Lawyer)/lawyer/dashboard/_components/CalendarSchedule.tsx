@@ -52,7 +52,7 @@ const getStatusColor = (status: string) => {
     case "confirmed": return "bg-primary/10 text-primary border-primary/20"
     case "scheduled": return "bg-emerald-50 text-emerald-700 border-emerald-200"
     case "pending": return "bg-amber-50 text-amber-700 border-amber-200"
-    default: return "bg-muted text-muted-foreground border-border"
+    default: return "bg-muted text-muted-foreground !border-border"
   }
 }
 

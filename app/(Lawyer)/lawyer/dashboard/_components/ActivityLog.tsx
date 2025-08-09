@@ -60,7 +60,7 @@ const getStatusColor = (status: string) => {
     case "new": return "bg-purple-50 text-purple-700 border-purple-200"
     case "scheduled": return "bg-amber-50 text-amber-700 border-amber-200"
     case "payment": return "bg-green-50 text-green-700 border-green-200"
-    default: return "bg-muted text-muted-foreground border-border"
+    default: return "bg-muted text-muted-foreground !border-border"
   }
 }
 

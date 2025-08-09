@@ -64,9 +64,9 @@ const ConflictDetailModal = ({
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" onClick={onClose} />
         
-        <div className="inline-block align-bottom bg-card rounded-lg border border-border text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
+        <div className="inline-block align-bottom bg-card rounded-lg border !border-border text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
           {/* Header */}
-          <div className="bg-card px-6 py-4 border-b border-border">
+          <div className="bg-card px-6 py-4 border-b !border-border">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-semibold text-foreground flex items-center">
                 <Search className="h-6 w-6 mr-3 text-primary" />
@@ -183,7 +183,7 @@ const ConflictDetailModal = ({
                     value={internalNote}
                     onChange={(e) => setInternalNote(e.target.value)}
                     rows={3}
-                    className="flex-1 border border-border rounded-md px-3 py-2 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring resize-none"
+                    className="flex-1 border !border-border rounded-md px-3 py-2 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring resize-none"
                     placeholder="Add internal notes about this conflict..."
                   />
                   <button

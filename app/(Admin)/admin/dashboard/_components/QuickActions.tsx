@@ -69,7 +69,7 @@ export default function QuickActions() {
             <Button
               key={index}
               variant="outline"
-              className="h-auto p-4 flex flex-col items-start gap-2 hover:bg-primary/5 border-border"
+              className="h-auto p-4 flex flex-col items-start gap-2 hover:bg-primary/5 !border-border"
               onClick={action.action}
             >
               <div className={`w-10 h-10 rounded-lg ${action.bgColor} flex items-center justify-center`}>

@@ -52,7 +52,7 @@ const UpcomingConsultations = () => {
           consultations.map((consultation) => (
             <div
               key={consultation._id}
-              className="p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors"
+              className="p-4 border !border-border rounded-lg hover:bg-accent/50 transition-colors"
             >
               <div className="flex justify-between items-start mb-3">
                 <div className="space-y-1">

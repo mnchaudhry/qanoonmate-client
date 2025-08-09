@@ -103,7 +103,7 @@ const FileTree: React.FC<FileTreeProps> = ({ files, currentPath, onPathChange, l
   if (loading) {
     return (
       <div className="h-full flex flex-col">
-        <div className="p-6 border-b border-border">
+        <div className="p-6 border-b !border-border">
           <Skeleton className="h-6 w-32 mb-2" />
           <Skeleton className="h-4 w-48" />
         </div>
@@ -120,7 +120,7 @@ const FileTree: React.FC<FileTreeProps> = ({ files, currentPath, onPathChange, l
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="p-6 border-b border-border">
+      <div className="p-6 border-b !border-border">
         <h3 className="text-lg font-semibold text-foreground mb-2">Documents</h3>
         <p className="text-sm text-muted-foreground">Browse your files and folders</p>
       </div>

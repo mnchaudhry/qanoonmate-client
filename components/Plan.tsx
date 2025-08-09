@@ -4,7 +4,7 @@ import React from 'react'
 
 const Plan = ({ plan }: { plan: any }) => {
     return (
-        <div className={`relative p-8 rounded-lg border shadow-sm hover:shadow-xl ${plan.popular ? "bg-primary/5 border-primary shadow-md" : "bg-neutral border-border"}`}>
+        <div className={`relative p-8 rounded-lg border shadow-sm hover:shadow-xl ${plan.popular ? "bg-primary/5 border-primary shadow-md" : "bg-neutral !border-border"}`}>
             {plan.popular && (
                 <div className="absolute top-0 right-0 bg-primary text-neutral text-xs font-bold px-3 py-1 rounded-bl-lg rounded-tr-lg">
                     POPULAR

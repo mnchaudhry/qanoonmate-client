@@ -98,7 +98,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
             <div className={`absolute left-0 top-2 bottom-2 w-1 rounded-full transition-all duration-200 ${isSelected ? 'bg-primary' : 'bg-transparent'}`} />
             {/* Avatar and status */}
             <div className="relative flex-shrink-0">
-              <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center overflow-hidden border border-border shadow">
+              <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center overflow-hidden border !border-border shadow">
                 {lawyer?.profilePicture ? (
                   <Image
                     src={lawyer.profilePicture}

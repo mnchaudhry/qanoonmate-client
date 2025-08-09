@@ -60,7 +60,7 @@ export default function ConsultationRequestsFilters({ onFilterChange }: { onFilt
         {/* Status Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="h-11 px-4 flex items-center gap-2 border-border bg-background text-foreground">
+            <Button variant="outline" className="h-11 px-4 flex items-center gap-2 !border-border bg-background text-foreground">
               <Filter className="h-4 w-4" />
               <span className="font-medium">{enumToLabel(status)}</span>
               <span className="ml-1">⌄</span>
@@ -81,7 +81,7 @@ export default function ConsultationRequestsFilters({ onFilterChange }: { onFilt
         {/* Type Dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="h-11 px-4 flex items-center gap-2 border-border bg-background text-foreground">
+            <Button variant="outline" className="h-11 px-4 flex items-center gap-2 !border-border bg-background text-foreground">
               <span className="font-medium">{enumToLabel(type)}</span>
               <span className="ml-1">⌄</span>
             </Button>

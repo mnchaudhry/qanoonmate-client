@@ -152,7 +152,7 @@ const DocumentPreview: React.FC<DocumentPreviewProps> = ({ document, onEdit, onD
             </div>
           )}
         </div>
-        <div className="flex items-center gap-2 pt-4 border-t border-border">
+        <div className="flex items-center gap-2 pt-4 border-t !border-border">
           <span className="text-sm text-muted-foreground">Actions:</span>
           <div className="flex gap-2">
             <Button

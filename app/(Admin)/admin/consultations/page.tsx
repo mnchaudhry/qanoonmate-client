@@ -260,7 +260,7 @@ const ConsultationsPage = () => {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="bg-card border border-border rounded-lg p-8 text-center">
+          <div className="bg-card border !border-border rounded-lg p-8 text-center">
             <p className="text-muted-foreground">Loading consultations...</p>
           </div>
         )}
@@ -282,7 +282,7 @@ const ConsultationsPage = () => {
           />
         ) : (
           !isLoading && (
-            <div className="bg-card border border-border rounded-lg p-12 text-center">
+            <div className="bg-card border !border-border rounded-lg p-12 text-center">
               <p className="text-muted-foreground">No consultations found.</p>
             </div>
           )

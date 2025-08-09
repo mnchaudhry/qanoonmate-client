@@ -405,7 +405,7 @@ const ScheduleConflictsPage = () => {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="bg-card border border-border rounded-lg p-8 text-center">
+          <div className="bg-card border !border-border rounded-lg p-8 text-center">
             <p className="text-muted-foreground">Loading schedule conflicts...</p>
           </div>
         )}
@@ -427,7 +427,7 @@ const ScheduleConflictsPage = () => {
           />
         ) : (
           !isLoading && (
-            <div className="bg-card border border-border rounded-lg p-12 text-center">
+            <div className="bg-card border !border-border rounded-lg p-12 text-center">
               <p className="text-muted-foreground">No schedule conflicts found.</p>
             </div>
           )

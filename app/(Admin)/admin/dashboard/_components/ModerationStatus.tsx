@@ -55,7 +55,7 @@ export default function ModerationStatus() {
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {moderationStats.map((stat, index) => (
-            <div key={index} className={`p-4 rounded-lg border border-border ${stat.bgColor} hover:shadow-md transition-shadow cursor-pointer`}>
+            <div key={index} className={`p-4 rounded-lg border !border-border ${stat.bgColor} hover:shadow-md transition-shadow cursor-pointer`}>
               <div className="flex items-center justify-between mb-2">
                 <stat.icon className={`h-6 w-6 ${stat.textColor}`} />
                 <Badge className={stat.badgeColor}>

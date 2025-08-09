@@ -9,7 +9,7 @@ const statusColor: Record<ConsultationStatus, string> = {
   [ConsultationStatus.SCHEDULED]: "bg-green-100 text-green-800 border border-green-200",
   [ConsultationStatus.COMPLETED]: "bg-primary-100 text-primary-800 border border-primary-200",
   [ConsultationStatus.CANCELLED]: "bg-destructive-100 text-destructive-800 border-destructive-200",
-  [ConsultationStatus.NO_SHOW]: "bg-muted text-muted-foreground border-border",
+  [ConsultationStatus.NO_SHOW]: "bg-muted text-muted-foreground !border-border",
   [ConsultationStatus.RESCHEDULED]: "bg-orange-100 text-orange-800 border border-orange-200",
   [ConsultationStatus.IN_PROGRESS]: "bg-purple-100 text-purple-800 border border-purple-200",
   [ConsultationStatus.CONFIRMED]: "bg-blue-100 text-blue-800 border border-blue-200"
@@ -17,7 +17,7 @@ const statusColor: Record<ConsultationStatus, string> = {
 
 export default function ConsultationRequestsTable({ requests = [], loading = false }: { requests: Consultation[]; loading?: boolean }) {
   return (
-    <div className="w-full rounded-xl bg-background border border-border overflow-x-auto">
+    <div className="w-full rounded-xl bg-background border !border-border overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted">
@@ -45,7 +45,7 @@ export default function ConsultationRequestsTable({ requests = [], loading = fal
                 <TableCell>
                   <span className={cn(
                     "px-2 py-1 rounded text-xs font-semibold border",
-                    statusColor[req.status] || "bg-muted text-foreground border-border"
+                    statusColor[req.status] || "bg-muted text-foreground !border-border"
                   )}>
                     {enumToLabel(req.status)}
                   </span>

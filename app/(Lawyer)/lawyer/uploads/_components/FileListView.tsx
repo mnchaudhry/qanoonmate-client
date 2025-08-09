@@ -96,7 +96,7 @@ const FileListView: React.FC<FileListViewProps> = ({ files, onFileSelect, select
 
   //////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////
   return (
-    <div className="border border-border rounded-lg">
+    <div className="border !border-border rounded-lg">
       <Table>
         <TableHeader>
           <TableRow>

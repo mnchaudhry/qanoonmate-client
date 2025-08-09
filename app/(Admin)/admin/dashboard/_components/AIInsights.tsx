@@ -42,7 +42,7 @@ export default function AIInsights() {
       <CardContent>
         <div className="space-y-4">
           {insights.map((insight, index) => (
-            <div key={index} className="p-4 bg-surface rounded-lg border border-border">
+            <div key={index} className="p-4 bg-surface rounded-lg border !border-border">
               <div className="flex items-center space-x-3 mb-3">
                 <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
                   <insight.icon className={`h-5 w-5 ${insight.color}`} />

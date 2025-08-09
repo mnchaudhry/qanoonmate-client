@@ -68,7 +68,7 @@ const ConsultationsTable = ({ consultations, selectedConsultations, handleView, 
   }
 
   return (
-    <div className="bg-card border border-border rounded-lg overflow-hidden">
+    <div className="bg-card border !border-border rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-muted">
@@ -78,7 +78,7 @@ const ConsultationsTable = ({ consultations, selectedConsultations, handleView, 
                   type="checkbox"
                   checked={selectedConsultations.length === consultations.length && consultations.length > 0}
                   onChange={handleSelectAll}
-                  className="rounded border-border text-primary focus:ring-ring"
+                  className="rounded !border-border text-primary focus:ring-ring"
                 />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -115,7 +115,7 @@ const ConsultationsTable = ({ consultations, selectedConsultations, handleView, 
                     type="checkbox"
                     checked={selectedConsultations.includes(consultation._id!)}
                     onChange={() => handleSelectConsultation(consultation._id!)}
-                    className="rounded border-border text-primary focus:ring-ring"
+                    className="rounded !border-border text-primary focus:ring-ring"
                   />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
@@ -203,19 +203,19 @@ const ConsultationsTable = ({ consultations, selectedConsultations, handleView, 
       </div>
 
       {/* Pagination */}
-      <div className="bg-card px-4 py-3 border-t border-border flex items-center justify-between">
+      <div className="bg-card px-4 py-3 border-t !border-border flex items-center justify-between">
         <div className="flex-1 flex justify-between sm:hidden">
           <button
             onClick={() => setPage(Math.max(1, page - 1))}
             disabled={page === 1}
-            className="relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+            className="relative inline-flex items-center px-4 py-2 border !border-border text-sm font-medium rounded-md text-foreground bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
           <button
             onClick={() => setPage(Math.min(totalPages, page + 1))}
             disabled={page === totalPages}
-            className="ml-3 relative inline-flex items-center px-4 py-2 border border-border text-sm font-medium rounded-md text-foreground bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+            className="ml-3 relative inline-flex items-center px-4 py-2 border !border-border text-sm font-medium rounded-md text-foreground bg-background hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>
@@ -233,7 +233,7 @@ const ConsultationsTable = ({ consultations, selectedConsultations, handleView, 
               <button
                 onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
-                className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-border bg-background text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative inline-flex items-center px-2 py-2 rounded-l-md border !border-border bg-background text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
@@ -255,7 +255,7 @@ const ConsultationsTable = ({ consultations, selectedConsultations, handleView, 
               <button
                 onClick={() => setPage(Math.min(totalPages, page + 1))}
                 disabled={page === totalPages}
-                className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-border bg-background text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                className="relative inline-flex items-center px-2 py-2 rounded-r-md border !border-border bg-background text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight className="h-5 w-5" />
               </button>

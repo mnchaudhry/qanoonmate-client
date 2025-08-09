@@ -47,7 +47,7 @@ export default function UsageAnalytics() {
       </CardHeader>
       <CardContent>
         {/* Mock Chart Area */}
-        <div className="h-64 bg-surface rounded-lg border border-border p-4 mb-4">
+        <div className="h-64 bg-surface rounded-lg border !border-border p-4 mb-4">
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <TrendingUp className="h-12 w-12 text-primary mx-auto mb-2" />
