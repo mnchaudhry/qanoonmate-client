@@ -313,9 +313,12 @@ export const getChatSessions = () =>
   APIClient.get<API.GetChatSessionsResponse>(`/ai/session/get-sessions`);
 export const getChatSession = (id: string) =>
   APIClient.get<API.GetChatSessionResponse>(`/ai/session/get-session/${id}`);
-export const getMyChatSessions = (data: UserAPI.User["_id"] | null) =>
+export const getMyChatSessions = (data: string) =>
   APIClient.get<API.GetMyChatSessionsResponse>(`/ai/session/get-my-sessions`, {
-    data,
+    params: {
+      userId: data,
+      timestamp: Date.now(),
+    },
   });
 export const renameSession = ({ id, title }: API.RenameSessionRequest) =>
   APIClient.put<API.RenameSessionResponse>(`/ai/session/rename-session/${id}`, {

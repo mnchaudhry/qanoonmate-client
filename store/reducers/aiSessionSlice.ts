@@ -66,7 +66,11 @@ export const getMyChatSessions = createAsyncThunk(
   "aiSessions/getMyChatSessions",
   async (userId: string | null, { rejectWithValue }) => {
     try {
+      if (!userId) {
+        throw new Error("Id not provided in the req");
+      }
       const { data } = await api.getMyChatSessions(userId);
+      console.log("data for sidebar is", data);
       if (!data?.success) toast.error(data?.message);
       return data?.data;
     } catch (error: any) {
