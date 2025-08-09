@@ -35,7 +35,7 @@ interface MessageBoxProps {
 
 const MessageBox: React.FC<
   MessageBoxProps & {
-    onRegenerate: (botMessage: any, history: any[]) => Promise<void>;
+    onRegenerate: (botMessage: AIChatMessage) => Promise<void>;
   }
 > = memo(({ chatViewMode = "card", textSize = 16, messages, onRegenerate }) => {
   ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////
@@ -90,19 +90,19 @@ const MessageBox: React.FC<
     }
   };
 
-  const onBookmark = (messageId: string) => {
+  const onBookmark = () => {
     toast.success("Message bookmarked!");
   };
 
-  const onRate = (messageId: string, rating: "good" | "bad") => {
+  const onRate = (rating: "good" | "bad") => {
     toast.success(`Response rated as ${rating}`);
   };
 
-  const onFeedback = (messageId: string) => {
+  const onFeedback = () => {
     toast.success("Feedback submitted!");
   };
 
-  const onSaveToNotes = (messageId: string) => {
+  const onSaveToNotes = () => {
     toast.success("Saved to notes!");
   };
 
@@ -111,12 +111,12 @@ const MessageBox: React.FC<
     toast.success("Message copied!");
   };
 
-  const onFlag = (messageId: string) => {
+  const onFlag = () => {
     toast.success("Response flagged for review");
   };
 
-  const buildMarkdown = (parsed) => {
-    let md = parsed.main || "";
+  const buildMarkdown = (parsed: ReturnType<typeof parseAIResponse>) => {
+    const md = parsed.main || "";
     return md;
   };
 
@@ -134,7 +134,7 @@ const MessageBox: React.FC<
   };
 
   ///////////////////////////////////////////////// COMPONENTS ///////////////////////////////////////////////////
-  const renderMessageActions = (message: AIChatMessage, history: any[]) => {
+  const renderMessageActions = (message: AIChatMessage) => {
     if (message.sender === "bot") {
       const responses = getBotResponses(message);
       const currentIdx = responseIndexes[message._id] || 0;
@@ -145,7 +145,7 @@ const MessageBox: React.FC<
             <Button
               variant="ghost"
               size="sm"
-              onClick={async () => await onRegenerate(message, history)}
+              onClick={async () => await onRegenerate(message)}
               className="p-1.5 rounded-full"
             >
               <RotateCcw className="w-5 h-5" />
@@ -187,7 +187,7 @@ const MessageBox: React.FC<
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onBookmark(message._id)}
+              onClick={() => onBookmark()}
               className="p-1.5 rounded-full"
             >
               <Bookmark className="w-5 h-5" />
@@ -198,7 +198,7 @@ const MessageBox: React.FC<
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onRate(message._id, "good")}
+              onClick={() => onRate("good")}
               className="p-1.5 rounded-full text-green-600 hover:text-green-700"
             >
               <ThumbsUp className="w-5 h-5" />
@@ -209,7 +209,7 @@ const MessageBox: React.FC<
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onRate(message._id, "bad")}
+              onClick={() => onRate("bad")}
               className="p-1.5 rounded-full text-red-600 hover:text-red-700"
             >
               <ThumbsDown className="w-5 h-5" />
@@ -231,7 +231,7 @@ const MessageBox: React.FC<
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onSaveToNotes(message._id)}
+              onClick={() => onSaveToNotes()}
               className="p-1.5 rounded-full"
             >
               <Save className="w-5 h-5" />
@@ -242,7 +242,7 @@ const MessageBox: React.FC<
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onFlag(message._id)}
+              onClick={() => onFlag()}
               className="p-1.5 rounded-full text-orange-600 hover:text-orange-700"
             >
               <Flag className="w-5 h-5" />
@@ -253,7 +253,7 @@ const MessageBox: React.FC<
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onFeedback(message._id)}
+              onClick={() => onFeedback()}
               className="p-1.5 rounded-full"
             >
               <MessageSquare className="w-5 h-5" />
@@ -270,8 +270,7 @@ const MessageBox: React.FC<
     index,
     chatViewMode,
     textSize,
-    history,
-  }: MessageItemProps & { history: any[] }) {
+  }: MessageItemProps) {
     // Defensive: default sender to 'bot' if missing
     const isModel = (message.sender ?? "bot") === "bot";
     const responses = getBotResponses(message);
@@ -309,7 +308,7 @@ const MessageBox: React.FC<
       let timer: number;
       function tick() {
         if (bufferRef.current.length > 0) {
-          setDisplayedContent((prev) => {
+          setDisplayedContent((prev: string) => {
             const nextChar = bufferRef.current[0];
             bufferRef.current = bufferRef.current.slice(1);
             return prev + nextChar;
@@ -319,9 +318,12 @@ const MessageBox: React.FC<
       }
       tick();
       return () => clearTimeout(timer);
-    }, [message.isStreaming]);
+    }, [message.isStreaming, currentResponse.content]);
 
-    const parsed = parseAIResponse(currentResponse.content);
+    const contentToRender = message.isStreaming
+      ? displayedContent
+      : currentResponse.content;
+    const parsed = parseAIResponse(contentToRender);
 
     if (chatViewMode === "compact") {
       return (
@@ -388,7 +390,7 @@ const MessageBox: React.FC<
             </div>
           )}
 
-          {renderMessageActions(message, history)}
+          {renderMessageActions(message)}
         </div>
       );
     }
@@ -461,7 +463,7 @@ const MessageBox: React.FC<
             </div>
           )}
 
-          {renderMessageActions(message, history)}
+          {renderMessageActions(message)}
         </div>
       );
     }
@@ -514,20 +516,15 @@ const MessageBox: React.FC<
             isModel ? "justify-start items-start" : "justify-end items-end"
           )}
         >
-          {renderMessageActions(message, history)}
+          {renderMessageActions(message)}
         </div>
       </div>
     );
   });
 
-  ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////
-  console.log(
-    "MessageBox render - messages:",
-    messages.length,
-    "streamingMessage:",
-    !!streamingMessage
-  );
+  MessageBox.displayName = "MessageBox";
 
+  
   return (
     <TooltipProvider>
       <div className="flex-1 overflow-y-auto py-6 space-y-4 px-6">
@@ -541,7 +538,6 @@ const MessageBox: React.FC<
                 index={index}
                 chatViewMode={chatViewMode}
                 textSize={textSize}
-                history={messages}
               />
             ))}
           {streamingMessage && (
@@ -551,7 +547,6 @@ const MessageBox: React.FC<
               index={messages.length}
               chatViewMode={chatViewMode}
               textSize={textSize}
-              history={messages}
             />
           )}
         </div>

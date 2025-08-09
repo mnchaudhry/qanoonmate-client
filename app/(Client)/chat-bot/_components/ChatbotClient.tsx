@@ -1,13 +1,12 @@
 "use client";
 
-import React, { FormEvent, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import MessageBox from "./MessageBox";
 import ChatbotSidebar from "./ChatbotSidebar";
 import ChatbotNavbar from "./ChatbotHeader";
 import { File } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useStateContext } from "@/context/useStateContext";
 import { useDispatch, useSelector } from "react-redux";
 import DefaultScreen from "./DefaultScreen";
 import ChatInput from "./ChatInput";
@@ -21,13 +20,22 @@ import {
 } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
-import { parseAIResponse } from "@/utils/parseAIResponse";
+import { useParsedMessages } from "../hooks/useParsedMessages";
 import { assistant, user as userRes } from "@openai/agents";
+import { AIChatMessage } from "@/lib/interfaces";
 
+/**
+ * Imports Done till here
+ */
+
+/**
+ *
+ * Main Component
+ */
 const ChatbotClient = () => {
   ///////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////////////
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const {
     defaultSocket: { socket, connectError, isConnected },
   } = useSocketContext();
@@ -37,9 +45,8 @@ const ChatbotClient = () => {
     currentSessionId: sessionId,
     sessionMetadata,
   } = useSelector((state: RootState) => state.aiSession);
-
+  console.log("messages", messages);
   ///////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////////////
-  const [debugInfo, setDebugInfo] = useState<string>("");
   // UI States
   const [showContextPanel, setShowContextPanel] = useState(true);
   const [showDictionary, setShowDictionary] = useState(false);
@@ -50,14 +57,8 @@ const ChatbotClient = () => {
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [allReferences, setAllReferences] = useState<
-    { act: string; section: string }[]
-  >([]);
-  const [allCases, setAllCases] = useState<string[]>([]);
-  const [latestLegalContext, setLatestLegalContext] = useState<string | null>(
-    null
-  );
-  const [latestConfidence, setLatestConfidence] = useState<number | null>(null);
+  const { references, cases, legalContext, confidence } =
+    useParsedMessages(messages);
 
   ///////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////////////
   // Get Lawyers
@@ -91,62 +92,16 @@ const ChatbotClient = () => {
     } else {
       console.log("Disconnected or connecting...");
     }
-  }, [isConnected, connectError, socket?.id]);
+  }, [isConnected, connectError, socket]);
   useEffect(() => {
     console.log("mounted");
   }, []);
 
-  useEffect(() => {
-    const refs: { act: string; section: string }[] = [];
-    const cases: string[] = [];
-    let lastLegalContext: string | null = null;
-    let lastConfidence: number | null = null;
-    messages.forEach((msg) => {
-      if (msg.sender === "bot") {
-        const parsed = parseAIResponse(msg.content);
-        if (parsed.referencedActs) {
-          parsed.referencedActs.forEach((actObj) => {
-            if (
-              actObj &&
-              !refs.some(
-                (r) => r.act === actObj.act && r.section === actObj.section
-              )
-            ) {
-              refs.push(actObj);
-            }
-          });
-        }
-        if (parsed.referencedCases) {
-          parsed.referencedCases.forEach((c) => {
-            if (c && !cases.includes(c)) cases.push(c);
-          });
-        }
-        if (parsed.legalContext) {
-          lastLegalContext = parsed.legalContext;
-        }
-        if (parsed.confidence) {
-          const conf = parseFloat(parsed.confidence);
-          console.log("Confidence: ", conf);
-          if (!isNaN(conf)) lastConfidence = conf;
-        }
-      }
-    });
-    setAllReferences(refs);
-    setAllCases(cases);
-    setLatestLegalContext(lastLegalContext);
-    setLatestConfidence(lastConfidence);
-  }, [messages]);
+  // Derived data moved to useParsedMessages hook
 
   ///////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////////////
 
-  const onRegenerate = async (botMessage, history) => {
-    console.log("onRegenerate called with:", { botMessage, history });
-    console.log("Socket, sessionId, userMessageId:", {
-      socket: !!socket,
-      sessionId,
-      userMessageId: botMessage?.userMessageId,
-    });
-
+  const onRegenerate = async (botMessage: AIChatMessage) => {
     // Find userMessageId if it's missing
     let userMessageId = botMessage.userMessageId;
     if (!userMessageId && messages && messages.length > 0) {
@@ -194,8 +149,9 @@ const ChatbotClient = () => {
   };
   useEffect(() => {
     if (!socket) return;
-    const handleBotMessageUpdated = (updatedBotMessage) => {
-      console.log("Received bot message update:", updatedBotMessage);
+    const handleBotMessageUpdated = (
+      updatedBotMessage: Partial<AIChatMessage> & { _id: string }
+    ) => {
       // Update the messages state with the new bot message (merge responses)
       dispatch(updateBotMessage(updatedBotMessage));
     };
@@ -224,7 +180,7 @@ const ChatbotClient = () => {
               setIsScreenReaderMode={setIsScreenReaderMode}
               chatViewMode={chatViewMode}
               setChatViewMode={setChatViewMode}
-              aiConfidence={latestConfidence}
+              aiConfidence={confidence}
             />
           </div>
           <div
@@ -237,13 +193,6 @@ const ChatbotClient = () => {
                 style={{ height: "calc(100vh - 64px)" }}
                 className="w-full mx-auto flex flex-1 flex-col"
               >
-                {/* Debug info */}
-                {debugInfo && (
-                  <div className="bg-yellow-100 text-yellow-800 p-2 mb-2 rounded text-xs hidden">
-                    Debug: {debugInfo}
-                  </div>
-                )}
-
                 {/* Main Chat Content */}
                 {messages?.length < 1 ? (
                   <DefaultScreen />
@@ -282,7 +231,6 @@ const ChatbotClient = () => {
                     setUploadedFiles={setUploadedFiles}
                     isConnected={isConnected}
                     textSize={textSize}
-                    uploadedFiles={uploadedFiles}
                     textareaRef={textareaRef}
                     fileInputRef={fileInputRef}
                   />
@@ -296,9 +244,9 @@ const ChatbotClient = () => {
               setShowContextPanel={setShowContextPanel}
               showDictionary={showDictionary}
               setShowDictionary={setShowDictionary}
-              keyReferences={allReferences}
-              relatedCases={allCases}
-              legalContext={latestLegalContext}
+              keyReferences={references}
+              relatedCases={cases}
+              legalContext={legalContext}
             />
           </div>
         </div>

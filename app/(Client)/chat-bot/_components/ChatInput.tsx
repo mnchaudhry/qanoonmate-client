@@ -36,7 +36,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { useSocketContext } from "@/context/useSocketContext";
 import { setIsStreaming } from "@/store/reducers/aiSessionSlice";
-import { AIMessage } from "@/store/types/api";
+// import { AIMessage } from "@/store/types/api";
 import { socketEvents } from "@/store/socket/events";
 import { AgentInputItem, assistant, user as userRes } from "@openai/agents";
 import { extractTextFromPDF } from "@/utils/extractFromPdf";
@@ -47,20 +47,12 @@ interface Props {
   isConnected: boolean;
   textSize: number;
   setUploadedFiles: Dispatch<SetStateAction<File[]>>;
-  uploadedFiles: File[];
-  textareaRef: RefObject<HTMLTextAreaElement>;
-  fileInputRef: RefObject<HTMLInputElement>;
+  textareaRef: RefObject<HTMLTextAreaElement | null>;
+  fileInputRef: RefObject<HTMLInputElement | null>;
 }
 
 const ChatInput: React.FC<Props> = memo(
-  ({
-    isConnected,
-    textSize,
-    uploadedFiles,
-    textareaRef,
-    fileInputRef,
-    setUploadedFiles,
-  }) => {
+  ({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles }) => {
     ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
     const {
       isStreaming,
@@ -118,7 +110,7 @@ const ChatInput: React.FC<Props> = memo(
           sessionId ? `with sessionId: ${sessionId}` : "without session"
         }`
       );
-      let history: AgentInputItem[] = messages.map((message) => {
+      const history: AgentInputItem[] = messages.map((message) => {
         return message.sender === "bot"
           ? assistant(message.content)
           : userRes(message.content);
@@ -136,7 +128,8 @@ const ChatInput: React.FC<Props> = memo(
       // If no sessionId yet, we need to start a new chat
       if (!sessionId) {
         // Using a test user ID (replace with actual authentication)
-        const userId = user?._id!; // Replace with actual user ID
+        const userId = user?._id; // Replace with actual user ID
+        if (!userId) return; // safety
 
         console.log("Starting new chat session for user:", userId);
 
@@ -442,3 +435,5 @@ const ChatInput: React.FC<Props> = memo(
 );
 
 export default ChatInput;
+// For better linting of memo components
+ChatInput.displayName = "ChatInput";
