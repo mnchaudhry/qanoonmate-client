@@ -35,7 +35,7 @@ const Summarizers = () => {
 
     /////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////
     return (
-        <section className="relative bg-background antialiased min-h-screen pt-0">
+        <section className="relative bg-background antialiased min-h-screen !pt-0">
             <LandingPageHeader
                 title="Legal AI Summarizers"
                 description="Discover our AI-powered summarizers that condense complex legal documents into concise, easy-to-understand summaries. Save time and enhance your understanding of legal texts."

@@ -13,7 +13,7 @@ import HowItWorks from './_components/HowItWorks'
 
 export default function ChatbotPage() {
   return (
-    <section className="relative bg-background antialiased min-h-screen pt-0">
+    <section className="relative bg-background antialiased min-h-screen !pt-0">
       <LandingPageHeader
         title="Your Legal Chatbot"
         description="Ask questions, get citations, and receive real-time legal insights with our AI-powered assistant."

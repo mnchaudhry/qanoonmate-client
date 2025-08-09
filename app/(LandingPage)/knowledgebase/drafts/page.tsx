@@ -143,7 +143,7 @@ const Drafts = () => {
 
   //////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////
   return (
-    <section className="relative bg-background antialiased min-h-screen pt-0 pb-20">
+    <section className="relative bg-background antialiased min-h-screen !pt-0 pb-20">
       <LandingPageHeader
         title="Legal Drafts"
         description="Explore our collection of legal drafts, including contracts, agreements, and templates, designed to simplify your legal processes."
@@ -169,7 +169,7 @@ const Drafts = () => {
             />
           </div>
 
-          <section className="col-span-3 pt-0">
+          <section className="col-span-3 !pt-0">
             {/* View Toggle and Count */}
             {drafts.length > 0 && (
               <div className="flex justify-between items-center mb-6">

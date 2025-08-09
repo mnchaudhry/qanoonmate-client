@@ -116,7 +116,7 @@ const FAQs = () => {
 
   ///////////////////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////////////////////
   return (
-    <section className="relative bg-background antialiased min-h-screen pt-0 pb-20">
+    <section className="relative bg-background antialiased min-h-screen !pt-0 pb-20">
       <LandingPageHeader
         title="FAQs"
         description="Find answers to common questions about our legal knowledge base, including how to use the platform, access resources, and more."
@@ -136,7 +136,7 @@ const FAQs = () => {
               isSearching={isSearching}
             />
           </div>
-          <section className="col-span-3 pt-0">
+          <section className="col-span-3 !pt-0">
             {/* View Toggle and Count */}
             {faqs.length > 0 && (
               <div className="flex justify-between items-center mb-6">

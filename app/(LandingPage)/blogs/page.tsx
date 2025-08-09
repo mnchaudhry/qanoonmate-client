@@ -8,7 +8,7 @@ import News from './_components/News'
 const BlogsAndNews = () => {
 
     return (
-        <section className="relative bg-background antialiased min-h-screen pt-0">
+        <section className="relative bg-background antialiased min-h-screen !pt-0">
 
             <LandingPageHeader
                 title="Blogs"

@@ -232,7 +232,7 @@ const LawyersDirectory = () => {
 
   /////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////
   return (
-    <section className="relative bg-background antialiased min-h-screen pt-0 pb-20">
+    <section className="relative bg-background antialiased min-h-screen !pt-0 pb-20">
       <LandingPageHeader
         title="Find Expert Lawyers"
         description="Connect with verified legal professionals specializing in your area of need."

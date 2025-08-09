@@ -42,7 +42,7 @@ const BentoCard = ({
         className={cn(
             "group relative col-span-1 flex flex-col justify-between overflow-hidden rounded-2xl",
             // light styles
-            "bg-neutral border border-border [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
+            "bg-neutral border !border-border [box-shadow:0_0_0_1px_rgba(0,0,0,.03),0_2px_4px_rgba(0,0,0,.05),0_12px_24px_rgba(0,0,0,.05)]",
             // dark styles
             "transform-gpu dark:bg-neutral dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#ffffff1f_inset]",
             "hover:border-primary/20 hover:shadow-xl transition-all duration-300",

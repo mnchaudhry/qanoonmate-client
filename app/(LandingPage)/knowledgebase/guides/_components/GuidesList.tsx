@@ -33,7 +33,7 @@ const GuidesList: React.FC<GuidesListProps> = ({
     return (
       <div className={isGridView ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" : "flex flex-col gap-4"}>
         {Array.from({ length: isGridView ? 6 : 6 }).map((_, i) => (
-          <div key={i} className="border border-border bg-surface p-4 rounded-lg shadow-sm">
+          <div key={i} className="border !border-border bg-surface p-4 rounded-lg shadow-sm">
             <Skeleton className="h-6 w-1/2 mb-2" />
             <Skeleton className="h-4 w-3/4 mb-2" />
             <div className="flex gap-2">

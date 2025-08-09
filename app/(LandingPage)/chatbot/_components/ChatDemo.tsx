@@ -63,7 +63,7 @@ const ChatDemo = () => {
 
             {/* Input field (non-functional) */}
             <div className="mt-10">
-                <div className="flex items-center gap-2 bg-background border border-border rounded-lg px-4 py-2">
+                <div className="flex items-center gap-2 bg-background border !border-border rounded-lg px-4 py-2">
                     <input
                         type="text"
                         disabled

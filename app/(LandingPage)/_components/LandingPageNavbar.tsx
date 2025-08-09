@@ -36,7 +36,7 @@ const LandingPageNavbar: React.FC = () => {
         // { label: 'Legal Forums', link: '/knowledgebase/forums', description: 'Coming soon: Engage with a community of learners and experts in legal discussions.' }
       ]
     },
-    { label: 'Chatbot', link: '/chatbot', subLinks: [], description: 'Get instant legal answers from our AI chatbot.' },
+    { label: 'Chatbot', link: '/chat', subLinks: [], description: 'Get instant legal answers from our AI chatbot.' },
     { label: 'Summarizers', link: '/summarizers', subLinks: [], description: 'Summarize legal documents and cases.' },
     { label: 'Blogs', link: '/blogs', subLinks: [], description: 'Read articles and updates on legal topics.' },
     { label: 'Find Lawyer', link: '/lawyers', subLinks: [], description: 'Search and connect with lawyers.' },

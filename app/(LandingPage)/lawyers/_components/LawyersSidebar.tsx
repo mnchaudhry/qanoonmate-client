@@ -128,7 +128,7 @@ const LawyersSidebar: React.FC<LawyersSidebarProps> = ({
                       ? onRangeFilterChange(category, itemValue)
                       : onFilterChange(category, itemValue)
                   }
-                  className="w-4 h-4 text-primary border-border focus:ring-primary rounded"
+                  className="w-4 h-4 text-primary !border-border focus:ring-primary rounded"
                 />
                 <span className="text-sm text-muted-foreground hover:text-foreground">
                   {itemLabel}

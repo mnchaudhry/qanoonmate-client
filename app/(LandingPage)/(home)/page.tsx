@@ -6,11 +6,11 @@ import BlogNewsTeaser from "./_components/LegalBlogs"
 import ConsultationMarketplace from "./_components/ConsultationMarketPlace"
 import CoreFeatures from "./_components/CoreFeatures"
 import { CTA } from "./_components/CTA"
-import PricingPlans from "./_components/PricingPlan"
 import LegalKnowledgeBase from "./_components/LegalKnowledgeBase"
 import LegalDrafts from "./_components/LegalDrafts"
 import LegalSummaries from "./_components/LegalSummaries"
 import { HeroGeometric } from "./_components/shape-landing-hero"
+import { Pricing } from "./_components/Pricing"
 
 export default function Home() {
 
@@ -23,13 +23,12 @@ export default function Home() {
 
       <About />
       <CoreFeatures />
-      <LegalKnowledgeBase />
       <LegalChatbotDemo />
-      <LegalDrafts />
+      <LegalKnowledgeBase />
       <LegalSummaries />
-      <BlogNewsTeaser />
       <ConsultationMarketplace />
-      <PricingPlans />
+      <BlogNewsTeaser />
+      <Pricing />
       <CTA />
       <Contact />
 

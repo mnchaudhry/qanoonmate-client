@@ -26,7 +26,7 @@ const CaseLawList: React.FC<Props> = ({ caseLaws, loading, onCourtClick, onCateg
                 <div className="flex-1 min-w-0">
                   <h2 className="text-xl font-semibold mb-1">{caseLaw.title}</h2>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm text-muted-foreground">{caseLaw.year}</span>
+                    <Badge variant="outline" className="text-xs">{caseLaw.year}</Badge>
                     {caseLaw.court && (
                       <Badge 
                         variant="outline" 
@@ -46,7 +46,7 @@ const CaseLawList: React.FC<Props> = ({ caseLaws, loading, onCourtClick, onCateg
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm line-clamp-3 mb-3">{caseLaw.summary}</p>
+                  <p className="text-sm line-clamp-3 mb-3"><span className="text-muted-foreground"><b>Summary: </b></span>{caseLaw.summary}</p>
                   
                   <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
                     {caseLaw.citation && (

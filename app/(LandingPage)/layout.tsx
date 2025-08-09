@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react'
 import LandingPageNavbar from './_components/LandingPageNavbar'
-import LandingPageFooter from './_components/Footer'
+import Footer from './_components/Footer'
 
 const LandingPageLayout = ({ children }: { children: ReactNode }) => {
   return (
@@ -9,7 +9,7 @@ const LandingPageLayout = ({ children }: { children: ReactNode }) => {
       <div className="min-h-[50vh]">
         {children}
       </div>
-      <LandingPageFooter />
+      <Footer />
     </div>
   )
 }
