@@ -1,11 +1,31 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Logo from "@/components/Logo";
 import { AIChatSession } from "@/store/types/api";
-import { deleteSession, getMyChatSessions, renameSession, setCurrentSession, setCurrentSessionId, SidebarChatItem } from "@/store/reducers/aiSessionSlice";
+import {
+  deleteSession,
+  getMyChatSessions,
+  renameSession,
+  setCurrentSession,
+  setCurrentSessionId,
+  SidebarChatItem,
+} from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Clock, MessageSquare, Settings, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  MoreVertical,
+  Clock,
+  MessageSquare,
+  Settings,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import AlertModal from "@/components/alert-modal";
@@ -17,76 +37,87 @@ interface ChatSidebarProps {
     interactionCount: number;
     lastModified: string; // Store as ISO string for serializability
     sessionDuration: number;
-  }
+  };
 }
 
-const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSidebarProps) => {
-
+const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
+  sessionMetadata,
+}: ChatSidebarProps) => {
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { sidebarSessions: sessions, currentSessionId: sessionId } = useSelector((state: RootState) => state.aiSession)
+  const { sidebarSessions: sessions, currentSessionId: sessionId } =
+    useSelector((state: RootState) => state.aiSession);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const paramSessionId = searchParams.get('id');
+  const paramSessionId = searchParams.get("id");
 
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
-  const [loading, setLoading] = useState<{ fetch: boolean, rename: boolean, delete: boolean }>({ fetch: false, rename: false, delete: false })
-  const [renaming, setRenaming] = useState<string>('')
-  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(null)
-  const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [loading, setLoading] = useState<{
+    fetch: boolean;
+    rename: boolean;
+    delete: boolean;
+  }>({ fetch: false, rename: false, delete: false });
+  const [renaming, setRenaming] = useState<string>("");
+  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(
+    null
+  );
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   ///////////////////////////////////////////////////////////// USE EFFECTS //////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (paramSessionId) {
-      dispatch(setCurrentSessionId(paramSessionId))
+      dispatch(setCurrentSessionId(paramSessionId));
     }
-  }, [paramSessionId])
+  }, [paramSessionId]);
   useEffect(() => {
-    setLoading(pre => ({ ...pre, fetch: true }))
-    dispatch(getMyChatSessions())
-      .finally(() => setLoading(pre => ({ ...pre, fetch: false })))
-  }, [dispatch, user])
+    setLoading((pre) => ({ ...pre, fetch: true }));
+    dispatch(getMyChatSessions(user ? user._id : null)).finally(() =>
+      setLoading((pre) => ({ ...pre, fetch: false }))
+    );
+  }, [dispatch, user]);
 
   ///////////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////////////
   const onRename = (id: string, newTitle: string) => {
-    setLoading(pre => ({ ...pre, rename: true }))
-    dispatch(renameSession({ id, title: newTitle }))
-      .finally(() => setLoading(pre => ({ ...pre, rename: false })))
+    setLoading((pre) => ({ ...pre, rename: true }));
+    dispatch(renameSession({ id, title: newTitle })).finally(() =>
+      setLoading((pre) => ({ ...pre, rename: false }))
+    );
 
-    setRenaming('');
+    setRenaming("");
   };
 
   const handleCreateSession = () => {
     toast.success("Session created successfully");
-  }
+    router.push("/chat-bot");
+  };
 
   const onChatSelect = (session: AIChatSession) => {
     if (!session) return;
-    router.push('/chat-bot?id=' + session._id)
-    dispatch(setCurrentSessionId(session._id))
-    dispatch(setCurrentSession(session))
-  }
+    router.push("/chat-bot?id=" + session._id);
+    dispatch(setCurrentSessionId(session._id));
+    dispatch(setCurrentSession(session));
+  };
 
   const onDelete = () => {
     if (!sessionToDelete) return toast.error("No session selected to delete.");
 
-    setLoading(pre => ({ ...pre, delete: true }))
+    setLoading((pre) => ({ ...pre, delete: true }));
     dispatch(deleteSession(sessionToDelete._id))
       .then(() => {
         setSessionToDelete(null);
         setOpenDeleteModal(false);
       })
-      .finally(() => setLoading(pre => ({ ...pre, delete: false })))
-  }
+      .finally(() => setLoading((pre) => ({ ...pre, delete: false })));
+  };
 
   ///////////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////////////
   return (
     <>
       <AlertModal
-        title={'Delete Session'}
+        title={"Delete Session"}
         description={`Are you sure you want to delete the session "${sessionToDelete?.title}"?`}
         onSubmit={onDelete}
         loading={loading.delete}
@@ -97,7 +128,9 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
       <aside
         className={cn(
           "relative border-r flex flex-col justify-between h-screen overflow-y-auto transition-all duration-200 bg-sidebar border-sidebar-border",
-          sidebarOpen ? "flex-[2] min-w-[260px]" : "flex-[0] w-[64px] min-w-[64px]"
+          sidebarOpen
+            ? "flex-[2] min-w-[260px]"
+            : "flex-[0] w-[64px] min-w-[64px]"
         )}
         style={{
           width: sidebarOpen ? undefined : 64,
@@ -117,11 +150,18 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
           <Button
             size="icon"
             variant="ghost"
-            className={cn("transition-transform z-40", sidebarOpen ? "mr-2" : "mb-2")}
-            onClick={() => setSidebarOpen(open => !open)}
+            className={cn(
+              "transition-transform z-40",
+              sidebarOpen ? "mr-2" : "mb-2"
+            )}
+            onClick={() => setSidebarOpen((open) => !open)}
             aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
           >
-            {sidebarOpen ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+            {sidebarOpen ? (
+              <ChevronLeft className="w-4 h-4" />
+            ) : (
+              <ChevronRight className="w-4 h-4" />
+            )}
           </Button>
           {sidebarOpen ? (
             <div className="flex-1 flex justify-center items-center">
@@ -144,7 +184,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
                   type="text"
                   placeholder="Search sessions..."
                   value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="flex-1 px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
                 />
                 <Button
@@ -160,11 +200,15 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
               {/* Session Metadata */}
               {sessionMetadata && sessionMetadata.interactionCount > 0 && (
                 <div className="p-3 bg-primary/5 rounded-lg border border-primary/10">
-                  <h3 className="text-sm font-semibold text-primary mb-2">Session Info</h3>
+                  <h3 className="text-sm font-semibold text-primary mb-2">
+                    Session Info
+                  </h3>
                   <div className="space-y-1.5 text-sm text-primary/80">
                     <div className="flex items-center gap-2">
                       <MessageSquare className="w-3 h-3" />
-                      <span>{sessionMetadata.interactionCount} interactions</span>
+                      <span>
+                        {sessionMetadata.interactionCount} interactions
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-3 h-3" />
@@ -176,89 +220,114 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
 
               {/* Chat Sessions */}
               <div className="flex-1">
-                {loading.fetch ? (
-                  Array.from({ length: 5 }).map((_, idx) => (
-                    <div
-                      key={idx}
-                      className="p-2 rounded-lg hover:bg-accent cursor-pointer text-sm flex justify-between items-center animate-pulse mb-1.5"
-                    >
-                      <span className="h-3 bg-muted-foreground/30 rounded w-3/4"></span>
-                      <div className="w-5 h-5 bg-muted-foreground/20 rounded-full"></div>
-                    </div>
-                  ))
-                ) : (
-                  sessions
-                    .filter(section =>
-                      section.items.some(session =>
-                        session.title.toLowerCase().includes(searchTerm.toLowerCase())
-                      )
-                    )
-                    .map((section, index) => (
-                      <div key={index} className="mt-4">
-                        <h2 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wide">
-                          {section.section}
-                        </h2>
-                        {section.items
-                          .filter(session =>
-                            session.title.toLowerCase().includes(searchTerm.toLowerCase())
-                          )
-                          .map((session, i) => (
-                            <div
-                              key={i}
-                              onClick={() => onChatSelect(session)}
-                              className={cn(
-                                "p-2 rounded-lg hover:bg-accent cursor-pointer text-sm flex justify-between items-center mb-1.5 transition-colors",
-                                String(sessionId) == String(session._id)
-                                  ? "bg-primary/10 text-primary border border-primary/20"
-                                  : "bg-transparent"
-                              )}
-                            >
-                              {renaming === session._id ? (
-                                <input
-                                  autoFocus
-                                  defaultValue={session.title}
-                                  onKeyDown={e => {
-                                    if (e.key === "Enter") {
-                                      onRename(session._id, (e.target as HTMLInputElement).value);
-                                    }
-                                  }}
-                                  onBlur={e => onRename(session._id, (e.target as HTMLInputElement).value)}
-                                  className={cn(
-                                    "w-full bg-transparent border border-border px-2 py-1 rounded-md text-sm",
-                                    loading.rename ? "animate-pulse cursor-not-allowed" : ""
-                                  )}
-                                  disabled={loading.rename}
-                                />
-                              ) : (
-                                <>
-                                  <span className="truncate font-medium">{session.title}</span>
-                                  <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                      <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="w-6 h-6 hover:bg-accent"
-                                        onClick={e => e.stopPropagation()}
-                                      >
-                                        <MoreVertical className="w-3 h-3" />
-                                      </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                      <DropdownMenuItem onClick={e => { e.stopPropagation(); setRenaming(session._id); }}>
-                                        Rename
-                                      </DropdownMenuItem>
-                                      <DropdownMenuItem onClick={e => { e.stopPropagation(); setSessionToDelete(session); setOpenDeleteModal(true); }}>
-                                        Delete
-                                      </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                  </DropdownMenu>
-                                </>
-                              )}
-                            </div>
-                          ))}
+                {loading.fetch
+                  ? Array.from({ length: 5 }).map((_, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2 rounded-lg hover:bg-accent cursor-pointer text-sm flex justify-between items-center animate-pulse mb-1.5"
+                      >
+                        <span className="h-3 bg-muted-foreground/30 rounded w-3/4"></span>
+                        <div className="w-5 h-5 bg-muted-foreground/20 rounded-full"></div>
                       </div>
                     ))
-                )}
+                  : sessions
+                      .filter((section) =>
+                        section.items.some((session) =>
+                          session.title
+                            .toLowerCase()
+                            .includes(searchTerm.toLowerCase())
+                        )
+                      )
+                      .map((section, index) => (
+                        <div key={index} className="mt-4">
+                          <h2 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wide">
+                            {section.section}
+                          </h2>
+                          {section.items
+                            .filter((session) =>
+                              session.title
+                                .toLowerCase()
+                                .includes(searchTerm.toLowerCase())
+                            )
+                            .map((session, i) => (
+                              <div
+                                key={i}
+                                onClick={() => onChatSelect(session)}
+                                className={cn(
+                                  "p-2 rounded-lg hover:bg-accent cursor-pointer text-sm flex justify-between items-center mb-1.5 transition-colors",
+                                  String(sessionId) == String(session._id)
+                                    ? "bg-primary/10 text-primary border border-primary/20"
+                                    : "bg-transparent"
+                                )}
+                              >
+                                {renaming === session._id ? (
+                                  <input
+                                    autoFocus
+                                    defaultValue={session.title}
+                                    onKeyDown={(e) => {
+                                      if (e.key === "Enter") {
+                                        onRename(
+                                          session._id,
+                                          (e.target as HTMLInputElement).value
+                                        );
+                                      }
+                                    }}
+                                    onBlur={(e) =>
+                                      onRename(
+                                        session._id,
+                                        (e.target as HTMLInputElement).value
+                                      )
+                                    }
+                                    className={cn(
+                                      "w-full bg-transparent border border-border px-2 py-1 rounded-md text-sm",
+                                      loading.rename
+                                        ? "animate-pulse cursor-not-allowed"
+                                        : ""
+                                    )}
+                                    disabled={loading.rename}
+                                  />
+                                ) : (
+                                  <>
+                                    <span className="truncate font-medium">
+                                      {session.title}
+                                    </span>
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button
+                                          variant="ghost"
+                                          size="icon"
+                                          className="w-6 h-6 hover:bg-accent"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          <MoreVertical className="w-3 h-3" />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end">
+                                        <DropdownMenuItem
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setRenaming(session._id);
+                                          }}
+                                        >
+                                          Rename
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSessionToDelete(session);
+                                            setOpenDeleteModal(true);
+                                          }}
+                                        >
+                                          Delete
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </>
+                                )}
+                              </div>
+                            ))}
+                        </div>
+                      ))}
               </div>
             </div>
 
@@ -294,7 +363,6 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
             <div className="mb-2" />
           </div>
         )}
-
       </aside>
     </>
   );
