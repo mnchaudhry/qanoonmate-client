@@ -57,7 +57,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
   ////////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////////////////
   return (
     <TooltipProvider>
-      <div className="h-[80px] bg-neutral px-6 py-4 flex justify-between items-center border-b border-border">
+      <div className="h-[80px] bg-neutral px-6 py-4 flex justify-between items-center border-b !border-border">
         {/* Left Side - AI Confidence */}
 
         <div className="flex items-center gap-4 ">

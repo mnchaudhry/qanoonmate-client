@@ -1,7 +1,7 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Logo from "@/components/Logo";
 import { AIChatSession } from "@/store/types/api";
-import { deleteSession, getMyChatSessions, renameSession, setCurrentSession, setCurrentSessionId, SidebarChatItem } from "@/store/reducers/aiSessionSlice";
+import { deleteSession, getMyChatSessions, renameSession, setCurrentSession, setCurrentSessionId } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import AlertModal from "@/components/alert-modal";
 import toast from "react-hot-toast";
-import { cn, groupChatsByDate } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
 interface ChatSidebarProps {
   sessionMetadata?: {
@@ -43,7 +44,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
     if (paramSessionId) {
       dispatch(setCurrentSessionId(paramSessionId))
     }
-  }, [paramSessionId])
+  }, [paramSessionId, dispatch])
   useEffect(() => {
     setLoading(pre => ({ ...pre, fetch: true }))
     dispatch(getMyChatSessions())
@@ -65,7 +66,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
 
   const onChatSelect = (session: AIChatSession) => {
     if (!session) return;
-    router.push('/chat-bot?id=' + session._id)
+    router.push('/chat?id=' + session._id)
     dispatch(setCurrentSessionId(session._id))
     dispatch(setCurrentSession(session))
   }
@@ -110,7 +111,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
           className={cn(
             "sticky top-0 z-20 bg-neutral",
             sidebarOpen
-              ? "flex flex-row items-center justify-between pt-4 pb-3 h-[80px] border-b border-border px-4"
+              ? "flex flex-row items-center justify-between pt-4 pb-3 h-[84px] border-b !border-border px-4"
               : "flex flex-col items-center justify-center pt-4 pb-3 px-0"
           )}
         >
@@ -145,7 +146,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
                   placeholder="Search sessions..."
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+                  className="flex-1 px-3 py-2 rounded-md border !border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
                 />
                 <Button
                   size="icon"
@@ -168,7 +169,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-3 h-3" />
-                      <span>Last: {sessionMetadata.lastModified}</span>
+                      <span>Last: {format(sessionMetadata.lastModified, 'MMM d, yyyy')}</span>
                     </div>
                   </div>
                 </div>
@@ -224,7 +225,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
                                   }}
                                   onBlur={e => onRename(session._id, (e.target as HTMLInputElement).value)}
                                   className={cn(
-                                    "w-full bg-transparent border border-border px-2 py-1 rounded-md text-sm",
+                                    "w-full bg-transparent border !border-border px-2 py-1 rounded-md text-sm",
                                     loading.rename ? "animate-pulse cursor-not-allowed" : ""
                                   )}
                                   disabled={loading.rename}
@@ -262,7 +263,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata }: ChatSid
               </div>
             </div>
 
-            <div className="mt-4 border-t border-border pt-3 sticky bottom-0 bg-neutral pb-4">
+            <div className="mt-4 border-t !border-border pt-3 sticky bottom-0 bg-neutral pb-4">
               <div className="p-2 flex items-center gap-2 hover:bg-accent cursor-pointer rounded-lg transition-colors">
                 <Settings className="w-3 h-3" />
                 <span className="text-sm font-medium">Settings</span>

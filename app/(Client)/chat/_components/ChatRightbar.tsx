@@ -32,8 +32,8 @@ const ChatRightbar = ({
                     ease-in-out
                     overflow-y-auto
                     ${showContextPanel
-                        ? "w-[22rem] min-w-[22rem] max-w-[22rem] opacity-100 pointer-events-auto bg-surface border-l border-border p-4 pt-8"
-                        : "w-8 min-w-8 max-w-8 opacity-100 bg-surface border-l border-border p-0"
+                        ? "w-[22rem] min-w-[22rem] max-w-[22rem] opacity-100 pointer-events-auto bg-surface border-l !border-border p-4 pt-8"
+                        : "w-8 min-w-8 max-w-8 opacity-100 bg-surface border-l !border-border p-0"
                     }
                 `}
                 style={{

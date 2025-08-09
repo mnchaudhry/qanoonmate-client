@@ -4,21 +4,7 @@ import { AIChatMessage, MessageItemProps } from "@/lib/interfaces";
 import React, { useEffect, useState, useRef, memo } from "react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
-import {
-  Bookmark,
-  ThumbsUp,
-  ThumbsDown,
-  Flag,
-  Save,
-  Copy,
-  MessageSquare,
-  User,
-  Bot,
-  Clock,
-  RotateCcw,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Bookmark, ThumbsUp, ThumbsDown, Flag, Save, Copy, MessageSquare, User, Bot, Clock, RotateCcw, ChevronLeft, ChevronRight, } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import Hint from "@/components/Hint";
@@ -27,34 +13,27 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { parseAIResponse } from "@/utils/parseAIResponse";
 import Link from "next/link";
+
 interface MessageBoxProps {
   chatViewMode?: "compact" | "card" | "timeline";
   textSize?: number;
   messages: AIChatMessage[];
 }
 
-const MessageBox: React.FC<
-  MessageBoxProps & {
-    onRegenerate: (botMessage: any, history: any[]) => Promise<void>;
-  }
-> = memo(({ chatViewMode = "card", textSize = 16, messages, onRegenerate }) => {
+const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: any, history: any[]) => Promise<void>; }> = memo(({ chatViewMode = "card", textSize = 16, messages, onRegenerate }) => {
   ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////
   console.log("messages", messages);
-  const streamingMessage = useSelector(
-    (state: RootState) => state.aiSession.streamingMessage
-  );
+  const { streamingMessage } = useSelector((state: RootState) => state.aiSession);
   console.log("streamingMessage", streamingMessage);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const endAnchorRef = useRef<HTMLDivElement>(null);
   // Track current response index for each bot message
-  const [responseIndexes, setResponseIndexes] = useState<
-    Record<string, number>
-  >({});
+  const [responseIndexes, setResponseIndexes] = useState<Record<string, number>>({});
 
-  const handleNavigate = (
-    messageId: string,
-    direction: "left" | "right",
-    responsesLength: number
-  ) => {
+  ///////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////
+
+  ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////
+  const handleNavigate = (messageId: string, direction: "left" | "right", responsesLength: number) => {
     setResponseIndexes((prev) => {
       const current = prev[messageId] || 0;
       let next = direction === "left" ? current - 1 : current + 1;
@@ -62,21 +41,6 @@ const MessageBox: React.FC<
       if (next >= responsesLength) next = responsesLength - 1;
       return { ...prev, [messageId]: next };
     });
-  };
-  ///////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////
-  useEffect(() => {
-    console.log(
-      "MessageBox useEffect triggered - messages:",
-      messages.length,
-      "streamingMessage:",
-      !!streamingMessage
-    );
-    scrollToBottom();
-  }, [messages, streamingMessage]);
-
-  ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   const getMessageTime = (timestamp: string) => {
@@ -91,6 +55,7 @@ const MessageBox: React.FC<
   };
 
   const onBookmark = (messageId: string) => {
+    console.log('messageId', messageId)
     toast.success("Message bookmarked!");
   };
 
@@ -99,10 +64,12 @@ const MessageBox: React.FC<
   };
 
   const onFeedback = (messageId: string) => {
+    console.log('messageId', messageId)
     toast.success("Feedback submitted!");
   };
 
   const onSaveToNotes = (messageId: string) => {
+    console.log('messageId', messageId)
     toast.success("Saved to notes!");
   };
 
@@ -112,16 +79,17 @@ const MessageBox: React.FC<
   };
 
   const onFlag = (messageId: string) => {
+    console.log('messageId', messageId)
     toast.success("Response flagged for review");
   };
 
-  const buildMarkdown = (parsed) => {
-    let md = parsed.main || "";
+  const buildMarkdown = (parsed: any) => {
+    const md = parsed.main || "";
     return md;
   };
 
   // Defensive extraction of responses for bot messages
-  const getBotResponses = (message: AIChatMessage) => {
+  const getBotResponses = (message: any) => {
     if (
       message.sender === "bot" &&
       Array.isArray(message.responses) &&
@@ -264,14 +232,10 @@ const MessageBox: React.FC<
     }
     return null;
   };
+
+
   // Memoized MessageItem component
-  const MessageItem = React.memo(function MessageItem({
-    message,
-    index,
-    chatViewMode,
-    textSize,
-    history,
-  }: MessageItemProps & { history: any[] }) {
+  const MessageItem = React.memo(function MessageItem({ message, index, chatViewMode, textSize, history, }: MessageItemProps & { history: any[] }) {
     // Defensive: default sender to 'bot' if missing
     const isModel = (message.sender ?? "bot") === "bot";
     const responses = getBotResponses(message);
@@ -280,9 +244,7 @@ const MessageBox: React.FC<
     const messageTime = getMessageTime(message.createdAt);
 
     // True character-by-character streaming
-    const [displayedContent, setDisplayedContent] = useState(
-      currentResponse.content
-    );
+    const [displayedContent, setDisplayedContent] = useState(currentResponse.content);
     const bufferRef = useRef("");
     const prevContentRef = useRef(currentResponse.content);
 
@@ -309,7 +271,7 @@ const MessageBox: React.FC<
       let timer: number;
       function tick() {
         if (bufferRef.current.length > 0) {
-          setDisplayedContent((prev) => {
+          setDisplayedContent((prev: any) => {
             const nextChar = bufferRef.current[0];
             bufferRef.current = bufferRef.current.slice(1);
             return prev + nextChar;
@@ -319,7 +281,7 @@ const MessageBox: React.FC<
       }
       tick();
       return () => clearTimeout(timer);
-    }, [message.isStreaming]);
+    }, [message.isStreaming, currentResponse.content]);
 
     const parsed = parseAIResponse(currentResponse.content);
 
@@ -349,7 +311,7 @@ const MessageBox: React.FC<
                 "px-4 py-3 rounded-lg shadow-sm border",
                 isModel
                   ? "bg-primary/10 text-foreground border-primary/10"
-                  : "bg-muted text-foreground border-border"
+                  : "bg-muted text-foreground !border-border"
               )}
             >
               <div style={{ fontSize: `${textSize}px` }}>
@@ -358,7 +320,7 @@ const MessageBox: React.FC<
                   <div className="text-gray-500">
                     Quick Action : {parsed.quickAction}{" "}
                     {parsed.quickAction.includes("Consult") ||
-                    parsed.quickAction.includes("consult") ? (
+                      parsed.quickAction.includes("consult") ? (
                       <Link href="/lawyers" className=" underline">
                         here
                       </Link>
@@ -422,7 +384,7 @@ const MessageBox: React.FC<
                 "px-4 py-3 rounded-lg shadow-sm border",
                 isModel
                   ? "bg-primary/10 text-foreground border-primary/10"
-                  : "bg-muted text-foreground border-border"
+                  : "bg-muted text-foreground !border-border"
               )}
             >
               <div style={{ fontSize: `${textSize}px` }}>
@@ -431,7 +393,7 @@ const MessageBox: React.FC<
                   <div className="text-gray-500">
                     Quick Action : {parsed.quickAction}{" "}
                     {parsed.quickAction.includes("Consult") ||
-                    parsed.quickAction.includes("consult") ? (
+                      parsed.quickAction.includes("consult") ? (
                       <Link href="/lawyers" className=" underline">
                         here
                       </Link>
@@ -481,7 +443,7 @@ const MessageBox: React.FC<
             "px-4 py-3 rounded-lg w-fit max-w-[80%] shadow-sm border",
             isModel
               ? "bg-primary/10 text-foreground border-primary/10"
-              : "bg-muted text-foreground border-border"
+              : "bg-muted text-foreground !border-border"
           )}
         >
           <div style={{ fontSize: `${textSize}px` }}>
@@ -490,7 +452,7 @@ const MessageBox: React.FC<
               <div className="text-gray-500">
                 Quick Action : {parsed.quickAction}{" "}
                 {parsed.quickAction.includes("Consult") ||
-                parsed.quickAction.includes("consult") ? (
+                  parsed.quickAction.includes("consult") ? (
                   <Link href="/lawyers" className=" underline">
                     here
                   </Link>
@@ -520,17 +482,17 @@ const MessageBox: React.FC<
     );
   });
 
-  ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////
-  console.log(
-    "MessageBox render - messages:",
-    messages.length,
-    "streamingMessage:",
-    !!streamingMessage
-  );
+  // Keep scroll pinned to bottom within this component's own container
+  useEffect(() => {
+    const anchor = endAnchorRef.current;
+    if (!anchor) return;
+    anchor.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, streamingMessage]);
 
+  ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////
   return (
     <TooltipProvider>
-      <div className="flex-1 overflow-y-auto py-6 space-y-4 px-6">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto py-6 space-y-4 px-6">
         <div className="max-w-4xl mx-auto">
           {messages &&
             messages.length > 0 &&
@@ -555,10 +517,13 @@ const MessageBox: React.FC<
             />
           )}
         </div>
-        <div ref={messagesEndRef} />
+        <div ref={endAnchorRef} />
       </div>
     </TooltipProvider>
   );
 });
 
 export default MessageBox;
+
+
+MessageBox.displayName = "MessageBox";
