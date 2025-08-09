@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useMemo, useState } from 'react'
-import { Calendar, Phone, Video, Search, MapPin, Star } from 'lucide-react'
+import { Search, MapPin, Star } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -90,7 +90,6 @@ const ALL_LAWYERS: Lawyer[] = [
   },
 ]
 
-const CONSULTATION_TYPES: ConsultationType[] = ['Phone', 'Video', 'In-person']
 const PRACTICE_AREAS = [
   'All',
   'Corporate Law',
@@ -278,18 +277,7 @@ function FilterInline(props: {
   onlyAvailable: boolean
   setOnlyAvailable: (v: boolean) => void
 }) {
-  const {
-    selectedPractice,
-    setSelectedPractice,
-    selectedCity,
-    setSelectedCity,
-    selectedTypes,
-    toggleType,
-    minRating,
-    setMinRating,
-    onlyAvailable,
-    setOnlyAvailable,
-  } = props
+  const { selectedPractice, setSelectedPractice, selectedCity, setSelectedCity, } = props
 
   return (
     <div className="w-full md:w-auto flex flex-col md:flex-row gap-3 md:items-center">
@@ -314,7 +302,7 @@ function FilterInline(props: {
           ))}
         </SelectContent>
       </Select>
-      
+
     </div>
   )
 }
@@ -360,7 +348,7 @@ function LawyerCard({ lawyer }: { lawyer: Lawyer }) {
     consultationTypes,
   } = lawyer
 
-    return (
+  return (
     <div className={cn(
       'group bg-neutral rounded-xl border overflow-hidden hover:shadow-lg transition',
     )}>

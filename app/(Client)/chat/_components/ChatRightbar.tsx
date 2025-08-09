@@ -6,7 +6,6 @@ const ChatRightbar = ({
     showContextPanel,
     setShowContextPanel,
     showDictionary,
-    setShowDictionary,
     keyReferences = [],
     relatedCases = [],
     legalContext = null,

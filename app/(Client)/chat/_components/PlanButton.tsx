@@ -6,7 +6,6 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
-    navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import { cn } from '@/lib/utils';
 
@@ -73,3 +72,5 @@ const ListItem = React.forwardRef<
         </li>
     )
 })
+
+ListItem.displayName = "ListItem"

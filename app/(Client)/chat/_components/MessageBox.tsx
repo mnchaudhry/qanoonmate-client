@@ -245,6 +245,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: any, h
 
     // True character-by-character streaming
     const [displayedContent, setDisplayedContent] = useState(currentResponse.content);
+    console.log("displayedContent", displayedContent);
     const bufferRef = useRef("");
     const prevContentRef = useRef(currentResponse.content);
 

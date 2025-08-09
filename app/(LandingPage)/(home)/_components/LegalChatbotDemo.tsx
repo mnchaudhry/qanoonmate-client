@@ -1,46 +1,8 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { Play, Users, Zap, Brain, MessageSquare, FileText } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Image from "next/image";
-import { About } from "@/constants/images";
 import ChatFeatures from "../../chatbot/_components/ChatFeatures";
 import ChatDemo from "../../chatbot/_components/ChatDemo";
-
-const features = [
-    {
-        title: "Conversational AI",
-        description: "Chat naturally with our AI trained on Pakistani legal content and public law datasets.",
-        icon: Brain,
-        color: "text-primary"
-    },
-    {
-        title: "Source Linking",
-        description: "Get references and legal citations alongside answers for verification.",
-        icon: FileText,
-        color: "text-primary-dark"
-    },
-    {
-        title: "Tone Control",
-        description: "Switch between formal legal tones and simplified explanations.",
-        icon: MessageSquare,
-        color: "text-secondary"
-    },
-    {
-        title: "Quick Actions",
-        description: "Generate documents, request templates, or summarize responses with one click.",
-        icon: Zap,
-        color: "text-accent"
-    },
-    {
-        title: "Bilingual Support",
-        description: "Ask and receive answers in English or Urdu—whichever suits you best.",
-        icon: Users,
-        color: "text-muted"
-    },
-];
 
 function LegalChatbotDemo() {
     const fadeUpVariants: Variants = {
@@ -49,15 +11,6 @@ function LegalChatbotDemo() {
             opacity: 1,
             y: 0,
             transition: { duration: 0.8, ease: "easeOut" },
-        },
-    };
-
-    const staggerVariants: Variants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.6, ease: "easeOut" },
         },
     };
 
