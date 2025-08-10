@@ -51,6 +51,10 @@ export function generateSEOMetadata({
     metadataBase: new URL(defaultConfig.baseUrl),
     alternates: {
       canonical: url,
+      languages: {
+        'en-US': url,
+        'ur-PK': url.replace('/en/', '/ur/'), // If you plan to add Urdu support
+      },
     },
     openGraph: {
       title: fullTitle,
