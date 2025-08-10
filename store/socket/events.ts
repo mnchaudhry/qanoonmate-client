@@ -1,59 +1,55 @@
-import { AppDispatch } from "../store";
-import store from "../store";
-import {
-  handleSummaryProgress,
-  handleSummaryComplete,
-  handleSummaryError,
-  handleSummaryStream,
-} from "../reducers/summarySlice";
 import {
   addAIMessage,
+  finalizeStreamingMessage,
   incrementInteractionCount,
   setCurrentSessionId,
   setIsStreaming,
-  updateAIMessageLocal,
+  setStreamingMessage,
   updateBotMessage,
   updateLastModified,
 } from "../reducers/aiSessionSlice";
 import {
   addMessage,
-  setUnreadCount,
-  setTypingStatus,
   setOnlineStatus,
+  setTypingStatus,
+  setUnreadCount,
   updateRoomState,
 } from "../reducers/chatSlice";
 import {
-  setStreamingMessage,
-  finalizeStreamingMessage,
-} from "../reducers/aiSessionSlice";
+  handleSummaryComplete,
+  handleSummaryError,
+  handleSummaryProgress,
+  handleSummaryStream,
+} from "../reducers/summarySlice";
+import store, { AppDispatch } from "../store";
 import type {
-  ModelStartChatEmit,
-  ModelUpdateTitleEmit,
-  ModelChatMessageEmit,
-  SummarySubmitEmit,
   AuthAuthenticateEmit,
-  SummaryProgress,
-  SummaryError,
-  SummaryComplete,
-  ModelMessageReceived,
-  ModelSessionStarted,
-  ModelMessageStream,
-  ModelError,
-  ChatJoinRoomEmit,
-  ChatLeaveRoomEmit,
-  ChatSendMessageEmit,
-  ChatTypingEmit,
-  ChatStopTypingEmit,
-  ChatMarkReadEmit,
+  ChatError,
   ChatJoinRoomAck,
+  ChatJoinRoomEmit,
   ChatLeaveRoomAck,
-  ChatUserJoined,
-  ChatNewMessage,
-  ChatUserTyping,
-  ChatUserStopTyping,
+  ChatLeaveRoomEmit,
+  ChatMarkReadEmit,
   ChatMessageRead,
   ChatMessageSentAck,
-  ChatError,
+  ChatNewMessage,
+  ChatSendMessageEmit,
+  ChatStopTypingEmit,
+  ChatTypingEmit,
+  ChatUserJoined,
+  ChatUserStopTyping,
+  ChatUserTyping,
+  ModelChatMessageEmit,
+  ModelError,
+  ModelMessageReceived,
+  ModelMessageStream,
+  ModelSessionStarted,
+  ModelStartChatEmit,
+  ModelUpdateTitleEmit,
+  SummaryComplete,
+  SummaryError,
+  SummaryProgress,
+  SummarySubmitEmit,
 } from "../types/socket";
 
 ///////////////////////////////////////////////// EMITTING EVENTS (Client to Server) /////////////////////////////////////////////////
@@ -137,9 +133,11 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
 
   // Summary events
   socket.on("summary:progress", (data: SummaryProgress) => {
+    console.log("Progress mentioned here");
     dispatch(handleSummaryProgress(data));
   });
   socket.on("summary:complete", (data: SummaryComplete) => {
+    console.log(data);
     dispatch(handleSummaryComplete(data));
   });
   socket.on("summary:error", (data: SummaryError) => {

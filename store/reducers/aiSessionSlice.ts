@@ -257,6 +257,30 @@ const aiSessionSlice = createSlice({
       );
       if (idx !== -1) {
         state.messages[idx] = { ...state.messages[idx], ...action.payload };
+        if (state.streamingMessage?._id === action.payload._id) {
+          state.streamingMessage = null;
+        }
+      }
+    },
+    updateStreamingMessage: (state, action) => {
+      const { id, content, done } = action.payload;
+
+      // Find the message in the messages array
+      const messageIndex = state.messages.findIndex((msg) => msg._id === id);
+
+      if (messageIndex !== -1) {
+        // Update the existing message directly
+        const message = state.messages[messageIndex];
+        message.content = content;
+        message.isStreaming = !done;
+
+        // Update the current response content
+        if (message.responses && Array.isArray(message.responses)) {
+          const currentResponseIndex = /* you'll need to track this */ 0; // or get from your responseIndexes
+          if (message.responses[currentResponseIndex]) {
+            message.responses[currentResponseIndex].content = content;
+          }
+        }
       }
     },
     removeAIMessage: (state, action) => {
@@ -474,6 +498,7 @@ export const {
   setIsStreaming,
   setSessionMetadata,
   updateAIMessageLocal,
+  updateStreamingMessage,
   updateBotMessage,
   incrementInteractionCount,
   updateLastModified,

@@ -17,6 +17,7 @@ import {
   getMessagesBySession,
   getChatSession,
   updateBotMessage,
+  updateStreamingMessage,
 } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
@@ -59,6 +60,9 @@ const ChatbotClient = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const { references, cases, legalContext, confidence } =
     useParsedMessages(messages);
+  const [regeneratingMessageId, setRegeneratingMessageId] = useState<
+    string | null
+  >(null);
 
   ///////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////////////
   // Get Lawyers
@@ -102,8 +106,10 @@ const ChatbotClient = () => {
   ///////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////////////
 
   const onRegenerate = async (botMessage: AIChatMessage) => {
+    setRegeneratingMessageId(botMessage._id);
     // Find userMessageId if it's missing
     let userMessageId = botMessage.userMessageId;
+
     if (!userMessageId && messages && messages.length > 0) {
       // Find the bot message index in the messages array
       const botMessageIndex = messages.findIndex(
@@ -146,17 +152,31 @@ const ChatbotClient = () => {
       userMessageId: userMessageId,
       history: builtHistory,
     });
+
+    setTimeout(() => setRegeneratingMessageId(null), 100);
   };
+
   useEffect(() => {
     if (!socket) return;
+
+    const handleMessageStream = (data: {
+      id: string;
+      content: string;
+      done: boolean;
+    }) => {
+      dispatch(updateStreamingMessage(data));
+    };
+
     const handleBotMessageUpdated = (
       updatedBotMessage: Partial<AIChatMessage> & { _id: string }
     ) => {
       // Update the messages state with the new bot message (merge responses)
       dispatch(updateBotMessage(updatedBotMessage));
     };
+    socket.on("model:message-stream", handleMessageStream);
     socket.on("model:bot-message-updated", handleBotMessageUpdated);
     return () => {
+      socket.off("model:message-stream", handleMessageStream);
       socket.off("model:bot-message-updated", handleBotMessageUpdated);
     };
   }, [socket, dispatch]);
