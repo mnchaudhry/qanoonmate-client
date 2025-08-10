@@ -1,28 +1,7 @@
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { useSocketContext } from "@/context/useSocketContext";
 import { cn } from "@/lib/utils";
-import {
-  FileText,
-  Globe,
-  Mic,
-  MicOff,
-  Send,
-  Settings,
-  Share2,
-  Upload,
-} from "lucide-react";
+import { setIsStreaming } from "@/store/reducers/aiSessionSlice";
+import { AppDispatch, RootState } from "@/store/store";
 import React, {
   Dispatch,
   FormEvent,
@@ -33,15 +12,13 @@ import React, {
 } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/store/store";
-import { useSocketContext } from "@/context/useSocketContext";
-import { setIsStreaming } from "@/store/reducers/aiSessionSlice";
 // import { AIMessage } from "@/store/types/api";
 import { socketEvents } from "@/store/socket/events";
-import { AgentInputItem, assistant, user as userRes } from "@openai/agents";
 import { extractTextFromPDF } from "@/utils/extractFromPdf";
+import { AgentInputItem, assistant, user as userRes } from "@openai/agents";
 import { jsPDF } from "jspdf";
 import { useRouter } from "next/navigation";
+import ChatControls from "./ChatControls";
 
 interface Props {
   isConnected: boolean;
@@ -295,136 +272,19 @@ const ChatInput: React.FC<Props> = memo(
           </div>
 
           {/* Controls Row */}
-          <div className="flex justify-between items-center w-full">
-            <div className="flex items-center gap-3">
-              {/* Language Toggle */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleLanguageToggle}
-                    className="h-9 w-9 p-0 hover:bg-accent"
-                  >
-                    <Globe className="w-4 h-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    Switch to{" "}
-                    {selectedLanguage === "english" ? "Urdu" : "English"}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-
-              {/* File Upload */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="h-9 w-9 p-0 hover:bg-accent"
-                  >
-                    <Upload className="w-4 h-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Upload file</p>
-                </TooltipContent>
-              </Tooltip>
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept=".pdf"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-
-              {/* Voice Input */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleVoiceToggle}
-                    className={cn(
-                      "h-9 w-9 p-0",
-                      isVoiceRecording &&
-                        "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                    )}
-                  >
-                    {isVoiceRecording ? (
-                      <MicOff className="w-4 h-4" />
-                    ) : (
-                      <Mic className="w-4 h-4" />
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>
-                    {isVoiceRecording ? "Stop recording" : "Start voice input"}
-                  </p>
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Actions Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 w-9 p-0 hover:bg-accent"
-                  >
-                    <Settings className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuLabel>Session Actions</DropdownMenuLabel>
-                  <DropdownMenuItem onClick={() => handleExportSession("pdf")}>
-                    <FileText className="w-4 h-4 mr-2" />
-                    Export as PDF
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExportSession("txt")}>
-                    <FileText className="w-4 h-4 mr-2" />
-                    Export as TXT
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleExportSession("json")}>
-                    <FileText className="w-4 h-4 mr-2" />
-                    Export as JSON
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleShareSession}>
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Share Session
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              {/* Add option for legal dictionary */}
-            </div>
-
-            {/* Send Button */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  size="sm"
-                  type="submit"
-                  disabled={!isConnected || isStreaming || isLoading}
-                  className="h-9 w-9 p-0 bg-primary hover:bg-primary/90 text-primary-foreground"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Send message</p>
-              </TooltipContent>
-            </Tooltip>
-          </div>
+          <ChatControls
+            handleExportSession={handleExportSession}
+            handleFileUpload={handleFileUpload}
+            handleLanguageToggle={handleLanguageToggle}
+            handleShareSession={handleShareSession}
+            handleVoiceToggle={handleVoiceToggle}
+            selectedLanguage={selectedLanguage}
+            isStreaming={isStreaming}
+            isConnected={isConnected}
+            isVoiceRecording={isVoiceRecording}
+            isLoading={isLoading}
+            fileInputRef={fileInputRef}
+          />
         </form>
         <div className="text-xs text-muted-foreground text-right w-full mt-2">
           LegalEase can make mistakes. Check important info.
