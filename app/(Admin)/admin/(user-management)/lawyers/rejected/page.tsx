@@ -1,14 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { 
-  RejectedLawyersHeader, 
-  RejectedLawyersFilterActionBar, 
-  RejectedLawyersTable, 
-  RejectedLawyerApplicationModal 
-} from './_components'
+import { RejectedLawyersFilterActionBar, RejectedLawyersTable, RejectedLawyerApplicationModal } from './_components'
 import { RejectedLawyer } from './_components/RejectedLawyersTable'
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader'
 
-// Mock data for demonstration
 const mockRejectedLawyers: RejectedLawyer[] = [
   {
     id: 1,
@@ -133,22 +128,23 @@ const mockRejectedLawyers: RejectedLawyer[] = [
 ]
 
 const RejectedLawyersPage = () => {
+
+  //////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
+  const lawyersPerPage = 10
+
+  //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
   const [lawyers, setLawyers] = useState<RejectedLawyer[]>([])
   const [filteredLawyers, setFilteredLawyers] = useState<RejectedLawyer[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedLawyer, setSelectedLawyer] = useState<RejectedLawyer | null>(null)
   const [showApplicationModal, setShowApplicationModal] = useState(false)
-
-  // Filter and Search States
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedRejectionReason, setSelectedRejectionReason] = useState('all')
   const [sortBy, setSortBy] = useState('name')
-
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1)
-  const lawyersPerPage = 10
 
-  // Load mock data
+
+  //////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
   useEffect(() => {
     setTimeout(() => {
       setLawyers(mockRejectedLawyers)
@@ -157,7 +153,7 @@ const RejectedLawyersPage = () => {
     }, 1000)
   }, [])
 
-  // Filter and sort lawyers
+  //////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
   useEffect(() => {
     let filtered = [...lawyers]
 
@@ -205,12 +201,13 @@ const RejectedLawyersPage = () => {
     setCurrentPage(1) // Reset to first page when filters change
   }, [lawyers, searchTerm, selectedRejectionReason, sortBy])
 
-  // Pagination logic
+  //////////////////////////////////////////////////// PAGINATION ////////////////////////////////////////////////////
   const totalPages = Math.ceil(filteredLawyers.length / lawyersPerPage)
   const startIndex = (currentPage - 1) * lawyersPerPage
   const endIndex = startIndex + lawyersPerPage
   const currentLawyers = filteredLawyers.slice(startIndex, endIndex)
 
+  //////////////////////////////////////////////////// HANDLERS ////////////////////////////////////////////////////
   const handleViewApplication = (lawyer: RejectedLawyer) => {
     setSelectedLawyer(lawyer)
     setShowApplicationModal(true)
@@ -253,6 +250,7 @@ const RejectedLawyersPage = () => {
     }, 1000)
   }
 
+  //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 p-6">
@@ -283,45 +281,42 @@ const RejectedLawyersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <RejectedLawyersHeader />
+    <div className="space-y-6">
+      <PageHeader
+        title="Rejected Lawyers"
+        description="View, filter, and manage all lawyers whose accounts have been rejected."
+      />
 
-        {/* Filter and Action Bar */}
-        <RejectedLawyersFilterActionBar
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          selectedRejectionReason={selectedRejectionReason}
-          onRejectionReasonChange={setSelectedRejectionReason}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          onResetFilters={handleResetFilters}
-          onRefresh={handleRefresh}
-        />
+      <RejectedLawyersFilterActionBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedRejectionReason={selectedRejectionReason}
+        onRejectionReasonChange={setSelectedRejectionReason}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        onResetFilters={handleResetFilters}
+        onRefresh={handleRefresh}
+      />
 
-        {/* Rejected Lawyers Table */}
-        <RejectedLawyersTable
-          lawyers={currentLawyers}
-          onViewApplication={handleViewApplication}
-          onReconsiderApplication={handleReconsiderApplication}
-          onViewNotes={handleViewNotes}
-          onDeletePermanently={handleDeletePermanently}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          totalCount={filteredLawyers.length}
-        />
+      <RejectedLawyersTable
+        lawyers={currentLawyers}
+        onViewApplication={handleViewApplication}
+        onReconsiderApplication={handleReconsiderApplication}
+        onViewNotes={handleViewNotes}
+        onDeletePermanently={handleDeletePermanently}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        totalCount={filteredLawyers.length}
+      />
 
-        {/* Application Details Modal */}
-        <RejectedLawyerApplicationModal
-          lawyer={selectedLawyer}
-          isOpen={showApplicationModal}
-          onClose={() => setShowApplicationModal(false)}
-          onReconsiderApplication={handleReconsiderApplication}
-          onDeletePermanently={handleDeletePermanently}
-        />
-      </div>
+      <RejectedLawyerApplicationModal
+        lawyer={selectedLawyer}
+        isOpen={showApplicationModal}
+        onClose={() => setShowApplicationModal(false)}
+        onReconsiderApplication={handleReconsiderApplication}
+        onDeletePermanently={handleDeletePermanently}
+      />
     </div>
   )
 }

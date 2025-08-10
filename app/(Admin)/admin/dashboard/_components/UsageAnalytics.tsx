@@ -36,8 +36,8 @@ export default function UsageAnalytics() {
     <Card className="border-border mb-6">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-            📈 Search & Usage Analytics
+          <CardTitle className="text-lg font-semibold text-foreground">
+            Usage Analytics
           </CardTitle>
           <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
             View Details
@@ -47,12 +47,12 @@ export default function UsageAnalytics() {
       </CardHeader>
       <CardContent>
         {/* Mock Chart Area */}
-        <div className="h-64 bg-surface rounded-lg border !border-border p-4 mb-4">
+        <div className="h-64 bg-surface rounded-lg border border-border p-4 mb-4">
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <TrendingUp className="h-12 w-12 text-primary mx-auto mb-2" />
-              <p className="text-muted-foreground">Analytics Chart</p>
-              <p className="text-sm text-muted-foreground">Line/Bar Graph showing usage trends</p>
+              <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+              <p className="text-foreground font-medium">Analytics Chart</p>
+              <p className="text-sm text-muted-foreground mt-1">Interactive chart showing usage trends will appear here</p>
             </div>
           </div>
         </div>

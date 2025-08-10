@@ -9,13 +9,11 @@ import { useRouter } from 'next/navigation';
 import { logout } from '../../../store/reducers/authSlice';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
-import { useStateContext } from '../../../context/useStateContext';
 
 const AdminNavbar = () => {
 
   //////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
   const { user } = useSelector((state: RootState) => state.auth);
-  const { isScrolled } = useStateContext();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -29,8 +27,9 @@ const AdminNavbar = () => {
 
   //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
-    <header className={`sticky top-0 z-50 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none ${isScrolled ? 'py-4' : 'py-4'}`}>
-      <div className="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+    <header className="w-full bg-background border-b border-border shadow-sm">
+
+      <div className="flex flex-grow items-center justify-between px-4 py-3 md:px-6">
         <div className="flex items-center gap-2 sm:gap-4 lg:hidden">
           <button
             aria-controls="sidebar"
@@ -38,46 +37,35 @@ const AdminNavbar = () => {
               e.stopPropagation();
               document.body.classList.toggle('sidebar-collapsed');
             }}
-            className="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden"
+            className="block rounded-md border border-border bg-background p-2 hover:bg-accent lg:hidden"
           >
-            <Menu />
+            <Menu className="h-4 w-4" />
           </button>
         </div>
 
-        <div className="flex flex-1 items-center justify-between px-4 md:px-6 2xl:px-11">
-          <div className="flex items-center gap-3 2xsm:gap-7">
-            <ul className="flex items-center gap-2 2xsm:gap-4">
-              <li>
-                <a
-                  className="group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
-                  href="#"
-                >
-                  <Search />
-                  Search
-                </a>
-              </li>
-            </ul>
+        <div className="flex flex-1 items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="hidden md:flex items-center gap-2">
+              <button className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+                <Search className="h-4 w-4" />
+                <span className="hidden lg:inline">Search</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 2xsm:gap-7">
-            <ul className="flex items-center gap-2 2xsm:gap-4">
-              <li>
-                <a
-                  className="group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4"
-                  href="#"
-                >
-                  <Bell />
-                  <span className="absolute -top-0.5 right-0 z-30 h-2 w-2 rounded-full bg-meta-1">
-                    <span className="absolute -z-10 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
-                  </span>
-                </a>
-              </li>
-            </ul>
+          <div className="flex items-center gap-4">
+            <button className="relative flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+              <Bell className="h-4 w-4" />
+              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
+              </span>
+            </button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="group relative">
-                  <User className="h-5.5 w-5.5" />
+                <button className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
+                  <User className="h-4 w-4" />
+                  <span className="hidden sm:inline">{user?.firstname || 'Admin'}</span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>

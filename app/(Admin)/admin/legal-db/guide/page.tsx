@@ -3,30 +3,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
-import {
-  getAdminGuides,
-  createAdminGuide,
-  updateAdminGuide,
-  deleteAdminGuide,
-  verifyAdminGuide,
-} from '@/store/reducers/guideSlice';
+import { getAdminGuides, createAdminGuide, updateAdminGuide, deleteAdminGuide, verifyAdminGuide, } from '@/store/reducers/guideSlice';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, PlusCircle, CheckCircle, Edit2 } from "lucide-react";
 import AddGuideModal from './_components/AddGuideModal';
 import AlertModal from '@/components/alert-modal';
 import { LawCategory } from '@/lib/enums';
 import { Pagination } from '@/components/ui/pagination';
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader';
 
 const PAGE_SIZE = 40;
 
@@ -107,8 +94,13 @@ const AdminGuidePage = () => {
 
   //////////////////////////////////////////////////// RENDER /////////////////////////////////////////////
   return (
-    <div className="p-6">
-      {/* Top Bar */}
+    <div className="space-y-6">
+
+      <PageHeader
+        title="Guides"
+        description="View and manage guides."
+      />
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
         <div className="flex gap-2 items-center flex-wrap">
           <Input
@@ -148,7 +140,6 @@ const AdminGuidePage = () => {
         </Button>
       </div>
 
-      {/* Modal */}
       <AddGuideModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
@@ -157,7 +148,6 @@ const AdminGuidePage = () => {
         loading={loading}
       />
 
-      {/* Table */}
       <Table>
         <TableCaption>
           {loading

@@ -59,8 +59,8 @@ export default function QuickActions() {
   return (
     <Card className="border-border mb-6">
       <CardHeader>
-        <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-          🔍 Action Shortcuts / Quick Tasks
+        <CardTitle className="text-lg font-semibold text-foreground">
+          Quick Actions
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -69,7 +69,7 @@ export default function QuickActions() {
             <Button
               key={index}
               variant="outline"
-              className="h-auto p-4 flex flex-col items-start gap-2 hover:bg-primary/5 !border-border"
+              className="h-auto max-h-max p-4 flex flex-col items-start gap-3 hover:bg-accent border-border"
               onClick={action.action}
             >
               <div className={`w-10 h-10 rounded-lg ${action.bgColor} flex items-center justify-center`}>

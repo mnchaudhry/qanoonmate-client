@@ -13,6 +13,8 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { LawCategory } from '@/lib/enums'
 import AlertModal from '@/components/alert-modal'
+import { PageHeader } from '../../../_components/PageHeader'
+import AdminSkeleton from '../../../_components/AdminSkeleton'
 import { Pagination } from '@/components/ui/pagination'
 
 const PAGE_SIZE = 40;
@@ -83,8 +85,12 @@ const Acts = () => {
 
   //////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
-    <div className="p-6">
-      {/* Top Bar */}
+    <div className="space-y-6">
+      <PageHeader
+        title="Acts & Laws"
+        description="Manage legal acts, statutes, and legislative documents."
+      />
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
         <div className="flex gap-2 items-center flex-wrap">
           <Input
@@ -128,7 +134,6 @@ const Acts = () => {
         </Button>
       </div>
 
-      {/* Modal */}
       <AddActModal
         open={addModalOpen || !!editAct}
         onClose={() => { setAddModalOpen(false); setEditAct(null); }}
@@ -136,15 +141,15 @@ const Acts = () => {
         onActSaved={() => dispatch(getActs({ page, limit: PAGE_SIZE, search: search || undefined, category: category !== 'all' ? category : undefined }))}
       />
 
-      {/* Table */}
-      <Table>
-        <TableCaption>
-          {isLoading
-            ? 'Loading acts...'
-            : acts.length
-              ? `Showing ${acts.length} of ${totalActs} acts (Page ${currentPage} of ${totalPages})`
-              : 'No acts found'}
-        </TableCaption>
+              {isLoading ? (
+          <AdminSkeleton tableRows={8} />
+        ) : (
+          <Table>
+            <TableCaption>
+              {acts.length
+                ? `Showing ${acts.length} of ${totalActs} acts (Page ${currentPage} of ${totalPages})`
+                : 'No acts found'}
+            </TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>Title</TableHead>
@@ -158,7 +163,7 @@ const Acts = () => {
         </TableHeader>
         <TableBody>
           {acts.map((act) => {
-            if (!act._id) return null // Skip rendering acts without _id
+            if (!act._id) return null
 
             return (
               <TableRow key={act._id}>
@@ -214,11 +219,15 @@ const Acts = () => {
           })}
         </TableBody>
       </Table>
-      <Pagination
-        currentPage={page}
-        onPageChange={setPage}
-        totalPages={totalPages}
-      />
+      )}
+      
+      {!isLoading && (
+        <Pagination
+          currentPage={page}
+          onPageChange={setPage}
+          totalPages={totalPages}
+        />
+      )}
       <AlertModal
         open={deleteModalOpen}
         onClose={() => { setDeleteModalOpen(false); setDeleteTargetId(null); }}

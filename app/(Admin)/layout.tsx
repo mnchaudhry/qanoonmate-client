@@ -12,22 +12,27 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 {/* Sidebar */}
                 <AdminSidebar />
 
-                {/* Main Content */}
-                <div className="flex-1 w-full min-h-screen transition-all" style={{ paddingTop: "4rem" }}>
-                    {/* Navbar */}
-                    <AdminNavbar />
-
-                    {/* Breadcrumb */}
-                    <div className="px-6 pt-4">
-                        <Breadcrumbs />
+                {/* Main Content Area */}
+                <div className="flex-1 flex flex-col min-h-screen">
+                    {/* Fixed Navbar */}
+                    <div className="sticky top-0 z-40">
+                        <AdminNavbar />
                     </div>
 
-                    {/* Page Content */}
-                    <main className="px-6 py-4 w-full">
-                        <div className="max-w-full">
-                            {children}
+                    {/* Scrollable Content */}
+                    <div className="flex-1 overflow-auto">
+                        {/* Breadcrumb */}
+                        <div className="px-4 sm:px-6 pt-4 ">
+                            <Breadcrumbs />
                         </div>
-                    </main>
+
+                        {/* Page Content */}
+                        <main className="flex-1 p-4 sm:p-6">
+                            <div className="max-w-full">
+                                {children}
+                            </div>
+                        </main>
+                    </div>
                 </div>
             </div>
         </SidebarProvider>

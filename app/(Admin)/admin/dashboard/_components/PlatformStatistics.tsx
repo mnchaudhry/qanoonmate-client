@@ -1,43 +1,52 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp } from "lucide-react"
+import { TrendingUp, Users, UserCheck, Scale, FileText, BookOpen, Gavel } from "lucide-react"
+
+const iconMap = {
+  Users,
+  UserCheck,
+  Scale,
+  FileText,
+  BookOpen,
+  Gavel
+}
 
 const statsData = [
   {
     title: "Total Users",
     value: "13,292",
-    icon: "👥",
+    icon: "Users",
     trend: "+12% from last month"
   },
   {
     title: "Verified Users",
     value: "11,480",
-    icon: "⚖️",
+    icon: "UserCheck",
     trend: "+8% from last month"
   },
   {
     title: "Lawyers",
     value: "742",
-    icon: "🕵️",
+    icon: "Scale",
     trend: "+15% from last month"
   },
   {
     title: "Consultations",
     value: "3,023",
-    icon: "📝",
+    icon: "FileText",
     trend: "+23% from last month"
   },
   {
     title: "Legal Acts",
     value: "627",
-    icon: "📚",
+    icon: "BookOpen",
     trend: "+5% from last month"
   },
   {
     title: "Case Laws",
     value: "1,031",
-    icon: "⚖️",
+    icon: "Gavel",
     trend: "+18% from last month"
   }
 ]
@@ -51,7 +60,10 @@ export default function PlatformStatistics() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {stat.title}
             </CardTitle>
-            <span className="text-2xl">{stat.icon}</span>
+            {(() => {
+              const IconComponent = iconMap[stat.icon as keyof typeof iconMap];
+              return <IconComponent className="h-5 w-5 text-muted-foreground" />;
+            })()}
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">{stat.value}</div>

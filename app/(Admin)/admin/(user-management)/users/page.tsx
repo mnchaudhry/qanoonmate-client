@@ -1,11 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { 
-  UsersHeader, 
   FiltersActionBar, 
   UsersTable, 
   UserDetailsModal 
 } from './_components'
+import { PageHeader } from '../../../_components/PageHeader'
+import { Users } from 'lucide-react'
 
 // Mock data for demonstration
 const mockUsers = [
@@ -226,8 +227,11 @@ const AdminUsers = () => {
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <UsersHeader />
+    <div className="space-y-6">
+      <PageHeader 
+        title="Users Management"
+        description="Manage platform users, their accounts, and permissions."
+      />
       
       <FiltersActionBar
         onSearch={handleSearch}

@@ -58,8 +58,8 @@ export default function RecentActivityFeed() {
     <Card className="border-border">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-            🧾 Recent Activity Feed
+          <CardTitle className="text-lg font-semibold text-foreground">
+            Recent Activity
           </CardTitle>
           <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
             View All

@@ -1,12 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { 
-  ApprovedLawyersHeader, 
-  ApprovedLawyersFilterActionBar, 
-  ApprovedLawyersTable, 
-  LawyerProfileModal 
-} from './_components'
+import { ApprovedLawyersFilterActionBar, ApprovedLawyersTable, LawyerProfileModal } from './_components'
 import { ApprovedLawyer } from './_components/ApprovedLawyersTable'
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader'
 
 // Mock data for demonstration
 const mockApprovedLawyers: ApprovedLawyer[] = [
@@ -183,6 +179,8 @@ const mockApprovedLawyers: ApprovedLawyer[] = [
 ]
 
 const ApprovedLawyersPage = () => {
+
+  //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
   const [lawyers, setLawyers] = useState<ApprovedLawyer[]>([])
   const [filteredLawyers, setFilteredLawyers] = useState<ApprovedLawyer[]>([])
   const [loading, setLoading] = useState(true)
@@ -190,17 +188,17 @@ const ApprovedLawyersPage = () => {
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [selectedLawyers, setSelectedLawyers] = useState<number[]>([])
 
-  // Filter and Search States
+  //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedJurisdiction, setSelectedJurisdiction] = useState('all')
   const [selectedPracticeArea, setSelectedPracticeArea] = useState('all')
   const [sortBy, setSortBy] = useState('name')
 
-  // Pagination
+  //////////////////////////////////////////////////// PAGINATION ////////////////////////////////////////////////////
   const [currentPage, setCurrentPage] = useState(1)
   const lawyersPerPage = 10
 
-  // Load mock data
+  //////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
   useEffect(() => {
     setTimeout(() => {
       setLawyers(mockApprovedLawyers)
@@ -209,7 +207,7 @@ const ApprovedLawyersPage = () => {
     }, 1000)
   }, [])
 
-  // Filter and sort lawyers
+  //////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
   useEffect(() => {
     let filtered = [...lawyers]
 
@@ -228,8 +226,8 @@ const ApprovedLawyersPage = () => {
 
     // Apply practice area filter
     if (selectedPracticeArea !== 'all') {
-      filtered = filtered.filter(lawyer => 
-        lawyer.practiceAreas.some(area => 
+      filtered = filtered.filter(lawyer =>
+        lawyer.practiceAreas.some(area =>
           area.toLowerCase().includes(selectedPracticeArea.toLowerCase())
         )
       )
@@ -265,12 +263,13 @@ const ApprovedLawyersPage = () => {
     setCurrentPage(1) // Reset to first page when filters change
   }, [lawyers, searchTerm, selectedJurisdiction, selectedPracticeArea, sortBy])
 
-  // Pagination logic
+  //////////////////////////////////////////////////// PAGINATION ////////////////////////////////////////////////////
   const totalPages = Math.ceil(filteredLawyers.length / lawyersPerPage)
   const startIndex = (currentPage - 1) * lawyersPerPage
   const endIndex = startIndex + lawyersPerPage
   const currentLawyers = filteredLawyers.slice(startIndex, endIndex)
 
+  //////////////////////////////////////////////////// HANDLERS ////////////////////////////////////////////////////
   const handleViewProfile = (lawyer: ApprovedLawyer) => {
     setSelectedLawyer(lawyer)
     setShowProfileModal(true)
@@ -285,7 +284,7 @@ const ApprovedLawyersPage = () => {
     // TODO: Implement suspend lawyer functionality
     console.log('Suspend lawyer:', lawyer.name)
     // Update lawyer status
-    setLawyers(prev => prev.map(l => 
+    setLawyers(prev => prev.map(l =>
       l.id === lawyer.id ? { ...l, status: 'suspended' as const } : l
     ))
   }
@@ -294,7 +293,7 @@ const ApprovedLawyersPage = () => {
     // TODO: Implement reactivate lawyer functionality
     console.log('Reactivate lawyer:', lawyer.name)
     // Update lawyer status
-    setLawyers(prev => prev.map(l => 
+    setLawyers(prev => prev.map(l =>
       l.id === lawyer.id ? { ...l, status: 'active' as const } : l
     ))
   }
@@ -315,8 +314,8 @@ const ApprovedLawyersPage = () => {
   }
 
   const handleSelectLawyer = (lawyerId: number) => {
-    setSelectedLawyers(prev => 
-      prev.includes(lawyerId) 
+    setSelectedLawyers(prev =>
+      prev.includes(lawyerId)
         ? prev.filter(id => id !== lawyerId)
         : [...prev, lawyerId]
     )
@@ -356,6 +355,7 @@ const ApprovedLawyersPage = () => {
     console.log('Bulk action:', action, 'for lawyers:', selectedLawyers)
   }
 
+  //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 p-6">
@@ -387,56 +387,54 @@ const ApprovedLawyersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <ApprovedLawyersHeader />
+    <div className="space-y-6">
 
-        {/* Filter and Action Bar */}
-        <ApprovedLawyersFilterActionBar
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          selectedJurisdiction={selectedJurisdiction}
-          onJurisdictionChange={setSelectedJurisdiction}
-          selectedPracticeArea={selectedPracticeArea}
-          onPracticeAreaChange={setSelectedPracticeArea}
-          sortBy={sortBy}
-          onSortChange={setSortBy}
-          onResetFilters={handleResetFilters}
-          onExportCSV={handleExportCSV}
-          onRefresh={handleRefresh}
-          onBulkAction={handleBulkAction}
-        />
+      <PageHeader
+        title="Approved Lawyers"
+        description="View, filter, and manage all lawyers whose accounts have been approved."
+      />
 
-        {/* Lawyers Table */}
-        <ApprovedLawyersTable
-          lawyers={currentLawyers}
-          onViewProfile={handleViewProfile}
-          onEditProfile={handleEditProfile}
-          onSuspendLawyer={handleSuspendLawyer}
-          onReactivateLawyer={handleReactivateLawyer}
-          onConsultationHistory={handleConsultationHistory}
-          onResetPassword={handleResetPassword}
-          onDeleteLawyer={handleDeleteLawyer}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          totalCount={filteredLawyers.length}
-          selectedLawyers={selectedLawyers}
-          onSelectLawyer={handleSelectLawyer}
-          onSelectAll={handleSelectAll}
-        />
+      <ApprovedLawyersFilterActionBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        selectedJurisdiction={selectedJurisdiction}
+        onJurisdictionChange={setSelectedJurisdiction}
+        selectedPracticeArea={selectedPracticeArea}
+        onPracticeAreaChange={setSelectedPracticeArea}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        onResetFilters={handleResetFilters}
+        onExportCSV={handleExportCSV}
+        onRefresh={handleRefresh}
+        onBulkAction={handleBulkAction}
+      />
 
-        {/* Lawyer Profile Modal */}
-        <LawyerProfileModal
-          lawyer={selectedLawyer}
-          isOpen={showProfileModal}
-          onClose={() => setShowProfileModal(false)}
-          onEditProfile={handleEditProfile}
-          onSuspendLawyer={handleSuspendLawyer}
-          onResetPassword={handleResetPassword}
-        />
-      </div>
+      <ApprovedLawyersTable
+        lawyers={currentLawyers}
+        onViewProfile={handleViewProfile}
+        onEditProfile={handleEditProfile}
+        onSuspendLawyer={handleSuspendLawyer}
+        onReactivateLawyer={handleReactivateLawyer}
+        onConsultationHistory={handleConsultationHistory}
+        onResetPassword={handleResetPassword}
+        onDeleteLawyer={handleDeleteLawyer}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+        totalCount={filteredLawyers.length}
+        selectedLawyers={selectedLawyers}
+        onSelectLawyer={handleSelectLawyer}
+        onSelectAll={handleSelectAll}
+      />
+
+      <LawyerProfileModal
+        lawyer={selectedLawyer}
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        onEditProfile={handleEditProfile}
+        onSuspendLawyer={handleSuspendLawyer}
+        onResetPassword={handleResetPassword}
+      />
     </div>
   )
 }

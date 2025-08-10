@@ -3,30 +3,17 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
-import {
-  fetchAdminFaqs,
-  createAdminFaq,
-  updateAdminFaq,
-  deleteAdminFaq,
-  verifyAdminFaq,
-} from "@/store/reducers/faqSlice";
+import { fetchAdminFaqs, createAdminFaq, updateAdminFaq, deleteAdminFaq, verifyAdminFaq, } from "@/store/reducers/faqSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, PlusCircle, CheckCircle, Edit2 } from "lucide-react";
 import AddFaqModal from './_components/AddFaqModal';
 import AlertModal from '@/components/alert-modal';
 import { LawCategory } from '@/lib/enums';
 import { Pagination } from '@/components/ui/pagination';
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader';
 
 const PAGE_SIZE = 40;
 const categoryList = ["all", "general", ...Object.values(LawCategory)];
@@ -110,8 +97,12 @@ const AdminFaqPage = () => {
 
   //////////////////////////////////////////////////// RENDER /////////////////////////////////////////////
   return (
-    <div className="p-6">
-      {/* Top Bar */}
+    <div className="space-y-6">
+      <PageHeader
+        title="FAQs"
+        description="View and manage FAQs."
+      />
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
         <div className="flex gap-2 items-center flex-wrap">
           <Input

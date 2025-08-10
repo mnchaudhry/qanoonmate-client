@@ -43,8 +43,8 @@ export default function ModerationStatus() {
     <Card className="border-border mb-6">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-            🚩 Moderation Status
+          <CardTitle className="text-lg font-semibold text-foreground">
+            Moderation Status
           </CardTitle>
           <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
             View Queue
@@ -55,7 +55,7 @@ export default function ModerationStatus() {
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {moderationStats.map((stat, index) => (
-            <div key={index} className={`p-4 rounded-lg border !border-border ${stat.bgColor} hover:shadow-md transition-shadow cursor-pointer`}>
+            <div key={index} className={`p-4 rounded-lg border border-border ${stat.bgColor} hover:shadow-md transition-shadow cursor-pointer`}>
               <div className="flex items-center justify-between mb-2">
                 <stat.icon className={`h-6 w-6 ${stat.textColor}`} />
                 <Badge className={stat.badgeColor}>

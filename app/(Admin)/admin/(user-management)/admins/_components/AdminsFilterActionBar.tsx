@@ -28,9 +28,9 @@ const AdminsFilterActionBar: React.FC<AdminsFilterActionBarProps> = ({
   onRefresh
 }) => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedRole, setSelectedRole] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState('')
-  const [sortBy, setSortBy] = useState('')
+  const [selectedRole, setSelectedRole] = useState('all')
+  const [selectedStatus, setSelectedStatus] = useState('all')
+  const [sortBy, setSortBy] = useState('default')
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -55,9 +55,9 @@ const AdminsFilterActionBar: React.FC<AdminsFilterActionBarProps> = ({
 
   const handleResetFilters = () => {
     setSearchTerm('')
-    setSelectedRole('')
-    setSelectedStatus('')
-    setSortBy('')
+    setSelectedRole('all')
+    setSelectedStatus('all')
+    setSortBy('default')
     onResetFilters()
   }
 
@@ -94,7 +94,7 @@ const AdminsFilterActionBar: React.FC<AdminsFilterActionBarProps> = ({
                 <SelectValue placeholder="All Roles" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Roles</SelectItem>
+                <SelectItem value="all">All Roles</SelectItem>
                 <SelectItem value="superadmin">SuperAdmin</SelectItem>
                 <SelectItem value="moderator">Moderator</SelectItem>
                 <SelectItem value="support">Support</SelectItem>
@@ -110,7 +110,7 @@ const AdminsFilterActionBar: React.FC<AdminsFilterActionBarProps> = ({
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="suspended">Suspended</SelectItem>
                 <SelectItem value="inactive">Inactive</SelectItem>
@@ -125,7 +125,7 @@ const AdminsFilterActionBar: React.FC<AdminsFilterActionBarProps> = ({
                 <SelectValue placeholder="Default" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Default</SelectItem>
+                <SelectItem value="default">Default</SelectItem>
                 <SelectItem value="name">Name</SelectItem>
                 <SelectItem value="email">Email</SelectItem>
                 <SelectItem value="role">Role</SelectItem>

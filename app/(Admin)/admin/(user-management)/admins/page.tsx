@@ -1,12 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { 
-  AdminsHeader, 
-  AdminsFilterActionBar, 
-  AdminsTable, 
-  AdminRolePermissionsModal 
-} from './_components'
+import { AdminsFilterActionBar, AdminsTable, AdminRolePermissionsModal } from './_components'
 import { Admin } from './_components/AdminsTable'
+import { PageHeader } from '../../../_components/PageHeader'
 
 // Mock data for demonstration
 const mockAdmins: Admin[] = [
@@ -98,6 +94,8 @@ const mockAdmins: Admin[] = [
 ]
 
 const AdminsPage = () => {
+
+  //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
   const [admins, setAdmins] = useState<Admin[]>(mockAdmins)
   const [filteredAdmins, setFilteredAdmins] = useState<Admin[]>(mockAdmins)
   const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null)
@@ -105,9 +103,10 @@ const AdminsPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedRole, setSelectedRole] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState('')
+  const [selectedRole, setSelectedRole] = useState('all')
+  const [selectedStatus, setSelectedStatus] = useState('all')
 
+  //////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
   // Filter admins based on search and filters
   useEffect(() => {
     let filtered = admins
@@ -121,12 +120,12 @@ const AdminsPage = () => {
     }
 
     // Role filter
-    if (selectedRole) {
+    if (selectedRole && selectedRole !== 'all') {
       filtered = filtered.filter(admin => admin.role.toLowerCase() === selectedRole.toLowerCase())
     }
 
     // Status filter
-    if (selectedStatus) {
+    if (selectedStatus && selectedStatus !== 'all') {
       filtered = filtered.filter(admin => admin.status.toLowerCase() === selectedStatus.toLowerCase())
     }
 
@@ -134,13 +133,13 @@ const AdminsPage = () => {
     setCurrentPage(1)
   }, [searchTerm, selectedRole, selectedStatus, admins])
 
-  // Pagination
+  //////////////////////////////////////////////////// PAGINATION ////////////////////////////////////////////////////
   const indexOfLastAdmin = currentPage * itemsPerPage
   const indexOfFirstAdmin = indexOfLastAdmin - itemsPerPage
   const currentAdmins = filteredAdmins.slice(indexOfFirstAdmin, indexOfLastAdmin)
   const totalPages = Math.ceil(filteredAdmins.length / itemsPerPage)
 
-  // Handlers
+  //////////////////////////////////////////////////// HANDLERS ////////////////////////////////////////////////////
   const handleSearch = (term: string) => {
     setSearchTerm(term)
   }
@@ -179,8 +178,8 @@ const AdminsPage = () => {
 
   const handleResetFilters = () => {
     setSearchTerm('')
-    setSelectedRole('')
-    setSelectedStatus('')
+    setSelectedRole('all')
+    setSelectedStatus('all')
   }
 
   const handleEditAdmin = (admin: Admin) => {
@@ -190,7 +189,7 @@ const AdminsPage = () => {
 
   const handleSuspendAdmin = (admin: Admin) => {
     if (confirm(`Are you sure you want to suspend ${admin.name}?`)) {
-      setAdmins(prev => prev.map(a => 
+      setAdmins(prev => prev.map(a =>
         a.id === admin.id ? { ...a, status: 'suspended' } : a
       ))
     }
@@ -198,14 +197,14 @@ const AdminsPage = () => {
 
   const handleReactivateAdmin = (admin: Admin) => {
     if (confirm(`Are you sure you want to reactivate ${admin.name}?`)) {
-      setAdmins(prev => prev.map(a => 
+      setAdmins(prev => prev.map(a =>
         a.id === admin.id ? { ...a, status: 'active' } : a
       ))
     }
   }
 
   const handleUpdateRole = (adminId: number, newRole: string, permissions: string[]) => {
-    setAdmins(prev => prev.map(a => 
+    setAdmins(prev => prev.map(a =>
       a.id === adminId ? { ...a, role: newRole, permissions } : a
     ))
   }
@@ -225,10 +224,14 @@ const AdminsPage = () => {
     console.log('Refresh admins data')
   }
 
+  //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
-    <div className="p-6 space-y-6">
-      <AdminsHeader />
-      
+    <div className="space-y-6">
+      <PageHeader
+        title="Admins Management"
+        description="View, add, or manage internal platform administrators and their privileges."
+      />
+
       <AdminsFilterActionBar
         onSearch={handleSearch}
         onRoleFilter={handleRoleFilter}

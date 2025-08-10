@@ -91,8 +91,8 @@ export default function CalendarLogsPanel() {
       <Card className="border-border">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-              📅 Upcoming Consultations
+            <CardTitle className="text-lg font-semibold text-foreground">
+              Upcoming Consultations
             </CardTitle>
             <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
               View All
@@ -134,8 +134,8 @@ export default function CalendarLogsPanel() {
       <Card className="border-border">
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-              🧾 Legal Submission Logs
+            <CardTitle className="text-lg font-semibold text-foreground">
+              Submission Logs
             </CardTitle>
             <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
               View All

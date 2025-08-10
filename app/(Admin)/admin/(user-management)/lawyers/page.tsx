@@ -8,12 +8,13 @@ import AddLawyerModal from './_components/AddLawyerModal'
 import ViewLawyerModal from './_components/ViewLawyerModal'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '@/store/store'
+import AdminSkeleton from '../../../_components/AdminSkeleton'
 import { getLawyers } from '@/store/reducers/lawyerSlice'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Pagination } from '@/components/ui/pagination'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { PageHeader } from '../../legal-db/_components/PageHeader'
+import { PageHeader } from '../../../_components/PageHeader'
 import { Lawyer } from '@/store/types/lawyer.types'
 import { ConsultationMode } from '@/lib/enums'
 
@@ -174,13 +175,17 @@ const LawyersPage = () => {
         isDisabling={disableLoading}
       />
 
-      <div className="p-6">
+      <div className="space-y-6">
         {/* Page Header */}
         <PageHeader
           title="Lawyers Management"
           description={`Manage registered lawyers (${totalCount} total)`}
-          actionLabel="Add New Lawyer"
-          onActionClick={handleAdd}
+          actions={
+            <Button onClick={handleAdd}>
+              <PlusCircle className="h-4 w-4" />
+              Add New Lawyer
+            </Button>
+          }
         />
 
         {/* Filters and Search */}
@@ -249,9 +254,7 @@ const LawyersPage = () => {
 
         {/* Loading State */}
         {isLoading && (
-          <div className="text-center py-8">
-            <p>Loading lawyers...</p>
-          </div>
+          <AdminSkeleton />
         )}
 
         {/* Lawyers Table */}

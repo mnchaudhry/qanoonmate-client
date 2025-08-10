@@ -1,18 +1,12 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import {
-  ScheduleConflictsHeader,
-  ConflictsFilterActionBar,
-  ConflictsTable,
-  ConflictDetailModal,
-  BulkActionsBar
-} from './_components'
+import { ConflictsFilterActionBar, ConflictsTable, ConflictDetailModal, BulkActionsBar } from './_components'
 import { Conflict } from './_components/types'
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader'
 
 const PAGE_SIZE = 10
 
-// Mock data for conflicts
 const mockConflicts: Conflict[] = [
   {
     id: '1',
@@ -215,21 +209,17 @@ const ScheduleConflictsPage = () => {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(Math.ceil(mockConflicts.length / PAGE_SIZE))
   const [totalCount, setTotalCount] = useState(mockConflicts.length)
-  
-  // Filters
+
   const [dateFilter, setDateFilter] = useState('all')
   const [lawyerFilter, setLawyerFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
-  
-  // Dropdown states
+
   const [showDateDropdown, setShowDateDropdown] = useState(false)
   const [showLawyerDropdown, setShowLawyerDropdown] = useState(false)
   const [showStatusDropdown, setShowStatusDropdown] = useState(false)
-  
-  // Selected conflicts for bulk actions
+
   const [selectedConflicts, setSelectedConflicts] = useState<string[]>([])
-  
-  // Modal states
+
   const [selectedConflict, setSelectedConflict] = useState<Conflict | null>(null)
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
 
@@ -237,25 +227,25 @@ const ScheduleConflictsPage = () => {
   useEffect(() => {
     // Filter conflicts based on current filters
     let filteredConflicts = [...mockConflicts]
-    
+
     if (dateFilter !== 'all') {
       // Apply date filter logic here
       console.log('Applying date filter:', dateFilter)
     }
-    
+
     if (lawyerFilter !== 'all') {
       // Apply lawyer filter logic here
       console.log('Applying lawyer filter:', lawyerFilter)
     }
-    
+
     if (statusFilter !== 'all') {
       filteredConflicts = filteredConflicts.filter(c => c.conflictType === statusFilter)
     }
-    
+
     setConflicts(filteredConflicts)
     setTotalCount(filteredConflicts.length)
     setTotalPages(Math.ceil(filteredConflicts.length / PAGE_SIZE))
-    setPage(1) // Reset to first page when filters change
+    setPage(1)
   }, [dateFilter, lawyerFilter, statusFilter])
 
   //////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
@@ -279,8 +269,8 @@ const ScheduleConflictsPage = () => {
   }
 
   const handleSelectConflict = (conflictId: string) => {
-    setSelectedConflicts(prev => 
-      prev.includes(conflictId) 
+    setSelectedConflicts(prev =>
+      prev.includes(conflictId)
         ? prev.filter(id => id !== conflictId)
         : [...prev, conflictId]
     )
@@ -333,7 +323,7 @@ const ScheduleConflictsPage = () => {
   const generatePageNumbers = () => {
     const pages: (number | string)[] = []
     const maxVisible = 5
-    
+
     if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i)
@@ -361,7 +351,7 @@ const ScheduleConflictsPage = () => {
         pages.push(totalPages)
       }
     }
-    
+
     return pages
   }
 
@@ -370,80 +360,75 @@ const ScheduleConflictsPage = () => {
 
   //////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <ScheduleConflictsHeader />
+    <div className="space-y-6">
+      <PageHeader
+        title="Schedule Conflicts"
+        description="View and manage schedule conflicts between users and lawyers."
+      />
 
-        {/* Filters and Actions */}
-        <ConflictsFilterActionBar
-          dateFilter={dateFilter}
-          setDateFilter={setDateFilter}
-          lawyerFilter={lawyerFilter}
-          setLawyerFilter={setLawyerFilter}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          showDateDropdown={showDateDropdown}
-          setShowDateDropdown={setShowDateDropdown}
-          showLawyerDropdown={showLawyerDropdown}
-          setShowLawyerDropdown={setShowLawyerDropdown}
-          showStatusDropdown={showStatusDropdown}
-          setShowStatusDropdown={setShowStatusDropdown}
-          handleRefresh={handleRefresh}
-          handleExportCSV={handleExportCSV}
-        />
+      <ConflictsFilterActionBar
+        dateFilter={dateFilter}
+        setDateFilter={setDateFilter}
+        lawyerFilter={lawyerFilter}
+        setLawyerFilter={setLawyerFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        showDateDropdown={showDateDropdown}
+        setShowDateDropdown={setShowDateDropdown}
+        showLawyerDropdown={showLawyerDropdown}
+        setShowLawyerDropdown={setShowLawyerDropdown}
+        showStatusDropdown={showStatusDropdown}
+        setShowStatusDropdown={setShowStatusDropdown}
+        handleRefresh={handleRefresh}
+        handleExportCSV={handleExportCSV}
+      />
 
-        {/* Bulk Actions Bar */}
-        <BulkActionsBar
+      <BulkActionsBar
+        selectedConflicts={selectedConflicts}
+        totalConflicts={conflicts.length}
+        onSelectAll={handleSelectAll}
+        onCancelSelectedBookings={handleCancelSelectedBookings}
+        onRescheduleToNextAvailable={handleRescheduleToNextAvailable}
+        onClearSelection={handleClearSelection}
+      />
+
+      {isLoading && (
+        <div className="bg-card border !border-border rounded-lg p-8 text-center">
+          <p className="text-muted-foreground">Loading schedule conflicts...</p>
+        </div>
+      )}
+
+      {!isLoading && currentConflicts.length > 0 ? (
+        <ConflictsTable
+          conflicts={currentConflicts}
           selectedConflicts={selectedConflicts}
-          totalConflicts={conflicts.length}
-          onSelectAll={handleSelectAll}
-          onCancelSelectedBookings={handleCancelSelectedBookings}
-          onRescheduleToNextAvailable={handleRescheduleToNextAvailable}
-          onClearSelection={handleClearSelection}
+          handleViewDetails={handleViewDetails}
+          handleSelectConflict={handleSelectConflict}
+          handleSelectAll={handleSelectAll}
+          page={page}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          setPage={setPage}
+          generatePageNumbers={generatePageNumbers}
+          PAGE_SIZE={PAGE_SIZE}
         />
-
-        {/* Loading State */}
-        {isLoading && (
-          <div className="bg-card border !border-border rounded-lg p-8 text-center">
-            <p className="text-muted-foreground">Loading schedule conflicts...</p>
+      ) : (
+        !isLoading && (
+          <div className="bg-card border !border-border rounded-lg p-12 text-center">
+            <p className="text-muted-foreground">No schedule conflicts found.</p>
           </div>
-        )}
+        )
+      )}
 
-        {/* Conflicts Table */}
-        {!isLoading && currentConflicts.length > 0 ? (
-          <ConflictsTable
-            conflicts={currentConflicts}
-            selectedConflicts={selectedConflicts}
-            handleViewDetails={handleViewDetails}
-            handleSelectConflict={handleSelectConflict}
-            handleSelectAll={handleSelectAll}
-            page={page}
-            totalPages={totalPages}
-            totalCount={totalCount}
-            setPage={setPage}
-            generatePageNumbers={generatePageNumbers}
-            PAGE_SIZE={PAGE_SIZE}
-          />
-        ) : (
-          !isLoading && (
-            <div className="bg-card border !border-border rounded-lg p-12 text-center">
-              <p className="text-muted-foreground">No schedule conflicts found.</p>
-            </div>
-          )
-        )}
-
-        {/* Detail Modal */}
-        <ConflictDetailModal
-          isOpen={isDetailModalOpen}
-          onClose={() => setIsDetailModalOpen(false)}
-          conflict={selectedConflict}
-          onCancelBooking={handleCancelBooking}
-          onReschedule={handleReschedule}
-          onContactParties={handleContactParties}
-          onSaveNote={handleSaveNote}
-        />
-      </div>
+      <ConflictDetailModal
+        isOpen={isDetailModalOpen}
+        onClose={() => setIsDetailModalOpen(false)}
+        conflict={selectedConflict}
+        onCancelBooking={handleCancelBooking}
+        onReschedule={handleReschedule}
+        onContactParties={handleContactParties}
+        onSaveNote={handleSaveNote}
+      />
     </div>
   )
 }
