@@ -301,12 +301,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: any, h
             </div>
           )}
 
-          <div
-            className={cn(
-              "flex-1 max-w-[75%]",
-              isModel ? "order-2" : "order-1"
-            )}
-          >
+          <div className={cn("flex-1 max-w-[75%]", isModel ? "order-2" : "order-1")}>
             <div
               className={cn(
                 "px-4 py-3 rounded-lg shadow-sm border",
@@ -434,7 +429,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: any, h
       <div
         key={index}
         className={cn(
-          "group flex flex-col gap-2 mb-6",
+          "group flex flex-col gap-2 mb-2",
           isModel ? "items-start justify-start" : "items-end justify-end"
         )}
       >
@@ -493,7 +488,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: any, h
   ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////
   return (
     <TooltipProvider>
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto py-6 space-y-4 px-6">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto py-6 px-6">
         <div className="max-w-4xl mx-auto">
           {messages &&
             messages.length > 0 &&

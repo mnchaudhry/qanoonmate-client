@@ -215,7 +215,7 @@ const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, f
             }
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            disabled={!isConnected || isStreaming}
+            disabled={!isConnected }
             className={cn(
               "w-full h-[32px] resize-none border-0 shadow-none bg-transparent placeholder:text-muted-foreground",
               "focus:outline-none focus:ring-0 focus:border-0 outline-none ring-0"

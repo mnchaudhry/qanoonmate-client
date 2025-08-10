@@ -11,7 +11,7 @@ const DefaultScreen = () => {
                     type='mini_green'
                     className='w-32  '
                 />
-                <h2 className="text-3xl text-muted-foreground ">Welcome to Verdict AI</h2>
+                <h2 className="text-3xl text-muted-foreground ">Welcome to QanoonMate</h2>
             </div>
 
         </div>

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import { Act, GetActsRequest, UpdateActRequest } from '@/store/types/api';
+import { Act, GetActsRequest } from '@/store/types/api';
 
 interface ActState {
     acts: Act[];
@@ -130,7 +130,7 @@ const actSlice = createSlice({
             })
             .addCase(createAct.fulfilled, (state, action) => {
                 state.isLoading = false;
-                // @ts-ignore
+                // @ts-expect-error 123 - TODO: fix this
                 state.acts.push(action.payload);
             })
             .addCase(createAct.rejected, (state, action) => {
@@ -145,7 +145,7 @@ const actSlice = createSlice({
             })
             .addCase(updateAct.fulfilled, (state, action) => {
                 state.isLoading = false;
-                // @ts-ignore
+                // @ts-expect-error 123 - TODO: fix this
                 state.acts = state.acts.map(act =>
                     act._id === action.payload!._id ? action.payload : act
                 );

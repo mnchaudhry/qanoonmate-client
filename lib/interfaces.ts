@@ -13,6 +13,7 @@ export interface AIChatMessage {
     sender: "user" | "bot",
     content: string,
     isStreaming: boolean
+    responses: { type: "original" | "regenerated" | "translated", content: string, createdAt: string }[]
     createdAt: string;
     updatedAt: string;
 }

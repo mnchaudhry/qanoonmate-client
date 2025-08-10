@@ -1,4 +1,4 @@
-import { GetDraftsParams } from "../reducers/draftSlice";
+
 import type * as API from '../types/api';
 import type * as UserAPI from '../types/user.types';
 import type * as AuthAPI from '../types/auth.types';
@@ -179,7 +179,7 @@ export const deleteSummaryNew = (id: string) => APIClient.delete(`/summaries/del
 
 ////////////////////////////////////////////////////////// DRAFTS ////////////////////////////////////////////////////////////
 export const uploadDraft = (formData: FormData) => FormDataAPI.post<API.UploadDraftResponse>(`/draft/upload`, formData)  // files: files field in FormData should be an array of files
-export const getDrafts = (params: GetDraftsParams) => APIClient.get<API.GetDraftsResponse>(`/draft/get-drafts`, { params })
+export const getDrafts = (params: API.GetDraftsRequest) => APIClient.get<API.GetDraftsResponse>(`/draft/get-drafts`, { params })
 export const getDraft = (idOrSlug: string) => APIClient.get<API.GetDraftResponse>(`/draft/get-draft/${idOrSlug}`)
 export const updateDraft = (id: string, formData: FormData) => APIClient.put(`/draft/update-draft/${id}`, formData)
 export const deleteDraft = (id: string) => APIClient.delete(`/draft/delete-draft/${id}`)

@@ -209,19 +209,7 @@ const LawyersDirectory = () => {
   };
 
   const handleSpecializationClick = (specialization: string) => {
-    setSelectedFilters(prev => ({
-      ...prev,
-      specialization: [specialization],
-      language: [],
-      availability: [],
-      city: [],
-      province: [],
-      rating: [],
-      fee_range: "",
-      experience_range: "",
-      sortBy: "relevance",
-      order: "desc"
-    }));
+    setSelectedFilters(prev => ({ ...prev, specialization: [specialization], language: [], availability: [], city: [], province: [], rating: [], fee_range: "", experience_range: "", sortBy: "relevance", order: "desc" }));
     setCurrentPage(1);
     setSearchTerm("");
   };
@@ -233,6 +221,7 @@ const LawyersDirectory = () => {
   /////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////
   return (
     <section className="relative bg-background antialiased min-h-screen !pt-0 pb-20">
+
       <LandingPageHeader
         title="Find Expert Lawyers"
         description="Connect with verified legal professionals specializing in your area of need."
@@ -257,7 +246,7 @@ const LawyersDirectory = () => {
           </div>
 
           {/* Main Content */}
-          <section className="col-span-3 pt-0">
+          <section className="col-span-3 !pt-0">
             {/* View Toggle and Count */}
             {lawyers.length > 0 && (
               <div className="flex justify-between items-center mb-6">

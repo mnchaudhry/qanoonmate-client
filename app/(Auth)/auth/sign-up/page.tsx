@@ -1,12 +1,11 @@
 "use client"
 
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
+import { useDispatch } from 'react-redux';
 import { Check, Eye, EyeOff } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { validate } from 'email-validator';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { RootState, AppDispatch } from '@/store/store';
+import { AppDispatch } from '@/store/store';
 import { useStateContext } from '@/context/useStateContext';
 import Link from 'next/link';
 import { OtpVerificationType, UserRole } from '@/lib/enums';
@@ -17,7 +16,6 @@ const SignUp: React.FC = () => {
   //////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>()
   const router = useRouter()
-  const { error } = useSelector((state: RootState) => state.auth)
   const { setOTPType } = useStateContext()
   const searchParams = useSearchParams();
   const roleParam = searchParams.get('role');
@@ -32,10 +30,6 @@ const SignUp: React.FC = () => {
   const [loading, setLoading] = useState(false)
 
   //////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////////////////
-  useEffect(() => {
-    if (error)
-      toast.error(error)
-  }, [error])
 
   //////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////
   const onChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -151,7 +145,7 @@ const SignUp: React.FC = () => {
     <div className="w-full border-stroke xl:border-l-2 lg:pl-12 ">
 
       <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
-        <h2 className="mb-9 text-2xl font-bold text-black dark:text-neutral sm:text-title-xl2">
+        <h2 className="mb-9 text-2xl font-bold text-foreground sm:text-title-xl2">
           Sign up as a <span className="capitalize">{role}</span>
         </h2>
 
@@ -159,7 +153,7 @@ const SignUp: React.FC = () => {
 
           {/* firstname */}
           <div className="mb-4">
-            <label className="mb-2.5 block font-medium text-black dark:text-neutral">
+            <label className="mb-2.5 block font-medium text-foreground">
               First Name
             </label>
             <div className="relative">
@@ -171,7 +165,7 @@ const SignUp: React.FC = () => {
                 value={formData?.firstname}
                 onChange={onChange}
                 placeholder="Enter your first name"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-neutral dark:focus:border-primary"
+                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               />
               {(inputError.firstname.length > 0) && <span className='text-destructive text-sm' >{inputError.firstname}</span>}
             </div>
@@ -179,7 +173,7 @@ const SignUp: React.FC = () => {
 
           {/* lastname */}
           <div className="mb-4">
-            <label className="mb-2.5 block font-medium text-black dark:text-neutral">
+            <label className="mb-2.5 block font-medium text-foreground">
               Last Name
             </label>
             <div className="relative">
@@ -191,7 +185,7 @@ const SignUp: React.FC = () => {
                 value={formData?.lastname}
                 onChange={onChange}
                 placeholder="Enter your last name"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-neutral dark:focus:border-primary"
+                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               />
               {(inputError.lastname.length > 0) && <span className='text-destructive text-sm' >{inputError.lastname}</span>}
             </div>
@@ -199,7 +193,7 @@ const SignUp: React.FC = () => {
 
           {/* Phone */}
           <div className="mb-4">
-            <label className="mb-2.5 block font-medium text-black dark:text-neutral">
+            <label className="mb-2.5 block font-medium text-foreground">
               Phone
             </label>
             <div className="relative">
@@ -211,7 +205,7 @@ const SignUp: React.FC = () => {
                 onKeyUp={() => validateForm('phone')}
                 onChange={onChange}
                 placeholder="Enter your phone"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-neutral dark:focus:border-primary"
+                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               />
             </div>
             {(inputError.phone.length > 0) && <span className='text-destructive text-sm' >{inputError.phone}</span>}
@@ -219,7 +213,7 @@ const SignUp: React.FC = () => {
 
           {/* Email */}
           <div className="mb-4">
-            <label className="mb-2.5 block font-medium text-black dark:text-neutral">
+            <label className="mb-2.5 block font-medium text-foreground">
               Email
             </label>
             <div className="relative">
@@ -231,7 +225,7 @@ const SignUp: React.FC = () => {
                 onKeyUp={() => validateForm('email')}
                 onChange={onChange}
                 placeholder="Enter your email"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-neutral dark:focus:border-primary"
+                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               />
             </div>
             {(inputError.email.length > 0) && <span className='text-destructive text-sm' >{inputError.email}</span>}
@@ -239,7 +233,7 @@ const SignUp: React.FC = () => {
 
           {/* Password */}
           <div className="mb-4">
-            <label className="mb-2.5 block font-medium text-black dark:text-neutral">
+            <label className="mb-2.5 block font-medium text-foreground">
               Password
             </label>
             <div className="relative">
@@ -251,7 +245,7 @@ const SignUp: React.FC = () => {
                 onKeyUp={() => validateForm('password')}
                 onChange={onChange}
                 placeholder="Enter your password"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-neutral dark:focus:border-primary"
+                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
               />
 
               <button onClick={(e) => { e.preventDefault(); setShowPassword(pre => ({ ...pre, password: !pre.password })) }} className="absolute right-4 top-4">
