@@ -1,14 +1,14 @@
 "use client"
 import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react"
 import EditorJS, { type OutputData } from "@editorjs/editorjs"
-import Header from "@editorjs/header"
-import List from "@editorjs/list"
-import Quote from "@editorjs/quote"
-import CodeTool from "@editorjs/code"
-import Table from "@editorjs/table"
-import InlineCode from "@editorjs/inline-code"
-import ImageTool from "@editorjs/image"
-import Marker from "@editorjs/marker"
+// import Header from "@editorjs/header"
+// import List from "@editorjs/list"
+// import Quote from "@editorjs/quote"
+// import CodeTool from "@editorjs/code"
+// import Table from "@editorjs/table"
+// import InlineCode from "@editorjs/inline-code"
+// import ImageTool from "@editorjs/image"
+// import Marker from "@editorjs/marker"
 
 type Props = {
   data?: OutputData
@@ -21,12 +21,14 @@ export type EditorHandle = {
   clear: () => void
 }
 
-const Editor = forwardRef<EditorHandle, Props>(({ data, onChange, onUploadFeatured }, ref) => {
+const Editor = forwardRef<EditorHandle, Props>(({ data,
+  //  onChange, onUploadFeatured 
+}, ref) => {
 
   //////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////
   const holderId = useRef(`editorjs-${Math.random().toString(36).slice(2)}`).current
   const instanceRef = useRef<EditorJS | null>(null)
-  const cleanupRef = useRef<(() => void) | null>(null)
+  // const cleanupRef = useRef<(() => void) | null>(null)
   const isInitializedRef = useRef(false)
 
   //////////////////////////////////////////////// EFFECTS ///////////////////////////////////////////
@@ -44,16 +46,16 @@ const Editor = forwardRef<EditorHandle, Props>(({ data, onChange, onUploadFeatur
   //////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////
   useEffect(() => {
     if (isInitializedRef.current) return
-    
-    let isMounted = true
+
+    // let isMounted = true
     const init = async () => {
       // Ensure holder element exists and is clean
       const holderElement = document.getElementById(holderId)
       if (!holderElement) return
-      
+
       // Clear any existing content
       holderElement.innerHTML = ''
-      
+
       const editor = new EditorJS({
         holder: holderId,
         data: data?.blocks?.length ? data : { time: Date.now(), blocks: [] },
@@ -157,8 +159,8 @@ const Editor = forwardRef<EditorHandle, Props>(({ data, onChange, onUploadFeatur
     }
     init()
     return () => {
-      isMounted = false
-      try { cleanupRef.current?.() } catch { }
+      // isMounted = false
+      // try { cleanupRef.current?.() } catch { }
       try {
         const inst: any = instanceRef.current
         if (inst && typeof inst.destroy === 'function') {
@@ -170,7 +172,7 @@ const Editor = forwardRef<EditorHandle, Props>(({ data, onChange, onUploadFeatur
       instanceRef.current = null
       isInitializedRef.current = false
     }
-  }, [])
+  }, [data, holderId])
 
 
 
@@ -184,4 +186,3 @@ const Editor = forwardRef<EditorHandle, Props>(({ data, onChange, onUploadFeatur
 
 Editor.displayName = "Editor"
 export default Editor
- 
