@@ -5,10 +5,12 @@ interface BlogDetailsProps {
   blog: {
     title: string;
     summary?: string;
+    excerpt?: string;
     content: string;
     featuredImage?: string;
     category?: string;
     createdAt?: string;
+    readingTime?: number;
   };
 }
 
@@ -27,15 +29,30 @@ export default function BlogDetails({ blog }: BlogDetailsProps) {
       <h1 className="font-extrabold text-4xl mb-4 leading-tight text-gray-900">
         {blog.title}
       </h1>
-      {blog.summary && (
+      {(blog.summary || blog.excerpt) && (
         <p className="text-xl text-gray-600 mb-6 font-light italic border-l-4 border-primary pl-4">
-          {blog.summary}
+          {blog.summary || blog.excerpt}
         </p>
       )}
-      <div className="text-muted-foreground text-sm mb-4">
-        {blog.category && <span className="mr-2 px-2 py-1 bg-primary/10 rounded text-primary font-medium">{blog.category}</span>}
+      <div className="flex items-center gap-4 text-muted-foreground text-sm mb-6">
+        {blog.category && (
+          <span className="px-3 py-1 bg-primary/10 rounded-full text-primary font-medium">
+            {blog.category}
+          </span>
+        )}
         {blog.createdAt && (
-          <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
+          <span className="flex items-center gap-1">
+            📅 {new Date(blog.createdAt).toLocaleDateString('en-US', { 
+              year: 'numeric', 
+              month: 'long', 
+              day: 'numeric' 
+            })}
+          </span>
+        )}
+        {blog.readingTime && (
+          <span className="flex items-center gap-1">
+            ⏱️ {blog.readingTime} min read
+          </span>
         )}
       </div>
       <section className="mt-8 prose prose-lg prose-primary max-w-none" dangerouslySetInnerHTML={{ __html: blog.content }} />

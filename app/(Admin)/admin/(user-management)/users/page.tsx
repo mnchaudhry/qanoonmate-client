@@ -1,12 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { 
-  FiltersActionBar, 
-  UsersTable, 
-  UserDetailsModal 
-} from './_components'
+import { FiltersActionBar, UsersTable, UserDetailsModal } from './_components'
 import { PageHeader } from '../../../_components/PageHeader'
-import { Users } from 'lucide-react'
 
 // Mock data for demonstration
 const mockUsers = [
@@ -168,13 +163,13 @@ const AdminUsers = () => {
   }
 
   const handleApproveUser = (user: any) => {
-    setUsers(prev => prev.map(u => 
+    setUsers(prev => prev.map(u =>
       u.id === user.id ? { ...u, status: 'active' } : u
     ))
   }
 
   const handleSuspendUser = (user: any) => {
-    setUsers(prev => prev.map(u => 
+    setUsers(prev => prev.map(u =>
       u.id === user.id ? { ...u, status: 'suspended' } : u
     ))
   }
@@ -228,11 +223,11 @@ const AdminUsers = () => {
 
   return (
     <div className="space-y-6">
-      <PageHeader 
+      <PageHeader
         title="Users Management"
         description="Manage platform users, their accounts, and permissions."
       />
-      
+
       <FiltersActionBar
         onSearch={handleSearch}
         onRoleFilter={handleRoleFilter}

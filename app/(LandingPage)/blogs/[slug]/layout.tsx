@@ -31,8 +31,9 @@ async function getBlogMeta(slug: string): Promise<BlogMeta | null> {
   }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const blog = await getBlogMeta(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const blog = await getBlogMeta(slug)
   
   if (!blog) {
     return {
@@ -55,7 +56,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       title,
       description,
       type: 'article',
-      url: `https://qanoonmate.com/blogs/${params.slug}`,
+      url: `https://qanoonmate.com/blogs/${slug}`,
       publishedTime,
       authors: blog.author ? [blog.author.name] : ['QanoonMate Team'],
       section: blog.category || 'Legal',
@@ -79,7 +80,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
 interface BlogPostLayoutProps {
   children: ReactNode
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export default function BlogPostLayout({ children }: BlogPostLayoutProps) {

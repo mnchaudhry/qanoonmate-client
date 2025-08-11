@@ -2,7 +2,6 @@
 
 import { PlatformStatistics, QuickActions, RecentActivityFeed, ModerationStatus, UsageAnalytics, CalendarLogsPanel, AIInsights } from './_components'
 import { PageHeader } from '../../_components/PageHeader'
-import AdminSkeleton from '../../_components/AdminSkeleton'
 
 export default function AdminDashboard() {
   return (

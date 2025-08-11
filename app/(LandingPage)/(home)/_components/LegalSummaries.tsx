@@ -1,16 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from 'react';
-import {
-  FileText,
-  BookOpen,
-  MessageSquareText,
-  ArchiveRestore,
-  Sparkles,
-  Wand2,
-  FileOutput,
-  ShieldAlert,
-} from 'lucide-react';
+import { FileText, BookOpen, MessageSquareText, ArchiveRestore, Sparkles, Wand2, FileOutput, ShieldAlert, } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -28,51 +19,51 @@ const MODES: Array<{
   icon: React.ComponentType<{ className?: string }>
   examples: string[];
 }> = [
-  {
-    key: 'act',
-    title: 'Act & Section Summaries',
-    description: 'Get structured, plain‑language summaries of Acts and their Sections with key points, penalties, and practical use.',
-    icon: BookOpen,
-    examples: [
-      'Summarize Section 489‑F PPC with key penalties',
-      'Outline the objectives of the Code of Civil Procedure',
-      'What are exceptions in Section 97 of QSO?',
-    ],
-  },
-  {
-    key: 'case',
-    title: 'Case Law Judgement Breakdown',
-    description: 'Digest holdings, ratio decidendi, citations, and implications for litigation strategy.',
-    icon: MessageSquareText,
-    examples: [
-      'Break down PLD 2020 SC 1 (key holdings)',
-      'Summarize a 2021 IHC bail decision with reasoning',
-      'List precedents cited in a 2019 LHC property dispute',
-    ],
-  },
-  {
-    key: 'document',
-    title: 'Document Analysis',
-    description: 'Upload a legal document and receive a concise summary with parties, issues, and action items.',
-    icon: FileText,
-    examples: [
-      'Summarize this sale agreement into 5 bullet points',
-      'Extract parties, dates, and obligations from this draft',
-      'Is there any unusual clause I should know?',
-    ],
-  },
-  {
-    key: 'topic',
-    title: 'Topic Explanations',
-    description: 'Deep dives into topics like Succession, Property Transfer, Contracts, Evidence, and more.',
-    icon: ArchiveRestore,
-    examples: [
-      'Explain the basics of Muslim inheritance shares',
-      'How does specific performance work in Pakistan?',
-      'What is the limitation for a recovery suit?',
-    ],
-  },
-];
+    {
+      key: 'act',
+      title: 'Act & Section Summaries',
+      description: 'Get structured, plain‑language summaries of Acts and their Sections with key points, penalties, and practical use.',
+      icon: BookOpen,
+      examples: [
+        'Summarize Section 489‑F PPC with key penalties',
+        'Outline the objectives of the Code of Civil Procedure',
+        'What are exceptions in Section 97 of QSO?',
+      ],
+    },
+    {
+      key: 'case',
+      title: 'Case Law Judgement Breakdown',
+      description: 'Digest holdings, ratio decidendi, citations, and implications for litigation strategy.',
+      icon: MessageSquareText,
+      examples: [
+        'Break down PLD 2020 SC 1 (key holdings)',
+        'Summarize a 2021 IHC bail decision with reasoning',
+        'List precedents cited in a 2019 LHC property dispute',
+      ],
+    },
+    {
+      key: 'document',
+      title: 'Document Analysis',
+      description: 'Upload a legal document and receive a concise summary with parties, issues, and action items.',
+      icon: FileText,
+      examples: [
+        'Summarize this sale agreement into 5 bullet points',
+        'Extract parties, dates, and obligations from this draft',
+        'Is there any unusual clause I should know?',
+      ],
+    },
+    {
+      key: 'topic',
+      title: 'Topic Explanations',
+      description: 'Deep dives into topics like Succession, Property Transfer, Contracts, Evidence, and more.',
+      icon: ArchiveRestore,
+      examples: [
+        'Explain the basics of Muslim inheritance shares',
+        'How does specific performance work in Pakistan?',
+        'What is the limitation for a recovery suit?',
+      ],
+    },
+  ];
 
 const LegalSummaries: React.FC = () => {
   const [active, setActive] = useState<SummaryModeKey>('act');
@@ -93,7 +84,7 @@ const LegalSummaries: React.FC = () => {
     await new Promise(res => setTimeout(res, 700));
     setResult(
       `Preview summary for “${query || 'Sample'}”.` +
-        (active === 'document' && files.length ? ` Processed ${files.length} file(s).` : '')
+      (active === 'document' && files.length ? ` Processed ${files.length} file(s).` : '')
     );
     setLoading(false);
   };
@@ -221,22 +212,6 @@ const LegalSummaries: React.FC = () => {
           </Tabs>
         </div>
 
-        {/* Benefits */}
-        <div className="grid md:grid-cols-3 gap-6 mt-10">
-          <FeatureItem
-            title="Download & Save"
-            description="Save summaries to your profile or download as PDF for later use."
-          />
-          <FeatureItem
-            title="Knowledge Integration"
-            description="Trigger summaries contextually from the Legal Knowledge Base."
-          />
-          <FeatureItem
-            title="Structured Outputs"
-            description="Clear sections: overview, key points, citations, and actions."
-          />
-        </div>
-
         {/* Disclaimer */}
         <div className="mt-8">
           <Alert className="bg-muted">
@@ -260,10 +235,4 @@ const LegalSummaries: React.FC = () => {
 };
 
 export default LegalSummaries;
-
-const FeatureItem = ({ title, description }: { title: string; description: string }) => (
-  <div className="bg-neutral border rounded-lg p-5">
-    <h4 className="font-semibold text-foreground mb-1">{title}</h4>
-    <p className="text-sm text-muted-foreground">{description}</p>
-  </div>
-);
+ 

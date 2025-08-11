@@ -26,9 +26,9 @@ const DraftGrid: React.FC<DraftGridProps> = ({ drafts, view, onCategoryClick, on
                   <div className="flex items-center gap-2 mb-2">
                     <FileText className="h-5 w-5 text-muted-foreground" />
                     <h3 className="text-lg font-semibold text-foreground">{draft.title}</h3>
-                    <Badge variant={draft.isFree ? 'default' : 'secondary'}>
+                    {/* <Badge variant={draft.isFree ? 'default' : 'secondary'}>
                       {draft.isFree ? 'Free' : 'Premium'}
-                    </Badge>
+                    </Badge> */}
                   </div>
 
                   <p className="text-sm text-muted-foreground mb-3">
@@ -103,9 +103,9 @@ const DraftGrid: React.FC<DraftGridProps> = ({ drafts, view, onCategoryClick, on
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-muted-foreground" />
-                <Badge variant={draft.isFree ? 'default' : 'secondary'}>
+                {/* <Badge variant={draft.isFree ? 'default' : 'secondary'}>
                   {draft.isFree ? 'Free' : 'Premium'}
-                </Badge>
+                </Badge> */}
               </div>
               <div className="text-xs text-muted-foreground uppercase font-medium">
                 {draft.format}

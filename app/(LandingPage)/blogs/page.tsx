@@ -15,7 +15,7 @@ const BlogsAndNews = () => {
                 description="Explore our collection of insightful blogs covering various topics, including legal updates, case studies, and expert opinions."
             />
 
-            <div className="container mx-auto mt-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="container mx-auto mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8 px-4">
                 <Blogs />
                 <News />
             </div>

@@ -16,7 +16,7 @@ interface AuthorInfoProps {
 export default function AuthorInfo({ author, createdAt }: AuthorInfoProps) {
   // Fallbacks for seed blogs with no author
   const displayName = author?.name || (author?.firstname && author?.lastname ? `${author.firstname} ${author.lastname}` : "QanoonMate Team");
-  const avatar = author?.avatar || author?.profilePicture || "/public/general/bot-green.png";
+  const avatar = author?.avatar || author?.profilePicture || "/general/bot-green.png";
   const bio = author?.bio || "Legal content by QanoonMate";
 
   return (

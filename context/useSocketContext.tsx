@@ -76,7 +76,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
 
     socketInstance.on("connect_error", (err) => {
-      console.error(`Socket connection error (namespace: ${namespace}):`, err.message);
+      console.log(`Socket connection error (namespace: ${namespace}):`, err.message);
       setConnections(prev => ({
         ...prev,
         [namespace]: { ...prev[namespace], connectError: err.message }
@@ -92,7 +92,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
 
     socketInstance.on("error", (err) => {
-      console.error(`Socket error (namespace: ${namespace}):`, err);
+      console.log(`Socket error (namespace: ${namespace}):`, err);
     });
 
     // Authentication events
@@ -105,7 +105,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     });
 
     socketInstance.on("auth:error", (data: any) => {
-      console.error(`Authentication failed for socket ${socketInstance.id}:`, data);
+      console.log(`Authentication failed for socket ${socketInstance.id}:`, data);
       setConnections(prev => ({
         ...prev,
         [namespace]: { ...prev[namespace], isAuthenticated: false, userId: undefined }
@@ -205,7 +205,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       console.log('Default socket reconnected successfully.');
       return true;
     } catch (error) {
-      console.error('Failed to reconnect socket:', error);
+      console.log('Failed to reconnect socket:', error);
       return false;
     }
   };
