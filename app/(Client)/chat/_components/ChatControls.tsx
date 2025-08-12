@@ -21,6 +21,7 @@ import {
   Send,
   Settings,
   Share2,
+  StopCircle,
   Upload,
 } from "lucide-react";
 
@@ -154,14 +155,16 @@ export default function ChatControls({
           <Button
             size="sm"
             type="submit"
-            disabled={!isConnected || isStreaming || isLoading}
-            className="h-9 w-9 p-0 bg-primary hover:bg-primary/90 text-primary-foreground"
+            disabled={!isConnected || isLoading}
+            className={`h-9 w-9 p-0 ${
+              isStreaming ? "bg-red-500" : "bg-primary"
+            } hover:bg-primary/90 text-primary-foreground`}
           >
-            <Send className="w-4 h-4" />
+            {isStreaming ? <StopCircle /> : <Send className="w-4 h-4" />}
           </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Send message</p>
+          <p>{isStreaming ? "Abort" : "Send Message"}</p>
         </TooltipContent>
       </Tooltip>
     </div>

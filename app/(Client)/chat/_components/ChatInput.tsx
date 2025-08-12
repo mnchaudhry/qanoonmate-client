@@ -54,14 +54,13 @@ const ChatInput: React.FC<Props> = memo(
     ///////////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////////////
     const onSendMessage = async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (
-        inputValue.trim() === "" ||
-        !socket ||
-        !isConnected ||
-        isStreaming ||
-        isLoading
-      )
+      if (inputValue.trim() === "" || !socket || !isConnected || isLoading)
         return;
+
+      if (isStreaming) {
+        socket.emit("abort_chat");
+        return;
+      }
 
       console.log("Sending message with socket:", {
         socketId: socket?.id,
