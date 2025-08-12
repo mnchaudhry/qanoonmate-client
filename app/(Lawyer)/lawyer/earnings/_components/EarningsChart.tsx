@@ -76,7 +76,7 @@ export default function EarningsChart() {
           </Button>
         ))}
       </div>
-      <div className="w-full h-56 flex items-center justify-center text-muted-foreground bg-background rounded-lg border border-dashed border-border">
+      <div className="w-full h-56 flex items-center justify-center text-muted-foreground bg-background rounded-lg border border-dashed !border-border">
         <div className="w-full h-full">
           {type === 'line' && <Line data={chartData} options={options} />}
           {type === 'bar' && <Bar data={chartData} options={options} />}

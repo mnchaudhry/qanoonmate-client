@@ -50,7 +50,7 @@ const RejectedLawyersFilterActionBar: React.FC<RejectedLawyersFilterActionBarPro
   ]
 
   return (
-    <div className="bg-surface border border-border rounded-lg p-6 mb-6">
+    <div className="bg-surface border !border-border rounded-lg p-6 mb-6">
       {/* Search Bar */}
       <div className="mb-6">
         <div className="relative max-w-md">
@@ -62,7 +62,7 @@ const RejectedLawyersFilterActionBar: React.FC<RejectedLawyersFilterActionBarPro
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="block w-full pl-10 pr-3 py-2 border border-border rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="block w-full pl-10 pr-3 py-2 border !border-border rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
       </div>
@@ -73,13 +73,13 @@ const RejectedLawyersFilterActionBar: React.FC<RejectedLawyersFilterActionBarPro
         <div className="relative">
           <button
             onClick={() => setShowRejectionReasonDropdown(!showRejectionReasonDropdown)}
-            className="inline-flex items-center px-4 py-2 border border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="inline-flex items-center px-4 py-2 border !border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             {rejectionReasons.find(r => r.value === selectedRejectionReason)?.label || 'Rejection Reason'}
             <ChevronDown className="h-4 w-4 ml-2" />
           </button>
           {showRejectionReasonDropdown && (
-            <div className="absolute z-10 mt-1 w-64 bg-background border border-border rounded-md shadow-lg">
+            <div className="absolute z-10 mt-1 w-64 bg-background border !border-border rounded-md shadow-lg">
               {rejectionReasons.map((reason) => (
                 <button
                   key={reason.value}
@@ -100,13 +100,13 @@ const RejectedLawyersFilterActionBar: React.FC<RejectedLawyersFilterActionBarPro
         <div className="relative">
           <button
             onClick={() => setShowSortDropdown(!showSortDropdown)}
-            className="inline-flex items-center px-4 py-2 border border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+            className="inline-flex items-center px-4 py-2 border !border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
           >
             Sort By
             <ChevronDown className="h-4 w-4 ml-2" />
           </button>
           {showSortDropdown && (
-            <div className="absolute z-10 mt-1 w-56 bg-background border border-border rounded-md shadow-lg">
+            <div className="absolute z-10 mt-1 w-56 bg-background border !border-border rounded-md shadow-lg">
               {sortOptions.map((option) => (
                 <button
                   key={option.value}
@@ -126,7 +126,7 @@ const RejectedLawyersFilterActionBar: React.FC<RejectedLawyersFilterActionBarPro
         {/* Reset Filters Button */}
         <button
           onClick={onResetFilters}
-          className="inline-flex items-center px-4 py-2 border border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          className="inline-flex items-center px-4 py-2 border !border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         >
           Reset Filters
         </button>
@@ -137,7 +137,7 @@ const RejectedLawyersFilterActionBar: React.FC<RejectedLawyersFilterActionBarPro
         {/* Refresh Button */}
         <button
           onClick={onRefresh}
-          className="inline-flex items-center px-4 py-2 border border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          className="inline-flex items-center px-4 py-2 border !border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         >
           <RefreshCw className="h-4 w-4 mr-2" />
           Refresh

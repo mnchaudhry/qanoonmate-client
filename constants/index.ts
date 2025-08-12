@@ -1,5 +1,4 @@
-import { Lawyer } from "@/store/types/lawyer.types";
-import { About, Lawyer1 } from "./images";
+import { About } from "./images";
 
 export const breadcrumbLabels: Record<string, string> = {
   "dashboard": "Dashboard",
@@ -33,7 +32,7 @@ export const pricingPlans = [
   },
   {
     name: "Student Plan",
-    price: 500,
+    price: 1000,
     description:
       "Everything a law student needs: deeper AI access, editing drafts, and saving work.",
     features: [
@@ -50,7 +49,7 @@ export const pricingPlans = [
   },
   {
     name: "Individual Plan",
-    price: 2000,
+    price: 5000,
     description:
       "For professionals: full AI power, draft building, case law access, and document uploads.",
     features: [
@@ -65,23 +64,23 @@ export const pricingPlans = [
     ],
     popular: true
   },
-  {
-    name: "Organization Plan",
-    price: 20000,
-    description:
-      "Everything in Individual, plus team seats, collaboration, and smart enterprise search.",
-    features: [
-      "All Individual Plan features",
-      "5 user seats (expandable)",
-      "Team dashboard with roles & permissions",
-      "AI draft builder (team‑wide access)",
-      "Smart, semantic search across all content",
-      "Shared saved summaries & tags",
-      "Monthly usage insights & alerts",
-      "Priority support"
-    ],
-    popular: false
-  }
+  // {
+  //   name: "Organization Plan",
+  //   price: 20000,
+  //   description:
+  //     "Everything in Individual, plus team seats, collaboration, and smart enterprise search.",
+  //   features: [
+  //     "All Individual Plan features",
+  //     "5 user seats (expandable)",
+  //     "Team dashboard with roles & permissions",
+  //     "AI draft builder (team‑wide access)",
+  //     "Smart, semantic search across all content",
+  //     "Shared saved summaries & tags",
+  //     "Monthly usage insights & alerts",
+  //     "Priority support"
+  //   ],
+  //   popular: false
+  // }
 ];
 
 export const dictionary = [

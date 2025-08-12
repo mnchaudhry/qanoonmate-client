@@ -9,7 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@fontsource/inter": "^5.2.6",
+=======
+    "@editorjs/code": "^2.9.3",
+    "@editorjs/editorjs": "^2.30.8",
+    "@editorjs/header": "^2.8.8",
+    "@editorjs/image": "^2.10.3",
+    "@editorjs/inline-code": "^1.5.2",
+    "@editorjs/link": "^2.5.0",
+    "@editorjs/list": "^2.0.8",
+    "@editorjs/marker": "^1.4.0",
+    "@editorjs/quote": "^2.7.6",
+    "@editorjs/table": "^2.4.5",
+    "@editorjs/underline": "^1.1.0",
+>>>>>>> d347da4e1f42d847749b6dc858c21a2f014f69f7
     "@fullcalendar/core": "^6.1.18",
     "@fullcalendar/daygrid": "^6.1.18",
     "@fullcalendar/interaction": "^6.1.18",
@@ -59,6 +73,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "editorjs-drag-drop": "^1.1.15",
     "email-validator": "^2.0.4",
     "framer-motion": "^12.23.12",
     "i": "^0.3.7",

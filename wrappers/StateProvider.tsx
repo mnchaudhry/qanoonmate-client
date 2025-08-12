@@ -2,15 +2,21 @@
 
 import { ContextProvider } from '@/context/useStateContext'
 import store, { persistor } from '@/store/store'
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect } from 'react'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import { SocketProvider } from '@/context/useSocketContext'
 import AuthProvider from './AuthProvider'
 import HydrationProvider from './HydrationProvider'
 import TokenRefreshProvider from './TokenRefreshProvider'
+import { ThemeProvider } from './ThemeProvider'
+import { setupInterceptors } from '@/store/api/interceptors'
 
 const StateProvider = ({ children }: { children: ReactNode }) => {
+  // Set up axios interceptors after store is available
+  useEffect(() => {
+    setupInterceptors(store);
+  }, []);
 
   return (
     <Provider store={store} >
@@ -20,7 +26,14 @@ const StateProvider = ({ children }: { children: ReactNode }) => {
             <ContextProvider>
               <SocketProvider>
                 <TokenRefreshProvider>
-                  {children}
+                  <ThemeProvider
+                    attribute="class"
+                    defaultTheme="light"
+                    enableSystem
+                    disableTransitionOnChange
+                  >
+                    {children}
+                  </ThemeProvider>
                 </TokenRefreshProvider>
               </SocketProvider>
             </ContextProvider>

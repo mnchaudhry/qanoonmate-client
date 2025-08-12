@@ -11,15 +11,7 @@ interface TwoWaySliderProps {
   label?: string;
 }
 
-const TwoWaySlider: React.FC<TwoWaySliderProps> = ({
-  min,
-  max,
-  value,
-  onChange,
-  step = 1,
-  className = '',
-  label
-}) => {
+const TwoWaySlider: React.FC<TwoWaySliderProps> = ({ min, max, value, onChange, step = 1, className = '', label }) => {
   return (
     <div className={`w-full ${className}`}>
       {label && <label className="block mb-2 text-sm font-medium text-foreground">{label}</label>}
@@ -32,24 +24,14 @@ const TwoWaySlider: React.FC<TwoWaySliderProps> = ({
         renderTrack={({ props, children }) => (
           <div
             {...props}
-            style={{
-              ...props.style,
-              height: '36px',
-              display: 'flex',
-              width: '100%'
-            }}
+            style={{ ...props.style, height: '36px', display: 'flex', width: '100%' }}
             className="relative"
           >
             <div
               ref={props.ref}
               className="w-full h-2 rounded-full bg-muted"
               style={{
-                background: getTrackBackground({
-                  values: value,
-                  colors: ['#e5e7eb', 'hsl(var(--primary))', '#e5e7eb'],
-                  min,
-                  max
-                })
+                background: getTrackBackground({ values: value, colors: ['#e5e7eb', 'hsl(var(--primary))', '#e5e7eb'], min, max })
               }}
             >
               <div className="absolute left-0 right-0 top-0 bottom-0" />

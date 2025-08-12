@@ -2,7 +2,7 @@
 
 export default function UsersHeader() {
   return (
-    <div className="bg-surface border border-border rounded-lg p-6 mb-6">
+    <div className="bg-surface border !border-border rounded-lg p-6 mb-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">

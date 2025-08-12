@@ -47,7 +47,7 @@ const LegalGuides = () => {
                 ) : guides.map((guide) => (
                   <div
                     key={guide._id}
-                    className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors"
+                    className="flex items-center justify-between p-4 border !border-border rounded-lg hover:bg-accent/50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
                       <div className="p-2 bg-primary/10 rounded-lg">
@@ -84,7 +84,7 @@ const LegalGuides = () => {
                 ) : drafts.map((template) => (
                   <div
                     key={template._id}
-                    className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors"
+                    className="flex items-center justify-between p-4 border !border-border rounded-lg hover:bg-accent/50 transition-colors"
                   >
                     <div className='space-y-1' >
                       <h4 className="font-medium text-foreground text-base">

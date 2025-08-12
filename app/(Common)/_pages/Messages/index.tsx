@@ -74,7 +74,7 @@ const MessagesPage = () => {
     <div className="relative flex h-[calc(100vh-90px)] min-h-0 gap-3">
 
       {/* Sidebar */}
-      <aside className="bg-muted/50 relative px-2.5 py-4 space-y-4 z-10 w-72 flex flex-col h-full min-h-0 rounded-lg border border-border overflow-hidden ">
+      <aside className="bg-muted/50 relative px-2.5 py-4 space-y-4 z-10 w-72 flex flex-col h-full min-h-0 rounded-lg border !border-border overflow-hidden ">
         <div className="sticky top-0 z-20 rounded-b-xl">
           <MessagesHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         </div>

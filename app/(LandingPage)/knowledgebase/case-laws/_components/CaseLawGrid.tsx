@@ -21,8 +21,8 @@ const CaseLawGrid: React.FC<CaseLawGridProps> = ({ caseLaws, onCourtClick, onCat
               <div>
                 <h3 className="text-lg font-semibold mb-2 line-clamp-2">{caseLaw.title}</h3>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-sm text-muted-foreground">{caseLaw.year}</span>
-                  {caseLaw.court && (
+                <Badge variant="outline" className="text-xs">{caseLaw.year}</Badge>
+                {caseLaw.court && (
                     <Badge 
                       variant="outline" 
                       className={`text-xs ${onCourtClick ? 'cursor-pointer hover:underline hover:bg-secondary/80 transition-colors' : ''}`}

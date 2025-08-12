@@ -288,14 +288,14 @@ const FileManager = () => {
   if (loading && documents.length === 0) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="border-b border-border bg-background sticky top-0 z-10">
+        <div className="border-b !border-border bg-background sticky top-0 z-10">
           <div className="p-6">
             <Skeleton className="h-8 w-64 mb-4" />
             <Skeleton className="h-12 w-full" />
           </div>
         </div>
         <div className="flex h-[calc(100vh-200px)]">
-          <div className="w-80 border-r border-border bg-muted/20 flex-shrink-0">
+          <div className="w-80 border-r !border-border bg-muted/20 flex-shrink-0">
             <div className="p-6">
               <Skeleton className="h-6 w-32 mb-4" />
               <div className="space-y-2">
@@ -320,7 +320,7 @@ const FileManager = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-background sticky top-0 z-10">
+      <div className="border-b !border-border bg-background sticky top-0 z-10">
         <div className="p-6">
           <PageHeader
             title="File Manager"
@@ -341,7 +341,7 @@ const FileManager = () => {
       </div>
 
       {/* Breadcrumb */}
-      <div className="border-b border-border px-6 py-3 bg-background">
+      <div className="border-b !border-border px-6 py-3 bg-background">
         <Breadcrumb path={currentPath} onPathChange={handlePathChange} />
       </div>
 
@@ -349,7 +349,7 @@ const FileManager = () => {
       <div className="flex h-[calc(100vh-200px)]">
         {/* Left Panel - File Tree */}
         {sidebarOpen && (
-          <div className="w-80 border-r border-border bg-muted/20 flex-shrink-0">
+          <div className="w-80 border-r !border-border bg-muted/20 flex-shrink-0">
             <FileTree
               files={allFiles as FileItem[]}
               currentPath={currentPath}
@@ -403,7 +403,7 @@ const FileManager = () => {
 
         {/* Right Panel - Details */}
         {showDetails && selectedFile && (
-          <div className="w-96 border-l border-border bg-muted/20 flex-shrink-0">
+          <div className="w-96 border-l !border-border bg-muted/20 flex-shrink-0">
             <FileDetailsPanel
               file={selectedFile}
               formatFileSize={formatFileSize}
@@ -415,7 +415,7 @@ const FileManager = () => {
 
       {/* Upload Zone (Bottom) */}
       {uploadLoading && (
-        <div className="fixed bottom-4 right-4 bg-background border border-border rounded-lg p-4 shadow-lg">
+        <div className="fixed bottom-4 right-4 bg-background border !border-border rounded-lg p-4 shadow-lg">
           <div className="flex items-center gap-3">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
             <div className="text-sm">Uploading... {uploadProgress}%</div>

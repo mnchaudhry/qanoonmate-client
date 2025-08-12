@@ -6,8 +6,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '@/store/store'
 import { getConsultations, confirmConsultation, startConsultation, completeConsultation, markAsNoShow, cancelConsultation } from '@/store/reducers/consultationSlice'
 import AlertModal from '@/components/alert-modal'
-import { ConsultationsHeader, ConsultationsFilterActionBar, ConsultationsTable, ConsultationsSummaryStats } from './_components'
+import { ConsultationsFilterActionBar, ConsultationsTable, ConsultationsSummaryStats } from './_components'
+import { PageHeader } from '../../_components/PageHeader'
 import { Consultation } from '@/store/types/api'
+import AdminSkeleton from '../../_components/AdminSkeleton'
 
 const PAGE_SIZE = 10;
 
@@ -28,17 +30,7 @@ const ConsultationsPage = () => {
   const [showStatusDropdown, setShowStatusDropdown] = useState(false)
   const [showBulkActionsDropdown, setShowBulkActionsDropdown] = useState(false)
   const [selectedConsultations, setSelectedConsultations] = useState<string[]>([])
-  const [alertModal, setAlertModal] = useState<{
-    open: boolean;
-    title: string;
-    description: string;
-    onConfirm: () => void;
-  }>({
-    open: false,
-    title: '',
-    description: '',
-    onConfirm: () => { }
-  })
+  const [alertModal, setAlertModal] = useState<{ open: boolean; title: string; description: string; onConfirm: () => void; }>({ open: false, title: '', description: '', onConfirm: () => { } })
 
   //////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
   useEffect(() => {
@@ -233,93 +225,86 @@ const ConsultationsPage = () => {
 
   //////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <ConsultationsHeader />
+    <div className="space-y-6">
+      <PageHeader
+        title="Consultations Management"
+        description="Manage and monitor all consultation sessions, schedules, and client interactions."
+      />
 
-        {/* Search and Filters */}
-        <ConsultationsFilterActionBar
-          search={search}
-          setSearch={setSearch}
-          startDate={startDate}
-          setStartDate={setStartDate}
-          endDate={endDate}
-          setEndDate={setEndDate}
-          filterStatus={filterStatus}
-          setFilterStatus={setFilterStatus}
-          showStatusDropdown={showStatusDropdown}
-          setShowStatusDropdown={setShowStatusDropdown}
-          showBulkActionsDropdown={showBulkActionsDropdown}
-          setShowBulkActionsDropdown={setShowBulkActionsDropdown}
-          handleExportCSV={handleExportCSV}
-          handleCalendarView={handleCalendarView}
-          handleBulkAction={handleBulkAction}
-          refreshConsultations={refreshConsultations}
-        />
+      <ConsultationsFilterActionBar
+        search={search}
+        setSearch={setSearch}
+        startDate={startDate}
+        setStartDate={setStartDate}
+        endDate={endDate}
+        setEndDate={setEndDate}
+        filterStatus={filterStatus}
+        setFilterStatus={setFilterStatus}
+        showStatusDropdown={showStatusDropdown}
+        setShowStatusDropdown={setShowStatusDropdown}
+        showBulkActionsDropdown={showBulkActionsDropdown}
+        setShowBulkActionsDropdown={setShowBulkActionsDropdown}
+        handleExportCSV={handleExportCSV}
+        handleCalendarView={handleCalendarView}
+        handleBulkAction={handleBulkAction}
+        refreshConsultations={refreshConsultations}
+      />
 
-        {/* Loading State */}
-        {isLoading && (
-          <div className="bg-card border border-border rounded-lg p-8 text-center">
-            <p className="text-muted-foreground">Loading consultations...</p>
-          </div>
-        )}
+      {isLoading && (
+        <AdminSkeleton showStats={true} statsCount={6} />
+      )}
 
-        {/* Consultations Table */}
-        {!isLoading && consultations.length > 0 ? (
-          <ConsultationsTable
-            consultations={consultations}
-            selectedConsultations={selectedConsultations}
-            handleView={handleView}
-            handleSelectConsultation={handleSelectConsultation}
-            handleSelectAll={handleSelectAll}
-            page={page}
-            totalPages={totalPages}
-            totalCount={totalCount}
-            setPage={setPage}
-            generatePageNumbers={generatePageNumbers}
-            PAGE_SIZE={PAGE_SIZE}
-          />
-        ) : (
-          !isLoading && (
-            <div className="bg-card border border-border rounded-lg p-12 text-center">
-              <p className="text-muted-foreground">No consultations found.</p>
-            </div>
-          )
-        )}
-
-        {/* Summary Stats */}
-        <ConsultationsSummaryStats
+      {!isLoading && consultations.length > 0 ? (
+        <ConsultationsTable
+          consultations={consultations}
+          selectedConsultations={selectedConsultations}
+          handleView={handleView}
+          handleSelectConsultation={handleSelectConsultation}
+          handleSelectAll={handleSelectAll}
+          page={page}
+          totalPages={totalPages}
           totalCount={totalCount}
-          completedCount={completedCount}
-          cancelledCount={cancelledCount}
-          disputedCount={disputedCount}
-          missedCount={missedCount}
-          totalRevenue={totalRevenue}
+          setPage={setPage}
+          generatePageNumbers={generatePageNumbers}
+          PAGE_SIZE={PAGE_SIZE}
         />
+      ) : (
+        !isLoading && (
+          <div className="bg-card border !border-border rounded-lg p-12 text-center">
+            <p className="text-muted-foreground">No consultations found.</p>
+          </div>
+        )
+      )}
 
-        {/* Modals */}
-        <ViewConsultationModal
-          open={viewModalOpen}
-          onClose={handleCloseViewModal}
-          consultation={selectedConsultation}
-          onConfirm={handleConfirm}
-          onStart={handleStart}
-          onComplete={handleComplete}
-          onNoShow={handleNoShow}
-          onCancel={handleCancel}
-          isActioning={actionLoading}
-        />
+      <ConsultationsSummaryStats
+        totalCount={totalCount}
+        completedCount={completedCount}
+        cancelledCount={cancelledCount}
+        disputedCount={disputedCount}
+        missedCount={missedCount}
+        totalRevenue={totalRevenue}
+      />
 
-        <AlertModal
-          open={alertModal.open}
-          onClose={() => setAlertModal({ ...alertModal, open: false })}
-          onSubmit={alertModal.onConfirm}
-          loading={actionLoading}
-          title={alertModal.title}
-          description={alertModal.description}
-        />
-      </div>
+      <ViewConsultationModal
+        open={viewModalOpen}
+        onClose={handleCloseViewModal}
+        consultation={selectedConsultation}
+        onConfirm={handleConfirm}
+        onStart={handleStart}
+        onComplete={handleComplete}
+        onNoShow={handleNoShow}
+        onCancel={handleCancel}
+        isActioning={actionLoading}
+      />
+
+      <AlertModal
+        open={alertModal.open}
+        onClose={() => setAlertModal({ ...alertModal, open: false })}
+        onSubmit={alertModal.onConfirm}
+        loading={actionLoading}
+        title={alertModal.title}
+        description={alertModal.description}
+      />
     </div>
   )
 }

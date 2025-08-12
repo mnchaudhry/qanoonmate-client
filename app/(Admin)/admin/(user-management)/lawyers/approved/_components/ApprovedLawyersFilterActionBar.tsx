@@ -91,7 +91,7 @@ const ApprovedLawyersFilterActionBar: React.FC<ApprovedLawyersFilterActionBarPro
               placeholder="Search Lawyer..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="block w-full pl-10 pr-3 py-2 border-border rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              className="block w-full pl-10 pr-3 py-2 !border-border rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
         </div>

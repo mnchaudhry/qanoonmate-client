@@ -30,8 +30,8 @@ export default function AIInsights() {
     <Card className="border-border">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-            🧠 AI Insights & Suggestions
+          <CardTitle className="text-lg font-semibold text-foreground">
+            AI Insights & Suggestions
           </CardTitle>
           <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
             View More

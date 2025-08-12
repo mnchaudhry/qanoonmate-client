@@ -115,7 +115,7 @@ const faqSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // @ts-ignore
+      // @ts-expect-error 123 - TODO: fix this
       .addCase(fetchFaqById.fulfilled, (state, action: PayloadAction<FaqEntry>) => {
         state.loading = false;
         state.faq = action.payload;
@@ -145,7 +145,7 @@ const faqSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // @ts-ignore
+      // @ts-expect-error 123 - TODO: fix this
       .addCase(createAdminFaq.fulfilled, (state, action: PayloadAction<FaqEntry>) => {
         state.loading = false;
         state.faqs.unshift(action.payload);
@@ -159,7 +159,7 @@ const faqSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // @ts-ignore
+      // @ts-expect-error 123 - TODO: fix this
       .addCase(updateAdminFaq.fulfilled, (state, action: PayloadAction<FaqEntry>) => {
         state.loading = false;
         state.faqs = state.faqs.map((f) => (f._id === action.payload._id ? action.payload : f));
@@ -174,7 +174,7 @@ const faqSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      // @ts-ignore
+      // @ts-expect-error 123 - TODO: fix this
       .addCase(verifyAdminFaq.fulfilled, (state, action: PayloadAction<FaqEntry>) => {
         state.loading = false;
         state.faqs = state.faqs.map((f) => (f._id === action.payload._id ? action.payload : f));

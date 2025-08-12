@@ -27,7 +27,7 @@ const BlogCard = ({ id, title, summary, date, tag, imageUrl, slug, author, likes
 
   const handleLike = async () => {
     if (!user) {
-      toast.error('Please login to like blogs')
+              toast.error('Please sign in to like blogs')
       return
     }
 
@@ -78,7 +78,7 @@ const BlogCard = ({ id, title, summary, date, tag, imageUrl, slug, author, likes
   return (
     <div className="group overflow-hidden rounded-2xl border border-muted/30 shadow-sm bg-white transition hover:shadow-md flex flex-col">
       {/* Image */}
-      <div className="relative w-full h-48 md:h-96 overflow-hidden">
+      <div className="relative w-full h-48 sm:h-64 overflow-hidden">
         <Image
           src={imageUrl}
           alt={title}
@@ -97,7 +97,7 @@ const BlogCard = ({ id, title, summary, date, tag, imageUrl, slug, author, likes
       {/* Content */}
       <div className="p-5 flex flex-col justify-between flex-grow">
         {/* Title */}
-        <h3 className="text-lg font-semibold text-primary-900 group-hover:text-green-700 transition line-clamp-2 mb-2">
+        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition line-clamp-2 mb-2">
           {title}
         </h3>
 
@@ -112,7 +112,7 @@ const BlogCard = ({ id, title, summary, date, tag, imageUrl, slug, author, likes
             <span>{date}</span>
           </div>
           <Link href={`/blogs/${slug}`} className='inline-flex items-center gap-1'>
-            <span className="text-primary-dark hover:underline text-sm">Read More</span>
+            <span className="text-primary hover:underline text-sm font-medium">Read More</span>
             <ArrowRight size={14} />
           </Link>
         </div>

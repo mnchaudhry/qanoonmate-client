@@ -12,8 +12,8 @@ export default function OverviewHeader() {
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-          🧭 Platform Overview
+        <h1 className="text-2xl font-bold text-foreground">
+          Platform Overview
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
           Dashboard ▸ Platform Overview

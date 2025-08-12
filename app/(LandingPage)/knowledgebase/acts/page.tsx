@@ -161,7 +161,7 @@ const Acts = () => {
 
   ////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////////
   return (
-    <section className="relative bg-background antialiased min-h-screen pt-0 pb-20">
+    <section className="relative bg-background antialiased min-h-screen !pt-0 pb-20">
       <LandingPageHeader
         title="Pakistan Acts"
         description="Explore the legal framework of Pakistan with our comprehensive collection of acts and statutes."

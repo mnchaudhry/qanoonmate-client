@@ -2,21 +2,15 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table"
 import { Trash2, UploadCloud, ExternalLink, Download } from 'lucide-react'
 import UploadDraftModal from './UploadDrafts'
 import SearchBar from './SearchBar'
 import { toast } from 'sonner'
 import { getDrafts, deleteDraft } from '@/store/api/index'
 import { Badge } from '@/components/ui/badge'
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader'
+import AdminSkeleton from '../../_components/AdminSkeleton'
 
 interface Draft {
   _id: string
@@ -32,12 +26,15 @@ interface Draft {
 }
 
 const Drafts = () => {
+
+  //////////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////
   const [drafts, setDrafts] = useState<Draft[]>([])
   const [search, setSearch] = useState("")
   const [loading, setLoading] = useState(true)
   const [uploadModalOpen, setUploadModalOpen] = useState(false)
   const [page, setPage] = useState(1)
 
+  //////////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////////
   const fetchDrafts = useCallback(async () => {
     setLoading(true)
     try {
@@ -54,10 +51,12 @@ const Drafts = () => {
     }
   }, [page])
 
+  //////////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////////
   useEffect(() => {
     fetchDrafts()
   }, [page, fetchDrafts])
 
+  //////////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////////
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this draft?")) return
     try {
@@ -91,6 +90,7 @@ const Drafts = () => {
     }
   }
 
+  //////////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////////
   const filteredDrafts = drafts.filter(d =>
     d.title.toLowerCase().includes(search.toLowerCase()) ||
     d.description?.toLowerCase().includes(search.toLowerCase()) ||
@@ -98,8 +98,14 @@ const Drafts = () => {
     d.tags?.some(tag => tag.toLowerCase().includes(search.toLowerCase()))
   )
 
+  //////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////////
   return (
-    <div className="p-6">
+    <div className="space-y-6">
+      <PageHeader
+        title="Drafts"
+        description="View and manage drafts."
+      />
+
       <div className="flex items-center justify-between mb-4">
         <SearchBar value={search} onChange={e => setSearch(e.target.value)} />
         <Button onClick={() => setUploadModalOpen(true)} className="flex gap-2">
@@ -114,8 +120,11 @@ const Drafts = () => {
         onUploadSuccess={fetchDrafts}
       />
 
-      <Table>
-        <TableCaption>{loading ? "Loading drafts..." : filteredDrafts.length ? "List of uploaded drafts" : "No drafts found"}</TableCaption>
+      {loading ? (
+        <AdminSkeleton tableRows={6} />
+      ) : (
+        <Table>
+          <TableCaption>{filteredDrafts.length ? "List of uploaded drafts" : "No drafts found"}</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>Title</TableHead>
@@ -183,24 +192,26 @@ const Drafts = () => {
           ))}
         </TableBody>
       </Table>
+      )}
 
-      {/* Pagination */}
-      <div className="flex justify-end mt-4 gap-4">
-        <Button
-          variant="outline"
-          onClick={() => setPage(prev => Math.max(1, prev - 1))}
-          disabled={page === 1}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          onClick={() => setPage(prev => prev + 1)}
-          disabled={filteredDrafts.length < 20}
-        >
-          Next
-        </Button>
-      </div>
+      {!loading && (
+        <div className="flex justify-end mt-4 gap-4">
+          <Button
+            variant="outline"
+            onClick={() => setPage(prev => Math.max(1, prev - 1))}
+            disabled={page === 1}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setPage(prev => prev + 1)}
+            disabled={filteredDrafts.length < 20}
+          >
+            Next
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

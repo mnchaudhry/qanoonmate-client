@@ -13,6 +13,7 @@ import AddDictionaryTermModal from './_components/AddDictionaryTermModal';
 import AlertModal from '@/components/alert-modal';
 import { Pagination } from '@/components/ui/pagination';
 import { LawCategory } from '@/lib/enums';
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader';
 
 const LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 const PAGE_SIZE = 20;
@@ -98,8 +99,13 @@ const AdminDictionaryPage = () => {
 
   //////////////////////////////////////////////////// RENDER /////////////////////////////////////////////
   return (
-    <div className="p-6">
-      {/* Top Bar */}
+    <div className="space-y-6">
+
+      <PageHeader
+        title="Dictionary"
+        description="View and manage dictionary terms."
+      />
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2 flex-wrap">
         <div className="flex gap-2 items-center flex-wrap">
           <Input

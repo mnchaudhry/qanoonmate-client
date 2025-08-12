@@ -4,9 +4,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const recommended = searchParams.get('recommended')
     
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"
     const url = recommended 
-      ? `/api/blogs/get-blogs?recommended=true`
-      : `/api/blogs/get-blogs`
+      ? `${baseUrl}/api/blogs/get-blogs?recommended=true`
+      : `${baseUrl}/api/blogs/get-blogs`
     
     const response = await fetch(url, {
       method: 'GET',
@@ -41,7 +42,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    const response = await fetch(`/api/blogs/create-blog`, {
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4000"
+    const response = await fetch(`${baseUrl}/api/blogs/create-blog`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

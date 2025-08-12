@@ -40,7 +40,7 @@ const getStatusColor = (status: string) => {
     case "inactive":
       return "bg-gray-50 text-gray-700 border-gray-200"
     default:
-      return "bg-muted text-muted-foreground border-border"
+      return "bg-muted text-muted-foreground !border-border"
   }
 }
 
@@ -55,7 +55,7 @@ const getRoleColor = (role: string) => {
     case "member":
       return "bg-purple-50 text-purple-700 border-purple-200"
     default:
-      return "bg-muted text-muted-foreground border-border"
+      return "bg-muted text-muted-foreground !border-border"
   }
 }
 
@@ -152,12 +152,12 @@ export default function UsersTable({
   }
 
   return (
-    <div className="bg-surface border border-border rounded-lg mb-6">
+    <div className="bg-surface border !border-border rounded-lg mb-6">
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-border">
+            <tr className="border-b !border-border">
               <th className="text-left p-4 font-semibold text-foreground">#</th>
               <th className="text-left p-4 font-semibold text-foreground">Name</th>
               <th className="text-left p-4 font-semibold text-foreground">Email</th>
@@ -168,7 +168,7 @@ export default function UsersTable({
           </thead>
           <tbody>
             {currentUsers.map((user, index) => (
-              <tr key={user.id} className="border-b border-border hover:bg-primary/5 transition-colors">
+              <tr key={user.id} className="border-b !border-border hover:bg-primary/5 transition-colors">
                 <td className="p-4 text-muted-foreground">{startIndex + index + 1}</td>
                 <td className="p-4">
                   <div className="font-medium text-foreground">{user.name}</div>
@@ -196,7 +196,7 @@ export default function UsersTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between p-4 border-t border-border">
+      <div className="flex items-center justify-between p-4 border-t !border-border">
         <div className="text-sm text-muted-foreground">
           Showing {startIndex + 1}–{Math.min(endIndex, users.length)} of {users.length} total users
         </div>

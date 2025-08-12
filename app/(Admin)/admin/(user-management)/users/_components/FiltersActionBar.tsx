@@ -43,7 +43,7 @@ export default function FiltersActionBar({
   }
 
   return (
-    <div className="bg-surface border border-border rounded-lg p-6 mb-6">
+    <div className="bg-surface border !border-border rounded-lg p-6 mb-6">
       {/* Search Bar */}
       <div className="flex items-center gap-4 mb-4">
         <div className="relative flex-1 max-w-md">
@@ -53,7 +53,7 @@ export default function FiltersActionBar({
             placeholder="Search users by name, email, or role..."
             value={searchQuery}
             onChange={handleSearchChange}
-            className="pl-10 bg-background border-border text-foreground placeholder-muted-foreground"
+            className="pl-10 bg-background !border-border text-foreground placeholder-muted-foreground"
           />
         </div>
         <Button variant="outline" size="sm" className="border-border hover:bg-primary/5">
@@ -64,7 +64,7 @@ export default function FiltersActionBar({
       {/* Filters */}
       <div className="flex items-center gap-4 mb-4">
         <Select onValueChange={onRoleFilter}>
-          <SelectTrigger className="w-40 bg-background border-border">
+          <SelectTrigger className="w-40 bg-background !border-border">
             <SelectValue placeholder="User Role" />
           </SelectTrigger>
           <SelectContent>
@@ -77,7 +77,7 @@ export default function FiltersActionBar({
         </Select>
 
         <Select onValueChange={onStatusFilter}>
-          <SelectTrigger className="w-32 bg-background border-border">
+          <SelectTrigger className="w-32 bg-background !border-border">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -90,7 +90,7 @@ export default function FiltersActionBar({
         </Select>
 
         <Select onValueChange={onSortChange}>
-          <SelectTrigger className="w-40 bg-background border-border">
+          <SelectTrigger className="w-40 bg-background !border-border">
             <SelectValue placeholder="Sort By" />
           </SelectTrigger>
           <SelectContent>

@@ -109,7 +109,7 @@ export default function LawyerNavbar() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
-                                <div className="p-3 border-b border-border bg-muted">
+                                <div className="p-3 border-b !border-border bg-muted">
                                     <p className="font-medium">Advocate Sarah Khan</p>
                                     <p className="text-sm text-muted-foreground">Corporate Law Specialist</p>
                                 </div>

@@ -56,7 +56,7 @@ export default function CommentsSection({ comments }: CommentsSectionProps) {
         {commentList.map((c) => (
           <div key={c.content} className="flex items-start gap-3">
             <Image
-              src={c.user.avatar || "/public/general/bot-green.png"}
+              src={c.user.avatar || "/general/bot-green.png"}
               alt={c.user.name}
               width={36}
               height={36}

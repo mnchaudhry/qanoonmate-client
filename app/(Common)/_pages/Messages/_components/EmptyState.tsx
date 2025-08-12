@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 const EmptyState = () => {
   return (
-    <div className="relative flex flex-col items-center justify-center h-full bg-white p-8 rounded-2xl shadow-xl border border-border overflow-hidden">
+    <div className="relative flex flex-col items-center justify-center h-full bg-white p-8 rounded-2xl shadow-xl border !border-border overflow-hidden">
       <div className="relative z-10 flex flex-col items-center gap-2 mb-6">
         <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center shadow-lg">
           <Logo size="sm" type="green" />

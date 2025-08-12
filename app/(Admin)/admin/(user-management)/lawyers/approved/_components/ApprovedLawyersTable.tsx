@@ -142,7 +142,7 @@ const ApprovedLawyersTable: React.FC<ApprovedLawyersTableProps> = ({
   const allSelected = lawyers.length > 0 && selectedLawyers.length === lawyers.length
 
   return (
-    <div className="bg-surface border border-border rounded-lg overflow-hidden mb-6">
+    <div className="bg-surface border !border-border rounded-lg overflow-hidden mb-6">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-border">
           <thead className="bg-background">
@@ -152,7 +152,7 @@ const ApprovedLawyersTable: React.FC<ApprovedLawyersTableProps> = ({
                   type="checkbox"
                   checked={allSelected}
                   onChange={(e) => onSelectAll(e.target.checked)}
-                  className="rounded border-border text-primary-600 focus:ring-primary-500"
+                  className="rounded !border-border text-primary-600 focus:ring-primary-500"
                 />
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
@@ -187,7 +187,7 @@ const ApprovedLawyersTable: React.FC<ApprovedLawyersTableProps> = ({
                       type="checkbox"
                       checked={isSelected}
                       onChange={() => onSelectLawyer(lawyer.id)}
-                      className="rounded border-border text-primary-600 focus:ring-primary-500"
+                      className="rounded !border-border text-primary-600 focus:ring-primary-500"
                     />
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-900 dark:text-neutral-100">

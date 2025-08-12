@@ -43,8 +43,8 @@ export default function ModerationStatus() {
     <Card className="border-border mb-6">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-2">
-            🚩 Moderation Status
+          <CardTitle className="text-lg font-semibold text-foreground">
+            Moderation Status
           </CardTitle>
           <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
             View Queue

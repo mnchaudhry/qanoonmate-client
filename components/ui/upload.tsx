@@ -177,7 +177,7 @@ const Upload: React.FC<UploadProps> = ({
                         {value.map((file, idx) => {
                             const key = file.name + file.size + file.lastModified;
                             return (
-                                <div key={key} className="flex items-center gap-3 border border-border rounded-lg p-2 w-fit">
+                                <div key={key} className="flex items-center gap-3 border !border-border rounded-lg p-2 w-fit">
                                     {file.type.startsWith('image/') && previews[key] ? (
                                         <Image
                                             src={previews[key]}

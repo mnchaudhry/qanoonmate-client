@@ -1,7 +1,13 @@
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader';
 import React from 'react';
 
 const DictionaryTermsPage = () => (
-  <div>Dictionary Terms - Admin</div>
+  <div className='space-y-6'>
+    <PageHeader
+      title="Dictionary Terms"
+      description="View and manage dictionary terms."
+    />
+  </div>
 );
 
 export default DictionaryTermsPage; 

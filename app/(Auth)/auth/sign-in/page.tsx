@@ -92,14 +92,14 @@ const SignIn: React.FC = () => {
 
       <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
 
-        <h2 className="mb-9 text-2xl font-bold text-black dark:text-neutral sm:text-title-xl2">
+        <h2 className="mb-9 text-2xl font-bold text-foreground sm:text-title-xl2">
           Sign in{role in Object.values(UserRole) ? <> as a <span className="capitalize">{role}</span></> : ' to QanoonMate'}
         </h2>
 
         <form onSubmit={onSubmit}>
 
           <div className="mb-4">
-            <label className="mb-2.5 block font-medium text-black dark:text-neutral">
+            <label className="mb-2.5 block font-medium text-foreground">
               Email
             </label>
             <div className="relative">
@@ -111,7 +111,7 @@ const SignIn: React.FC = () => {
                 onKeyUp={() => validateFields('email')}
                 onChange={onChange}
                 placeholder="Enter your email"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-neutral dark:focus:border-primary"
+                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none "
               />
               <span className="absolute right-4 top-4">
                 <Mail />
@@ -124,7 +124,7 @@ const SignIn: React.FC = () => {
 
           <div className="mb-6">
             <div className="w flex items-center justify-between">
-              <label className="mb-2.5 block font-medium text-black dark:text-neutral">
+              <label className="mb-2.5 block font-medium text-foreground">
                 Password
               </label>
               <button type="button" onClick={onForgetPassword} className="cursor-pointer font-normal text-primary hover:underline " >
@@ -140,7 +140,7 @@ const SignIn: React.FC = () => {
                 onKeyUp={() => validateFields('password')}
                 onChange={onChange}
                 placeholder="Your password"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-neutral dark:focus:border-primary"
+                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none "
               />
               <button
                 type="button"

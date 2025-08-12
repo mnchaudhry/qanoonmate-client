@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import { Draft } from '@/store/types/api';
+import { Draft, GetDraftsRequest } from '@/store/types/api';
 
 interface DraftState {
   drafts: Draft[];
@@ -23,19 +23,9 @@ const initialState: DraftState = {
   totalCount: 0,
 };
 
-// Update the params type to include all filters
-export interface GetDraftsParams {
-  page?: number;
-  limit?: number;
-  category?: string;
-  search?: string;
-  tags?: string[];
-  format?: string;
-  isFree?: boolean;
-  sort?: 'latest' | 'oldest' | 'alphabetical' | 'category'
-}
+// Using GetDraftsRequest from API types to avoid circular dependency
 
-export const getDrafts = createAsyncThunk('draft/getDrafts', async (params: GetDraftsParams = {}) => {
+export const getDrafts = createAsyncThunk('draft/getDrafts', async (params: GetDraftsRequest = {}) => {
   try {
     const { data } = await api.getDrafts(params);
     return data;

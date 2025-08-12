@@ -13,6 +13,7 @@ import AddCaseLawModal from './_components/AddCaseLawModal'
 import AlertModal from '@/components/alert-modal'
 import { Pagination } from '@/components/ui/pagination'
 import { CaseLaw } from '@/store/types/api'
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader'
 
 const PAGE_SIZE = 40;
 
@@ -74,8 +75,12 @@ const CaseLaws = () => {
 
   //////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
-    <div className="p-6">
-      {/* Top Bar */}
+    <div className="space-y-6">
+      <PageHeader
+        title="Case Laws"
+        description="Manage case laws and judgments."
+      />
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
         <div className="flex gap-2 items-center flex-wrap">
           <Input
@@ -119,7 +124,6 @@ const CaseLaws = () => {
         </Button>
       </div>
 
-      {/* Modal */}
       <AddCaseLawModal
         open={addModalOpen || !!editCaseLaw}
         onClose={() => { setAddModalOpen(false); setEditCaseLaw(null); }}
@@ -135,7 +139,6 @@ const CaseLaws = () => {
         description="Are you sure you want to delete this case law? This action cannot be undone."
       />
 
-      {/* Table */}
       <Table>
         <TableCaption>
           {loading
@@ -157,7 +160,7 @@ const CaseLaws = () => {
         </TableHeader>
         <TableBody>
           {caseLaws.map((cl) => {
-            if (!cl._id) return null // Skip rendering case laws without _id
+            if (!cl._id) return null
             return (
               <TableRow key={cl._id}>
                 <TableCell className="font-medium">{cl.title || '-'}</TableCell>

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { ArrowRight, Brain, FileText, BookOpen, MessageSquare, Users, Calendar, Bell, Globe, Search, Star, CheckCircle, Zap, Shield, Clock, Phone, Video } from "lucide-react";
+import { ArrowRight, Brain, FileText, BookOpen, MessageSquare, Users, Calendar, Star, Phone, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { BentoCard, BentoGrid } from "./bento";

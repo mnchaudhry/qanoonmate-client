@@ -62,7 +62,7 @@ const NewPassword: React.FC = () => {
 
       <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
 
-        <h2 className="mb-3 text-2xl font-bold text-black dark:text-neutral sm:text-title-xl2">
+        <h2 className="mb-3 text-2xl font-bold text-foreground sm:text-title-xl2">
           New Password
         </h2>
 
@@ -72,7 +72,7 @@ const NewPassword: React.FC = () => {
 
         <form onSubmit={onSubmit} >
           <div className="mb-6">
-            <label className="mb-2.5 block font-medium text-black dark:text-neutral">
+            <label className="mb-2.5 block font-medium text-foreground">
               New Password
             </label>
             <div className="relative">
@@ -81,13 +81,13 @@ const NewPassword: React.FC = () => {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-neutral dark:focus:border-primary"
+                  className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none"
               />
             </div>
           </div>
 
           <div className="mb-6">
-            <label className="mb-2.5 block font-medium text-black dark:text-neutral">
+            <label className="mb-2.5 block font-medium text-foreground">
               Confirm Password
             </label>
             <div className="relative">
@@ -96,7 +96,7 @@ const NewPassword: React.FC = () => {
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
                 placeholder="Confirm password"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-neutral dark:focus:border-primary"
+                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none"
               />
             </div>
           </div>

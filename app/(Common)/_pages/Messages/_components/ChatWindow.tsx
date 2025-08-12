@@ -256,7 +256,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile }) =>
                 {/* Date Divider */}
                 <div className="flex items-center gap-3 my-2">
                   <div className="flex-1 h-px bg-border" />
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground bg-white/80 px-3 py-1 rounded-full border border-border shadow-sm">
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground bg-white/80 px-3 py-1 rounded-full border !border-border shadow-sm">
                     <Gavel className="w-3 h-3 text-primary" />
                     {formatMessageDate(group.date)}
                   </span>
@@ -331,10 +331,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile }) =>
         </div>
 
         {/* Message Input */}
-        <div className="relative z-20 border-t border-border p-3 backdrop-blur-md">
+        <div className="relative z-20 border-t !border-border p-3 backdrop-blur-md">
           {/* File preview */}
           {selectedFile && (
-            <div className="flex items-center gap-2 mb-2 p-2 bg-surface border border-border rounded-lg shadow-sm animate-fade-in">
+            <div className="flex items-center gap-2 mb-2 p-2 bg-surface border !border-border rounded-lg shadow-sm animate-fade-in">
               <FileText className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium truncate max-w-[180px]">{selectedFile.name}</span>
               <span className="text-xs text-muted-foreground">{(selectedFile.size / 1024).toFixed(1)} KB</span>
@@ -369,7 +369,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile }) =>
                 <Smile className="w-5 h-5" />
               </button>
               {showEmojiPicker && (
-                <div className="absolute bottom-12 left-0 z-30 bg-surface border border-border rounded-xl shadow-lg p-2 flex flex-wrap gap-1 w-56 animate-fade-in">
+                <div className="absolute bottom-12 left-0 z-30 bg-surface border !border-border rounded-xl shadow-lg p-2 flex flex-wrap gap-1 w-56 animate-fade-in">
                   {EMOJIS.map((emoji) => (
                     <button
                       key={emoji}
@@ -391,7 +391,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile }) =>
                 value={messageInput}
                 onChange={handleInputChange}
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                className="flex-1 px-4 py-2 border border-border rounded-full focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-surface/80 transition"
+                className="flex-1 px-4 py-2 border !border-border rounded-full focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-surface/80 transition"
                 aria-label="Type a message"
               />
               <button
@@ -409,7 +409,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile }) =>
         </div>
       </div>
 
-      <div className={cn("bg-muted/50 h-full transition-all duration-300 rounded-lg border border-border", showRightbar ? "w-72" : "w-0")}>
+      <div className={cn("bg-muted/50 h-full transition-all duration-300 rounded-lg border !border-border", showRightbar ? "w-72" : "w-0")}>
         <Rightbar showRightbar={showRightbar} setShowSidebar={setShowRightbar} />
       </div>
     </div>

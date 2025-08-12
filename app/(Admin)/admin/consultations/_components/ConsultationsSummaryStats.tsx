@@ -18,7 +18,7 @@ const ConsultationsSummaryStats = ({
   totalRevenue
 }: ConsultationsSummaryStatsProps) => {
   return (
-    <div className="bg-card border border-border rounded-lg p-6">
+    <div className="bg-card border !border-border rounded-lg p-6">
       <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
         <MoreVertical className="h-5 w-5 mr-2 text-primary" />
         Summary Stats

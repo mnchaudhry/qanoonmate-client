@@ -45,7 +45,7 @@ const AdminsTable: React.FC<AdminsTableProps> = ({
             case 'analyst':
                 return 'bg-warning-50 text-warning-700 dark:bg-warning-900/20 dark:text-warning-400'
             default:
-                return 'bg-muted text-muted-foreground border-border'
+                return 'bg-muted text-muted-foreground !border-border'
         }
     }
 
@@ -56,9 +56,9 @@ const AdminsTable: React.FC<AdminsTableProps> = ({
             case 'suspended':
                 return 'bg-danger-50 text-danger-700 dark:bg-danger-900/20 dark:text-danger-400'
             case 'inactive':
-                return 'bg-muted text-muted-foreground border-border'
+                return 'bg-muted text-muted-foreground !border-border'
             default:
-                return 'bg-muted text-muted-foreground border-border'
+                return 'bg-muted text-muted-foreground !border-border'
         }
     }
 

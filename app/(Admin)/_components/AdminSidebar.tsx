@@ -4,7 +4,7 @@ import { Settings, Gavel, Users, Shield, BarChart, Bell, Newspaper, LayoutDashbo
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem, } from '../../../components/ui/sidebar';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { usePathname } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import Logo from "@/components/Logo"
 
 // Main navigation items
@@ -36,41 +36,47 @@ const consultationsItems = [
 // Legal Content Management items
 const legalContentItems = [
     {
-        title: "Acts & Laws", url: "/admin/legal-content/acts", icon: Gavel,
+        title: "Acts & Laws", url: "/admin/legal-db/act", icon: Gavel,
         subItems: [
-            { title: "View / Edit / Add", url: "/admin/legal-content/acts/manage" },
-            { title: "Bulk Upload", url: "/admin/legal-content/acts/bulk-upload" }
+            { title: "All Acts", url: "/admin/legal-db/act" },
+            { title: "View / Edit / Add", url: "/admin/legal-db/act/manage" },
+            { title: "Bulk Upload", url: "/admin/legal-db/act/bulk-upload" }
         ]
     },
     {
-        title: "Case Laws", url: "/admin/legal-content/case-laws", icon: BookOpen,
+        title: "Case Laws", url: "/admin/legal-db/case-law", icon: BookOpen,
         subItems: [
-            { title: "View / Edit / Add", url: "/admin/legal-content/case-laws/manage" },
-            { title: "Bulk Upload & Review", url: "/admin/legal-content/case-laws/bulk-upload" }
+            { title: "All Case Laws", url: "/admin/legal-db/case-law" },
+            { title: "View / Edit / Add", url: "/admin/legal-db/case-law/manage" },
+            { title: "Bulk Upload & Review", url: "/admin/legal-db/case-law/bulk-upload" }
         ]
     },
     {
-        title: "Legal Drafts", url: "/admin/legal-content/drafts", icon: Newspaper,
+        title: "Legal Drafts", url: "/admin/drafts", icon: Newspaper,
         subItems: [
-            { title: "Templates & Categories", url: "/admin/legal-content/drafts/templates" }
+            { title: "All Drafts", url: "/admin/drafts" },
+            { title: "Templates & Categories", url: "/admin/legal-db/drafts/templates" }
         ]
     },
     {
-        title: "Legal FAQs", url: "/admin/legal-content/faqs", icon: HelpCircle,
+        title: "Legal FAQs", url: "/admin/legal-db/faq", icon: HelpCircle,
         subItems: [
-            { title: "View / Approve / Edit", url: "/admin/legal-content/faqs/manage" }
+            { title: "All FAQs", url: "/admin/legal-db/faq" },
+            { title: "View / Approve / Edit", url: "/admin/legal-db/faq/manage" }
         ]
     },
     {
-        title: "Legal Dictionary", url: "/admin/legal-content/dictionary", icon: BookOpen,
+        title: "Legal Dictionary", url: "/admin/legal-db/dictionary", icon: BookOpen,
         subItems: [
-            { title: "Terms Management", url: "/admin/legal-content/dictionary/terms" }
+            { title: "All Dictionary", url: "/admin/legal-db/dictionary" },
+            { title: "Terms Management", url: "/admin/legal-db/dictionary/terms" }
         ]
     },
     {
-        title: "Legal Guides", url: "/admin/legal-content/guides", icon: BookOpen,
+        title: "Legal Guides", url: "/admin/legal-db/guide", icon: BookOpen,
         subItems: [
-            { title: "View / Approve / Seed", url: "/admin/legal-content/guides/manage" }
+            { title: "All Guides", url: "/admin/legal-db/guide" },
+            { title: "View / Approve / Seed", url: "/admin/legal-db/guide/manage" }
         ]
     },
 ]
@@ -117,13 +123,22 @@ const moderationQueueItems = [
 ]
 
 export function AdminSidebar() {
+
+    //////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
     const pathname = usePathname();
-    const [manualOpen, setManualOpen] = useState<Record<string, boolean>>({});
 
-    // Helper: is a URL active?
+    //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
+    const [manualOpen, setManualOpen] = useState<Record<string, boolean>>(() => {
+        // Load saved state from localStorage
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('admin-sidebar-state');
+            return saved ? JSON.parse(saved) : {};
+        }
+        return {};
+    });
+
+    //////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
     const isActive = useCallback((url: string) => pathname === url || pathname.startsWith(url + "/"), [pathname]);
-
-    // Helper: is any item in a section active?
     const isSectionActive = useCallback((items: any[]) => {
         return items.some(item => {
             if (item.subItems) {
@@ -133,7 +148,6 @@ export function AdminSidebar() {
         });
     }, [isActive]);
 
-    // Compute which sections are active
     const activeSections = useMemo(() => {
         const sections: string[] = [];
         if (isSectionActive(userManagementItems)) sections.push("user-management");
@@ -148,20 +162,44 @@ export function AdminSidebar() {
         return sections;
     }, [isSectionActive]);
 
-    // Helper: is a section open (either active or manually toggled)
+    // Auto-open sections when they become active
+    useEffect(() => {
+        const newState = { ...manualOpen };
+        activeSections.forEach(section => {
+            if (!newState[section]) {
+                newState[section] = true;
+            }
+        });
+        
+        if (JSON.stringify(newState) !== JSON.stringify(manualOpen)) {
+            setManualOpen(newState);
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('admin-sidebar-state', JSON.stringify(newState));
+            }
+        }
+    }, [activeSections, manualOpen]);
+
     const isSectionOpen = (section: string) => {
         return activeSections.includes(section) || manualOpen[section];
     };
 
-    // Handler: toggle section open/close
     const handleToggleSection = (section: string) => {
-        setManualOpen(prev => ({ ...prev, [section]: !prev[section] }));
+        setManualOpen(prev => {
+            const newState = { ...prev, [section]: !prev[section] };
+            // Save to localStorage
+            if (typeof window !== 'undefined') {
+                localStorage.setItem('admin-sidebar-state', JSON.stringify(newState));
+            }
+            return newState;
+        });
     };
 
+    //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
     return (
-        <Sidebar className="w-64 bg-primary-50 border-r border-primary-200">
+        <Sidebar className="w-64 bg-sidebar-background border-r border-sidebar-border">
             <SidebarContent>
-                <SidebarHeader>
+
+                <SidebarHeader className="h-[60px] flex items-center justify-center " >
                     <SidebarMenu>
                         <SidebarMenuItem className="w-full flex justify-center">
                             <Logo size="md" />
@@ -177,7 +215,7 @@ export function AdminSidebar() {
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton
                                         asChild
-                                        className={`hover:bg-primary-100 text-primary-700 hover:text-primary-800 ${isActive(item.url) ? 'bg-primary-100 text-primary-800 font-medium' : ''
+                                        className={`hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-foreground ${isActive(item.url) ? 'bg-sidebar-accent text-sidebar-foreground font-medium' : ''
                                             }`}
                                     >
                                         <a href={item.url} className="flex items-center gap-3">
@@ -196,7 +234,7 @@ export function AdminSidebar() {
                                 >
                                     <CollapsibleTrigger asChild>
                                         <SidebarMenuButton
-                                            className={`hover:bg-primary-100 text-primary-700 hover:text-primary-800 ${isSectionActive(userManagementItems) ? 'bg-primary-100 text-primary-800 font-medium' : ''
+                                            className={`hover:bg-sidebar-accent text-sidebar-foreground hover:text-sidebar-foreground ${isSectionActive(userManagementItems) ? 'bg-sidebar-accent text-sidebar-foreground font-medium' : ''
                                                 }`}
                                         >
                                             <Users className="w-5 h-5" />

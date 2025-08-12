@@ -1,7 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { PendingLawyersHeader, PendingLawyersFilterActionBar, PendingLawyersTable, LawyerApplicationDetailsModal } from './_components'
+import { PendingLawyersFilterActionBar, PendingLawyersTable, LawyerApplicationDetailsModal } from './_components'
 import { PendingLawyer } from './_components/PendingLawyersTable'
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader'
 
 // Mock data for demonstration
 const mockPendingLawyers: PendingLawyer[] = [
@@ -98,6 +99,8 @@ const mockPendingLawyers: PendingLawyer[] = [
 ]
 
 const PendingLawyersPage = () => {
+
+  //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
   const [lawyers, setLawyers] = useState<PendingLawyer[]>(mockPendingLawyers)
   const [filteredLawyers, setFilteredLawyers] = useState<PendingLawyer[]>(mockPendingLawyers)
   const [selectedLawyer, setSelectedLawyer] = useState<PendingLawyer | null>(null)
@@ -108,7 +111,7 @@ const PendingLawyersPage = () => {
   const [selectedJurisdiction, setSelectedJurisdiction] = useState('')
   const [selectedDateRange, setSelectedDateRange] = useState('')
 
-  // Filter lawyers based on search and filters
+  //////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
   useEffect(() => {
     let filtered = lawyers.filter(lawyer => lawyer.status === 'pending' || lawyer.status === 'under_review')
 
@@ -161,13 +164,13 @@ const PendingLawyersPage = () => {
     setCurrentPage(1)
   }, [searchTerm, selectedJurisdiction, selectedDateRange, lawyers])
 
-  // Pagination
+  //////////////////////////////////////////////////// PAGINATION ////////////////////////////////////////////////////
   const indexOfLastLawyer = currentPage * itemsPerPage
   const indexOfFirstLawyer = indexOfLastLawyer - itemsPerPage
   const currentLawyers = filteredLawyers.slice(indexOfFirstLawyer, indexOfLastLawyer)
   const totalPages = Math.ceil(filteredLawyers.length / itemsPerPage)
 
-  // Handlers
+  //////////////////////////////////////////////////// HANDLERS ////////////////////////////////////////////////////
   const handleSearch = (term: string) => {
     setSearchTerm(term)
   }
@@ -267,9 +270,13 @@ const PendingLawyersPage = () => {
     console.log('Refresh pending lawyers data')
   }
 
+  //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
-    <div className="p-6 space-y-6">
-      <PendingLawyersHeader />
+    <div className="space-y-6">
+      <PageHeader
+        title='Pending Lawyers'
+        description='View, filter, and manage all lawyers whose accounts are pending.'
+      />
 
       <PendingLawyersFilterActionBar
         onSearch={handleSearch}

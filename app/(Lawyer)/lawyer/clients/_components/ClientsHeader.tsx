@@ -40,7 +40,7 @@ const ClientsHeader = ({ onSearch, onFilter, filter, view, onViewChange }: Clien
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 onKeyDown={handleKeyPress}
-                className="pl-10 pr-10 h-11 bg-background border-border text-foreground placeholder-muted-foreground rounded-lg shadow-sm"
+                className="pl-10 pr-10 h-11 bg-background !border-border text-foreground placeholder-muted-foreground rounded-lg shadow-sm"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               {query && (
@@ -60,7 +60,7 @@ const ClientsHeader = ({ onSearch, onFilter, filter, view, onViewChange }: Clien
           <div className="flex items-center gap-2">
             <DropdownMenu open={open} onOpenChange={setOpen}>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-11 px-4 flex items-center gap-2 border-border bg-background text-foreground">
+                <Button variant="outline" className="h-11 px-4 flex items-center gap-2 !border-border bg-background text-foreground">
                   <Filter className="h-4 w-4" />
                   <span className="font-medium">{filter}</span>
                   <span className="ml-1">⌄</span>

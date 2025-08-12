@@ -1,102 +1,207 @@
-"use client"
-
 import Logo from '@/components/Logo';
-import { Button } from '@/components/ui/button';
-import { FaInstagram, FaTwitter, FaFacebook, FaEnvelope, } from 'react-icons/fa';
+import { Facebook, Github, Instagram, Mail, MapPin, Phone, Twitter, } from 'lucide-react';
+import Link from 'next/link';
 
-const LandingPageFooter: React.FC = () => {
+const data = {
+  facebookLink: '#',
+  instaLink: '#',
+  twitterLink: '#',
+  githubLink: '#',
+  services: {
+    chatbot: '/chatbot',
+    knowledgebase: '/knowledgebase',
+    summarizers: '/summarizers',
+    lawyers: '/lawyers',
+    blogs: '/blogs',
+    pricing: '/pricing',
+  },
+  about: {
+    about: '/about',
+    privacy: '/privacy',
+    terms: '/terms',
+    contact: '/contacts',
+  },
+  help: {
+    faq: '/faq',
+    support: '/support',
+    contact: '/contacts',
+  },
+  contact: {
+    email: 'contact@qanoonmate.com',
+    phone: '+92 300 1234567',
+    address: 'Islamabad, Pakistan',
+  },
+  company: {
+    name: 'QanoonMate',
+    description:
+      'AI-powered legal assistant for Pakistan. Search laws, read case laws, draft documents, and get reliable legal insights instantly.',
+    logo: '/favicon.ico',
+  },
+};
 
-  /////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////////// 
-  const services = [
-    { name: 'Legal Chatbot', link: '/chatbot', description: 'Ask legal questions and get instant, AI-generated responses tailored to Pakistan’s legal system.', },
-    { name: 'Legal KnowledgeBase', link: '/knowledge', description: 'Browse simplified summaries of laws, legal topics, and documents — your go-to legal resource hub.', },
-    { name: 'Legal Drafts', link: '/drafts', description: 'Access downloadable, editable legal documents — from contracts to affidavits — organized by category.', },
-    { name: 'Legal Summaries', link: '/summaries', description: 'Upload legal content or enter queries to receive AI-generated act, case law, and topic summaries.', },
-    { name: 'Legal Blogs', link: '/blogs', description: 'Read expert-written articles on legal trends, reforms, and insights from lawyers and researchers.', },
-    { name: 'Legal News', link: '/news', description: 'Stay updated with weekly or real-time coverage of court rulings, policy changes, and legal reforms.', },
-    { name: 'Find Lawyer', link: '/find-lawyer', description: 'Search verified lawyers by expertise, location, and availability — complete with filters and profiles.', },
-    { name: 'Book Consultations', link: '/consultations', description: 'Schedule secure legal consultations online or in-person with trusted, verified professionals.', },
-  ];
+const socialLinks = [
+  { icon: Facebook, label: 'Facebook', href: data.facebookLink },
+  { icon: Instagram, label: 'Instagram', href: data.instaLink },
+  { icon: Twitter, label: 'Twitter', href: data.twitterLink },
+  { icon: Github, label: 'GitHub', href: data.githubLink },
+];
 
-  const companyLinks = [
-    { name: 'About Us', href: '/about' },
-    { name: 'Terms & Conditions', href: '/terms' },
-    { name: 'Privacy Policy', href: '/privacy' },
-  ];
+const aboutLinks = [
+  { text: 'About Us', href: data.about.about },
+  { text: 'Privacy Policy', href: data.about.privacy },
+  { text: 'Terms & Conditions', href: data.about.terms },
+  { text: 'Contact', href: data.about.contact },
+];
 
-  const socialLinks = [
-    { name: 'Instagram', icon: <FaInstagram size={20} /> },
-    { name: 'Twitter', icon: <FaTwitter size={20} /> },
-    { name: 'Facebook', icon: <FaFacebook size={20} /> },
-    { name: 'Email', icon: <FaEnvelope size={20} /> },
-  ];
+const serviceLinks = [
+  { text: 'AI Legal Chatbot', href: data.services.chatbot },
+  { text: 'Knowledge Base', href: data.services.knowledgebase },
+  { text: 'Summarizers', href: data.services.summarizers },
+  { text: 'Find Lawyers', href: data.services.lawyers },
+  { text: 'Blogs', href: data.services.blogs },
+  { text: 'Pricing', href: data.services.pricing },
+];
 
-  /////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////////// 
+const helpfulLinks = [
+  { text: 'FAQs', href: data.help.faq },
+  { text: 'Support', href: data.help.support },
+  { text: 'Contact', href: data.help.contact, hasIndicator: true },
+];
+
+const contactInfo = [
+  { icon: Mail, text: data.contact.email },
+  { icon: Phone, text: data.contact.phone },
+  { icon: MapPin, text: data.contact.address, isAddress: true },
+];
+
+const Footer = () => {
   return (
-    <footer className="bg-neutral text-neutral-foreground pt-24 pb-8">
+    <footer className="bg-primary-dark dark:bg-secondary/20 mt-16 w-full place-self-end rounded-t-xl">
+      <div className="mx-auto max-w-screen-xl px-4 pt-16 pb-6 sm:px-6 lg:px-8 lg:pt-24">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <div>
+            <Logo />
 
-      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-10">
-        {/* Logo & About */}
-        <div className='space-y-5'>
-          <Logo type='white' />
-          <p className="text-muted-foreground text-sm leading-relaxed">
-            QanoonMate combines cutting-edge AI with expert legal knowledge to make law accessible, fast, and affordable for everyone.
-          </p>
-        </div>
+            <p className="text-foreground/60 mt-6 max-w-md text-center leading-relaxed sm:max-w-xs sm:text-left">
+              {data.company.description}
+            </p>
 
-        {/* Services */}
-        <div>
-          <h4 className="font-semibold text-lg mb-4">Services</h4>
-          <ul className="space-y-3 text-sm text-muted-foreground">
-            {services.slice(0, 6).map((service) => (
-              <li key={service.name} className="hover:text-green-400 transition">
-                {service.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Company Links */}
-        <div>
-          <h4 className="font-semibold text-lg mb-4">Company</h4>
-          <ul className="space-y-3 text-sm text-muted-foreground">
-            {companyLinks.map((link) => (
-              <li key={link.name}>
-                <a href={link.href} className="hover:text-green-400 transition">{link.name}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Social + Newsletter */}
-        <div>
-          <h4 className="font-semibold text-lg mb-4">Follow Us</h4>
-          <div className="flex space-x-4 mb-6 text-muted-foreground">
-            {socialLinks.map((social) => (
-              <a key={social.name} href="#" className="hover:text-green-400 transition">{social.icon}</a>
-            ))}
+            <ul className="mt-8 flex justify-center gap-6 sm:justify-start md:gap-8">
+              {socialLinks.map(({ icon: Icon, label, href }) => (
+                <li key={label}>
+                  <Link
+                    href={href}
+                    className="text-primary hover:text-primary/80 transition"
+                  >
+                    <span className="sr-only">{label}</span>
+                    <Icon className="h-5 w-5" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          <h4 className="font-semibold text-lg mb-4">Stay Updated</h4>
-          <form className="flex items-center space-x-2">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="flex-1 px-4 py-2 border border-black bg-white rounded-md text-black text-sm"
-            />
-            <Button variant="outline" type="submit" className="py-2 px-5 text-sm">
-              Subscribe
-            </Button>
-          </form>
-        </div>
-      </div>
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:col-span-2">
+            <div className="text-center sm:text-left">
+              <p className="text-lg font-medium">About</p>
+              <ul className="mt-8 space-y-4 text-sm">
+                {aboutLinks.map(({ text, href }) => (
+                  <li key={text}>
+                    <a
+                      className="text-secondary-foreground/70 hover:text-secondary-foreground transition"
+                      href={href}
+                    >
+                      {text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-      {/* Footer Bottom */}
-      <div className="text-center text-foreground text-sm mt-16">
-        © 2025 QanoonMate. All rights reserved.
+            <div className="text-center sm:text-left">
+              <p className="text-lg font-medium">Products</p>
+              <ul className="mt-8 space-y-4 text-sm">
+                {serviceLinks.map(({ text, href }) => (
+                  <li key={text}>
+                    <a
+                      className="text-secondary-foreground/70 hover:text-secondary-foreground transition"
+                      href={href}
+                    >
+                      {text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="text-center sm:text-left">
+              <p className="text-lg font-medium">Helpful Links</p>
+              <ul className="mt-8 space-y-4 text-sm">
+                {helpfulLinks.map(({ text, href, hasIndicator }) => (
+                  <li key={text}>
+                    <a
+                      href={href}
+                      className={`${hasIndicator
+                        ? 'group flex justify-center gap-1.5 sm:justify-start'
+                        : 'text-secondary-foreground/70 hover:text-secondary-foreground transition'
+                        }`}
+                    >
+                      <span className="text-secondary-foreground/70 group-hover:text-secondary-foreground transition">
+                        {text}
+                      </span>
+                      {hasIndicator && (
+                        <span className="relative flex size-2">
+                          <span className="bg-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+                          <span className="bg-primary relative inline-flex size-2 rounded-full" />
+                        </span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="text-center sm:text-left">
+              <p className="text-lg font-medium">Contact</p>
+              <ul className="mt-8 space-y-4 text-sm">
+                {contactInfo.map(({ icon: Icon, text, isAddress }) => (
+                  <li key={text}>
+                    <a
+                      className="flex items-center justify-center gap-1.5 sm:justify-start"
+                      href="#"
+                    >
+                      <Icon className="text-primary h-5 w-5 shrink-0" />
+                      {isAddress ? (
+                        <address className="text-secondary-foreground/70 -mt-0.5 flex-1 not-italic transition">
+                          {text}
+                        </address>
+                      ) : (
+                        <span className="text-secondary-foreground/70 flex-1 transition">
+                          {text}
+                        </span>
+                      )}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 border-t pt-6">
+          <div className="text-center sm:flex sm:justify-between sm:text-left">
+            <p className="text-sm">
+              <span className="block sm:inline">All rights reserved.</span>
+            </p>
+
+            <p className="text-secondary-foreground/70 mt-4 text-sm transition sm:order-first sm:mt-0">
+              &copy; 2025 {data.company.name}
+            </p>
+          </div>
+        </div>
       </div>
     </footer>
   );
-};
+}
 
-export default LandingPageFooter;
+export default Footer;

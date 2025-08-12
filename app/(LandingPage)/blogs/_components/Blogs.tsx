@@ -61,11 +61,11 @@ const Blogs = () => {
 
     if (isLoading) {
         return (
-            <div className="md:col-span-2 space-y-6">
-                <div className="flex items-center justify-between">
-                    <div className="h-10 bg-muted animate-pulse rounded-lg w-64"></div>
-                    <div className="h-10 bg-muted animate-pulse rounded-lg w-32"></div>
-                </div>
+            <div className="lg:col-span-2 space-y-6">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="h-10 bg-muted animate-pulse rounded-lg w-64"></div>
+                <div className="h-10 bg-muted animate-pulse rounded-lg w-32"></div>
+            </div>
                 <div className="space-y-6">
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="h-96 bg-muted animate-pulse rounded-2xl"></div>
@@ -121,12 +121,12 @@ const Blogs = () => {
                             date={blog.createdAt}
                             imageUrl={blog.featuredImage || '/default-blog-image.jpg'}
                             slug={blog.slug}
-                            summary={blog.content.slice(0, 150) + '...'}
+                            summary={blog.excerpt || blog.content.slice(0, 150) + '...'}
                             tag={blog.tags?.[0] || ''}
                             title={blog.title}
-                            author={`${blog.author.firstname} ${blog.author.lastname}`}
+                            author={blog.author?.name || `${blog.author?.firstname || ''} ${blog.author?.lastname || ''}`.trim() || 'QanoonMate Team'}
                             likes={blog.likes}
-                            comments={blog.comments.length}
+                            comments={blog.comments?.length || 0}
                         />
                     ))
                 ) : (

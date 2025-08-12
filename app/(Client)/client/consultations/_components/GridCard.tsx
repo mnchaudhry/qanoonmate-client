@@ -40,7 +40,7 @@ function getStatusBadge(status: ConsultationStatus) {
 
 const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
   return (
-    <Card className="flex flex-col items-center p-4 border border-border bg-background rounded-xl shadow-sm h-full">
+    <Card className="flex flex-col items-center p-4 border !border-border bg-background rounded-xl shadow-sm h-full">
       <Avatar className="h-[72px] w-[72px] mb-2">
         <AvatarImage src={(consultation.lawyerId as Lawyer)?.profilePicture} />
         <AvatarFallback className="uppercase text-xl">

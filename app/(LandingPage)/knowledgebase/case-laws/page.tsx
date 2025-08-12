@@ -177,7 +177,7 @@ const CaseLaws = () => {
 
     ///////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////////
     return (
-        <section className="relative bg-background antialiased min-h-screen pt-0 pb-20">
+        <section className="relative bg-background antialiased min-h-screen !pt-0 pb-20">
             <LandingPageHeader
                 title="Pakistan Case Laws"
                 description="Explore the legal framework of Pakistan with our comprehensive collection of case laws and judgments."
@@ -203,7 +203,7 @@ const CaseLaws = () => {
                             isYearRangeChanging={isYearRangeChanging}
                         />
                     </div>
-                    <section className="col-span-3 pt-0">
+                    <section className="col-span-3 !pt-0">
                         {/* View Toggle and Count */}
                         {caseLaws.length > 0 && (
                         <div className="flex justify-between items-center mb-6">

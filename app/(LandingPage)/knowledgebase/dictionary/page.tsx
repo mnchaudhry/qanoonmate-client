@@ -153,7 +153,7 @@ const LegalDictionary = () => {
 
     ///////////////////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////////////////////
     return (
-        <section className="relative bg-background antialiased min-h-screen pt-0 pb-20">
+        <section className="relative bg-background antialiased min-h-screen !pt-0 pb-20">
             <LandingPageHeader
                 title="Legal Dictionary"
                 description="Explore our comprehensive legal dictionary to understand key legal terms and concepts."
@@ -177,7 +177,7 @@ const LegalDictionary = () => {
                             isSearching={isSearching}
                         />
                     </div>
-                    <section className="col-span-3 pt-0">
+                    <section className="col-span-3 !pt-0">
                         {/* View Toggle and Count */}
                         {terms.length > 0 && (
                         <div className="flex justify-between items-center mb-6">

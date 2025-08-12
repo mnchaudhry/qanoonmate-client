@@ -80,7 +80,7 @@ const DocumentsList: React.FC<DocumentsListProps> = ({
           {documents.map((document) => (
             <div
               key={document._id}
-              className={`p-4 border-b border-border cursor-pointer transition-colors hover:bg-accent/50 ${selectedDocument?._id === document._id ? 'bg-primary/10 border-primary/20' : ''
+              className={`p-4 border-b !border-border cursor-pointer transition-colors hover:bg-accent/50 ${selectedDocument?._id === document._id ? 'bg-primary/10 border-primary/20' : ''
                 }`}
               onClick={() => onSelectDocument(document)}
             >

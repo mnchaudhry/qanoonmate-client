@@ -164,7 +164,7 @@ export const getProfile = createAsyncThunk('auth/getProfile', async (_, { reject
       return data.data;
     }
     else {
-      toast.error(data.message)
+      // toast.error(data.message)
       return rejectWithValue(data.message);
     }
   } catch (err: any) {
@@ -276,13 +276,14 @@ export const hydrateAuth = createAsyncThunk('auth/hydrateAuth', async (options: 
       if (!silent) {
         toast.error('Session invalid');
       }
-      return rejectWithValue('Session invalid');
+      return rejectWithValue('');
     }
   } catch (err: any) {
     await dispatch(logout());
+    console.log('silent2', silent)
     if (!silent) toast.error('Hydration failed');
     const message = getErrorMessage(err, 'Hydration failed');
-    return rejectWithValue(message);
+    return rejectWithValue('');
   }
 });
 

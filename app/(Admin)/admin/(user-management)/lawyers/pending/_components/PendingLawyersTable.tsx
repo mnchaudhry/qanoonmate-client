@@ -102,7 +102,7 @@ const PendingLawyersTable: React.FC<PendingLawyersTableProps> = ({
   }
 
   return (
-    <div className="bg-surface border border-border rounded-lg overflow-hidden mb-6">
+    <div className="bg-surface border !border-border rounded-lg overflow-hidden mb-6">
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full">

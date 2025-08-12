@@ -95,7 +95,7 @@ const VerifyOTP: React.FC = () => {
 
       <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
 
-        <h2 className="mb-3 text-2xl font-bold text-black dark:text-neutral sm:text-title-xl2">
+        <h2 className="mb-3 text-2xl font-bold text-foreground sm:text-title-xl2">
           Verify Your Account to {OTPType === OtpVerificationType.SIGNUP ? "Complete Signup" : "Reset Password"}
         </h2>
 
@@ -124,7 +124,7 @@ const VerifyOTP: React.FC = () => {
             />
           </div>
 
-          <p className="mb-5 mt-4 text-left text-black dark:text-neutral">
+          <p className="mb-5 mt-4 text-left text-foreground">
             Did not receive a code?
             <button type='button' onClick={onResend} className="font-medium text-primary ml-1"> Resend</button>
           </p>

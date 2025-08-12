@@ -133,7 +133,7 @@ const RejectedLawyersTable: React.FC<RejectedLawyersTableProps> = ({
   }
 
   return (
-    <div className="bg-surface border border-border rounded-lg overflow-hidden mb-6">
+    <div className="bg-surface border !border-border rounded-lg overflow-hidden mb-6">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="bg-background">

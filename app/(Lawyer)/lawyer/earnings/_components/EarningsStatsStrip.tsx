@@ -33,7 +33,7 @@ export default function EarningsStatsStrip() {
     <div className="w-full overflow-x-auto">
       <div className="flex gap-4 min-w-[600px] md:min-w-0 md:grid md:grid-cols-4">
         {stats.map((stat) => (
-          <Card key={stat.label} className="flex-1 min-w-[220px] border-border shadow-none hover:shadow-md transition-shadow">
+          <Card key={stat.label} className="flex-1 min-w-[220px] !border-border shadow-none hover:shadow-md transition-shadow">
             <CardContent className="flex items-center gap-3 py-4 px-5">
               <div className={`rounded-lg bg-primary/10 p-2 ${stat.iconColor}`}>
                 <stat.icon className="h-6 w-6" />

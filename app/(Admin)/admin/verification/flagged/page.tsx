@@ -1,7 +1,13 @@
+import { PageHeader } from '@/app/(Admin)/_components/PageHeader';
 import React from 'react';
 
 const FlaggedEditsPage = () => (
-  <div>Flagged Edits - Admin</div>
+  <div className='space-y-6'>
+    <PageHeader
+      title="Flagged Edits"
+      description="View and manage flagged edits."
+    />
+  </div>
 );
 
 export default FlaggedEditsPage; 

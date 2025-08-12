@@ -58,7 +58,7 @@ const ConsultationStats = () => {
           {statItems.map((item, index) => (
             <div
               key={index}
-              className="flex items-center gap-3 p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors"
+              className="flex items-center gap-3 p-4 border !border-border rounded-lg hover:bg-accent/50 transition-colors"
             >
               <div className="p-2 bg-background rounded-lg">
                 <item.icon className={`h-5 w-5 ${item.color}`} />

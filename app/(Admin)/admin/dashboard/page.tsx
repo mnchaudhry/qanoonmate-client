@@ -1,21 +1,16 @@
 "use client"
 
-import {
-  OverviewHeader,
-  PlatformStatistics,
-  QuickActions,
-  RecentActivityFeed,
-  ModerationStatus,
-  UsageAnalytics,
-  CalendarLogsPanel,
-  AIInsights
-} from './_components'
+import { PlatformStatistics, QuickActions, RecentActivityFeed, ModerationStatus, UsageAnalytics, CalendarLogsPanel, AIInsights } from './_components'
+import { PageHeader } from '../../_components/PageHeader'
 
 export default function AdminDashboard() {
   return (
     <div className="space-y-6">
       {/* Overview Header */}
-      <OverviewHeader />
+      <PageHeader
+        title="Platform Overview"
+        description="Monitor platform performance, user activity, and system metrics at a glance."
+      />
 
       {/* Platform Statistics */}
       <PlatformStatistics />

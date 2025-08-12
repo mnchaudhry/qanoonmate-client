@@ -7,7 +7,7 @@ import LandingPageHeader from "../_components/LandingPageHeader";
 export default function PricingPage() {
 
   return (
-    <section className="relative bg-background antialiased min-h-screen pt-0 ">
+    <section className="relative bg-background antialiased min-h-screen !pt-0 ">
 
       <LandingPageHeader
         title="Pricing Plans"
