@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-import { GetDraftsParams } from "../reducers/draftSlice";
 import type * as API from "../types/api";
 import type * as UserAPI from "../types/user.types";
 import type * as AuthAPI from "../types/auth.types";
@@ -7,16 +5,6 @@ import type * as ClientAPI from "../types/client.types";
 import type * as LawyerAPI from "../types/lawyer.types";
 import type * as ClientSettingsAPI from "../types/clientSettings.types";
 import type * as LawyerSettingsAPI from "../types/lawyerSettings.types";
-=======
-
-import type * as API from '../types/api';
-import type * as UserAPI from '../types/user.types';
-import type * as AuthAPI from '../types/auth.types';
-import type * as ClientAPI from '../types/client.types';
-import type * as LawyerAPI from '../types/lawyer.types';
-import type * as ClientSettingsAPI from '../types/clientSettings.types';
-import type * as LawyerSettingsAPI from '../types/lawyerSettings.types';
->>>>>>> d347da4e1f42d847749b6dc858c21a2f014f69f7
 
 import { APIClient, FormDataAPI } from "./axios";
 import { UserRole } from "@/lib/enums";
@@ -529,24 +517,11 @@ export const deleteSummaryNew = (id: string) =>
   APIClient.delete(`/summaries/delete-summary/${id}`);
 
 ////////////////////////////////////////////////////////// DRAFTS ////////////////////////////////////////////////////////////
-<<<<<<< HEAD
-export const uploadDraft = (formData: FormData) =>
-  FormDataAPI.post<API.UploadDraftResponse>(`/draft/upload`, formData); // files: files field in FormData should be an array of files
-export const getDrafts = (params: GetDraftsParams) =>
-  APIClient.get<API.GetDraftsResponse>(`/draft/get-drafts`, { params });
-export const getDraft = (idOrSlug: string) =>
-  APIClient.get<API.GetDraftResponse>(`/draft/get-draft/${idOrSlug}`);
-export const updateDraft = (id: string, formData: FormData) =>
-  APIClient.put(`/draft/update-draft/${id}`, formData);
-export const deleteDraft = (id: string) =>
-  APIClient.delete(`/draft/delete-draft/${id}`);
-=======
 export const uploadDraft = (formData: FormData) => FormDataAPI.post<API.UploadDraftResponse>(`/draft/upload`, formData)  // files: files field in FormData should be an array of files
 export const getDrafts = (params: API.GetDraftsRequest) => APIClient.get<API.GetDraftsResponse>(`/draft/get-drafts`, { params })
 export const getDraft = (idOrSlug: string) => APIClient.get<API.GetDraftResponse>(`/draft/get-draft/${idOrSlug}`)
 export const updateDraft = (id: string, formData: FormData) => APIClient.put(`/draft/update-draft/${id}`, formData)
 export const deleteDraft = (id: string) => APIClient.delete(`/draft/delete-draft/${id}`)
->>>>>>> d347da4e1f42d847749b6dc858c21a2f014f69f7
 
 ////////////////////////////////////////////////////////// CASE LAWS ////////////////////////////////////////////////////////////
 export const getCaseLaws = (params?: API.GetCaseLawsRequest) =>

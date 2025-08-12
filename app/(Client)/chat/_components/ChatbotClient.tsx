@@ -18,6 +18,12 @@ import {
   getChatSession,
   updateBotMessage,
   updateStreamingMessage,
+  setCondidence,
+  setLegalContext,
+  setCases,
+  setReferences,
+  setQuickAction,
+  setChatMetadata,
 } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
@@ -58,11 +64,16 @@ const ChatbotClient = () => {
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const { references, cases, legalContext, confidence } =
-    useParsedMessages(messages);
   const [regeneratingMessageId, setRegeneratingMessageId] = useState<
     string | null
   >(null);
+  const {
+    cases,
+    references,
+    aiConfidence: confidence,
+    legalContext,
+    quickAction,
+  } = useSelector((state: RootState) => state.aiSession);
 
   ///////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////////////
   // Get Lawyers
@@ -167,14 +178,26 @@ const ChatbotClient = () => {
       dispatch(updateStreamingMessage(data));
     };
 
+    const handleMetadataDisplay = (data: {
+      aiConfidence: number;
+      references: string[];
+      cases: string[];
+      legalContext: string;
+      quickAction: string;
+    }) => {
+      dispatch(setChatMetadata(data));
+    };
+
     const handleBotMessageUpdated = (
       updatedBotMessage: Partial<AIChatMessage> & { _id: string }
     ) => {
       // Update the messages state with the new bot message (merge responses)
       dispatch(updateBotMessage(updatedBotMessage));
     };
+
     socket.on("model:message-stream", handleMessageStream);
     socket.on("model:bot-message-updated", handleBotMessageUpdated);
+    socket.on("model:metadata-generated", handleMetadataDisplay);
     return () => {
       socket.off("model:message-stream", handleMessageStream);
       socket.off("model:bot-message-updated", handleBotMessageUpdated);
@@ -221,6 +244,7 @@ const ChatbotClient = () => {
                     chatViewMode={chatViewMode}
                     textSize={textSize}
                     messages={messages}
+                    quickAction={quickAction}
                     onRegenerate={onRegenerate}
                   />
                 )}

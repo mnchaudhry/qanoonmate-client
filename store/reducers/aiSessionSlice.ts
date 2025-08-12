@@ -7,6 +7,10 @@ import { AIChatMessage } from "@/lib/interfaces";
 
 interface SessionState {
   aiConfidence: number;
+  quickAction: string;
+  references: string[];
+  cases: string[];
+  legalContext: string;
   sessions: AIChatSession[];
   sidebarSessions: SidebarChatItem[];
   currentSession: AIChatSession | null;
@@ -203,6 +207,10 @@ export const deleteMessage = createAsyncThunk(
 
 const initialState: SessionState = {
   aiConfidence: 95,
+  legalContext: "",
+  references: [],
+  cases: [],
+  quickAction: "",
   sessions: [],
   sidebarSessions: [],
   currentSession: null,
@@ -225,6 +233,13 @@ const aiSessionSlice = createSlice({
   initialState,
   reducers: {
     resetState: () => initialState,
+    setChatMetadata: (state, action) => {
+      state.aiConfidence = action.payload.aiConfidence;
+      state.cases = action.payload.cases;
+      state.references = action.payload.references;
+      state.legalContext = action.payload.legalContext;
+      state.quickAction = action.payload.quickAction;
+    },
     setCurrentSession: (state, action) => {
       state.currentSession = action.payload;
     },
@@ -486,6 +501,7 @@ const aiSessionSlice = createSlice({
 export default aiSessionSlice.reducer;
 export const {
   resetState,
+  setChatMetadata,
   addAIMessage,
   clearError,
   removeAIMessage,
