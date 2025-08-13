@@ -2,7 +2,6 @@
 
 import Hint from "@/components/Hint";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AIChatMessage, MessageItemProps } from "@/lib/interfaces";
 import { cn } from "@/lib/utils";
@@ -27,7 +26,7 @@ import { Nunito } from "next/font/google";
 import React, { memo, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useSelector } from "react-redux";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 const nunito = Nunito({ subsets: ["latin"] });
 
 interface MessageBoxProps {

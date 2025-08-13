@@ -26,10 +26,18 @@ interface Props {
   setUploadedFiles: Dispatch<SetStateAction<File[]>>;
   textareaRef: RefObject<HTMLTextAreaElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
+  setShowContextPanel: any;
 }
 
 const ChatInput: React.FC<Props> = memo(
-  ({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles }) => {
+  ({
+    isConnected,
+    textSize,
+    textareaRef,
+    fileInputRef,
+    setUploadedFiles,
+    setShowContextPanel,
+  }) => {
     ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
     const {
       isStreaming,
@@ -150,6 +158,8 @@ const ChatInput: React.FC<Props> = memo(
         setExtractedText("");
       }
       setExtractedText(""); // Clear after sending
+      setUploadedFiles([]);
+      setShowContextPanel(true);
     };
 
     const handleFileUpload = async (
@@ -178,12 +188,12 @@ const ChatInput: React.FC<Props> = memo(
       );
     };
 
-    const handleVoiceToggle = () => {
-      setIsVoiceRecording(!isVoiceRecording);
-      toast.success(
-        isVoiceRecording ? "Voice recording stopped" : "Voice recording started"
-      );
-    };
+    // const handleVoiceToggle = () => {
+    //   setIsVoiceRecording(!isVoiceRecording);
+    //   toast.success(
+    //     isVoiceRecording ? "Voice recording stopped" : "Voice recording started"
+    //   );
+    // };
 
     const handleExportSession = (format: "pdf" | "txt" | "json") => {
       const chatMessages = messages;
@@ -276,7 +286,7 @@ const ChatInput: React.FC<Props> = memo(
             handleFileUpload={handleFileUpload}
             handleLanguageToggle={handleLanguageToggle}
             handleShareSession={handleShareSession}
-            handleVoiceToggle={handleVoiceToggle}
+            // handleVoiceToggle={handleVoiceToggle}
             selectedLanguage={selectedLanguage}
             isStreaming={isStreaming}
             isConnected={isConnected}
@@ -286,7 +296,7 @@ const ChatInput: React.FC<Props> = memo(
           />
         </form>
         <div className="text-xs text-muted-foreground text-right w-full mt-2">
-          LegalEase can make mistakes. Check important info.
+          QanoonMate can make mistakes. Check important info.
         </div>
       </div>
     );

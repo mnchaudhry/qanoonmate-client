@@ -169,15 +169,12 @@ export const getChatMetadataBySession = createAsyncThunk(
   async (sessionId: string, { rejectWithValue }) => {
     try {
       const { data } = await api.getChatMetadataBySession(sessionId);
-      console.log("data for chat metadata", data);
-      if (!data?.success) toast.error(data?.message);
       return data?.data;
     } catch (err: any) {
       const message = getErrorMessage(
         err,
         `Could not load metadata with session ID: ${sessionId}.`
       );
-      toast.error(message);
       return rejectWithValue(message);
     }
   }

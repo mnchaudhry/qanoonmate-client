@@ -30,7 +30,7 @@ export default function ChatControls({
   selectedLanguage,
   fileInputRef,
   handleFileUpload,
-  handleVoiceToggle,
+  // handleVoiceToggle,
   isVoiceRecording,
   handleExportSession,
   handleShareSession,
@@ -88,7 +88,7 @@ export default function ChatControls({
         />
 
         {/* Voice Input */}
-        <Tooltip>
+        {/* <Tooltip>
           <TooltipTrigger asChild>
             <Button
               type="button"
@@ -111,42 +111,7 @@ export default function ChatControls({
           <TooltipContent>
             <p>{isVoiceRecording ? "Stop recording" : "Start voice input"}</p>
           </TooltipContent>
-        </Tooltip>
-
-        {/* Actions Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-9 w-9 p-0 hover:bg-accent"
-            >
-              <Settings className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            <DropdownMenuLabel>Session Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={() => handleExportSession("pdf")}>
-              <FileText className="w-4 h-4 mr-2" />
-              Export as PDF
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExportSession("txt")}>
-              <FileText className="w-4 h-4 mr-2" />
-              Export as TXT
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExportSession("json")}>
-              <FileText className="w-4 h-4 mr-2" />
-              Export as JSON
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleShareSession}>
-              <Share2 className="w-4 h-4 mr-2" />
-              Share Session
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        {/* Add option for legal dictionary */}
+        </Tooltip> */}
       </div>
 
       {/* Send Button */}

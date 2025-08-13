@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import MessageBox from "./MessageBox";
 import ChatbotSidebar from "./ChatbotSidebar";
 import ChatbotNavbar from "./ChatbotHeader";
-import { File } from "lucide-react";
+import { Cross, File, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +31,7 @@ import { getLawyers } from "@/store/reducers/lawyerSlice";
 import { useParsedMessages } from "../hooks/useParsedMessages";
 import { assistant, user as userRes } from "@openai/agents";
 import { AIChatMessage } from "@/lib/interfaces";
+import { Button } from "@/components/ui/button";
 
 /**
  * Imports Done till here
@@ -56,7 +57,6 @@ const ChatbotClient = () => {
   console.log("messages", messages);
   ///////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////////////
   // UI States
-  const [showContextPanel, setShowContextPanel] = useState(true);
   const [showDictionary, setShowDictionary] = useState(false);
   const [chatViewMode, setChatViewMode] = useState<
     "compact" | "card" | "timeline"
@@ -76,6 +76,7 @@ const ChatbotClient = () => {
     quickAction,
   } = useSelector((state: RootState) => state.aiSession);
 
+  const [showContextPanel, setShowContextPanel] = useState(false);
   ///////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////////////
   // Get Lawyers
   useEffect(() => {
@@ -88,6 +89,7 @@ const ChatbotClient = () => {
     dispatch(getChatSession(sessionId));
     dispatch(getMessagesBySession(sessionId));
     dispatch(getChatMetadataBySession(sessionId));
+    setShowContextPanel(true);
   }, [sessionId, dispatch]);
 
   useEffect(() => {
@@ -273,13 +275,30 @@ const ChatbotClient = () => {
                       </div>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {uploadedFiles.map((file, index) => (
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            {file.name}
-                          </Badge>
+                          <div key={index} className="relative">
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              {file.name}
+                            </Badge>
+                            <Button
+                              className="absolute top-0 right-0 w-0.5 h-0.5"
+                              onClick={() =>
+                                setUploadedFiles(
+                                  uploadedFiles.filter((fileObj) => {
+                                    return (
+                                      fileObj.name !== file.name &&
+                                      fileObj.size !== file.size
+                                    );
+                                  })
+                                )
+                              }
+                            >
+                              <X />
+                            </Button>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -290,6 +309,7 @@ const ChatbotClient = () => {
                     textSize={textSize}
                     textareaRef={textareaRef}
                     fileInputRef={fileInputRef}
+                    setShowContextPanel={setShowContextPanel}
                   />
                 </div>
               </div>
