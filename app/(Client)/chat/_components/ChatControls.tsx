@@ -1,29 +1,16 @@
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
-import {
-  FileText,
-  Globe,
-  Mic,
-  MicOff,
-  Send,
-  Settings,
-  Share2,
-  StopCircle,
-  Upload,
-} from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger, } from "@/components/ui/tooltip";
+import { Globe, Send, StopCircle, Upload, } from "lucide-react";
+
+interface Props {
+  handleLanguageToggle: () => void;
+  selectedLanguage: string;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isConnected: boolean;
+  isStreaming: boolean;
+  isLoading: boolean;
+}
 
 export default function ChatControls({
   handleLanguageToggle,
@@ -31,13 +18,10 @@ export default function ChatControls({
   fileInputRef,
   handleFileUpload,
   // handleVoiceToggle,
-  isVoiceRecording,
-  handleExportSession,
-  handleShareSession,
   isConnected,
   isStreaming,
   isLoading,
-}) {
+}: Props) {
   return (
     <div className="flex justify-between items-center w-full">
       <div className="flex items-center gap-3">
@@ -121,9 +105,8 @@ export default function ChatControls({
             size="sm"
             type="submit"
             disabled={!isConnected || isLoading}
-            className={`h-9 w-9 p-0 ${
-              isStreaming ? "bg-red-500" : "bg-primary"
-            } hover:bg-primary/90 text-primary-foreground`}
+            className={`h-9 w-9 p-0 ${isStreaming ? "bg-red-500" : "bg-primary"
+              } hover:bg-primary/90 text-primary-foreground`}
           >
             {isStreaming ? <StopCircle /> : <Send className="w-4 h-4" />}
           </Button>

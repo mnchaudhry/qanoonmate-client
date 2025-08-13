@@ -7,21 +7,7 @@ import { AIChatMessage, MessageItemProps } from "@/lib/interfaces";
 import { cn } from "@/lib/utils";
 import { RootState } from "@/store/store";
 import { parseAIResponse } from "@/utils/parseAIResponse";
-import {
-  Bookmark,
-  Bot,
-  ChevronLeft,
-  ChevronRight,
-  Clock,
-  Copy,
-  Flag,
-  MessageSquare,
-  RotateCcw,
-  Save,
-  ThumbsDown,
-  ThumbsUp,
-  User,
-} from "lucide-react";
+import { Bookmark, Bot, ChevronLeft, ChevronRight, Clock, Copy, Flag, MessageSquare, RotateCcw, Save, ThumbsDown, ThumbsUp, User, } from "lucide-react";
 import { Nunito } from "next/font/google";
 import React, { memo, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
@@ -36,28 +22,18 @@ interface MessageBoxProps {
   quickAction: string;
 }
 
-const MessageBox: React.FC<
-  MessageBoxProps & {
-    onRegenerate: (botMessage: AIChatMessage) => Promise<void>;
-  }
-> = memo(({ chatViewMode = "card", textSize = 16, messages, onRegenerate }) => {
+const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChatMessage) => Promise<void>; }> = memo(({ chatViewMode = "card", textSize = 16, messages, onRegenerate }) => {
   ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////
   console.log("messages", messages);
-  const { quickAction, streamingMessage } = useSelector(
-    (state: RootState) => state.aiSession
-  );
+  const { quickAction, streamingMessage } = useSelector((state: RootState) => state.aiSession);
 
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const endAnchorRef = useRef<HTMLDivElement>(null);
+
   // Track current response index for each bot message
-  const [responseIndexes, setResponseIndexes] = useState<
-    Record<string, number>
-  >({});
+  const [responseIndexes, setResponseIndexes] = useState<Record<string, number>>({});
 
-  const handleNavigate = (
-    messageId: string,
-    direction: "left" | "right",
-    responsesLength: number
-  ) => {
+  const handleNavigate = (messageId: string, direction: "left" | "right", responsesLength: number) => {
     setResponseIndexes((prev) => {
       const current = prev[messageId] || 0;
       let next = direction === "left" ? current - 1 : current + 1;
@@ -68,20 +44,12 @@ const MessageBox: React.FC<
   };
   ///////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////
   useEffect(() => {
-    console.log(
-      "MessageBox useEffect triggered - messages:",
-      messages.length,
-      "streamingMessage:",
-      !!streamingMessage
-    );
-    scrollToBottom();
+    const anchor = endAnchorRef.current;
+    if (!anchor) return;
+    anchor.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, streamingMessage]);
 
   ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   const getMessageTime = (timestamp: string) => {
     try {
       return new Date(timestamp).toLocaleTimeString([], {
@@ -271,13 +239,7 @@ const MessageBox: React.FC<
     return null;
   };
   // Memoized MessageItem component
-  const MessageItem = React.memo(function MessageItem({
-    message,
-    index,
-    chatViewMode,
-    textSize,
-    quickAction,
-  }: MessageItemProps) {
+  const MessageItem = React.memo(function MessageItem({ message, index, chatViewMode, textSize, quickAction, }: MessageItemProps) {
     // Defensive: default sender to 'bot' if missing
     const isModel = (message.sender ?? "bot") === "bot";
     const responses = getBotResponses(message);
@@ -524,7 +486,7 @@ const MessageBox: React.FC<
 
   return (
     <TooltipProvider>
-      <div className="flex-1 overflow-y-auto py-6 space-y-4 px-6">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto py-6 space-y-4 px-6">
         <div className="max-w-4xl mx-auto">
           {messages &&
             messages.length > 0 &&
@@ -549,7 +511,7 @@ const MessageBox: React.FC<
             />
           )}
         </div>
-        <div ref={messagesEndRef} />
+        <div ref={endAnchorRef} />
       </div>
     </TooltipProvider>
   );

@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { socketEvents } from "@/store/socket/events";
 import { extractTextFromPDF } from "@/utils/extractFromPdf";
 import { AgentInputItem, assistant, user as userRes } from "@openai/agents";
-import { jsPDF } from "jspdf";
+// import { jsPDF } from "jspdf";
 import { useRouter } from "next/navigation";
 import ChatControls from "./ChatControls";
 
@@ -52,7 +52,7 @@ const ChatInput: React.FC<Props> = memo(
     const { user } = useSelector((state: RootState) => state.auth);
     const router = useRouter();
     ///////////////////////////////////////////////////////////// STATES //////////////////////////////////////////////////////////////////////
-    const [isVoiceRecording, setIsVoiceRecording] = useState(false);
+    // const [isVoiceRecording, _setIsVoiceRecording] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState<
       "english" | "urdu"
     >("english");
@@ -90,8 +90,7 @@ const ChatInput: React.FC<Props> = memo(
 
       // Always log what we're about to send
       console.log(
-        `Sending message: "${userMessage}" ${
-          sessionId ? `with sessionId: ${sessionId}` : "without session"
+        `Sending message: "${userMessage}" ${sessionId ? `with sessionId: ${sessionId}` : "without session"
         }`
       );
       const history: AgentInputItem[] = messages.map((message) => {
@@ -181,8 +180,7 @@ const ChatInput: React.FC<Props> = memo(
     const handleLanguageToggle = () => {
       setSelectedLanguage((prev) => (prev === "english" ? "urdu" : "english"));
       toast.success(
-        `Language switched to ${
-          selectedLanguage === "english" ? "Urdu" : "English"
+        `Language switched to ${selectedLanguage === "english" ? "Urdu" : "English"
         }`
       );
     };
@@ -194,48 +192,48 @@ const ChatInput: React.FC<Props> = memo(
     //   );
     // };
 
-    const handleExportSession = (format: "pdf" | "txt" | "json") => {
-      const chatMessages = messages;
-      if (format === "json") {
-        const blob = new Blob([JSON.stringify(chatMessages, null, 2)], {
-          type: "application/json",
-        });
-        const url = URL.createObjectURL(blob);
-        downloadFile(url, "chat-export.json");
-      } else if (format === "txt") {
-        const text = chatMessages
-          .map((m) => `[${m.sender}] ${m.content}`)
-          .join("\n\n");
-        const blob = new Blob([text], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        downloadFile(url, "chat-export.txt");
-      } else if (format === "pdf") {
-        const doc = new jsPDF();
-        let y = 10;
-        chatMessages.forEach((m) => {
-          doc.text(`[${m.sender}] ${m.content}`, 10, y);
-          y += 10;
-          if (y > 280) {
-            doc.addPage();
-            y = 10;
-          }
-        });
-        doc.save("chat-export.pdf");
-      }
-    };
+    // const handleExportSession = (format: "pdf" | "txt" | "json") => {
+    //   const chatMessages = messages;
+    //   if (format === "json") {
+    //     const blob = new Blob([JSON.stringify(chatMessages, null, 2)], {
+    //       type: "application/json",
+    //     });
+    //     const url = URL.createObjectURL(blob);
+    //     downloadFile(url, "chat-export.json");
+    //   } else if (format === "txt") {
+    //     const text = chatMessages
+    //       .map((m) => `[${m.sender}] ${m.content}`)
+    //       .join("\n\n");
+    //     const blob = new Blob([text], { type: "text/plain" });
+    //     const url = URL.createObjectURL(blob);
+    //     downloadFile(url, "chat-export.txt");
+    //   } else if (format === "pdf") {
+    //     const doc = new jsPDF();
+    //     let y = 10;
+    //     chatMessages.forEach((m) => {
+    //       doc.text(`[${m.sender}] ${m.content}`, 10, y);
+    //       y += 10;
+    //       if (y > 280) {
+    //         doc.addPage();
+    //         y = 10;
+    //       }
+    //     });
+    //     doc.save("chat-export.pdf");
+    //   }
+    // };
 
-    const downloadFile = (url: string, filename: string) => {
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    };
+    // const downloadFile = (url: string, filename: string) => {
+    //   const a = document.createElement("a");
+    //   a.href = url;
+    //   a.download = filename;
+    //   a.click();
+    //   URL.revokeObjectURL(url);
+    // };
 
-    const handleShareSession = () => {
-      navigator.clipboard.writeText(window.location.href);
-      toast.success("Session link copied to clipboard!");
-    };
+    // const handleShareSession = () => {
+    //   navigator.clipboard.writeText(window.location.href);
+    //   toast.success("Session link copied to clipboard!");
+    // };
 
     ///////////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////////////
     return (
@@ -258,7 +256,7 @@ const ChatInput: React.FC<Props> = memo(
               }
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              disabled={!isConnected || isStreaming}
+              disabled={!isConnected}
               className={cn(
                 "w-full h-[32px] resize-none border-0 shadow-none bg-transparent placeholder:text-muted-foreground",
                 "focus:outline-none focus:ring-0 focus:border-0 outline-none ring-0"
@@ -281,15 +279,11 @@ const ChatInput: React.FC<Props> = memo(
 
           {/* Controls Row */}
           <ChatControls
-            handleExportSession={handleExportSession}
             handleFileUpload={handleFileUpload}
             handleLanguageToggle={handleLanguageToggle}
-            handleShareSession={handleShareSession}
-            // handleVoiceToggle={handleVoiceToggle}
             selectedLanguage={selectedLanguage}
             isStreaming={isStreaming}
             isConnected={isConnected}
-            isVoiceRecording={isVoiceRecording}
             isLoading={isLoading}
             fileInputRef={fileInputRef}
           />

@@ -6,8 +6,6 @@ import {
   getMyChatSessions,
   newChat,
   renameSession,
-  resetState,
-  setAIMessages,
   setCurrentSession,
   setCurrentSessionId,
 } from "@/store/reducers/aiSessionSlice";

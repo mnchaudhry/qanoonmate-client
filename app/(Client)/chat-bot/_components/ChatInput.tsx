@@ -18,7 +18,9 @@ import { extractTextFromPDF } from "@/utils/extractFromPdf";
 import { AgentInputItem, assistant, user as userRes } from "@openai/agents";
 import { jsPDF } from "jspdf";
 import { useRouter } from "next/navigation";
-import ChatControls from "./ChatControls";
+import { File, Send, Share } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
 
 interface Props {
   isConnected: boolean;
@@ -170,6 +172,10 @@ const ChatInput: React.FC<Props> = memo(
       setExtractedText(allText);
     };
 
+    const triggerFileUpload = () => {
+      fileInputRef.current?.click();
+    };
+
     const handleLanguageToggle = () => {
       setSelectedLanguage((prev) => (prev === "english" ? "urdu" : "english"));
       toast.success(
@@ -271,20 +277,56 @@ const ChatInput: React.FC<Props> = memo(
             />
           </div>
 
-          {/* Controls Row */}
-          <ChatControls
-            handleExportSession={handleExportSession}
-            handleFileUpload={handleFileUpload}
-            handleLanguageToggle={handleLanguageToggle}
-            handleShareSession={handleShareSession}
-            handleVoiceToggle={handleVoiceToggle}
-            selectedLanguage={selectedLanguage}
-            isStreaming={isStreaming}
-            isConnected={isConnected}
-            isVoiceRecording={isVoiceRecording}
-            isLoading={isLoading}
-            fileInputRef={fileInputRef}
+          {/* Hidden file input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf"
+            onChange={handleFileUpload}
+            className="hidden"
           />
+          
+          {/* Controls Row */}
+          <div className="flex items-center justify-between w-full mt-2">
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={triggerFileUpload}
+                disabled={!isConnected || isStreaming}
+              >
+                <File className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleLanguageToggle}
+                disabled={!isConnected || isStreaming}
+              >
+                {selectedLanguage === "english" ? "EN" : "اردو"}
+              </Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleShareSession}
+                disabled={!isConnected}
+              >
+                <Share className="h-4 w-4" />
+              </Button>
+              <Button
+                type="submit"
+                disabled={!isConnected || isStreaming || inputValue.trim() === ""}
+                size="sm"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </form>
         <div className="text-xs text-muted-foreground text-right w-full mt-2">
           LegalEase can make mistakes. Check important info.

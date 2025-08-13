@@ -20,17 +20,7 @@ interface ChatNavbarProps {
   aiConfidence?: number | null;
 }
 
-const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
-  showAccessibilityPanel,
-  setShowAccessibilityPanel,
-  textSize = 16,
-  setTextSize,
-  isScreenReaderMode,
-  setIsScreenReaderMode,
-  chatViewMode,
-  setChatViewMode,
-  aiConfidence,
-}) => {
+const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setShowAccessibilityPanel, textSize = 16, setTextSize, isScreenReaderMode, setIsScreenReaderMode, chatViewMode, setChatViewMode, aiConfidence, }) => {
 
   ////////////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////////////
   const reduxConfidence = useSelector((state: RootState) => state.aiSession.aiConfidence);

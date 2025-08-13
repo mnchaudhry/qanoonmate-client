@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import MessageBox from "./MessageBox";
 import ChatbotSidebar from "./ChatbotSidebar";
 import ChatbotNavbar from "./ChatbotHeader";
-import { Cross, File, X } from "lucide-react";
+import { File, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,17 +18,12 @@ import {
   getChatSession,
   updateBotMessage,
   updateStreamingMessage,
-  setCondidence,
-  setLegalContext,
-  setCases,
-  setReferences,
-  setQuickAction,
   setChatMetadata,
   getChatMetadataBySession,
 } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
-import { useParsedMessages } from "../hooks/useParsedMessages";
+
 import { assistant, user as userRes } from "@openai/agents";
 import { AIChatMessage } from "@/lib/interfaces";
 import { Button } from "@/components/ui/button";
@@ -43,7 +38,7 @@ import { Button } from "@/components/ui/button";
  */
 const ChatbotClient = () => {
   ///////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////////////
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const {
     defaultSocket: { socket, connectError, isConnected },
@@ -65,9 +60,8 @@ const ChatbotClient = () => {
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [regeneratingMessageId, setRegeneratingMessageId] = useState<
-    string | null
-  >(null);
+  const [regeneratingMessageId, _setRegeneratingMessageId] = useState<string | null>(null);
+  console.log('regeneratedMessageId', regeneratingMessageId)
   const {
     cases,
     references,
@@ -121,7 +115,7 @@ const ChatbotClient = () => {
   ///////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////////////
 
   const onRegenerate = async (botMessage: AIChatMessage) => {
-    setRegeneratingMessageId(botMessage._id);
+    _setRegeneratingMessageId(botMessage._id);
     // Find userMessageId if it's missing
     let userMessageId = botMessage.userMessageId;
 
@@ -168,7 +162,7 @@ const ChatbotClient = () => {
       history: builtHistory,
     });
 
-    setTimeout(() => setRegeneratingMessageId(null), 100);
+    setTimeout(() => _setRegeneratingMessageId(null), 100);
   };
 
   useEffect(() => {
