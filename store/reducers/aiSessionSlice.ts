@@ -224,7 +224,7 @@ export const deleteMessage = createAsyncThunk(
 ////////////////////////////////////////////////////////// REDUCER ////////////////////////////////////////////////////////////
 
 const initialState: SessionState = {
-  aiConfidence: 95,
+  aiConfidence: 100,
   legalContext: "",
   references: [],
   cases: [],
@@ -251,8 +251,8 @@ const aiSessionSlice = createSlice({
   initialState,
   reducers: {
     resetState: () => initialState,
-    newChat: (state, action) => {
-      state.aiConfidence = 95;
+    newChat: (state) => {
+      state.aiConfidence = 100;
       state.currentMessage = null;
       state.isLoading = false;
       state.isStreaming = false;

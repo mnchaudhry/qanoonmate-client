@@ -46,7 +46,6 @@ const MessageBox: React.FC<
   const { quickAction, streamingMessage } = useSelector(
     (state: RootState) => state.aiSession
   );
-  console.log("streamingMessage", streamingMessage);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   // Track current response index for each bot message

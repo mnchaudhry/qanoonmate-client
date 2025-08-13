@@ -100,11 +100,10 @@ const ChatInput: React.FC<Props> = memo(
           : userRes(message.content);
       });
 
-      console.log("Extracted text is: ", extractedText);
       history.push(
         userRes(
           extractedText
-            ? `\nProvided Context from file is ${extractedText}\n\n Answer only in ${selectedLanguage}`
+            ? `\nProvided Context from pdf file is ${extractedText}\n\n Answer only in ${selectedLanguage}`
             : `Answer only in ${selectedLanguage}`
         )
       );
