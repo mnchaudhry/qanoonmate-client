@@ -147,16 +147,18 @@ const MessageBox: React.FC<
       return (
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           {/* Regenerate Button */}
-          <Hint label="Regenerate response">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={async () => await onRegenerate(message)}
-              className="p-1.5 rounded-full"
-            >
-              <RotateCcw className="w-5 h-5" />
-            </Button>
-          </Hint>
+          {message._id == messages[messages.length - 1]._id && (
+            <Hint label="Regenerate response">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={async () => await onRegenerate(message)}
+                className="p-1.5 rounded-full"
+              >
+                <RotateCcw className="w-5 h-5" />
+              </Button>
+            </Hint>
+          )}
           {/* Navigation Arrows */}
           {responses.length > 1 && (
             <>
