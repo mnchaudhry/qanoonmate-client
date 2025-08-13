@@ -254,6 +254,25 @@ const aiSessionSlice = createSlice({
   initialState,
   reducers: {
     resetState: () => initialState,
+    newChat: (state, action) => {
+      state.aiConfidence = 95;
+      state.currentMessage = null;
+      state.isLoading = false;
+      state.isStreaming = false;
+      state.quickAction = "";
+      state.error = null;
+      state.legalContext = "";
+      state.cases = [];
+      state.references = [];
+      state.sessionMetadata = {
+        interactionCount: 0,
+        lastModified: new Date().toISOString(),
+        sessionDuration: 0,
+      };
+      state.currentSession = null;
+      state.currentSessionId = null;
+      state.messages = [];
+    },
     setChatMetadata: (state, action) => {
       state.aiConfidence = action.payload.aiConfidence;
       state.cases = action.payload.cases;
@@ -535,6 +554,7 @@ const aiSessionSlice = createSlice({
 export default aiSessionSlice.reducer;
 export const {
   resetState,
+  newChat,
   setChatMetadata,
   addAIMessage,
   clearError,

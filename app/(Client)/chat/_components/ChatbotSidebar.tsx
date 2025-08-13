@@ -4,7 +4,10 @@ import { AIChatSession } from "@/store/types/api";
 import {
   deleteSession,
   getMyChatSessions,
+  newChat,
   renameSession,
+  resetState,
+  setAIMessages,
   setCurrentSession,
   setCurrentSessionId,
 } from "@/store/reducers/aiSessionSlice";
@@ -91,7 +94,9 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
 
   const handleCreateSession = () => {
     toast.success("Session created successfully");
+
     router.push("/chat");
+    dispatch(newChat());
   };
 
   const onChatSelect = (session: AIChatSession) => {
