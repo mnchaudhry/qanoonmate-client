@@ -8,6 +8,7 @@ import type * as LawyerSettingsAPI from "../types/lawyerSettings.types";
 
 import { APIClient, FormDataAPI } from "./axios";
 import { UserRole } from "@/lib/enums";
+import { string } from "zod/v3";
 
 ////////////////////////////////////////////////////////// AUTH ////////////////////////////////////////////////////////////
 export const signup = (role: UserRole, data: AuthAPI.SignupRequest) =>
@@ -323,6 +324,12 @@ export const renameSession = ({ id, title }: API.RenameSessionRequest) =>
   APIClient.put<API.RenameSessionResponse>(`/ai/session/rename-session/${id}`, {
     title,
   });
+export const getChatMetadataBySession = (sessionId: string) =>
+  APIClient.get(`/ai/session/get-chat-metadata`, {
+    params: {
+      sessionId: sessionId,
+    },
+  });
 export const deleteSession = (id: string) =>
   APIClient.delete<API.DeleteSessionResponse>(
     `/ai/session/delete-session/${id}`
@@ -517,11 +524,16 @@ export const deleteSummaryNew = (id: string) =>
   APIClient.delete(`/summaries/delete-summary/${id}`);
 
 ////////////////////////////////////////////////////////// DRAFTS ////////////////////////////////////////////////////////////
-export const uploadDraft = (formData: FormData) => FormDataAPI.post<API.UploadDraftResponse>(`/draft/upload`, formData)  // files: files field in FormData should be an array of files
-export const getDrafts = (params: API.GetDraftsRequest) => APIClient.get<API.GetDraftsResponse>(`/draft/get-drafts`, { params })
-export const getDraft = (idOrSlug: string) => APIClient.get<API.GetDraftResponse>(`/draft/get-draft/${idOrSlug}`)
-export const updateDraft = (id: string, formData: FormData) => APIClient.put(`/draft/update-draft/${id}`, formData)
-export const deleteDraft = (id: string) => APIClient.delete(`/draft/delete-draft/${id}`)
+export const uploadDraft = (formData: FormData) =>
+  FormDataAPI.post<API.UploadDraftResponse>(`/draft/upload`, formData); // files: files field in FormData should be an array of files
+export const getDrafts = (params: API.GetDraftsRequest) =>
+  APIClient.get<API.GetDraftsResponse>(`/draft/get-drafts`, { params });
+export const getDraft = (idOrSlug: string) =>
+  APIClient.get<API.GetDraftResponse>(`/draft/get-draft/${idOrSlug}`);
+export const updateDraft = (id: string, formData: FormData) =>
+  APIClient.put(`/draft/update-draft/${id}`, formData);
+export const deleteDraft = (id: string) =>
+  APIClient.delete(`/draft/delete-draft/${id}`);
 
 ////////////////////////////////////////////////////////// CASE LAWS ////////////////////////////////////////////////////////////
 export const getCaseLaws = (params?: API.GetCaseLawsRequest) =>

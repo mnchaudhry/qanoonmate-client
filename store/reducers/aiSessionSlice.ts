@@ -54,6 +54,7 @@ export const getChatSession = createAsyncThunk(
     try {
       const { data } = await api.getChatSession(id);
       if (!data?.success) toast.error(data?.message);
+      console.log("data for chat session", data);
       return data?.data;
     } catch (error: any) {
       const message = getErrorMessage(
@@ -150,11 +151,31 @@ export const getMessagesBySession = createAsyncThunk(
     try {
       const { data } = await api.getMessagesBySession(sessionId);
       if (!data?.success) toast.error(data?.message);
+      console.log("data for getmessages by session", data);
       return data?.data;
     } catch (error: any) {
       const message = getErrorMessage(
         error,
         `Unable to fetch messages for session ID: ${sessionId}.`
+      );
+      toast.error(message);
+      return rejectWithValue(message);
+    }
+  }
+);
+
+export const getChatMetadataBySession = createAsyncThunk(
+  "aiMessage/getChatMetadataBySession",
+  async (sessionId: string, { rejectWithValue }) => {
+    try {
+      const { data } = await api.getChatMetadataBySession(sessionId);
+      console.log("data for chat metadata", data);
+      if (!data?.success) toast.error(data?.message);
+      return data?.data;
+    } catch (err: any) {
+      const message = getErrorMessage(
+        err,
+        `Could not load metadata with session ID: ${sessionId}.`
       );
       toast.error(message);
       return rejectWithValue(message);
@@ -398,7 +419,20 @@ const aiSessionSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
       })
-
+      .addCase(getChatMetadataBySession.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(getChatMetadataBySession.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.aiConfidence = action.payload.aiConfidence;
+        state.cases = action.payload.cases;
+        state.references = action.payload.references;
+        state.legalContext = action.payload.legalContext;
+        state.quickAction = action.payload.quickAction;
+      })
+      .addCase(getChatMetadataBySession.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
       .addCase(renameSession.pending, (state) => {
         state.isLoading = true;
       })

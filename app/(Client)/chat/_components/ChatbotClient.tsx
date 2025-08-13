@@ -24,6 +24,7 @@ import {
   setReferences,
   setQuickAction,
   setChatMetadata,
+  getChatMetadataBySession,
 } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
@@ -86,6 +87,7 @@ const ChatbotClient = () => {
     if (!sessionId) return;
     dispatch(getChatSession(sessionId));
     dispatch(getMessagesBySession(sessionId));
+    dispatch(getChatMetadataBySession(sessionId));
   }, [sessionId, dispatch]);
 
   useEffect(() => {
@@ -195,9 +197,20 @@ const ChatbotClient = () => {
       dispatch(updateBotMessage(updatedBotMessage));
     };
 
+    const handleMetadataLoaded = (data: {
+      aiConfidence: number;
+      legalContext: string;
+      references: string[];
+      cases: string[];
+      quickAction: string;
+    }) => {
+      dispatch(setChatMetadata(data));
+    };
+
     socket.on("model:message-stream", handleMessageStream);
     socket.on("model:bot-message-updated", handleBotMessageUpdated);
     socket.on("model:metadata-generated", handleMetadataDisplay);
+    socket.on("model:metadata-loaded", handleMetadataLoaded);
     return () => {
       socket.off("model:message-stream", handleMessageStream);
       socket.off("model:bot-message-updated", handleBotMessageUpdated);
