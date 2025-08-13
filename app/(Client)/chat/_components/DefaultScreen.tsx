@@ -7,7 +7,7 @@ const DefaultScreen = () => {
       <div className="flex flex-row items-center justify-center gap-4 opacity-50">
         <h2 className="text-3xl text-muted-foreground flex flex-col justify-center align-middle text-center">
           Welcome to
-          <Logo size="lg" type="green" className="w-32  " />
+          <Logo size="lg" type="green" className="w-32" />
         </h2>
       </div>
     </div>
