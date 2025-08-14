@@ -13,7 +13,7 @@ const PaymentSecurity: React.FC = () => {
         <CheckCircle className="w-5 h-5 text-primary-600 mt-0.5 flex-shrink-0" />
         <div className="text-sm text-primary-800">
           <p className="mb-2">
-            All transactions are encrypted and processed securely via VerdictA&apos;s verified payment gateways.
+            All transactions are encrypted and processed securely via QanoonMate&apos;s verified payment gateways.
           </p>
           <div className="flex items-center gap-2 text-xs text-primary-700">
             <Lock className="w-3 h-3" />

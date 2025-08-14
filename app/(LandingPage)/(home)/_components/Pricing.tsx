@@ -1,11 +1,5 @@
 import { CheckIcon, MoveRight, PhoneCall } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import SectionHeading from "./SectionHeading";
 import { pricingPlans } from "@/constants";
