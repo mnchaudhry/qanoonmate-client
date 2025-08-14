@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     description: 'Legal access simplified. QanoonMate is Pakistan\'s leading legal tech platform that connects users with qualified lawyers and provides AI-driven legal solutions.',
     images: [
       {
-        url: '/Pictures/qanoonmate-og-image.jpg',
+        url: '/Pictures/main.jpeg',
         width: 1200,
         height: 630,
         alt: 'QanoonMate - Legal Tech Platform',
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'QanoonMate - AI-Powered Legal Platform for Pakistan',
     description: 'Legal access simplified. Connect with qualified lawyers and get AI-driven legal solutions.',
-    images: ['/Pictures/qanoonmate-twitter-image.jpg'],
+    images: ['/Pictures/main.jpeg'],
     creator: '@qanoonmate',
     site: '@qanoonmate',
   },
