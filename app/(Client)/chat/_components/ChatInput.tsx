@@ -29,7 +29,7 @@ interface Props {
   setShowContextPanel: any;
 }
 
-const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles, setShowContextPanel, }) => {
+const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles, }) => {
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
   const { isStreaming, isLoading, messages, currentSessionId: sessionId, } = useSelector((state: RootState) => state.aiSession);
   const { defaultSocket: { socket }, } = useSocketContext();

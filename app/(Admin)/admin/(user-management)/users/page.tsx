@@ -43,6 +43,7 @@ const AdminUsers = () => {
 
   ////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////
   const initializedFromUrl = useRef(false)
+  useEffect(()=>{setSelectedUser(null)},[])
   useEffect(() => {
     if (initializedFromUrl.current) return
     initializedFromUrl.current = true

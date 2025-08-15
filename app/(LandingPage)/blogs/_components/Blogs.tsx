@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react'
 import React, { useState, useEffect, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+// import { useRouter } from 'next/navigation'
 import BlogCard from './BlogCard'
 import BlogFilters from './BlogFilters'
 import { Button } from '@/components/ui/button'
@@ -12,9 +12,9 @@ import { Blog } from '@/store/types/api'
 const Blogs = () => {
 
     ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
-    const router = useRouter()
+    // const router = useRouter()
     const dispatch = useDispatch();
-    const { user } = useSelector((state: RootState) => state.auth)
+    // const { user } = useSelector((state: RootState) => state.auth)
     const { blogs, loading: isLoading } = useSelector((state: RootState) => state.blog);
 
     ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
@@ -52,13 +52,13 @@ const Blogs = () => {
     }, [blogs, search, selectedCategory, filterBlogs])
 
     ////////////////////////////////////////////////////////// HANDLERS /////////////////////////////////////////////////////////////
-    const handleWriteBlog = () => {
-        if (user) {
-            router.push('/blogs/write')
-        } else {
-            router.push('/auth/sign-in?redirect=/blogs/write')
-        }
-    }
+    // const handleWriteBlog = () => {
+    //     if (user) {
+    //         router.push('/blogs/write')
+    //     } else {
+    //         router.push('/auth/sign-in?redirect=/blogs/write')
+    //     }
+    // }
 
     const handleCategoryChange = (category: string) => {
         setSelectedCategory(category)

@@ -127,18 +127,6 @@ const ApprovedLawyersPage = () => {
     setSortBy('name')
   }
 
-  const handleExportCSV = () => {
-    // TODO: Implement CSV export functionality
-    console.log('Export CSV')
-  }
-
-  const handleRefresh = () => { dispatch(getLawyers({ page: 1, limit: 100 })) }
-
-  const handleBulkAction = (action: string) => {
-    // TODO: Implement bulk actions
-    console.log('Bulk action:', action, 'for lawyers:', selectedLawyers)
-  }
-
   //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   if (isLoading) {
     return (

@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { socketEvents } from "@/store/socket/events";
 import { extractTextFromPDF } from "@/utils/extractFromPdf";
 import { AgentInputItem, assistant, user as userRes } from "@openai/agents";
-import { jsPDF } from "jspdf";
+// import { jsPDF } from "jspdf";
 import { useRouter } from "next/navigation";
 import { File, Send, Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -46,7 +46,7 @@ const ChatInput: React.FC<Props> = memo(
     const { user } = useSelector((state: RootState) => state.auth);
     const router = useRouter();
     ///////////////////////////////////////////////////////////// STATES //////////////////////////////////////////////////////////////////////
-    const [isVoiceRecording, setIsVoiceRecording] = useState(false);
+    // const [isVoiceRecording, setIsVoiceRecording] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState<
       "english" | "urdu"
     >("english");
@@ -185,50 +185,50 @@ const ChatInput: React.FC<Props> = memo(
       );
     };
 
-    const handleVoiceToggle = () => {
-      setIsVoiceRecording(!isVoiceRecording);
-      toast.success(
-        isVoiceRecording ? "Voice recording stopped" : "Voice recording started"
-      );
-    };
+    // const handleVoiceToggle = () => {
+    //   setIsVoiceRecording(!isVoiceRecording);
+    //   toast.success(
+    //     isVoiceRecording ? "Voice recording stopped" : "Voice recording started"
+    //   );
+    // };
 
-    const handleExportSession = (format: "pdf" | "txt" | "json") => {
-      const chatMessages = messages;
-      if (format === "json") {
-        const blob = new Blob([JSON.stringify(chatMessages, null, 2)], {
-          type: "application/json",
-        });
-        const url = URL.createObjectURL(blob);
-        downloadFile(url, "chat-export.json");
-      } else if (format === "txt") {
-        const text = chatMessages
-          .map((m) => `[${m.sender}] ${m.content}`)
-          .join("\n\n");
-        const blob = new Blob([text], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        downloadFile(url, "chat-export.txt");
-      } else if (format === "pdf") {
-        const doc = new jsPDF();
-        let y = 10;
-        chatMessages.forEach((m) => {
-          doc.text(`[${m.sender}] ${m.content}`, 10, y);
-          y += 10;
-          if (y > 280) {
-            doc.addPage();
-            y = 10;
-          }
-        });
-        doc.save("chat-export.pdf");
-      }
-    };
+    // const handleExportSession = (format: "pdf" | "txt" | "json") => {
+    //   const chatMessages = messages;
+    //   if (format === "json") {
+    //     const blob = new Blob([JSON.stringify(chatMessages, null, 2)], {
+    //       type: "application/json",
+    //     });
+    //     const url = URL.createObjectURL(blob);
+    //     downloadFile(url, "chat-export.json");
+    //   } else if (format === "txt") {
+    //     const text = chatMessages
+    //       .map((m) => `[${m.sender}] ${m.content}`)
+    //       .join("\n\n");
+    //     const blob = new Blob([text], { type: "text/plain" });
+    //     const url = URL.createObjectURL(blob);
+    //     downloadFile(url, "chat-export.txt");
+    //   } else if (format === "pdf") {
+    //     const doc = new jsPDF();
+    //     let y = 10;
+    //     chatMessages.forEach((m) => {
+    //       doc.text(`[${m.sender}] ${m.content}`, 10, y);
+    //       y += 10;
+    //       if (y > 280) {
+    //         doc.addPage();
+    //         y = 10;
+    //       }
+    //     });
+    //     doc.save("chat-export.pdf");
+    //   }
+    // };
 
-    const downloadFile = (url: string, filename: string) => {
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      a.click();
-      URL.revokeObjectURL(url);
-    };
+    // const downloadFile = (url: string, filename: string) => {
+    //   const a = document.createElement("a");
+    //   a.href = url;
+    //   a.download = filename;
+    //   a.click();
+    //   URL.revokeObjectURL(url);
+    // };
 
     const handleShareSession = () => {
       navigator.clipboard.writeText(window.location.href);
