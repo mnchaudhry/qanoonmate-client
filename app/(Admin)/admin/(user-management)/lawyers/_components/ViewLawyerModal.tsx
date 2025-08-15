@@ -61,7 +61,7 @@ const ViewLawyerModal: React.FC<ViewLawyerModalProps> = ({
                 {lawyer.firstname} {lawyer.lastname}
               </h3>
               <div className="flex items-center space-x-2 mt-1">
-                {lawyer.isVerified ? (
+                {lawyer.identityVerified ? (
                   <Badge className="bg-green-500">
                     <CheckCircle className="w-3 h-3 mr-1" />
                     Verified
@@ -83,7 +83,7 @@ const ViewLawyerModal: React.FC<ViewLawyerModalProps> = ({
 
           {/* Action Buttons */}
           <div className="flex space-x-2">
-            {!lawyer.isVerified && (
+            {!lawyer.identityVerified && (
               <Button
                 size="sm"
                 onClick={handleVerify}

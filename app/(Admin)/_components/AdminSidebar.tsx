@@ -18,6 +18,7 @@ const userManagementItems = [
     {
         title: "Lawyers", url: "/admin/lawyers", icon: UserCheck,
         subItems: [
+            { title: "All Lawyers", url: "/admin/lawyers" },
             { title: "Pending", url: "/admin/lawyers/pending" },
             { title: "Approved", url: "/admin/lawyers/approved" },
             { title: "Rejected", url: "/admin/lawyers/rejected" }

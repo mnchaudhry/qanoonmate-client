@@ -41,28 +41,19 @@ interface ChatSidebarProps {
   };
 }
 
-const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
-  sessionMetadata,
-}: ChatSidebarProps) => {
+const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata, }: ChatSidebarProps) => {
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { sidebarSessions: sessions, currentSessionId: sessionId } =
-    useSelector((state: RootState) => state.aiSession);
+  const { sidebarSessions: sessions, currentSessionId: sessionId } = useSelector((state: RootState) => state.aiSession);
   const router = useRouter();
   const searchParams = useSearchParams();
   const paramSessionId = searchParams.get("id");
 
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
-  const [loading, setLoading] = useState<{
-    fetch: boolean;
-    rename: boolean;
-    delete: boolean;
-  }>({ fetch: false, rename: false, delete: false });
+  const [loading, setLoading] = useState<{ fetch: boolean; rename: boolean; delete: boolean; }>({ fetch: false, rename: false, delete: false });
   const [renaming, setRenaming] = useState<string>("");
-  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(
-    null
-  );
+  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -74,10 +65,10 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
     }
   }, [paramSessionId, dispatch]);
   useEffect(() => {
+    if (!user) return;
     setLoading((pre) => ({ ...pre, fetch: true }));
-    dispatch(getMyChatSessions(user ? user._id : null)).finally(() =>
-      setLoading((pre) => ({ ...pre, fetch: false }))
-    );
+    dispatch(getMyChatSessions(user._id))
+      .finally(() => setLoading((pre) => ({ ...pre, fetch: false })));
   }, [dispatch, user]);
 
   ///////////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////////////
@@ -228,112 +219,112 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
               <div className="flex-1">
                 {loading.fetch
                   ? Array.from({ length: 5 }).map((_, idx) => (
-                      <div
-                        key={idx}
-                        className="p-2 rounded-lg hover:bg-accent cursor-pointer text-sm flex justify-between items-center animate-pulse mb-1.5"
-                      >
-                        <span className="h-3 bg-muted-foreground/30 rounded w-3/4"></span>
-                        <div className="w-5 h-5 bg-muted-foreground/20 rounded-full"></div>
-                      </div>
-                    ))
+                    <div
+                      key={idx}
+                      className="p-2 rounded-lg hover:bg-accent cursor-pointer text-sm flex justify-between items-center animate-pulse mb-1.5"
+                    >
+                      <span className="h-3 bg-muted-foreground/30 rounded w-3/4"></span>
+                      <div className="w-5 h-5 bg-muted-foreground/20 rounded-full"></div>
+                    </div>
+                  ))
                   : sessions
-                      .filter((section) =>
-                        section.items.some((session) =>
-                          session.title
-                            .toLowerCase()
-                            .includes(searchTerm.toLowerCase())
-                        )
+                    .filter((section) =>
+                      section.items.some((session) =>
+                        session.title
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
                       )
-                      .map((section, index) => (
-                        <div key={index} className="mt-4">
-                          <h2 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wide">
-                            {section.section}
-                          </h2>
-                          {section.items
-                            .filter((session) =>
-                              session.title
-                                .toLowerCase()
-                                .includes(searchTerm.toLowerCase())
-                            )
-                            .map((session, i) => (
-                              <div
-                                key={i}
-                                onClick={() => onChatSelect(session)}
-                                className={cn(
-                                  "p-2 rounded-lg hover:bg-accent cursor-pointer text-sm flex justify-between items-center mb-1.5 transition-colors",
-                                  String(sessionId) == String(session._id)
-                                    ? "bg-primary/10 text-primary border border-primary/20"
-                                    : "bg-transparent"
-                                )}
-                              >
-                                {renaming === session._id ? (
-                                  <input
-                                    autoFocus
-                                    defaultValue={session.title}
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter") {
-                                        onRename(
-                                          session._id,
-                                          (e.target as HTMLInputElement).value
-                                        );
-                                      }
-                                    }}
-                                    onBlur={(e) =>
+                    )
+                    .map((section, index) => (
+                      <div key={index} className="mt-4">
+                        <h2 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wide">
+                          {section.section}
+                        </h2>
+                        {section.items
+                          .filter((session) =>
+                            session.title
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                          )
+                          .map((session, i) => (
+                            <div
+                              key={i}
+                              onClick={() => onChatSelect(session)}
+                              className={cn(
+                                "p-2 rounded-lg hover:bg-accent cursor-pointer text-sm flex justify-between items-center mb-1.5 transition-colors",
+                                String(sessionId) == String(session._id)
+                                  ? "bg-primary/10 text-primary border border-primary/20"
+                                  : "bg-transparent"
+                              )}
+                            >
+                              {renaming === session._id ? (
+                                <input
+                                  autoFocus
+                                  defaultValue={session.title}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
                                       onRename(
                                         session._id,
                                         (e.target as HTMLInputElement).value
-                                      )
+                                      );
                                     }
-                                    className={cn(
-                                      "w-full bg-transparent border !border-border px-2 py-1 rounded-md text-sm",
-                                      loading.rename
-                                        ? "animate-pulse cursor-not-allowed"
-                                        : ""
-                                    )}
-                                    disabled={loading.rename}
-                                  />
-                                ) : (
-                                  <>
-                                    <span className="truncate font-medium">
-                                      {session.title}
-                                    </span>
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button
-                                          variant="ghost"
-                                          size="icon"
-                                          className="w-6 h-6 hover:bg-accent"
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
-                                          <MoreVertical className="w-3 h-3" />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setRenaming(session._id);
-                                          }}
-                                        >
-                                          Rename
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setSessionToDelete(session);
-                                            setOpenDeleteModal(true);
-                                          }}
-                                        >
-                                          Delete
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  </>
-                                )}
-                              </div>
-                            ))}
-                        </div>
-                      ))}
+                                  }}
+                                  onBlur={(e) =>
+                                    onRename(
+                                      session._id,
+                                      (e.target as HTMLInputElement).value
+                                    )
+                                  }
+                                  className={cn(
+                                    "w-full bg-transparent border !border-border px-2 py-1 rounded-md text-sm",
+                                    loading.rename
+                                      ? "animate-pulse cursor-not-allowed"
+                                      : ""
+                                  )}
+                                  disabled={loading.rename}
+                                />
+                              ) : (
+                                <>
+                                  <span className="truncate font-medium">
+                                    {session.title}
+                                  </span>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="w-6 h-6 hover:bg-accent"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        <MoreVertical className="w-3 h-3" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setRenaming(session._id);
+                                        }}
+                                      >
+                                        Rename
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSessionToDelete(session);
+                                          setOpenDeleteModal(true);
+                                        }}
+                                      >
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+                    ))}
               </div>
             </div>
 

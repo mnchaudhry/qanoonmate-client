@@ -157,14 +157,12 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
 
   // Model events
   socket.on("model:message-received", (data: ModelMessageReceived) => {
-    console.log("model:message-received", data);
     dispatch(addAIMessage(data));
     dispatch(incrementInteractionCount());
     dispatch(updateLastModified());
   });
 
   socket.on("model:session-started", (data: ModelSessionStarted) => {
-    console.log("model:session-started", data);
     dispatch(setCurrentSessionId(data.sessionId));
   });
 
@@ -173,7 +171,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   let streamingId: string | null = null;
   let rafId: number | null = null;
   socket.on("model:message-stream", (data: ModelMessageStream) => {
-    console.log("Received streaming data:", data);
 
     // Initialize streaming if this is the first chunk
     if (streamingId !== data.id) {
@@ -188,14 +185,8 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     // For streaming, we should replace the content, not append
     // The backend sends the complete content up to this point
     streamingBuffer = data.content;
-    console.log("Updated streaming buffer:", streamingBuffer);
 
     // Create streaming message with actual content (no empty placeholder)
-    console.log("Dispatching streaming message:", {
-      _id: streamingId,
-      content: streamingBuffer,
-      isStreaming: !data.done,
-    });
     dispatch(
       setStreamingMessage({
         _id: streamingId,
@@ -209,7 +200,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     );
 
     if (data.done) {
-      console.log("Streaming completed, finalizing message");
       dispatch(
         setStreamingMessage({
           _id: data.id,
@@ -248,7 +238,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   });
 
   socket.on("model:bot-message-updated", (data: any) => {
-    console.log("model:bot-message-updated", data);
     dispatch(updateBotMessage(data));
   });
 
@@ -258,7 +247,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   });
   socket.on("chat:leave-room-ack", (data: ChatLeaveRoomAck) => {});
   socket.on("chat:user-joined", (data: ChatUserJoined) => {
-    console.log("chat:user-joined", data);
     dispatch(
       setOnlineStatus({
         roomId: data.roomId,
@@ -268,8 +256,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     );
   });
   socket.on("chat:new-message", (data: ChatNewMessage) => {
-    console.log("chat:new-message", data);
-
     // Check if this message is already in our state to prevent duplicates
     const state = store.getState();
     const roomMessages = state.chat.messages[data.chatRoomId] || [];
@@ -312,11 +298,9 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   });
 
   socket.on("chat:message-sent-ack", (data: ChatMessageSentAck) => {
-    console.log("chat:message-sent-ack", data);
     // Message was successfully sent and saved by the server
   });
   socket.on("chat:user-typing", (data: ChatUserTyping) => {
-    console.log("User typing event received:", data);
     dispatch(
       setTypingStatus({
         roomId: data.roomId,
@@ -326,7 +310,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     );
   });
   socket.on("chat:user-stop-typing", (data: ChatUserStopTyping) => {
-    console.log("User stopped typing event received:", data);
     dispatch(
       setTypingStatus({
         roomId: data.roomId,
@@ -342,7 +325,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     console.error("chat:error", data);
   });
   socket.on("user-online", (data: any) => {
-    console.log("user-online", data);
     dispatch(
       setOnlineStatus({
         roomId: data.roomId || "global",
@@ -352,7 +334,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     );
   });
   socket.on("user-offline", (data: any) => {
-    console.log("user-offline", data);
     dispatch(
       setOnlineStatus({
         roomId: data.roomId || "global",
@@ -362,7 +343,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     );
   });
   socket.on("chat:online-status", (data: any) => {
-    console.log("chat:online-status", data);
     if (data.onlineUserIds && Array.isArray(data.onlineUserIds)) {
       dispatch(
         updateRoomState({

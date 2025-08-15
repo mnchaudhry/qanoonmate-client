@@ -9,7 +9,7 @@ import AlertModal from '@/components/alert-modal'
 import { ConsultationsFilterActionBar, ConsultationsTable, ConsultationsSummaryStats } from './_components'
 import { PageHeader } from '../../_components/PageHeader'
 import { Consultation } from '@/store/types/api'
-import AdminSkeleton from '../../_components/AdminSkeleton'
+import AdminSkeleton from '@/components/skeletons/AdminPageSkeleton'
 
 const PAGE_SIZE = 10;
 

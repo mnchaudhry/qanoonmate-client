@@ -13,14 +13,7 @@ import ChatInput from "./ChatInput";
 import ChatRightbar from "./ChatRightbar";
 import { useSocketContext } from "@/context/useSocketContext";
 import { socketEvents } from "@/store/socket/events";
-import {
-  getMessagesBySession,
-  getChatSession,
-  updateBotMessage,
-  updateStreamingMessage,
-  setChatMetadata,
-  getChatMetadataBySession,
-} from "@/store/reducers/aiSessionSlice";
+import { getMessagesBySession, getChatSession, updateBotMessage, updateStreamingMessage, setChatMetadata, getChatMetadataBySession, } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
 
@@ -28,47 +21,25 @@ import { assistant, user as userRes } from "@openai/agents";
 import { AIChatMessage } from "@/lib/interfaces";
 import { Button } from "@/components/ui/button";
 
-/**
- * Imports Done till here
- */
-
-/**
- *
- * Main Component
- */
 const ChatbotClient = () => {
   ///////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////////////
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const {
-    defaultSocket: { socket, connectError, isConnected },
-  } = useSocketContext();
+  const { defaultSocket: { socket, connectError, isConnected }, } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    messages,
-    currentSessionId: sessionId,
-    sessionMetadata,
-  } = useSelector((state: RootState) => state.aiSession);
+  const { messages, currentSessionId: sessionId, sessionMetadata, } = useSelector((state: RootState) => state.aiSession);
   console.log("messages", messages);
   ///////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////////////
   // UI States
   const [showDictionary, setShowDictionary] = useState(false);
-  const [chatViewMode, setChatViewMode] = useState<
-    "compact" | "card" | "timeline"
-  >("card");
+  const [chatViewMode, setChatViewMode] = useState<"compact" | "card" | "timeline">("card");
   const [textSize, setTextSize] = useState(16);
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [regeneratingMessageId, _setRegeneratingMessageId] = useState<string | null>(null);
   console.log('regeneratedMessageId', regeneratingMessageId)
-  const {
-    cases,
-    references,
-    aiConfidence: confidence,
-    legalContext,
-    quickAction,
-  } = useSelector((state: RootState) => state.aiSession);
+  const { cases, references, aiConfidence: confidence, legalContext, quickAction, } = useSelector((state: RootState) => state.aiSession);
 
   const [showContextPanel, setShowContextPanel] = useState(false);
   ///////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////////////
@@ -106,11 +77,42 @@ const ChatbotClient = () => {
       console.log("Disconnected or connecting...");
     }
   }, [isConnected, connectError, socket]);
-  useEffect(() => {
-    console.log("mounted");
-  }, []);
 
-  // Derived data moved to useParsedMessages hook
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMessageStream = (data: { id: string; content: string; done: boolean; }) => {
+      dispatch(updateStreamingMessage(data));
+    };
+
+    const handleMetadataDisplay = (data: { aiConfidence: number; references: string[]; cases: string[]; legalContext: string; quickAction: string; }) => {
+      dispatch(setChatMetadata(data));
+    };
+
+    const handleBotMessageUpdated = (updatedBotMessage: Partial<AIChatMessage> & { _id: string }) => {
+      // Update the messages state with the new bot message (merge responses)
+      dispatch(updateBotMessage(updatedBotMessage));
+    };
+
+    const handleMetadataLoaded = (data: {
+      aiConfidence: number;
+      legalContext: string;
+      references: string[];
+      cases: string[];
+      quickAction: string;
+    }) => {
+      dispatch(setChatMetadata(data));
+    };
+
+    socket.on("model:message-stream", handleMessageStream);
+    socket.on("model:bot-message-updated", handleBotMessageUpdated);
+    socket.on("model:metadata-generated", handleMetadataDisplay);
+    socket.on("model:metadata-loaded", handleMetadataLoaded);
+    return () => {
+      socket.off("model:message-stream", handleMessageStream);
+      socket.off("model:bot-message-updated", handleBotMessageUpdated);
+    };
+  }, [socket, dispatch]);
 
   ///////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////////////
 
@@ -165,54 +167,6 @@ const ChatbotClient = () => {
     setTimeout(() => _setRegeneratingMessageId(null), 100);
   };
 
-  useEffect(() => {
-    if (!socket) return;
-
-    const handleMessageStream = (data: {
-      id: string;
-      content: string;
-      done: boolean;
-    }) => {
-      dispatch(updateStreamingMessage(data));
-    };
-
-    const handleMetadataDisplay = (data: {
-      aiConfidence: number;
-      references: string[];
-      cases: string[];
-      legalContext: string;
-      quickAction: string;
-    }) => {
-      dispatch(setChatMetadata(data));
-    };
-
-    const handleBotMessageUpdated = (
-      updatedBotMessage: Partial<AIChatMessage> & { _id: string }
-    ) => {
-      // Update the messages state with the new bot message (merge responses)
-      dispatch(updateBotMessage(updatedBotMessage));
-    };
-
-    const handleMetadataLoaded = (data: {
-      aiConfidence: number;
-      legalContext: string;
-      references: string[];
-      cases: string[];
-      quickAction: string;
-    }) => {
-      dispatch(setChatMetadata(data));
-    };
-
-    socket.on("model:message-stream", handleMessageStream);
-    socket.on("model:bot-message-updated", handleBotMessageUpdated);
-    socket.on("model:metadata-generated", handleMetadataDisplay);
-    socket.on("model:metadata-loaded", handleMetadataLoaded);
-    return () => {
-      socket.off("model:message-stream", handleMessageStream);
-      socket.off("model:bot-message-updated", handleBotMessageUpdated);
-    };
-  }, [socket, dispatch]);
-
   ///////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////////////
   return (
     <TooltipProvider>
@@ -220,7 +174,7 @@ const ChatbotClient = () => {
         <ChatbotSidebar sessionMetadata={sessionMetadata} />
 
         {/* Main Content Area (Chat + Rightbar) */}
-        <div className="flex flex-[8] flex-col h-full w-full bg-background overflow-scroll">
+        <div className="flex flex-[8] flex-col h-full w-full bg-background overflow-hidden">
           {/* Navbar covers both chat and rightbar */}
           <div className="w-full z-30 bg-background">
             <ChatbotNavbar

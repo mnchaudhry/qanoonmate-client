@@ -1,13 +1,16 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { X, Mail, Phone, MapPin, Calendar, Shield, FileText, Eye, MessageSquare, Clock } from 'lucide-react'
+import type { User } from '@/store/types/user.types'
 
+////////////////////////////////////////////////////////// TYPES /////////////////////////////////////////////////////////////
 interface UserDetailsModalProps {
-  user: any
+  user: User | null
   isOpen: boolean
   onClose: () => void
 }
 
+////////////////////////////////////////////////////////// COMPONENT /////////////////////////////////////////////////////////////
 const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
@@ -38,8 +41,25 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
     }
   }
 
+  ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
   const [activeTab, setActiveTab] = useState<'messages' | 'personal' | 'activity' | 'cases'>('personal')
   if (!isOpen) return null
+
+  ////////////////////////////////////////////////////////// DERIVED /////////////////////////////////////////////////////////////
+  const displayName = `${user?.firstname || ''} ${user?.lastname || ''}`.trim() || user?.username || user?.email || 'Unknown User'
+
+  const displayEmail = user?.email || 'No email provided'
+  const displayPhone = user?.phone || 'N/A'
+  const displayLocation = user?.location ? [user.location.city, user.location.province].filter(Boolean).join(', ') : 'N/A'
+  const displayJoined = user?.createdAt || 'N/A'
+  const displayLastLogin = user?.updatedAt || 'N/A'
+  const displayVerification = user?.identityVerified ? 'Verified' : 'Not Verified'
+
+  const statusLabel = String(user?.accountStatus || 'active')
+  const roleLabel = (user?.role ? String(user.role) : 'user')
+  const totalCases = 0
+  const casesWon = 0
+  const activeCases = 0
 
   const tabs = [
     { id: 'personal', label: 'Personal Info', icon: FileText },
@@ -48,32 +68,24 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
     { id: 'messages', label: 'Messages', icon: MessageSquare },
   ]
 
+  ////////////////////////////////////////////////////////// RENDERS /////////////////////////////////////////////////////////////
   const renderPersonalInfo = () => (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
-        <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
-          <span className="text-2xl font-bold text-white">
-            {user?.name?.charAt(0) || 'U'}
+        <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
+          <span className="text-2xl font-bold text-background">
+            {displayName?.charAt(0) || 'U'}
           </span>
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-            {user?.name || 'Unknown User'}
-          </h3>
-          <p className="text-neutral-600 dark:text-neutral-400">
-            {user?.email || 'No email provided'}
-          </p>
+          <h3 className="text-xl font-semibold text-foreground">{displayName}</h3>
+          <p className="text-muted-foreground">{displayEmail}</p>
           <div className="flex items-center space-x-2 mt-1">
-            <span className={`px-2 py-1 text-xs rounded-full ${user?.status === 'active'
-              ? 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-400'
-              : user?.status === 'suspended'
-                ? 'bg-danger-50 text-danger-700 dark:bg-danger-900/20 dark:text-danger-400'
-                : 'bg-warning-50 text-warning-700 dark:bg-warning-900/20 dark:text-warning-400'
-              }`}>
-              {user?.status || 'pending'}
+            <span className="px-2 py-1 text-xs rounded-full bg-background text-muted-foreground border border-border">
+              {statusLabel}
             </span>
-            <span className="px-2 py-1 text-xs rounded-full bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400">
-              {user?.role || 'user'}
+            <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">
+              {roleLabel}
             </span>
           </div>
         </div>
@@ -82,62 +94,56 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div className="flex items-center space-x-3">
-            <Mail className="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
+            <Mail className="w-5 h-5 text-muted-foreground" />
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Email</p>
-              <p className="text-neutral-900 dark:text-neutral-100">{user?.email || 'N/A'}</p>
+              <p className="text-sm text-muted-foreground">Email</p>
+              <p className="text-foreground">{displayEmail}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <Phone className="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
+            <Phone className="w-5 h-5 text-muted-foreground" />
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Phone</p>
-              <p className="text-neutral-900 dark:text-neutral-100">{user?.phone || 'N/A'}</p>
+              <p className="text-sm text-muted-foreground">Phone</p>
+              <p className="text-foreground">{displayPhone}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <MapPin className="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
+            <MapPin className="w-5 h-5 text-muted-foreground" />
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Location</p>
-              <p className="text-neutral-900 dark:text-neutral-100">{user?.location || 'N/A'}</p>
+              <p className="text-sm text-muted-foreground">Location</p>
+              <p className="text-foreground">{displayLocation}</p>
             </div>
           </div>
         </div>
         <div className="space-y-4">
           <div className="flex items-center space-x-3">
-            <Calendar className="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
+            <Calendar className="w-5 h-5 text-muted-foreground" />
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Joined</p>
-              <p className="text-neutral-900 dark:text-neutral-100">
-                {user?.signupDate || 'N/A'}
-              </p>
+              <p className="text-sm text-muted-foreground">Joined</p>
+              <p className="text-foreground">{displayJoined}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <Eye className="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
+            <Eye className="w-5 h-5 text-muted-foreground" />
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Last Login</p>
-              <p className="text-neutral-900 dark:text-neutral-100">
-                {user?.lastLogin || 'N/A'}
-              </p>
+              <p className="text-sm text-muted-foreground">Last Login</p>
+              <p className="text-foreground">{displayLastLogin}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <Shield className="w-5 h-5 text-neutral-500 dark:text-neutral-400" />
+            <Shield className="w-5 h-5 text-muted-foreground" />
             <div>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Verification</p>
-              <p className="text-neutral-900 dark:text-neutral-100">
-                {user?.isVerified ? 'Verified' : 'Not Verified'}
-              </p>
+              <p className="text-sm text-muted-foreground">Verification</p>
+              <p className="text-foreground">{displayVerification}</p>
             </div>
           </div>
         </div>
       </div>
 
-      {user?.notes && (
-        <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
-          <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-2">Admin Notes</h4>
-          <p className="text-neutral-600 dark:text-neutral-400">{user.notes}</p>
+      {user?.bio && (
+        <div className="bg-surface rounded-lg p-4 border border-border">
+          <h4 className="font-medium text-foreground mb-2">About</h4>
+          <p className="text-muted-foreground">{user.bio}</p>
         </div>
       )}
     </div>
@@ -146,31 +152,31 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
   const renderActivity = () => (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-gradient-to-r from-primary-50 to-primary-100 dark:from-primary-900/20 dark:to-primary-800/20 rounded-lg p-4">
-          <h4 className="font-medium text-primary-900 dark:text-primary-100">Total Cases</h4>
-          <p className="text-2xl font-bold text-primary-600 dark:text-primary-400">{user?.totalCases || 0}</p>
+        <div className="bg-surface rounded-lg p-4 border border-border">
+          <h4 className="font-medium text-foreground">Total Cases</h4>
+          <p className="text-2xl font-bold text-primary">{totalCases}</p>
         </div>
-        <div className="bg-gradient-to-r from-success-50 to-success-100 dark:from-success-900/20 dark:to-success-800/20 rounded-lg p-4">
-          <h4 className="font-medium text-success-900 dark:text-success-100">Cases Won</h4>
-          <p className="text-2xl font-bold text-success-600 dark:text-success-400">{user?.casesWon || 0}</p>
+        <div className="bg-surface rounded-lg p-4 border border-border">
+          <h4 className="font-medium text-foreground">Cases Won</h4>
+          <p className="text-2xl font-bold text-primary">{casesWon}</p>
         </div>
-        <div className="bg-gradient-to-r from-warning-50 to-warning-100 dark:from-warning-900/20 dark:to-warning-800/20 rounded-lg p-4">
-          <h4 className="font-medium text-warning-900 dark:text-warning-100">Active Cases</h4>
-          <p className="text-2xl font-bold text-warning-600 dark:text-warning-400">{user?.activeCases || 0}</p>
+        <div className="bg-surface rounded-lg p-4 border border-border">
+          <h4 className="font-medium text-foreground">Active Cases</h4>
+          <p className="text-2xl font-bold text-primary">{activeCases}</p>
         </div>
       </div>
 
-      <div className="bg-neutral-50 dark:bg-neutral-800 rounded-lg p-4">
-        <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-3">Recent Activity</h4>
+      <div className="bg-surface rounded-lg p-4 border border-border">
+        <h4 className="font-medium text-foreground mb-3">Recent Activity</h4>
         <div className="space-y-3">
           {[1, 2, 3].map((_, index) => (
             <div key={index} className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-primary rounded-full"></div>
               <div className="flex-1">
-                <p className="text-sm text-neutral-900 dark:text-neutral-100">
+                <p className="text-sm text-foreground">
                   Case analysis completed for {`"Case #${index + 1}"`}
                 </p>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                <p className="text-xs text-muted-foreground">
                   {index + 1} hour{index !== 0 ? 's' : ''} ago
                 </p>
               </div>
@@ -184,34 +190,29 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
   const renderCases = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="font-medium text-neutral-900 dark:text-neutral-100">User Cases</h4>
-        <button className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300">
+        <h4 className="font-medium text-foreground">User Cases</h4>
+        <button className="text-sm text-primary hover:opacity-90">
           View All Cases
         </button>
       </div>
 
       <div className="space-y-3">
         {[1, 2, 3].map((_, index) => (
-          <div key={index} className="border border-neutral-200 dark:border-neutral-700 rounded-lg p-4">
+          <div key={index} className="border border-border rounded-lg p-4 bg-surface">
             <div className="flex items-center justify-between">
               <div>
-                <h5 className="font-medium text-neutral-900 dark:text-neutral-100">
+                <h5 className="font-medium text-foreground">
                   Case #{index + 1}
                 </h5>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                <p className="text-sm text-muted-foreground">
                   Criminal Law - Theft Case
                 </p>
               </div>
-              <span className={`px-2 py-1 text-xs rounded-full ${index === 0
-                ? 'bg-success-50 text-success-700 dark:bg-success-900/20 dark:text-success-400'
-                : index === 1
-                  ? 'bg-warning-50 text-warning-700 dark:bg-warning-900/20 dark:text-warning-400'
-                  : 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-400'
-                }`}>
+              <span className="px-2 py-1 text-xs rounded-full bg-background text-muted-foreground border border-border">
                 {index === 0 ? 'Completed' : index === 1 ? 'In Progress' : 'Pending'}
               </span>
             </div>
-            <div className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+            <div className="mt-2 text-sm text-muted-foreground">
               Created: {new Date(Date.now() - index * 24 * 60 * 60 * 1000).toLocaleDateString()}
             </div>
           </div>
@@ -223,32 +224,32 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
   const renderMessages = () => (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h4 className="font-medium text-neutral-900 dark:text-neutral-100">Messages & Support</h4>
-        <button className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300">
+        <h4 className="font-medium text-foreground">Messages & Support</h4>
+        <button className="text-sm text-primary hover:opacity-90">
           Send Message
         </button>
       </div>
 
       <div className="space-y-3">
         {[1, 2, 3].map((_, index) => (
-          <div key={index} className="border border-neutral-200 dark:border-neutral-700 rounded-lg p-4">
+          <div key={index} className="border border-border rounded-lg p-4 bg-surface">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <span className="text-xs font-medium text-white">
                     {index === 0 ? 'S' : 'U'}
                   </span>
                 </div>
                 <div>
-                  <h5 className="font-medium text-neutral-900 dark:text-neutral-100">
+                  <h5 className="font-medium text-foreground">
                     {index === 0 ? 'Support Request' : 'User Message'}
                   </h5>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  <p className="text-sm text-muted-foreground">
                     {index === 0 ? 'Technical issue with case upload' : 'Question about case analysis'}
                   </p>
                 </div>
               </div>
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">
+              <span className="text-xs text-muted-foreground">
                 {index + 1}h ago
               </span>
             </div>
@@ -275,18 +276,18 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
       onClick={handleBackdropClick}
     >
-      <div className="w-full max-w-4xl max-h-[90vh] bg-white dark:bg-neutral-900 rounded-2xl shadow-xl overflow-hidden">
+      <div className="w-full max-w-4xl max-h-[90vh] bg-surface rounded-2xl shadow-xl overflow-hidden border border-border">
         <div className="p-4 md:p-6 h-full overflow-y-auto">
           <div className="flex items-center justify-between mb-4 md:mb-6">
-            <h2 className="text-lg md:text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+            <h2 className="text-lg md:text-xl font-semibold text-foreground">
               User Details
             </h2>
             <button
               type="button"
-              className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              className="rounded-lg p-2 text-muted-foreground hover:bg-background"
               onClick={onClose}
             >
               <X className="w-5 h-5" />
@@ -294,7 +295,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
           </div>
 
           {/* Tabs */}
-          <div className="flex overflow-x-auto space-x-1 mb-4 md:mb-6 bg-neutral-100 dark:bg-neutral-800 rounded-lg p-1">
+          <div className="flex overflow-x-auto space-x-1 mb-4 md:mb-6 bg-background rounded-lg p-1 border border-border">
             {tabs.map((tab) => {
               const Icon = tab.icon
               return (
@@ -302,8 +303,8 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as 'messages' | 'personal' | 'activity' | 'cases')}
                   className={`flex items-center space-x-2 px-3 md:px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
-                    ? 'bg-white dark:bg-neutral-700 text-primary-600 dark:text-primary-400 shadow-sm'
-                    : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
+                    ? 'bg-surface text-primary shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
                     }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -319,17 +320,17 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-end space-y-2 sm:space-y-0 sm:space-x-3 mt-4 md:mt-6 pt-4 md:pt-6 border-t border-neutral-200 dark:border-neutral-700">
+          <div className="flex flex-col sm:flex-row items-center justify-end space-y-2 sm:space-y-0 sm:space-x-3 mt-4 md:mt-6 pt-4 md:pt-6 border-t border-border">
             <button
               type="button"
-              className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-700"
+              className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-surface"
               onClick={onClose}
             >
               Close
             </button>
             <button
               type="button"
-              className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-primary-600 dark:bg-primary-500 rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600"
+              className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-background bg-primary rounded-lg hover:opacity-90"
             >
               Edit User
             </button>

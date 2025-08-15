@@ -1,15 +1,17 @@
 'use client'
-import { Edit, Ban, Check, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Edit, Ban, Check } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Pagination } from '@/components/ui/pagination'
+import { AccountStatus } from '@/lib/enums'
 
 export interface Admin {
     id: number
     name: string
     email: string
     role: string
-    status: string
+    status: AccountStatus
     createdDate: string
     lastLogin: string
     permissions: string[]
@@ -60,41 +62,6 @@ const AdminsTable: React.FC<AdminsTableProps> = ({
             default:
                 return 'bg-muted text-muted-foreground !border-border'
         }
-    }
-
-    const generatePageNumbers = () => {
-        const pages: (number | string)[] = []
-        const maxVisible = 5
-
-        if (totalPages <= maxVisible) {
-            for (let i = 1; i <= totalPages; i++) {
-                pages.push(i)
-            }
-        } else {
-            if (currentPage <= 3) {
-                for (let i = 1; i <= 4; i++) {
-                    pages.push(i)
-                }
-                pages.push('...')
-                pages.push(totalPages)
-            } else if (currentPage >= totalPages - 2) {
-                pages.push(1)
-                pages.push('...')
-                for (let i = totalPages - 3; i <= totalPages; i++) {
-                    pages.push(i)
-                }
-            } else {
-                pages.push(1)
-                pages.push('...')
-                for (let i = currentPage - 1; i <= currentPage + 1; i++) {
-                    pages.push(i)
-                }
-                pages.push('...')
-                pages.push(totalPages)
-            }
-        }
-
-        return pages
     }
 
     return (
@@ -173,67 +140,18 @@ const AdminsTable: React.FC<AdminsTableProps> = ({
                     </Table>
                 </div>
 
+
                 {/* Pagination */}
-                <div className="bg-white dark:bg-neutral-900 px-4 py-3 border-t border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
-                    <div className="flex-1 flex justify-between sm:hidden">
-                        <Button
-                            onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-                            disabled={currentPage === 1}
-                            className="relative inline-flex items-center px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-sm font-medium rounded-md text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Previous
-                        </Button>
-                        <Button
-                            onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-                            disabled={currentPage === totalPages}
-                            className="ml-3 relative inline-flex items-center px-4 py-2 border border-neutral-300 dark:border-neutral-600 text-sm font-medium rounded-md text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            Next
-                        </Button>
+                {totalPages > 1 && (
+                    <div className="mt-6 flex justify-center">
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={onPageChange}
+                        />
                     </div>
-                    <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                        <div>
-                            <p className="text-sm text-neutral-700 dark:text-neutral-300">
-                                Showing <span className="font-medium">{(currentPage - 1) * 10 + 1}</span> to{' '}
-                                <span className="font-medium">{Math.min(currentPage * 10, admins.length)}</span> of{' '}
-                                <span className="font-medium">{admins.length}</span> administrators
-                            </p>
-                        </div>
-                        <div>
-                            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                <Button
-                                    onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-                                    disabled={currentPage === 1}
-                                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <ChevronLeft className="h-5 w-5" />
-                                </Button>
-                                {generatePageNumbers().map((page, index) => (
-                                    <Button
-                                        key={index}
-                                        onClick={() => typeof page === 'number' && onPageChange(page)}
-                                        disabled={page === '...'}
-                                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${page === currentPage
-                                            ? 'z-10 bg-primary-50 dark:bg-primary-900/20 border-primary-500 text-primary-600 dark:text-primary-400'
-                                            : page === '...'
-                                                ? 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 cursor-default'
-                                                : 'border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700'
-                                            }`}
-                                    >
-                                        {page}
-                                    </Button>
-                                ))}
-                                <Button
-                                    onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    <ChevronRight className="h-5 w-5" />
-                                </Button>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
+                )}
+
             </CardContent>
         </Card>
     )

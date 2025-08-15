@@ -80,7 +80,7 @@ const AddLawyerModal: React.FC<AddLawyerModalProps> = ({ open, onClose, lawyer, 
         languagePreference: 'English',
         additionalLanguages: [],
         specializations: lawyer.specializations || [],
-        isVerified: lawyer.isVerified || false,
+        isVerified: lawyer.identityVerified || false,
         isActive: lawyer.isActive !== false
       })
     } else {

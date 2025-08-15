@@ -1,235 +1,135 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { AdminsFilterActionBar, AdminsTable, AdminRolePermissionsModal } from './_components'
 import { Admin } from './_components/AdminsTable'
 import { PageHeader } from '../../../_components/PageHeader'
+import { AppDispatch } from '@/store/store'
+import { getUsers, blockUser } from '@/store/reducers/userSlice'
+import { User as StoreUser } from '@/store/types/user.types'
+import { AccountStatus, UserRole } from '@/lib/enums'
+import { Button } from '@/components/ui/button'
+import { Download, Plus, RefreshCw } from 'lucide-react'
 
-// Mock data for demonstration
-const mockAdmins: Admin[] = [
-  {
-    id: 1,
-    name: 'Arham Khan',
-    email: 'arham@qanoonmate.legal',
-    role: 'SuperAdmin',
-    status: 'active',
-    createdDate: '2023-01-15',
-    lastLogin: '2024-01-20 10:30 AM',
-    permissions: [
-      'can_add_users',
-      'can_suspend_users',
-      'can_manage_lawyers',
-      'can_view_consultations',
-      'can_edit_legal_data',
-      'access_platform_settings'
-    ]
-  },
-  {
-    id: 2,
-    name: 'Hina Shafi',
-    email: 'hina@qanoonmate.legal',
-    role: 'Moderator',
-    status: 'active',
-    createdDate: '2023-02-10',
-    lastLogin: '2024-01-19 2:15 PM',
-    permissions: [
-      'can_add_users',
-      'can_suspend_users',
-      'can_manage_lawyers',
-      'can_view_consultations'
-    ]
-  },
-  {
-    id: 3,
-    name: 'Osama Zafar',
-    email: 'osama@qanoonmate.legal',
-    role: 'Support',
-    status: 'suspended',
-    createdDate: '2023-03-05',
-    lastLogin: '2024-01-10 8:45 AM',
-    permissions: [
-      'can_add_users',
-      'can_view_consultations'
-    ]
-  },
-  {
-    id: 4,
-    name: 'Zara Ahmed',
-    email: 'zara@qanoonmate.legal',
-    role: 'Analyst',
-    status: 'active',
-    createdDate: '2023-04-20',
-    lastLogin: '2024-01-20 4:20 PM',
-    permissions: [
-      'can_view_consultations'
-    ]
-  },
-  {
-    id: 5,
-    name: 'Ahmed Hassan',
-    email: 'ahmed@qanoonmate.legal',
-    role: 'Moderator',
-    status: 'active',
-    createdDate: '2023-05-12',
-    lastLogin: '2024-01-18 11:30 AM',
-    permissions: [
-      'can_add_users',
-      'can_suspend_users',
-      'can_manage_lawyers',
-      'can_view_consultations'
-    ]
-  },
-  {
-    id: 6,
-    name: 'Fatima Ali',
-    email: 'fatima@qanoonmate.legal',
-    role: 'Support',
-    status: 'active',
-    createdDate: '2023-06-08',
-    lastLogin: '2024-01-19 9:20 AM',
-    permissions: [
-      'can_add_users',
-      'can_view_consultations'
-    ]
-  }
-]
+const PAGE_SIZE = 20
 
 const AdminsPage = () => {
 
-  //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
-  const [admins, setAdmins] = useState<Admin[]>(mockAdmins)
-  const [filteredAdmins, setFilteredAdmins] = useState<Admin[]>(mockAdmins)
-  const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(10)
+  ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
+  const dispatch = useDispatch<AppDispatch>()
+  const { users = [] } = useSelector((s: any) => s.user || {})
+
+  ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedRole, setSelectedRole] = useState('all')
   const [selectedStatus, setSelectedStatus] = useState('all')
+  const [sortBy, setSortBy] = useState('default')
+  const [page, setPage] = useState(1)
+  const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  //////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
-  // Filter admins based on search and filters
+  ////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////
   useEffect(() => {
-    let filtered = admins
+    dispatch(getUsers({ page, limit: PAGE_SIZE, search: searchTerm || undefined }))
+  }, [dispatch, page, searchTerm])
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(admin =>
-        admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        admin.email.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+  useEffect(() => { setPage(1) }, [searchTerm, selectedRole, selectedStatus, sortBy])
+
+  ////////////////////////////////////////////////////////// MEMOS /////////////////////////////////////////////////////////////
+  const adminUsers: StoreUser[] = useMemo(() => {
+    return (users || []).filter((u: StoreUser) => u.role === UserRole.ADMIN)
+  }, [users])
+
+  const filteredAdmins: Admin[] = useMemo(() => {
+    const list = adminUsers.map((u, idx) => ({
+      id: idx + 1,
+      name: `${u.firstname || ''} ${u.lastname || ''}`.trim() || u.username || u.email,
+      email: u.email,
+      role: 'superadmin',
+      status: u.accountStatus,
+      createdDate: u.createdAt,
+      lastLogin: u.updatedAt,
+      permissions: [],
+    }))
+    const roleOk = (role: string) => selectedRole === 'all' || role.toLowerCase() === selectedRole.toLowerCase()
+    const statusOk = (status: AccountStatus) => selectedStatus === 'all' || status.toLowerCase() === selectedStatus.toLowerCase()
+    const searchOk = (name: string, email: string) => !searchTerm || name.toLowerCase().includes(searchTerm.toLowerCase()) || email.toLowerCase().includes(searchTerm.toLowerCase())
+    const filtered = list.filter(a => roleOk(a.role) && statusOk(a.status) && searchOk(a.name, a.email))
+    const sorted = [...filtered]
+    switch (sortBy) {
+      case 'name': sorted.sort((a, b) => a.name.localeCompare(b.name)); break
+      case 'email': sorted.sort((a, b) => a.email.localeCompare(b.email)); break
+      case 'role': sorted.sort((a, b) => a.role.localeCompare(b.role)); break
+      case 'status': sorted.sort((a, b) => a.status.localeCompare(b.status)); break
+      case 'created': sorted.sort((a, b) => new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime()); break
+      default: break
     }
+    return sorted
+  }, [adminUsers, selectedRole, selectedStatus, searchTerm, sortBy])
 
-    // Role filter
-    if (selectedRole && selectedRole !== 'all') {
-      filtered = filtered.filter(admin => admin.role.toLowerCase() === selectedRole.toLowerCase())
-    }
+  ////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////
+  const getRealId = (id: number) => adminUsers[id - 1]?._id
 
-    // Status filter
-    if (selectedStatus && selectedStatus !== 'all') {
-      filtered = filtered.filter(admin => admin.status.toLowerCase() === selectedStatus.toLowerCase())
-    }
+  const handleSearch = (term: string) => setSearchTerm(term)
+  const handleRoleFilter = (role: string) => setSelectedRole(role)
+  const handleStatusFilter = (status: string) => setSelectedStatus(status)
+  const handleSortChange = (sort: string) => setSortBy(sort)
+  const handleResetFilters = () => { setSearchTerm(''); setSelectedRole('all'); setSelectedStatus('all'); setSortBy('default') }
 
-    setFilteredAdmins(filtered)
-    setCurrentPage(1)
-  }, [searchTerm, selectedRole, selectedStatus, admins])
+  const handleEditAdmin = (admin: Admin) => { setSelectedAdmin(admin); setIsModalOpen(true) }
+  const handleSuspendAdmin = async (admin: Admin) => { const uid = getRealId(admin.id); if (uid && confirm(`Suspend ${admin.name}?`)) await dispatch(blockUser({ id: uid, block: true })) }
+  const handleReactivateAdmin = async (admin: Admin) => { const uid = getRealId(admin.id); if (uid && confirm(`Reactivate ${admin.name}?`)) await dispatch(blockUser({ id: uid, block: false })) }
+  const handleUpdateRole = (_adminId: number, _newRole: string, _permissions: string[]) => {
+    console.log('update role', _adminId, _newRole, _permissions)
+  }
+  const handleAddAdmin = () => { }
+  const handleExportCSV = () => { }
+  const handleRefresh = () => { dispatch(getUsers({ page, limit: PAGE_SIZE, search: searchTerm || undefined })) }
 
-  //////////////////////////////////////////////////// PAGINATION ////////////////////////////////////////////////////
-  const indexOfLastAdmin = currentPage * itemsPerPage
-  const indexOfFirstAdmin = indexOfLastAdmin - itemsPerPage
-  const currentAdmins = filteredAdmins.slice(indexOfFirstAdmin, indexOfLastAdmin)
+  ////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////
+  const itemsPerPage = 10
+  const indexOfLast = page * itemsPerPage
+  const indexOfFirst = indexOfLast - itemsPerPage
+  const currentAdmins = filteredAdmins.slice(indexOfFirst, indexOfLast)
   const totalPages = Math.ceil(filteredAdmins.length / itemsPerPage)
 
-  //////////////////////////////////////////////////// HANDLERS ////////////////////////////////////////////////////
-  const handleSearch = (term: string) => {
-    setSearchTerm(term)
-  }
-
-  const handleRoleFilter = (role: string) => {
-    setSelectedRole(role)
-  }
-
-  const handleStatusFilter = (status: string) => {
-    setSelectedStatus(status)
-  }
-
-  const handleSortChange = (sort: string) => {
-    let sorted = [...filteredAdmins]
-    switch (sort) {
-      case 'name':
-        sorted = sorted.sort((a, b) => a.name.localeCompare(b.name))
-        break
-      case 'email':
-        sorted = sorted.sort((a, b) => a.email.localeCompare(b.email))
-        break
-      case 'role':
-        sorted = sorted.sort((a, b) => a.role.localeCompare(b.role))
-        break
-      case 'status':
-        sorted = sorted.sort((a, b) => a.status.localeCompare(b.status))
-        break
-      case 'created':
-        sorted = sorted.sort((a, b) => new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime())
-        break
-      default:
-        break
-    }
-    setFilteredAdmins(sorted)
-  }
-
-  const handleResetFilters = () => {
-    setSearchTerm('')
-    setSelectedRole('all')
-    setSelectedStatus('all')
-  }
-
-  const handleEditAdmin = (admin: Admin) => {
-    setSelectedAdmin(admin)
-    setIsModalOpen(true)
-  }
-
-  const handleSuspendAdmin = (admin: Admin) => {
-    if (confirm(`Are you sure you want to suspend ${admin.name}?`)) {
-      setAdmins(prev => prev.map(a =>
-        a.id === admin.id ? { ...a, status: 'suspended' } : a
-      ))
-    }
-  }
-
-  const handleReactivateAdmin = (admin: Admin) => {
-    if (confirm(`Are you sure you want to reactivate ${admin.name}?`)) {
-      setAdmins(prev => prev.map(a =>
-        a.id === admin.id ? { ...a, status: 'active' } : a
-      ))
-    }
-  }
-
-  const handleUpdateRole = (adminId: number, newRole: string, permissions: string[]) => {
-    setAdmins(prev => prev.map(a =>
-      a.id === adminId ? { ...a, role: newRole, permissions } : a
-    ))
-  }
-
-  const handleAddAdmin = () => {
-    // TODO: Implement add admin functionality
-    console.log('Add new admin')
-  }
-
-  const handleExportCSV = () => {
-    // TODO: Implement export functionality
-    console.log('Export admins')
-  }
-
-  const handleRefresh = () => {
-    // TODO: Implement refresh functionality
-    console.log('Refresh admins data')
-  }
-
-  //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
     <div className="space-y-6">
       <PageHeader
         title="Admins Management"
         description="View, add, or manage internal platform administrators and their privileges."
+        actions={
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              type="button"
+              onClick={handleAddAdmin}
+              className="flex items-center space-x-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Add Admin</span>
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleExportCSV}
+              className="flex items-center space-x-2"
+            >
+              <Download className="w-4 h-4" />
+              <span>Export CSV</span>
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleRefresh}
+              className="flex items-center space-x-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span>Refresh</span>
+            </Button>
+          </div>
+        }
       />
 
       <AdminsFilterActionBar
@@ -238,9 +138,6 @@ const AdminsPage = () => {
         onStatusFilter={handleStatusFilter}
         onSortChange={handleSortChange}
         onResetFilters={handleResetFilters}
-        onAddAdmin={handleAddAdmin}
-        onExportCSV={handleExportCSV}
-        onRefresh={handleRefresh}
       />
 
       <AdminsTable
@@ -248,9 +145,9 @@ const AdminsPage = () => {
         onEditAdmin={handleEditAdmin}
         onSuspendAdmin={handleSuspendAdmin}
         onReactivateAdmin={handleReactivateAdmin}
-        currentPage={currentPage}
+        currentPage={page}
         totalPages={totalPages}
-        onPageChange={setCurrentPage}
+        onPageChange={setPage}
       />
 
       <AdminRolePermissionsModal

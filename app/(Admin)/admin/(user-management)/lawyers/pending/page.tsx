@@ -1,215 +1,86 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { PendingLawyersFilterActionBar, PendingLawyersTable, LawyerApplicationDetailsModal } from './_components'
-import { PendingLawyer } from './_components/PendingLawyersTable'
+import type { PendingLawyer } from './_components/PendingLawyersTable'
 import { PageHeader } from '@/app/(Admin)/_components/PageHeader'
-
-// Mock data for demonstration
-const mockPendingLawyers: PendingLawyer[] = [
-  {
-    id: 1,
-    name: 'Adv. Fariha Shah',
-    email: 'fshah@law.com',
-    phone: '+92 300 1234567',
-    jurisdiction: 'Lahore High Court',
-    appliedDate: '2025-06-20',
-    practiceAreas: ['Criminal Law', 'Family Law'],
-    experience: '6+ years',
-    cnic: '35202-XXXXXXX-5',
-    enrollmentNo: 'LHC-56789',
-    uploadedDocs: ['Bar Certificate', 'CNIC Front', 'CNIC Back', 'Photo'],
-    additionalInfo: 'Practicing since 2019. Also part of Women Legal Aid Forum.',
-    status: 'pending'
-  },
-  {
-    id: 2,
-    name: 'Adv. Bilal Yousaf',
-    email: 'bilal@x.com',
-    phone: '+92 321 9876543',
-    jurisdiction: 'Sindh High Court',
-    appliedDate: '2025-06-18',
-    practiceAreas: ['Corporate Law', 'Commercial Law'],
-    experience: '8+ years',
-    cnic: '42101-XXXXXXX-3',
-    enrollmentNo: 'SHC-12345',
-    uploadedDocs: ['Bar Certificate', 'CNIC Front', 'CNIC Back', 'Photo', 'Law Degree'],
-    additionalInfo: 'Specialized in corporate litigation and contract disputes.',
-    status: 'pending'
-  },
-  {
-    id: 3,
-    name: 'Adv. S. Abbas',
-    email: 'sabbas@abc.com',
-    phone: '+92 333 5555555',
-    jurisdiction: 'Islamabad High Court',
-    appliedDate: '2025-06-10',
-    practiceAreas: ['Constitutional Law', 'Civil Rights'],
-    experience: '12+ years',
-    cnic: '61101-XXXXXXX-7',
-    enrollmentNo: 'IHC-98765',
-    uploadedDocs: ['Bar Certificate', 'CNIC Front', 'CNIC Back', 'Photo', 'Law Degree', 'Experience Certificate'],
-    additionalInfo: 'Senior advocate with extensive experience in constitutional matters.',
-    status: 'under_review'
-  },
-  {
-    id: 4,
-    name: 'Adv. Ayesha Khan',
-    email: 'ayesha@legal.com',
-    phone: '+92 345 1111111',
-    jurisdiction: 'Peshawar High Court',
-    appliedDate: '2025-06-05',
-    practiceAreas: ['Family Law', 'Women Rights'],
-    experience: '4+ years',
-    cnic: '17301-XXXXXXX-2',
-    enrollmentNo: 'PHC-11111',
-    uploadedDocs: ['Bar Certificate', 'CNIC Front', 'CNIC Back', 'Photo'],
-    additionalInfo: 'Advocate for women and children rights.',
-    status: 'pending'
-  },
-  {
-    id: 5,
-    name: 'Adv. Muhammad Ali',
-    email: 'mali@lawfirm.com',
-    phone: '+92 302 7777777',
-    jurisdiction: 'Balochistan High Court',
-    appliedDate: '2025-05-28',
-    practiceAreas: ['Criminal Law', 'Property Law'],
-    experience: '10+ years',
-    cnic: '54401-XXXXXXX-9',
-    enrollmentNo: 'BHC-22222',
-    uploadedDocs: ['Bar Certificate', 'CNIC Front', 'CNIC Back', 'Photo', 'Law Degree'],
-    additionalInfo: 'Practicing in criminal and property matters.',
-    status: 'pending'
-  },
-  {
-    id: 6,
-    name: 'Adv. Sana Malik',
-    email: 'sana@advocates.com',
-    phone: '+92 315 8888888',
-    jurisdiction: 'Lahore High Court',
-    appliedDate: '2025-05-25',
-    practiceAreas: ['Tax Law', 'Banking Law'],
-    experience: '5+ years',
-    cnic: '35202-XXXXXXX-1',
-    enrollmentNo: 'LHC-33333',
-    uploadedDocs: ['Bar Certificate', 'CNIC Front', 'CNIC Back', 'Photo', 'Law Degree'],
-    additionalInfo: 'Specialized in tax and banking regulations.',
-    status: 'pending'
-  }
-]
+import { AppDispatch, RootState } from '@/store/store'
+import { getLawyers } from '@/store/reducers/lawyerSlice'
+import { Lawyer } from '@/store/types/lawyer.types'
+import { Button } from '@/components/ui/button'
 
 const PendingLawyersPage = () => {
 
-  //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
-  const [lawyers, setLawyers] = useState<PendingLawyer[]>(mockPendingLawyers)
-  const [filteredLawyers, setFilteredLawyers] = useState<PendingLawyer[]>(mockPendingLawyers)
+  ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
+  const dispatch = useDispatch<AppDispatch>()
+  const { lawyers = [] } = useSelector((state: RootState) => state.lawyer)
+
+  ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
   const [selectedLawyer, setSelectedLawyer] = useState<PendingLawyer | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(10)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedJurisdiction, setSelectedJurisdiction] = useState('')
   const [selectedDateRange, setSelectedDateRange] = useState('')
+  const itemsPerPage = 10
 
-  //////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
-  useEffect(() => {
-    let filtered = lawyers.filter(lawyer => lawyer.status === 'pending' || lawyer.status === 'under_review')
+  ////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////
+  useEffect(() => { dispatch(getLawyers({ page: 1, limit: 100 })) }, [dispatch])
 
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(lawyer =>
-        lawyer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lawyer.email.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+  ////////////////////////////////////////////////////////// MEMOS /////////////////////////////////////////////////////////////
+  const mappedPending: PendingLawyer[] = useMemo(() => {
+    const statusOf = (l: Lawyer): PendingLawyer['status'] => {
+      if (l.identityVerified) return 'approved'
+      return 'pending'
     }
+    return (lawyers || []).map((l, idx) => ({
+      id: idx + 1,
+      name: `${l.firstname || ''} ${l.lastname || ''}`.trim() || l.email,
+      email: l.email,
+      phone: l.phone,
+      jurisdiction: l.location?.province || '',
+      appliedDate: l.createdAt,
+      practiceAreas: l.specializations || [],
+      experience: `${l.experience || 0}+ years`,
+      cnic: l.cnic || '',
+      enrollmentNo: l.licenseNumber || '',
+      uploadedDocs: [],
+      additionalInfo: '',
+      status: statusOf(l),
+    }))
+  }, [lawyers])
 
-    // Jurisdiction filter
-    if (selectedJurisdiction) {
-      filtered = filtered.filter(lawyer =>
-        lawyer.jurisdiction.toLowerCase().includes(selectedJurisdiction.toLowerCase())
-      )
-    }
-
-    // Date range filter
+  const filteredLawyers = useMemo(() => {
+    let filtered = mappedPending.filter(l => l.status === 'pending' || l.status === 'under_review')
+    if (searchTerm) filtered = filtered.filter(l => l.name.toLowerCase().includes(searchTerm.toLowerCase()) || l.email.toLowerCase().includes(searchTerm.toLowerCase()))
+    if (selectedJurisdiction) filtered = filtered.filter(l => l.jurisdiction.toLowerCase().includes(selectedJurisdiction.toLowerCase()))
     if (selectedDateRange) {
       const now = new Date()
       const filterDate = new Date()
-
       switch (selectedDateRange) {
-        case 'today':
-          filterDate.setHours(0, 0, 0, 0)
-          break
-        case 'week':
-          filterDate.setDate(now.getDate() - 7)
-          break
-        case 'month':
-          filterDate.setMonth(now.getMonth() - 1)
-          break
-        case '3months':
-          filterDate.setMonth(now.getMonth() - 3)
-          break
-        case '6months':
-          filterDate.setMonth(now.getMonth() - 6)
-          break
-        default:
-          filterDate.setFullYear(2000) // Very old date to include all
+        case 'today': filterDate.setHours(0, 0, 0, 0); break
+        case 'week': filterDate.setDate(now.getDate() - 7); break
+        case 'month': filterDate.setMonth(now.getMonth() - 1); break
+        case '3months': filterDate.setMonth(now.getMonth() - 3); break
+        case '6months': filterDate.setMonth(now.getMonth() - 6); break
+        default: filterDate.setFullYear(2000)
       }
-
-      filtered = filtered.filter(lawyer =>
-        new Date(lawyer.appliedDate) >= filterDate
-      )
+      filtered = filtered.filter(l => new Date(l.appliedDate) >= filterDate)
     }
+    return filtered
+  }, [mappedPending, searchTerm, selectedJurisdiction, selectedDateRange])
 
-    setFilteredLawyers(filtered)
-    setCurrentPage(1)
-  }, [searchTerm, selectedJurisdiction, selectedDateRange, lawyers])
-
-  //////////////////////////////////////////////////// PAGINATION ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////// PAGINATION /////////////////////////////////////////////////////////////
   const indexOfLastLawyer = currentPage * itemsPerPage
   const indexOfFirstLawyer = indexOfLastLawyer - itemsPerPage
   const currentLawyers = filteredLawyers.slice(indexOfFirstLawyer, indexOfLastLawyer)
   const totalPages = Math.ceil(filteredLawyers.length / itemsPerPage)
 
-  //////////////////////////////////////////////////// HANDLERS ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////// HANDLERS /////////////////////////////////////////////////////////////
   const handleSearch = (term: string) => {
     setSearchTerm(term)
   }
 
-  const handleJurisdictionFilter = (jurisdiction: string) => {
-    setSelectedJurisdiction(jurisdiction)
-  }
-
-  const handleDateFilter = (dateRange: string) => {
-    setSelectedDateRange(dateRange)
-  }
-
-  const handleSortChange = (sort: string) => {
-    let sorted = [...filteredLawyers]
-    switch (sort) {
-      case 'name':
-        sorted = sorted.sort((a, b) => a.name.localeCompare(b.name))
-        break
-      case 'email':
-        sorted = sorted.sort((a, b) => a.email.localeCompare(b.email))
-        break
-      case 'date':
-        sorted = sorted.sort((a, b) => new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime())
-        break
-      case 'jurisdiction':
-        sorted = sorted.sort((a, b) => a.jurisdiction.localeCompare(b.jurisdiction))
-        break
-      case 'experience':
-        sorted = sorted.sort((a, b) => {
-          const expA = parseInt(a.experience.split('+')[0])
-          const expB = parseInt(b.experience.split('+')[0])
-          return expB - expA
-        })
-        break
-      default:
-        break
-    }
-    setFilteredLawyers(sorted)
-  }
 
   const handleResetFilters = () => {
     setSearchTerm('')
@@ -224,17 +95,13 @@ const PendingLawyersPage = () => {
 
   const handleApproveLawyer = (lawyer: PendingLawyer) => {
     if (confirm(`Are you sure you want to approve ${lawyer.name}?`)) {
-      setLawyers(prev => prev.map(l =>
-        l.id === lawyer.id ? { ...l, status: 'approved' } : l
-      ))
+
     }
   }
 
   const handleRejectLawyer = (lawyer: PendingLawyer) => {
     if (confirm(`Are you sure you want to reject ${lawyer.name}?`)) {
-      setLawyers(prev => prev.map(l =>
-        l.id === lawyer.id ? { ...l, status: 'rejected' } : l
-      ))
+
     }
   }
 
@@ -276,16 +143,29 @@ const PendingLawyersPage = () => {
       <PageHeader
         title='Pending Lawyers'
         description='View, filter, and manage all lawyers whose accounts are pending.'
+        actions={
+          <div className="flex flex-wrap gap-4 items-center">
+            <Button
+              variant="outline"
+              onClick={handleExportList}
+              className="inline-flex items-center px-4 py-2"
+            >
+              Export List
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleRefresh}
+              className="inline-flex items-center px-4 py-2"
+            >
+              Refresh
+            </Button>
+          </div>
+        }
       />
 
       <PendingLawyersFilterActionBar
         onSearch={handleSearch}
-        onJurisdictionFilter={handleJurisdictionFilter}
-        onDateFilter={handleDateFilter}
-        onSortChange={handleSortChange}
         onResetFilters={handleResetFilters}
-        onExportList={handleExportList}
-        onRefresh={handleRefresh}
       />
 
       <PendingLawyersTable
@@ -299,7 +179,6 @@ const PendingLawyersPage = () => {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        totalCount={filteredLawyers.length}
       />
 
       <LawyerApplicationDetailsModal

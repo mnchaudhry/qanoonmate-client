@@ -1,275 +1,80 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { ApprovedLawyersFilterActionBar, ApprovedLawyersTable, LawyerProfileModal } from './_components'
-import { ApprovedLawyer } from './_components/ApprovedLawyersTable'
+import type { ApprovedLawyer } from './_components/ApprovedLawyersTable'
 import { PageHeader } from '@/app/(Admin)/_components/PageHeader'
-
-// Mock data for demonstration
-const mockApprovedLawyers: ApprovedLawyer[] = [
-  {
-    id: 1,
-    name: 'Adv. Zoya Nasir',
-    email: 'zoya@lawfirm.com',
-    phone: '+92-300-0000000',
-    jurisdiction: 'lahore-hc',
-    practiceAreas: ['Family Law', 'Criminal Law'],
-    verifiedDate: '2025-03-12',
-    experience: '7 Years',
-    cnic: '35202-XXXXXXX-X',
-    barLicense: '#LHC-45672',
-    consultationsTotal: 23,
-    consultationsCompleted: 19,
-    consultationsNoShow: 2,
-    consultationsCancelled: 2,
-    status: 'active'
-  },
-  {
-    id: 2,
-    name: 'Barr. A. Hussain',
-    email: 'ah@pklegal.org',
-    phone: '+92-321-1111111',
-    jurisdiction: 'sindh-hc',
-    practiceAreas: ['Corporate Law', 'Commercial Law'],
-    verifiedDate: '2025-02-28',
-    experience: '12 Years',
-    cnic: '42101-XXXXXXX-Y',
-    barLicense: '#SHC-12345',
-    consultationsTotal: 45,
-    consultationsCompleted: 38,
-    consultationsNoShow: 4,
-    consultationsCancelled: 3,
-    status: 'active'
-  },
-  {
-    id: 3,
-    name: 'Adv. N. Mehmood',
-    email: 'nm@advocates.pk',
-    phone: '+92-333-2222222',
-    jurisdiction: 'peshawar-hc',
-    practiceAreas: ['Civil Rights', 'Constitutional Law'],
-    verifiedDate: '2025-01-15',
-    experience: '5 Years',
-    cnic: '17301-XXXXXXX-Z',
-    barLicense: '#PHC-98765',
-    consultationsTotal: 18,
-    consultationsCompleted: 14,
-    consultationsNoShow: 2,
-    consultationsCancelled: 2,
-    status: 'suspended'
-  },
-  {
-    id: 4,
-    name: 'Adv. S. Shah',
-    email: 'shah@lawx.com',
-    phone: '+92-300-3333333',
-    jurisdiction: 'supreme-court',
-    practiceAreas: ['Constitutional Law', 'Supreme Court Practice'],
-    verifiedDate: '2024-12-10',
-    experience: '15 Years',
-    cnic: '61101-XXXXXXX-A',
-    barLicense: '#SC-11111',
-    consultationsTotal: 67,
-    consultationsCompleted: 58,
-    consultationsNoShow: 5,
-    consultationsCancelled: 4,
-    status: 'active'
-  },
-  {
-    id: 5,
-    name: 'Adv. Fatima Ali',
-    email: 'fatima@legalaid.pk',
-    phone: '+92-300-4444444',
-    jurisdiction: 'islamabad-hc',
-    practiceAreas: ['Family Law', 'Immigration Law'],
-    verifiedDate: '2025-03-05',
-    experience: '8 Years',
-    cnic: '61101-XXXXXXX-B',
-    barLicense: '#IHC-22222',
-    consultationsTotal: 31,
-    consultationsCompleted: 26,
-    consultationsNoShow: 3,
-    consultationsCancelled: 2,
-    status: 'active'
-  },
-  {
-    id: 6,
-    name: 'Adv. Ahmed Khan',
-    email: 'ahmed@pklaw.com',
-    phone: '+92-300-5555555',
-    jurisdiction: 'lahore-hc',
-    practiceAreas: ['Corporate Law', 'Tax Law'],
-    verifiedDate: '2025-02-20',
-    experience: '10 Years',
-    cnic: '35202-XXXXXXX-C',
-    barLicense: '#LHC-33333',
-    consultationsTotal: 42,
-    consultationsCompleted: 35,
-    consultationsNoShow: 4,
-    consultationsCancelled: 3,
-    status: 'active'
-  },
-  {
-    id: 7,
-    name: 'Adv. Mariam Qureshi',
-    email: 'mariam@advocates.com',
-    phone: '+92-321-6666666',
-    jurisdiction: 'sindh-hc',
-    practiceAreas: ['Criminal Law', 'Labor Law'],
-    verifiedDate: '2025-01-30',
-    experience: '6 Years',
-    cnic: '42101-XXXXXXX-D',
-    barLicense: '#SHC-44444',
-    consultationsTotal: 28,
-    consultationsCompleted: 22,
-    consultationsNoShow: 3,
-    consultationsCancelled: 3,
-    status: 'active'
-  },
-  {
-    id: 8,
-    name: 'Adv. Usman Malik',
-    email: 'usman@lawfirm.pk',
-    phone: '+92-333-7777777',
-    jurisdiction: 'balochistan-hc',
-    practiceAreas: ['Real Estate Law', 'Commercial Law'],
-    verifiedDate: '2025-02-15',
-    experience: '9 Years',
-    cnic: '71101-XXXXXXX-E',
-    barLicense: '#BHC-55555',
-    consultationsTotal: 19,
-    consultationsCompleted: 16,
-    consultationsNoShow: 2,
-    consultationsCancelled: 1,
-    status: 'active'
-  },
-  {
-    id: 9,
-    name: 'Adv. Saima Iqbal',
-    email: 'saima@legal.pk',
-    phone: '+92-300-8888888',
-    jurisdiction: 'peshawar-hc',
-    practiceAreas: ['Family Law', 'Civil Rights'],
-    verifiedDate: '2025-03-01',
-    experience: '4 Years',
-    cnic: '17301-XXXXXXX-F',
-    barLicense: '#PHC-66666',
-    consultationsTotal: 15,
-    consultationsCompleted: 12,
-    consultationsNoShow: 2,
-    consultationsCancelled: 1,
-    status: 'active'
-  },
-  {
-    id: 10,
-    name: 'Adv. Hassan Raza',
-    email: 'hassan@lawyers.pk',
-    phone: '+92-321-9999999',
-    jurisdiction: 'islamabad-hc',
-    practiceAreas: ['Constitutional Law', 'Civil Law'],
-    verifiedDate: '2025-01-20',
-    experience: '11 Years',
-    cnic: '61101-XXXXXXX-G',
-    barLicense: '#IHC-77777',
-    consultationsTotal: 39,
-    consultationsCompleted: 33,
-    consultationsNoShow: 3,
-    consultationsCancelled: 3,
-    status: 'active'
-  }
-]
+import { AppDispatch, RootState } from '@/store/store'
+import { getLawyers } from '@/store/reducers/lawyerSlice'
+import { Lawyer } from '@/store/types/lawyer.types'
 
 const ApprovedLawyersPage = () => {
 
-  //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
-  const [lawyers, setLawyers] = useState<ApprovedLawyer[]>([])
-  const [filteredLawyers, setFilteredLawyers] = useState<ApprovedLawyer[]>([])
-  const [loading, setLoading] = useState(true)
+  ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
+  const dispatch = useDispatch<AppDispatch>()
+  const { lawyers = [], isLoading } = useSelector((state: RootState) => state.lawyer)
+
+  ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
   const [selectedLawyer, setSelectedLawyer] = useState<ApprovedLawyer | null>(null)
   const [showProfileModal, setShowProfileModal] = useState(false)
   const [selectedLawyers, setSelectedLawyers] = useState<number[]>([])
-
-  //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedJurisdiction, setSelectedJurisdiction] = useState('all')
   const [selectedPracticeArea, setSelectedPracticeArea] = useState('all')
+  const [selectedStatus, setSelectedStatus] = useState('all')
   const [sortBy, setSortBy] = useState('name')
-
-  //////////////////////////////////////////////////// PAGINATION ////////////////////////////////////////////////////
   const [currentPage, setCurrentPage] = useState(1)
   const lawyersPerPage = 10
 
-  //////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////
   useEffect(() => {
-    setTimeout(() => {
-      setLawyers(mockApprovedLawyers)
-      setFilteredLawyers(mockApprovedLawyers)
-      setLoading(false)
-    }, 1000)
-  }, [])
+    dispatch(getLawyers({ page: 1, limit: 100 }))
+  }, [dispatch])
 
-  //////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
-  useEffect(() => {
-    let filtered = [...lawyers]
+  ////////////////////////////////////////////////////////// MEMOS /////////////////////////////////////////////////////////////
+  const approvedMapped: ApprovedLawyer[] = useMemo(() => {
+    const mapJurisdiction = (l: Lawyer) => (l.location?.province?.toLowerCase() || 'all')
+    return (lawyers || [])
+      .filter((l: Lawyer) => Boolean(l.identityVerified))
+      .map((l: Lawyer, idx: number) => ({
+        id: idx + 1,
+        name: `${l.firstname || ''} ${l.lastname || ''}`.trim() || l.email,
+        email: l.email,
+        phone: l.phone,
+        jurisdiction: mapJurisdiction(l),
+        practiceAreas: l.specializations || [],
+        verifiedDate: l.updatedAt || l.createdAt,
+        experience: `${l.experience || 0}`,
+        cnic: l.cnic || '',
+        barLicense: l.licenseNumber || '',
+        consultationsTotal: 0,
+        consultationsCompleted: 0,
+        consultationsNoShow: 0,
+        consultationsCancelled: 0,
+        status: l.isActive ? 'active' : 'suspended',
+      }))
+  }, [lawyers])
 
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(lawyer =>
-        lawyer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        lawyer.email.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+  const filteredLawyers = useMemo(() => {
+    let list = [...approvedMapped]
+    if (searchTerm) list = list.filter(x => x.name.toLowerCase().includes(searchTerm.toLowerCase()) || x.email.toLowerCase().includes(searchTerm.toLowerCase()))
+    if (selectedJurisdiction !== 'all') list = list.filter(x => x.jurisdiction === selectedJurisdiction)
+    if (selectedPracticeArea !== 'all') list = list.filter(x => x.practiceAreas.some(a => a.toLowerCase().includes(selectedPracticeArea.toLowerCase())))
+    switch (sortBy) {
+      case 'name': list.sort((a, b) => a.name.localeCompare(b.name)); break
+      case 'name-desc': list.sort((a, b) => b.name.localeCompare(a.name)); break
+      case 'email': list.sort((a, b) => a.email.localeCompare(b.email)); break
+      case 'email-desc': list.sort((a, b) => b.email.localeCompare(a.email)); break
+      case 'jurisdiction': list.sort((a, b) => a.jurisdiction.localeCompare(b.jurisdiction)); break
+      case 'approved-date': list.sort((a, b) => new Date(b.verifiedDate).getTime() - new Date(a.verifiedDate).getTime()); break
+      case 'approved-date-desc': list.sort((a, b) => new Date(a.verifiedDate).getTime() - new Date(b.verifiedDate).getTime()); break
+      case 'experience': list.sort((a, b) => parseInt(b.experience) - parseInt(a.experience)); break
+      case 'experience-desc': list.sort((a, b) => parseInt(a.experience) - parseInt(b.experience)); break
     }
+    return list
+  }, [approvedMapped, searchTerm, selectedJurisdiction, selectedPracticeArea, sortBy])
 
-    // Apply jurisdiction filter
-    if (selectedJurisdiction !== 'all') {
-      filtered = filtered.filter(lawyer => lawyer.jurisdiction === selectedJurisdiction)
-    }
-
-    // Apply practice area filter
-    if (selectedPracticeArea !== 'all') {
-      filtered = filtered.filter(lawyer =>
-        lawyer.practiceAreas.some(area =>
-          area.toLowerCase().includes(selectedPracticeArea.toLowerCase())
-        )
-      )
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return a.name.localeCompare(b.name)
-        case 'name-desc':
-          return b.name.localeCompare(a.name)
-        case 'email':
-          return a.email.localeCompare(b.email)
-        case 'email-desc':
-          return b.email.localeCompare(a.email)
-        case 'jurisdiction':
-          return a.jurisdiction.localeCompare(b.jurisdiction)
-        case 'approved-date':
-          return new Date(b.verifiedDate).getTime() - new Date(a.verifiedDate).getTime()
-        case 'approved-date-desc':
-          return new Date(a.verifiedDate).getTime() - new Date(b.verifiedDate).getTime()
-        case 'experience':
-          return parseInt(b.experience) - parseInt(a.experience)
-        case 'experience-desc':
-          return parseInt(a.experience) - parseInt(b.experience)
-        default:
-          return 0
-      }
-    })
-
-    setFilteredLawyers(filtered)
-    setCurrentPage(1) // Reset to first page when filters change
-  }, [lawyers, searchTerm, selectedJurisdiction, selectedPracticeArea, sortBy])
-
-  //////////////////////////////////////////////////// PAGINATION ////////////////////////////////////////////////////
-  const totalPages = Math.ceil(filteredLawyers.length / lawyersPerPage)
-  const startIndex = (currentPage - 1) * lawyersPerPage
-  const endIndex = startIndex + lawyersPerPage
-  const currentLawyers = filteredLawyers.slice(startIndex, endIndex)
-
-  //////////////////////////////////////////////////// HANDLERS ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////// HANDLERS /////////////////////////////////////////////////////////////
   const handleViewProfile = (lawyer: ApprovedLawyer) => {
     setSelectedLawyer(lawyer)
     setShowProfileModal(true)
@@ -280,22 +85,12 @@ const ApprovedLawyersPage = () => {
     console.log('Edit profile for:', lawyer.name)
   }
 
-  const handleSuspendLawyer = (lawyer: ApprovedLawyer) => {
-    // TODO: Implement suspend lawyer functionality
-    console.log('Suspend lawyer:', lawyer.name)
-    // Update lawyer status
-    setLawyers(prev => prev.map(l =>
-      l.id === lawyer.id ? { ...l, status: 'suspended' as const } : l
-    ))
+  const handleSuspendLawyer = (_lawyer: ApprovedLawyer) => {
+    console.log('lawyer', _lawyer)
   }
 
-  const handleReactivateLawyer = (lawyer: ApprovedLawyer) => {
-    // TODO: Implement reactivate lawyer functionality
-    console.log('Reactivate lawyer:', lawyer.name)
-    // Update lawyer status
-    setLawyers(prev => prev.map(l =>
-      l.id === lawyer.id ? { ...l, status: 'active' as const } : l
-    ))
+  const handleReactivateLawyer = (_lawyer: ApprovedLawyer) => {
+    console.log('lawyer', _lawyer)
   }
 
   const handleConsultationHistory = (lawyer: ApprovedLawyer) => {
@@ -321,12 +116,8 @@ const ApprovedLawyersPage = () => {
     )
   }
 
-  const handleSelectAll = (selectAll: boolean) => {
-    if (selectAll) {
-      setSelectedLawyers(currentLawyers.map(lawyer => lawyer.id))
-    } else {
-      setSelectedLawyers([])
-    }
+  const handleSelectAll = (_selectAll: boolean) => {
+    console.log('selectAll', _selectAll)
   }
 
   const handleResetFilters = () => {
@@ -341,14 +132,7 @@ const ApprovedLawyersPage = () => {
     console.log('Export CSV')
   }
 
-  const handleRefresh = () => {
-    // TODO: Implement refresh functionality
-    console.log('Refresh data')
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 1000)
-  }
+  const handleRefresh = () => { dispatch(getLawyers({ page: 1, limit: 100 })) }
 
   const handleBulkAction = (action: string) => {
     // TODO: Implement bulk actions
@@ -356,7 +140,7 @@ const ApprovedLawyersPage = () => {
   }
 
   //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 p-6">
         <div className="max-w-7xl mx-auto">
@@ -386,6 +170,11 @@ const ApprovedLawyersPage = () => {
     )
   }
 
+  const totalPages = Math.ceil(filteredLawyers.length / lawyersPerPage)
+  const startIndex = (currentPage - 1) * lawyersPerPage
+  const endIndex = startIndex + lawyersPerPage
+  const currentLawyers = filteredLawyers.slice(startIndex, endIndex)
+
   return (
     <div className="space-y-6">
 
@@ -401,12 +190,11 @@ const ApprovedLawyersPage = () => {
         onJurisdictionChange={setSelectedJurisdiction}
         selectedPracticeArea={selectedPracticeArea}
         onPracticeAreaChange={setSelectedPracticeArea}
+        selectedStatus={selectedStatus}
+        onStatusChange={setSelectedStatus}
         sortBy={sortBy}
         onSortChange={setSortBy}
         onResetFilters={handleResetFilters}
-        onExportCSV={handleExportCSV}
-        onRefresh={handleRefresh}
-        onBulkAction={handleBulkAction}
       />
 
       <ApprovedLawyersTable
@@ -421,7 +209,6 @@ const ApprovedLawyersPage = () => {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        totalCount={filteredLawyers.length}
         selectedLawyers={selectedLawyers}
         onSelectLawyer={handleSelectLawyer}
         onSelectAll={handleSelectAll}

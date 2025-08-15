@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input'
 import { LawCategory } from '@/lib/enums'
 import AlertModal from '@/components/alert-modal'
 import { PageHeader } from '../../../_components/PageHeader'
-import AdminSkeleton from '../../../_components/AdminSkeleton'
+import AdminSkeleton from '@/components/skeletons/AdminPageSkeleton'
 import { Pagination } from '@/components/ui/pagination'
 
 const PAGE_SIZE = 40;

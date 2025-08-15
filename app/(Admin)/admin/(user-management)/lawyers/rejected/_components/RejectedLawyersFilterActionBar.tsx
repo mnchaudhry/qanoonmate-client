@@ -1,10 +1,13 @@
 'use client'
-import { useState } from 'react'
-import { Search, ChevronDown, RefreshCw } from 'lucide-react'
+
+import { X } from 'lucide-react'
+import SearchBar from '@/components/SearchBar'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from '@/components/ui/button'
 
 interface RejectedLawyersFilterActionBarProps {
   searchTerm: string
-  onSearchChange: (value: string) => void
+  onSearchChange: (query: string) => void
   selectedRejectionReason: string
   onRejectionReasonChange: (value: string) => void
   sortBy: string
@@ -18,130 +21,67 @@ const RejectedLawyersFilterActionBar: React.FC<RejectedLawyersFilterActionBarPro
   onSearchChange,
   selectedRejectionReason,
   onRejectionReasonChange,
+  sortBy,
   onSortChange,
   onResetFilters,
-  onRefresh
+  onRefresh,
 }) => {
-  const [showRejectionReasonDropdown, setShowRejectionReasonDropdown] = useState(false)
-  const [showSortDropdown, setShowSortDropdown] = useState(false)
-
-  const rejectionReasons = [
-    { value: 'all', label: 'All Rejection Reasons' },
-    { value: 'incomplete-credentials', label: 'Incomplete Credentials' },
-    { value: 'invalid-documents', label: 'Invalid Documents' },
-    { value: 'suspended-license', label: 'Suspended License' },
-    { value: 'fraudulent-application', label: 'Fraudulent Application' },
-    { value: 'duplicate-application', label: 'Duplicate Application' },
-    { value: 'insufficient-experience', label: 'Insufficient Experience' },
-    { value: 'failed-verification', label: 'Failed Verification' },
-    { value: 'other', label: 'Other' }
-  ]
-
-  const sortOptions = [
-    { value: 'name', label: 'Name (A-Z)' },
-    { value: 'name-desc', label: 'Name (Z-A)' },
-    { value: 'email', label: 'Email (A-Z)' },
-    { value: 'email-desc', label: 'Email (Z-A)' },
-    { value: 'applied-date', label: 'Applied Date (Latest)' },
-    { value: 'applied-date-desc', label: 'Applied Date (Oldest)' },
-    { value: 'rejected-date', label: 'Rejected Date (Latest)' },
-    { value: 'rejected-date-desc', label: 'Rejected Date (Oldest)' },
-    { value: 'rejection-reason', label: 'Rejection Reason' }
-  ]
-
   return (
-    <div className="bg-surface border !border-border rounded-lg p-6 mb-6">
-      {/* Search Bar */}
-      <div className="mb-6">
-        <div className="relative max-w-md">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search className="h-5 w-5 text-muted-foreground" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="block w-full pl-10 pr-3 py-2 border !border-border rounded-md leading-5 bg-background text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          />
-        </div>
-      </div>
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4 mt-6">
+      <SearchBar
+        value={searchTerm}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchChange(e.target.value)}
+        containerClassName="mb-0 mx-0 w-1/3"
+      />
 
-      {/* Filters Row */}
-      <div className="flex flex-wrap gap-4 items-center mb-6">
-        {/* Rejection Reason Filter */}
-        <div className="relative">
-          <button
-            onClick={() => setShowRejectionReasonDropdown(!showRejectionReasonDropdown)}
-            className="inline-flex items-center px-4 py-2 border !border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          >
-            {rejectionReasons.find(r => r.value === selectedRejectionReason)?.label || 'Rejection Reason'}
-            <ChevronDown className="h-4 w-4 ml-2" />
-          </button>
-          {showRejectionReasonDropdown && (
-            <div className="absolute z-10 mt-1 w-64 bg-background border !border-border rounded-md shadow-lg">
-              {rejectionReasons.map((reason) => (
-                <button
-                  key={reason.value}
-                  onClick={() => {
-                    onRejectionReasonChange(reason.value)
-                    setShowRejectionReasonDropdown(false)
-                  }}
-                  className="block w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted/50 first:rounded-t-md last:rounded-b-md"
-                >
-                  {reason.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+      <div className="flex gap-2 items-center flex-wrap">
+        <Select value={selectedRejectionReason} onValueChange={onRejectionReasonChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Rejection Reason" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Reasons</SelectItem>
+            <SelectItem value="failed-verification">Failed Verification</SelectItem>
+            <SelectItem value="incomplete-documents">Incomplete Documents</SelectItem>
+            <SelectItem value="other">Other</SelectItem>
+          </SelectContent>
+        </Select>
 
-        {/* Sort By Filter */}
-        <div className="relative">
-          <button
-            onClick={() => setShowSortDropdown(!showSortDropdown)}
-            className="inline-flex items-center px-4 py-2 border !border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-          >
-            Sort By
-            <ChevronDown className="h-4 w-4 ml-2" />
-          </button>
-          {showSortDropdown && (
-            <div className="absolute z-10 mt-1 w-56 bg-background border !border-border rounded-md shadow-lg">
-              {sortOptions.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => {
-                    onSortChange(option.value)
-                    setShowSortDropdown(false)
-                  }}
-                  className="block w-full px-4 py-2 text-left text-sm text-foreground hover:bg-muted/50 first:rounded-t-md last:rounded-b-md"
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        <Select value={sortBy} onValueChange={onSortChange}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="name">Name (A-Z)</SelectItem>
+            <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+            <SelectItem value="email">Email (A-Z)</SelectItem>
+            <SelectItem value="email-desc">Email (Z-A)</SelectItem>
+            <SelectItem value="applied-date">Applied (Newest)</SelectItem>
+            <SelectItem value="applied-date-desc">Applied (Oldest)</SelectItem>
+            <SelectItem value="rejected-date">Rejected (Newest)</SelectItem>
+            <SelectItem value="rejected-date-desc">Rejected (Oldest)</SelectItem>
+            <SelectItem value="rejection-reason">Rejection Reason</SelectItem>
+          </SelectContent>
+        </Select>
 
-        {/* Reset Filters Button */}
-        <button
-          onClick={onResetFilters}
-          className="inline-flex items-center px-4 py-2 border !border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-        >
-          Reset Filters
-        </button>
-      </div>
-
-      {/* Action Buttons Row */}
-      <div className="flex flex-wrap gap-4 items-center">
-        {/* Refresh Button */}
-        <button
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onRefresh}
-          className="inline-flex items-center px-4 py-2 border !border-border rounded-md bg-background text-foreground hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+          className="border-border hover:bg-primary/5"
         >
-          <RefreshCw className="h-4 w-4 mr-2" />
           Refresh
-        </button>
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onResetFilters}
+          className="border-border hover:bg-primary/5"
+        >
+          <X className="h-4 w-4 mr-2" />
+          Reset Filters
+        </Button>
       </div>
     </div>
   )

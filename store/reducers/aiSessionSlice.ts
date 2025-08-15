@@ -33,98 +33,86 @@ export interface SidebarChatItem {
   items: AIChatSession[];
 }
 
-export const getChatSessions = createAsyncThunk(
-  "aiSessions/getChatSessions",
-  async (_, { rejectWithValue }) => {
-    try {
-      const { data } = await api.getChatSessions();
-      if (!data?.success) toast.error(data?.message);
-      return data?.data;
-    } catch (error: any) {
-      const message = getErrorMessage(error, "Failed to fetch chat sessions.");
-      toast.error(message);
-      return rejectWithValue(message);
-    }
+export const getChatSessions = createAsyncThunk("aiSessions/getChatSessions", async (_, { rejectWithValue }) => {
+  try {
+    const { data } = await api.getChatSessions();
+    if (!data?.success) toast.error(data?.message);
+    return data?.data;
+  } catch (error: any) {
+    const message = getErrorMessage(error, "Failed to fetch chat sessions.");
+    toast.error(message);
+    return rejectWithValue(message);
   }
+}
 );
 
-export const getChatSession = createAsyncThunk(
-  "aiSessions/getChatSession",
-  async (id: string, { rejectWithValue }) => {
-    try {
-      const { data } = await api.getChatSession(id);
-      if (!data?.success) toast.error(data?.message);
-      console.log("data for chat session", data);
-      return data?.data;
-    } catch (error: any) {
-      const message = getErrorMessage(
-        error,
-        `Failed to retrieve chat session with ID: ${id}.`
-      );
-      toast.error(message);
-      return rejectWithValue(message);
-    }
+export const getChatSession = createAsyncThunk("aiSessions/getChatSession", async (id: string, { rejectWithValue }) => {
+  try {
+    const { data } = await api.getChatSession(id);
+    if (!data?.success) toast.error(data?.message);
+    console.log("data for chat session", data);
+    return data?.data;
+  } catch (error: any) {
+    const message = getErrorMessage(
+      error,
+      `Failed to retrieve chat session with ID: ${id}.`
+    );
+    toast.error(message);
+    return rejectWithValue(message);
   }
+}
 );
 
-export const getMyChatSessions = createAsyncThunk(
-  "aiSessions/getMyChatSessions",
-  async (userId: string | null, { rejectWithValue }) => {
-    try {
-      if (!userId) {
-        throw new Error("Id not provided in the req");
-      }
-      const { data } = await api.getMyChatSessions(userId);
-      console.log("data for sidebar is", data);
-      if (!data?.success) toast.error(data?.message);
-      return data?.data;
-    } catch (error: any) {
-      const message = getErrorMessage(
-        error,
-        "Failed to fetch your chat sessions."
-      );
-      toast.error(message);
-      return rejectWithValue(message);
+export const getMyChatSessions = createAsyncThunk("aiSessions/getMyChatSessions", async (userId: string | null, { rejectWithValue }) => {
+  try {
+    if (!userId) {
+      throw new Error("Id not provided in the req");
     }
+    const { data } = await api.getMyChatSessions(userId);
+    console.log("data for sidebar is", data);
+    if (!data?.success) toast.error(data?.message);
+    return data?.data;
+  } catch (error: any) {
+    console.log('error', error)
+    const message = getErrorMessage(error, "Failed to fetch your chat sessions.");
+    toast.error(message);
+    return rejectWithValue(message);
   }
+}
 );
 
-export const renameSession = createAsyncThunk(
-  "aiSessions/renameSession",
-  async (formData: { id: string; title: string }, { rejectWithValue }) => {
-    try {
-      const { data } = await api.renameSession(formData);
-      if (data?.success) toast.success(data?.message);
-      else toast.error(data?.message);
-      return data?.data;
-    } catch (error: any) {
-      const message = getErrorMessage(
-        error,
-        `Unable to rename session with ID: ${formData.id}.`
-      );
-      toast.error(message);
-      return rejectWithValue(message);
-    }
+export const renameSession = createAsyncThunk("aiSessions/renameSession", async (formData: { id: string; title: string }, { rejectWithValue }) => {
+  try {
+    const { data } = await api.renameSession(formData);
+    if (data?.success) toast.success(data?.message);
+    else toast.error(data?.message);
+    return data?.data;
+  } catch (error: any) {
+    const message = getErrorMessage(
+      error,
+      `Unable to rename session with ID: ${formData.id}.`
+    );
+    toast.error(message);
+    return rejectWithValue(message);
   }
+}
 );
 
-export const deleteSession = createAsyncThunk(
-  "aiSessions/deleteSession",
-  async (id: string, { rejectWithValue }) => {
-    try {
-      const { data } = await api.deleteSession(id);
-      if (data?.success) toast.success(data?.message);
-      else toast.error(data?.message);
-      return id;
-    } catch (error: any) {
-      const message = getErrorMessage(
-        error,
-        `Failed to delete session with ID: ${id}.`
-      );
-      toast.error(message);
-      return rejectWithValue(message);
-    }
+export const deleteSession = createAsyncThunk("aiSessions/deleteSession", async (id: string, { rejectWithValue }) => {
+  try {
+    const { data } = await api.deleteSession(id);
+    if (data?.success) toast.success(data?.message);
+    else toast.error(data?.message);
+    return id;
+  } catch (error: any) {
+    const message = getErrorMessage(
+      error,
+      `Failed to delete session with ID: ${id}.`
+    );
+    toast.error(message);
+    return rejectWithValue(message);
   }
+}
 );
 
 export const getMessage = createAsyncThunk(
@@ -145,80 +133,66 @@ export const getMessage = createAsyncThunk(
   }
 );
 
-export const getMessagesBySession = createAsyncThunk(
-  "aiMessage/getMessagesBySession",
-  async (sessionId: string, { rejectWithValue }) => {
-    try {
-      const { data } = await api.getMessagesBySession(sessionId);
-      if (!data?.success) toast.error(data?.message);
-      console.log("data for getmessages by session", data);
-      return data?.data;
-    } catch (error: any) {
-      const message = getErrorMessage(
-        error,
-        `Unable to fetch messages for session ID: ${sessionId}.`
-      );
-      toast.error(message);
-      return rejectWithValue(message);
-    }
+export const getMessagesBySession = createAsyncThunk("aiMessage/getMessagesBySession", async (sessionId: string, { rejectWithValue }) => {
+  try {
+    const { data } = await api.getMessagesBySession(sessionId);
+    if (!data?.success) toast.error(data?.message);
+    console.log("data for getmessages by session", data);
+    return data?.data;
+  } catch (error: any) {
+    const message = getErrorMessage(
+      error,
+      `Unable to fetch messages for session ID: ${sessionId}.`
+    );
+    toast.error(message);
+    return rejectWithValue(message);
   }
+}
 );
 
-export const getChatMetadataBySession = createAsyncThunk(
-  "aiMessage/getChatMetadataBySession",
-  async (sessionId: string, { rejectWithValue }) => {
-    try {
-      const { data } = await api.getChatMetadataBySession(sessionId);
-      return data?.data;
-    } catch (err: any) {
-      const message = getErrorMessage(
-        err,
-        `Could not load metadata with session ID: ${sessionId}.`
-      );
-      return rejectWithValue(message);
-    }
+export const getChatMetadataBySession = createAsyncThunk("aiMessage/getChatMetadataBySession", async (sessionId: string, { rejectWithValue }) => {
+  try {
+    const { data } = await api.getChatMetadataBySession(sessionId);
+    return data?.data;
+  } catch (err: any) {
+    const message = getErrorMessage(
+      err,
+      `Could not load metadata with session ID: ${sessionId}.`
+    );
+    return rejectWithValue(message);
   }
+}
 );
 
-export const updateMessage = createAsyncThunk(
-  "aiMessage/updateMessage",
-  async (
-    formData: { id: string; content: string; isStreaming: boolean },
-    { rejectWithValue }
-  ) => {
-    try {
-      const { data } = await api.updateAIMessage(formData);
-      if (data?.success) toast.success(data?.message);
-      else toast.error(data?.message);
-      return data?.data;
-    } catch (error: any) {
-      const message = getErrorMessage(
-        error,
-        `Failed to update message with ID: ${formData.id}.`
-      );
-      toast.error(message);
-      return rejectWithValue(message);
-    }
+export const updateMessage = createAsyncThunk("aiMessage/updateMessage", async (formData: { id: string; content: string; isStreaming: boolean }, { rejectWithValue }) => {
+  try {
+    const { data } = await api.updateAIMessage(formData);
+    if (data?.success) toast.success(data?.message);
+    else toast.error(data?.message);
+    return data?.data;
+  } catch (error: any) {
+    const message = getErrorMessage(
+      error,
+      `Failed to update message with ID: ${formData.id}.`
+    );
+    toast.error(message);
+    return rejectWithValue(message);
   }
+}
 );
 
-export const deleteMessage = createAsyncThunk(
-  "aiMessage/deleteMessage",
-  async (messageId: string, { rejectWithValue }) => {
-    try {
-      const { data } = await api.deleteAIMessage(messageId);
-      if (data?.success) toast.success(data?.message);
-      else toast.error(data?.message);
-      return data?.data;
-    } catch (error: any) {
-      const message = getErrorMessage(
-        error,
-        `Could not delete message with ID: ${messageId}.`
-      );
-      toast.error(message);
-      return rejectWithValue(message);
-    }
+export const deleteMessage = createAsyncThunk("aiMessage/deleteMessage", async (messageId: string, { rejectWithValue }) => {
+  try {
+    const { data } = await api.deleteAIMessage(messageId);
+    if (data?.success) toast.success(data?.message);
+    else toast.error(data?.message);
+    return data?.data;
+  } catch (error: any) {
+    const message = getErrorMessage(error, `Could not delete message with ID: ${messageId}.`);
+    toast.error(message);
+    return rejectWithValue(message);
   }
+}
 );
 
 ////////////////////////////////////////////////////////// REDUCER ////////////////////////////////////////////////////////////

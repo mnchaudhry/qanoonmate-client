@@ -1,6 +1,6 @@
 'use client'
 
-import AdminSkeleton from '@/app/(Admin)/_components/AdminSkeleton';
+import AdminSkeleton from '@/components/skeletons/AdminPageSkeleton'
 import { PageHeader } from '@/app/(Admin)/_components/PageHeader';
 import React, { useState, useEffect } from 'react';
 
