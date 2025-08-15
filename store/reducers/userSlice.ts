@@ -1,30 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import {
-    User,
-    GetUsersRequest,
-    GetUsersResponse,
-    SearchUsersRequest,
-    SearchUsersResponse,
-    CheckUsernameResponse,
-    CheckEmailResponse,
-    BlockUserResponse,
-    UpdateAvatarResponse,
-    UpdateUsernameResponse,
-    GetUserRoleResponse,
-    GetUserByUsernameOrIdResponse,
-    GetUserByIdResponse,
-    UpdateUserRequest,
-    UpdateUserResponse,
-    DeleteUserResponse,
-    BlockUserRequest
-} from '../types/user.types';
+import { User, GetUsersRequest, GetUsersResponse, SearchUsersRequest, SearchUsersResponse, CheckUsernameResponse, CheckEmailResponse, BlockUserResponse, UpdateAvatarResponse, UpdateUsernameResponse, GetUserRoleResponse, GetUserByUsernameOrIdResponse, GetUserByIdResponse, UpdateUserRequest, UpdateUserResponse, DeleteUserResponse, BlockUserRequest, AddUserResponse, AddUserRequest } from '../types/user.types';
 import { PaginationMeta } from '../types/api';
 
 interface UserState {
     users: User[];
-    selectedUser: User | null;
+    currentUser: User | null;
     loading: boolean;
     error: string | null;
     searchResults: User[];
@@ -33,7 +15,7 @@ interface UserState {
 
 const initialState: UserState = {
     users: [],
-    selectedUser: null,
+    currentUser: null,
     loading: false,
     error: null,
     searchResults: [],
@@ -76,6 +58,37 @@ export const checkEmail = createAsyncThunk<CheckEmailResponse, string>('user/che
         return data;
     } catch (err: any) {
         toast.error(err.message || 'Failed to check email');
+        return rejectWithValue(err.message);
+    }
+});
+
+export const addUser = createAsyncThunk<AddUserResponse, AddUserRequest>('user/addUser', async (input, { rejectWithValue }) => {
+    try {
+        const { data } = await api.addUser(input);
+        return data;
+    } catch (err: any) {
+        toast.error(err.message || 'Failed to add user');
+        return rejectWithValue(err.message);
+    }
+});
+
+export const exportUsersCsv = createAsyncThunk<Blob, GetUsersRequest | undefined>('user/exportUsersCsv', async (params, { rejectWithValue }) => {
+    try {
+        const { data } = await api.exportUsersCsv(params);
+        return data as unknown as Blob;
+    } catch (err: any) {
+        toast.error(err.message || 'Failed to export users');
+        return rejectWithValue(err.message);
+    }
+});
+
+export const bulkUploadUsers = createAsyncThunk<any, File>('user/bulkUploadUsers', async (file, { rejectWithValue }) => {
+    try {
+        const { data } = await api.bulkUploadUsers(file);
+        toast.success('Bulk upload processed');
+        return data;
+    } catch (err: any) {
+        toast.error(err.message || 'Failed to upload CSV');
         return rejectWithValue(err.message);
     }
 });
@@ -153,30 +166,46 @@ export const updateUser = createAsyncThunk<UpdateUserResponse, UpdateUserRequest
     }
 });
 
-export const deleteUser = createAsyncThunk<DeleteUserResponse, string>(
-    'user/deleteUser',
-    async (id, { rejectWithValue }) => {
-        try {
-            const { data } = await api.deleteUser(id);
-            toast.success('User deleted');
-            return data;
-        } catch (err: any) {
-            toast.error(err.message || 'Failed to delete user');
-            return rejectWithValue(err.message);
-        }
+export const deleteUser = createAsyncThunk<DeleteUserResponse, string>('user/deleteUser', async (id, { rejectWithValue }) => {
+    try {
+        const { data } = await api.deleteUser(id);
+        toast.success('User deleted');
+        return data;
+    } catch (err: any) {
+        toast.error(err.message || 'Failed to delete user');
+        return rejectWithValue(err.message);
     }
+}
 );
+
+export const resetUserPassword = createAsyncThunk<any, { id: string; password?: string }>('user/resetUserPassword', async ({ id, password }, { rejectWithValue }) => {
+    try {
+        const { data } = await api.resetUserPassword(id, password);
+        toast.success('Password reset');
+        return data;
+    } catch (err: any) {
+        toast.error(err.message || 'Failed to reset password');
+        return rejectWithValue(err.message);
+    }
+});
+
+export const getUserLogs = createAsyncThunk<any, string>('user/getUserLogs', async (id, { rejectWithValue }) => {
+    try {
+        const { data } = await api.getUserLogs(id);
+        return data;
+    } catch (err: any) {
+        toast.error(err.message || 'Failed to fetch logs');
+        return rejectWithValue(err.message);
+    }
+});
 
 
 const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
-        setSelectedUser(state, action) {
-            state.selectedUser = action.payload;
-        },
-        clearSelectedUser(state) {
-            state.selectedUser = null;
+        setCurrentUser(state, action) {
+            state.currentUser = action.payload;
         },
         clearSearchResults(state) {
             state.searchResults = [];
@@ -205,14 +234,32 @@ const userSlice = createSlice({
             .addCase(getUserById.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(getUserById.fulfilled, (state, action) => {
                 state.loading = false;
-                state.selectedUser = action.payload?.data?.user || null;
+                state.currentUser = action.payload?.data?.user || null;
             })
             .addCase(getUserById.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; })
+
+            .addCase(addUser.pending, (state) => { state.loading = true; state.error = null; })
+            .addCase(addUser.fulfilled, (state, action) => {
+                state.loading = false;
+                if (action.payload && action.payload.data && action.payload.data.user) {
+                    state.users.unshift(action.payload.data.user);
+                }
+            })
+            .addCase(addUser.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; })
+
+            .addCase(bulkUploadUsers.fulfilled, (state, action) => {
+                if (action.payload && action.payload.data && action.payload.data.users) {
+                    const created = action.payload.data.users as User[]
+                    // Prepend created users
+                    state.users = [...created, ...state.users]
+                }
+            })
+
             .addCase(updateUser.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(updateUser.fulfilled, (state, action) => {
                 state.loading = false;
                 if (action.payload && action.payload.data && action.payload.data.user) {
-                    state.selectedUser = action.payload.data.user;
+                    state.currentUser = action.payload.data.user;
                     state.users = state.users.map(u => u._id === action.payload.data?.user?._id ? action.payload.data?.user : u).filter(Boolean) as User[];
                 }
             })
@@ -222,8 +269,8 @@ const userSlice = createSlice({
                 state.loading = false;
                 if (action.payload && action.payload.data && action.payload.data.user) {
                     state.users = state.users.filter(u => u._id !== action.payload.data?.user?._id);
-                    if (state.selectedUser && state.selectedUser._id === action.payload.data.user._id) {
-                        state.selectedUser = null;
+                    if (state.currentUser && state.currentUser._id === action.payload.data.user._id) {
+                        state.currentUser = null;
                     }
                 }
             })
@@ -233,20 +280,20 @@ const userSlice = createSlice({
                 if (action.payload && action.payload.data && action.payload.data.user) {
                     const updated = action.payload.data.user;
                     state.users = state.users.map(u => u._id === updated._id ? updated : u);
-                    if (state.selectedUser && state.selectedUser._id === updated._id) {
-                        state.selectedUser = updated;
+                    if (state.currentUser && state.currentUser._id === updated._id) {
+                        state.currentUser = updated;
                     }
                 }
             })
             .addCase(blockUser.rejected, (state, action) => { state.error = action.payload as string; })
             .addCase(updateAvatar.fulfilled, (state, action) => {
                 if (action.payload && action.payload.data && action.payload.data.user) {
-                    state.selectedUser = action.payload.data.user;
+                    state.currentUser = action.payload.data.user;
                 }
             })
             .addCase(updateUsername.fulfilled, (state, action) => {
                 if (action.payload && action.payload.data && action.payload.data.user) {
-                    state.selectedUser = action.payload.data.user;
+                    state.currentUser = action.payload.data.user;
                 }
             })
             .addCase(getUserRole.fulfilled, () => {
@@ -254,11 +301,11 @@ const userSlice = createSlice({
             })
             .addCase(getUserByUsernameOrId.fulfilled, (state, action) => {
                 if (action.payload && action.payload.data && action.payload.data.user) {
-                    state.selectedUser = action.payload.data.user;
+                    state.currentUser = action.payload.data.user;
                 }
             })
     },
 });
 
-export const { setSelectedUser, clearSelectedUser, clearSearchResults, resetUserState, setCurrentPage } = userSlice.actions;
+export const { setCurrentUser, clearSearchResults, resetUserState, setCurrentPage } = userSlice.actions;
 export default userSlice.reducer; 

@@ -14,10 +14,6 @@ interface FiltersActionBarProps {
   onStatusFilter: (status: string) => void
   onSortChange: (sort: string) => void
   onResetFilters: () => void
-  onAddUser: () => void
-  onBulkUpload: () => void
-  onExportCSV: () => void
-  onRefresh: () => void
   searchValue?: string
   roleValue?: string
   statusValue?: string
@@ -45,9 +41,10 @@ export default function FiltersActionBar({ onSearch, onRoleFilter, onStatusFilte
     onResetFilters()
   }
 
+
   ////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////
   return (
-    <div className="bg-surface mb-6 flex justify-between items-center">
+    <div className="mb-6 flex justify-between items-center">
 
       {/* Search Bar */}
       <SearchBar

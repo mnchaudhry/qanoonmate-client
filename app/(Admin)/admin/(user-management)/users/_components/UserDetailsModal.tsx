@@ -1,62 +1,45 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { X, Mail, Phone, MapPin, Calendar, Shield, FileText, Eye, MessageSquare, Clock } from 'lucide-react'
-import type { User } from '@/store/types/user.types'
+import { useState } from 'react'
+import { Mail, Phone, MapPin, Calendar, Shield, FileText, Eye, MessageSquare, Clock } from 'lucide-react'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/store/store'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import EditUserModal from './EditUserModal'
+import DangerZoneModal from './DangerZoneModal'
 
-////////////////////////////////////////////////////////// TYPES /////////////////////////////////////////////////////////////
 interface UserDetailsModalProps {
-  user: User | null
   isOpen: boolean
   onClose: () => void
 }
 
-////////////////////////////////////////////////////////// COMPONENT /////////////////////////////////////////////////////////////
-const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClose }) => {
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = 'unset'
-    }
+const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ isOpen, onClose }) => {
 
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
-    }
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape)
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset'
-      document.removeEventListener('keydown', handleEscape)
-    }
-  }, [isOpen, onClose])
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose()
-    }
-  }
+  ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
+  const { currentUser } = useSelector((state: RootState) => state.user)
 
   ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
   const [activeTab, setActiveTab] = useState<'messages' | 'personal' | 'activity' | 'cases'>('personal')
-  if (!isOpen) return null
 
-  ////////////////////////////////////////////////////////// DERIVED /////////////////////////////////////////////////////////////
-  const displayName = `${user?.firstname || ''} ${user?.lastname || ''}`.trim() || user?.username || user?.email || 'Unknown User'
+  ////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////
 
-  const displayEmail = user?.email || 'No email provided'
-  const displayPhone = user?.phone || 'N/A'
-  const displayLocation = user?.location ? [user.location.city, user.location.province].filter(Boolean).join(', ') : 'N/A'
-  const displayJoined = user?.createdAt || 'N/A'
-  const displayLastLogin = user?.updatedAt || 'N/A'
-  const displayVerification = user?.identityVerified ? 'Verified' : 'Not Verified'
 
-  const statusLabel = String(user?.accountStatus || 'active')
-  const roleLabel = (user?.role ? String(user.role) : 'user')
+  ////////////////////////////////////////////////////////// DERIVED VARIABLES /////////////////////////////////////////////////////////////
+  const displayName = `${currentUser?.firstname || ''} ${currentUser?.lastname || ''}`.trim() || currentUser?.username || currentUser?.email || 'Unknown User'
+
+  const displayEmail = currentUser?.email || 'No email provided'
+  const displayPhone = currentUser?.phone || 'N/A'
+  const displayLocation = currentUser?.location ? [currentUser.location.city, currentUser.location.province].filter(Boolean).join(', ') : 'N/A'
+  const displayJoined = currentUser?.createdAt || 'N/A'
+  const displayLastLogin = currentUser?.updatedAt || 'N/A'
+  const displayVerification = currentUser?.identityVerified ? 'Verified' : 'Not Verified'
+
+  const statusLabel = String(currentUser?.accountStatus || 'active')
+  const roleLabel = (currentUser?.role ? String(currentUser.role) : 'user')
   const totalCases = 0
   const casesWon = 0
   const activeCases = 0
@@ -72,21 +55,15 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
   const renderPersonalInfo = () => (
     <div className="space-y-6">
       <div className="flex items-center space-x-4">
-        <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
-          <span className="text-2xl font-bold text-background">
-            {displayName?.charAt(0) || 'U'}
-          </span>
-        </div>
+        <Avatar className="h-20 w-20">
+          <AvatarFallback className="text-2xl font-bold">{displayName?.charAt(0) || 'U'}</AvatarFallback>
+        </Avatar>
         <div>
           <h3 className="text-xl font-semibold text-foreground">{displayName}</h3>
           <p className="text-muted-foreground">{displayEmail}</p>
           <div className="flex items-center space-x-2 mt-1">
-            <span className="px-2 py-1 text-xs rounded-full bg-background text-muted-foreground border border-border">
-              {statusLabel}
-            </span>
-            <span className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary">
-              {roleLabel}
-            </span>
+            <Badge variant="outline" className="bg-background text-muted-foreground border-border">{statusLabel}</Badge>
+            <Badge className="bg-primary/10 text-primary border-transparent">{roleLabel}</Badge>
           </div>
         </div>
       </div>
@@ -140,10 +117,10 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
         </div>
       </div>
 
-      {user?.bio && (
+      {currentUser?.bio && (
         <div className="bg-surface rounded-lg p-4 border border-border">
           <h4 className="font-medium text-foreground mb-2">About</h4>
-          <p className="text-muted-foreground">{user.bio}</p>
+          <p className="text-muted-foreground">{currentUser.bio}</p>
         </div>
       )}
     </div>
@@ -191,9 +168,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="font-medium text-foreground">User Cases</h4>
-        <button className="text-sm text-primary hover:opacity-90">
-          View All Cases
-        </button>
+        <Button variant="link" className="text-sm p-0 h-auto">View All Cases</Button>
       </div>
 
       <div className="space-y-3">
@@ -208,9 +183,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
                   Criminal Law - Theft Case
                 </p>
               </div>
-              <span className="px-2 py-1 text-xs rounded-full bg-background text-muted-foreground border border-border">
-                {index === 0 ? 'Completed' : index === 1 ? 'In Progress' : 'Pending'}
-              </span>
+              <Badge variant="outline" className="bg-background text-muted-foreground border-border">{index === 0 ? 'Completed' : index === 1 ? 'In Progress' : 'Pending'}</Badge>
             </div>
             <div className="mt-2 text-sm text-muted-foreground">
               Created: {new Date(Date.now() - index * 24 * 60 * 60 * 1000).toLocaleDateString()}
@@ -225,9 +198,7 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h4 className="font-medium text-foreground">Messages & Support</h4>
-        <button className="text-sm text-primary hover:opacity-90">
-          Send Message
-        </button>
+        <Button variant="link" className="text-sm p-0 h-auto">Send Message</Button>
       </div>
 
       <div className="space-y-3">
@@ -235,11 +206,9 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
           <div key={index} className="border border-border rounded-lg p-4 bg-surface">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-xs font-medium text-white">
-                    {index === 0 ? 'S' : 'U'}
-                  </span>
-                </div>
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="text-xs font-medium">{index === 0 ? 'S' : 'U'}</AvatarFallback>
+                </Avatar>
                 <div>
                   <h5 className="font-medium text-foreground">
                     {index === 0 ? 'Support Request' : 'User Message'}
@@ -259,86 +228,65 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ user, isOpen, onClo
     </div>
   )
 
-  const renderTabContent = () => {
-    switch (activeTab) {
-      case 'personal':
-        return renderPersonalInfo()
-      case 'activity':
-        return renderActivity()
-      case 'cases':
-        return renderCases()
-      case 'messages':
-        return renderMessages()
-      default:
-        return renderPersonalInfo()
-    }
-  }
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
-      onClick={handleBackdropClick}
-    >
-      <div className="w-full max-w-4xl max-h-[90vh] bg-surface rounded-2xl shadow-xl overflow-hidden border border-border">
-        <div className="p-4 md:p-6 h-full overflow-y-auto">
-          <div className="flex items-center justify-between mb-4 md:mb-6">
-            <h2 className="text-lg md:text-xl font-semibold text-foreground">
-              User Details
-            </h2>
-            <button
-              type="button"
-              className="rounded-lg p-2 text-muted-foreground hover:bg-background"
-              onClick={onClose}
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle className="text-foreground">User Details</DialogTitle>
+        </DialogHeader>
 
-          {/* Tabs */}
-          <div className="flex overflow-x-auto space-x-1 mb-4 md:mb-6 bg-background rounded-lg p-1 border border-border">
+        <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as 'messages' | 'personal' | 'activity' | 'cases')}>
+          <TabsList className="w-full justify-start overflow-x-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon
               return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as 'messages' | 'personal' | 'activity' | 'cases')}
-                  className={`flex items-center space-x-2 px-3 md:px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
-                    ? 'bg-surface text-primary shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                >
+                <TabsTrigger key={tab.id} value={tab.id} className="flex items-center space-x-2">
                   <Icon className="w-4 h-4" />
                   <span className="hidden sm:inline">{tab.label}</span>
-                </button>
+                </TabsTrigger>
               )
             })}
-          </div>
+          </TabsList>
 
-          {/* Tab Content */}
-          <div className="max-h-[50vh] md:max-h-96 overflow-y-auto">
-            {renderTabContent()}
-          </div>
+          <ScrollArea className="max-h-[60vh] mt-4">
+            <TabsContent value="personal">{renderPersonalInfo()}</TabsContent>
+            <TabsContent value="activity">{renderActivity()}</TabsContent>
+            <TabsContent value="cases">{renderCases()}</TabsContent>
+            <TabsContent value="messages">{renderMessages()}</TabsContent>
+          </ScrollArea>
+        </Tabs>
 
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-end space-y-2 sm:space-y-0 sm:space-x-3 mt-4 md:mt-6 pt-4 md:pt-6 border-t border-border">
-            <button
-              type="button"
-              className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-foreground bg-background border border-border rounded-lg hover:bg-surface"
-              onClick={onClose}
-            >
-              Close
-            </button>
-            <button
-              type="button"
-              className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-background bg-primary rounded-lg hover:opacity-90"
-            >
-              Edit User
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+        <DialogFooter className="mt-4 gap-2">
+          <Button variant="outline" onClick={onClose}>Close</Button>
+          <EditUserButton />
+          <DangerZoneButton />
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 
 export default UserDetailsModal
+
+function EditUserButton() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Edit User</Button>
+      <EditUserModal open={open} onOpenChange={setOpen} />
+    </>
+  )
+}
+
+function DangerZoneButton() {
+  const [open, setOpen] = useState(false)
+  const { currentUser } = useSelector((s: RootState) => s.user)
+  return (
+    <>
+      <Button variant="destructive" onClick={() => setOpen(true)}>Danger Zone</Button>
+      {currentUser?._id && (
+        <DangerZoneModal open={open} onOpenChange={setOpen} userId={currentUser._id} />
+      )}
+    </>
+  )
+}

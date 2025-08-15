@@ -5,14 +5,15 @@ import { useDebounce } from '@/hooks/use-debounce'
 import { useDispatch, useSelector } from 'react-redux'
 import { PageHeader } from '../../../_components/PageHeader'
 import { AppDispatch, RootState } from '@/store/store'
-import { getUsers, setCurrentPage } from '@/store/reducers/userSlice'
-import { User } from '@/store/types/user.types'
+import { getUsers, setCurrentPage, exportUsersCsv, bulkUploadUsers } from '@/store/reducers/userSlice'
 import { Plus, Upload, Download, RefreshCw } from "lucide-react"
 import { Button } from '@/components/ui/button'
+import toast from 'react-hot-toast'
 import FiltersActionBar from './_components/FiltersActionBar'
 import UsersTable from './_components/UsersTable'
 import UserDetailsModal from './_components/UserDetailsModal'
 import { TableSkeleton } from '@/components/skeletons'
+import AddUserModal from './_components/AddUserModal'
 
 
 const PAGE_SIZE = 20
@@ -25,8 +26,8 @@ const AdminUsers = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const initialSearch = searchParams.get('q') || ''
-  const initialRole = searchParams.get('role') || ''
-  const initialStatus = searchParams.get('status') || ''
+  const initialRole = (() => { const r = searchParams.get('role') || ''; return r === 'all' ? '' : r })()
+  const initialStatus = (() => { const s = searchParams.get('status') || ''; return s === 'all' ? '' : s })()
   const initialSort = searchParams.get('sort') || ''
   const currentPage = meta?.currentPage || 1
 
@@ -36,14 +37,13 @@ const AdminUsers = () => {
   const [selectedStatus, setSelectedStatus] = useState(initialStatus)
   const [sortBy, setSortBy] = useState(initialSort)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const debouncedSearch = useDebounce(searchTerm, 400)
 
   ////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////
   const initializedFromUrl = useRef(false)
-  useEffect(()=>{setSelectedUser(null)},[])
   useEffect(() => {
     if (initializedFromUrl.current) return
     initializedFromUrl.current = true
@@ -55,9 +55,9 @@ const AdminUsers = () => {
 
   useEffect(() => {
     setLoading(true)
-    dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
+    dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
       .finally(() => setLoading(false))
-  }, [dispatch, currentPage, debouncedSearch, sortBy])
+  }, [dispatch, currentPage, debouncedSearch, selectedRole, selectedStatus, sortBy])
 
   useEffect(() => {
     dispatch(setCurrentPage(1))
@@ -77,17 +77,17 @@ const AdminUsers = () => {
   ////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////
   const handleRefresh = () => {
     setLoading(true)
-    dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
+    dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
       .finally(() => setLoading(false))
   }
   const handleSortChange = (sort: string) => {
     setSortBy(sort)
   }
   const handleRoleFilter = (role: string) => {
-    setSelectedRole(role)
+    setSelectedRole(role === 'all' ? '' : role)
   }
   const handleStatusFilter = (status: string) => {
-    setSelectedStatus(status)
+    setSelectedStatus(status === 'all' ? '' : status)
   }
   const handleResetFilters = () => {
     setSearchTerm('');
@@ -97,13 +97,85 @@ const AdminUsers = () => {
     dispatch(setCurrentPage(1))
   }
   const handleAddUser = () => {
-
+    setIsAddModalOpen(true)
   }
-  const handleBulkUpload = () => {
-
+  const handleBulkUpload = async () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.csv,text/csv'
+    input.onchange = async () => {
+      const file = input.files?.[0]
+      if (!file) return
+      // basic client-side validation before upload
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        toast.error('Please select a .csv file')
+        return
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('CSV file is too large (max 5MB)')
+        return
+      }
+      const text = await file.text()
+      const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0)
+      if (lines.length < 2) {
+        toast.error('CSV must include header and at least one data row')
+        return
+      }
+      const header = lines[0].split(',').map(h => h.trim().toLowerCase())
+      console.log('header', header)
+      const required = ['firstname', 'lastname', 'email', 'username', 'phone', 'password']
+      const missing = required.filter(c => !header.includes(c))
+      if (missing.length) {
+        toast.error(`Missing required columns: ${missing.join(', ')}`)
+        return
+      }
+      // per-row checks (lightweight)
+      const emailIdx = header.indexOf('email')
+      const phoneIdx = header.indexOf('phone')
+      const usernameIdx = header.indexOf('username')
+      const pwdIdx = header.indexOf('password')
+      const roleIdx = header.indexOf('role')
+      const errors: string[] = []
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      const allowedRoles = ['admin', 'client', 'lawyer']
+      for (let i = 1; i < lines.length && i <= 1000; i++) {
+        const parts = lines[i].split(',')
+        const email = parts[emailIdx]?.trim() || ''
+        const phone = parts[phoneIdx]?.trim() || ''
+        const username = parts[usernameIdx]?.trim() || ''
+        const pwd = parts[pwdIdx]?.trim() || ''
+        const role = roleIdx >= 0 ? (parts[roleIdx]?.trim()?.toLowerCase() || '') : ''
+        if (!emailRegex.test(email)) errors.push(`Row ${i + 1}: invalid email`)
+        if (!username) errors.push(`Row ${i + 1}: username is required`)
+        if (phone.length < 6) errors.push(`Row ${i + 1}: phone too short`)
+        if (pwd.length < 6) errors.push(`Row ${i + 1}: password too short`)
+        if (role && !allowedRoles.includes(role)) errors.push(`Row ${i + 1}: invalid role '${role}'`)
+      }
+      console.log('errors', errors)
+      if (errors.length) {
+        toast.error(`CSV has ${errors.length} issue(s). Fix and retry. First: ${errors[0]}`)
+        return
+      }
+      setLoading(true)
+      try {
+        await dispatch(bulkUploadUsers(file)).unwrap()
+        await dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
+      } finally { setLoading(false) }
+    }
+    input.click()
   }
-  const handleExportCSV = () => {
-
+  const handleExportCSV = async () => {
+    const { payload } = await dispatch(exportUsersCsv({ search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc', limit: 100000 }))
+    if (payload instanceof Blob) {
+      const url = URL.createObjectURL(payload)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'users-export.csv'
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    }
   }
 
   ////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////
@@ -167,10 +239,6 @@ const AdminUsers = () => {
         roleValue={selectedRole || undefined}
         statusValue={selectedStatus || undefined}
         sortValue={sortBy || undefined}
-        onAddUser={handleAddUser}
-        onBulkUpload={handleBulkUpload}
-        onExportCSV={handleExportCSV}
-        onRefresh={handleRefresh}
       />
 
       {
@@ -186,7 +254,8 @@ const AdminUsers = () => {
           <UsersTable setIsModalOpen={setIsModalOpen} />
         )}
 
-      <UserDetailsModal user={selectedUser} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <UserDetailsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AddUserModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
 
     </div>
   )
