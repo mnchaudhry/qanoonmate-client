@@ -66,9 +66,9 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     const socketInstance = io(fullUrl, {
       withCredentials: true,
       transports: ["websocket", "polling"],
-      reconnectionAttempts: 10,
+      reconnectionAttempts: 30,
       reconnectionDelay: 1000,
-      timeout: 5000,
+      timeout: 30000,
     });
 
     const connection: SocketConnection = {

@@ -26,6 +26,7 @@ interface SessionState {
     sessionDuration: number;
   };
   streamingMessage: AIChatMessage | null;
+  regeneratingMessageId: string | null;
 }
 
 export interface SidebarChatItem {
@@ -228,6 +229,7 @@ const initialState: SessionState = {
     sessionDuration: 0,
   },
   streamingMessage: null,
+  regeneratingMessageId: null
 };
 
 const aiSessionSlice = createSlice({
@@ -269,6 +271,9 @@ const aiSessionSlice = createSlice({
     },
     setAIMessages: (state, action) => {
       state.messages = action.payload;
+    },
+    setRegeneratingMessageId: (state, action) => {
+      state.regeneratingMessageId = action.payload;
     },
     addAIMessage: (state, action) => {
       state.messages.push(action.payload);
@@ -388,6 +393,7 @@ const aiSessionSlice = createSlice({
     finalizeStreamingMessage: (state) => {
       if (state.streamingMessage) {
         state.messages.push(state.streamingMessage);
+        state.sessionMetadata.interactionCount += 1;
         state.streamingMessage = null;
       }
     },
@@ -545,6 +551,7 @@ export const {
   setCurrentMessage,
   setCurrentSession,
   setCurrentSessionId,
+  setRegeneratingMessageId,
   setError,
   setIsLoading,
   setIsStreaming,

@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSocketContext } from "@/context/useSocketContext";
 import {
-  getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, updateBotMessage, updateStreamingMessage
+  getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, setRegeneratingMessageId, updateAIMessageLocal, updateBotMessage, updateStreamingMessage
 } from "@/store/reducers/aiSessionSlice";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
 import { socketEvents } from "@/store/socket/events";
@@ -48,10 +48,7 @@ const ChatbotClient = () => {
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [regeneratingMessageId, _setRegeneratingMessageId] = useState<
-    string | null
-  >(null);
-  const { cases, references, aiConfidence: confidence, legalContext, quickAction, } = useSelector((state: RootState) => state.aiSession);
+  const { cases, references, aiConfidence: confidence, legalContext, quickAction, regeneratingMessageId } = useSelector((state: RootState) => state.aiSession);
 
   const [showContextPanel, setShowContextPanel] = useState(false);
 
@@ -124,17 +121,17 @@ const ChatbotClient = () => {
   // --------------------------------------------------------------
   //                                    functions 
   const onRegenerate = async (botMessage: AIChatMessage) => {
-    _setRegeneratingMessageId(botMessage._id);
-    // Find userMessageId if it's missing
+    dispatch(setRegeneratingMessageId(botMessage._id));
+    // find userMessageId if it's missing
     let userMessageId = botMessage.userMessageId;
 
     if (!userMessageId && messages && messages.length > 0) {
-      // Find the bot message index in the messages array
+      // find the bot message index in the messages array
       const botMessageIndex = messages.findIndex(
         (m) => m._id === botMessage._id
       );
       if (botMessageIndex > 0) {
-        // Look for the previous user message
+        // look for the previous user message
         for (let i = botMessageIndex - 1; i >= 0; i--) {
           if (messages[i].sender === "user") {
             userMessageId = messages[i]._id;
@@ -143,7 +140,6 @@ const ChatbotClient = () => {
         }
       }
     }
-
     if (!socket || !sessionId || !userMessageId) {
       return;
     }
@@ -159,7 +155,7 @@ const ChatbotClient = () => {
       sessionId, userMessageId: userMessageId, history: builtHistory,
     });
 
-    setTimeout(() => _setRegeneratingMessageId(null), 100);
+    setTimeout(() => dispatch(setRegeneratingMessageId(null), 100));
   };
 
 

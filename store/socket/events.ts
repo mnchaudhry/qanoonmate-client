@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import {
   addAIMessage,
   finalizeStreamingMessage,
@@ -167,20 +168,15 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   let streamingId: string | null = null;
   let rafId: number | null = null;
   socket.on("model:message-stream", (data: ModelMessageStream) => {
-    // Initialize streaming if this is the first chunk
+    // initialize
     if (streamingId !== data.id) {
       streamingBuffer = "";
       streamingId = data.id;
 
-      // Initialize streaming state and create streaming message
       dispatch(setIsStreaming(true));
     }
-
-    // For streaming, we should replace the content, not append
-    // The backend sends the complete content up to this point
     streamingBuffer = data.content;
-
-    // Create streaming message with actual content (no empty placeholder)
+    
     dispatch(
       setStreamingMessage({
         _id: streamingId,
