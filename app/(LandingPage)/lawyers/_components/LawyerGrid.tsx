@@ -95,7 +95,7 @@ export const LawyerGrid: React.FC<LawyerGridProps> = ({
                   <h3 className="font-semibold text-foreground truncate">
                     {lawyer.firstname} {lawyer.lastname}
                   </h3>
-                  {lawyer.isVerified && (
+                  {lawyer.identityVerified && (
                     <Badge variant="default" className="text-xs">
                       <BadgeCheck className="h-3 w-3 mr-1" />
                       Verified
@@ -173,12 +173,12 @@ export const LawyerGrid: React.FC<LawyerGridProps> = ({
             {/* Actions */}
             <div className="flex space-x-2 pt-2">
               <Button asChild size="sm" className="flex-1">
-                <Link href={`/lawyers/${lawyer._id}`}>
+                <Link href={`/lawyers/${lawyer.username}`}>
                   View Profile
                 </Link>
               </Button>
               <Button asChild variant="outline" size="sm" className="flex-1">
-                <Link href={`/lawyers/${lawyer._id}/book`}>
+                <Link href={`/lawyers/${lawyer.username}/book`}>
                   Book Consultation
                 </Link>
               </Button>

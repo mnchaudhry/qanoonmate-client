@@ -15,7 +15,7 @@ export default function PricingPage() {
       />
 
       {/* Pricing Plans */}
-      <section className="py-16">
+      <div className="py-16">
         <div className="container px-4 mx-auto md:px-6">
           <div className="text-center mb-12">
             <div className="text-primary font-medium mb-2">OUR PRICING</div>
@@ -33,7 +33,7 @@ export default function PricingPage() {
           </div>
 
         </div>
-      </section>
+      </div>
 
       {/* Additional Services */}
       <ConsultationService />

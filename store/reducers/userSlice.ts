@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
 import {
@@ -9,8 +9,6 @@ import {
     SearchUsersResponse,
     CheckUsernameResponse,
     CheckEmailResponse,
-    GetAdminUsersRequest,
-    GetAdminUsersResponse,
     BlockUserResponse,
     UpdateAvatarResponse,
     UpdateUsernameResponse,
@@ -22,6 +20,7 @@ import {
     DeleteUserResponse,
     BlockUserRequest
 } from '../types/user.types';
+import { PaginationMeta } from '../types/api';
 
 interface UserState {
     users: User[];
@@ -29,7 +28,7 @@ interface UserState {
     loading: boolean;
     error: string | null;
     searchResults: User[];
-    meta?: any;
+    meta: PaginationMeta;
 }
 
 const initialState: UserState = {
@@ -38,7 +37,7 @@ const initialState: UserState = {
     loading: false,
     error: null,
     searchResults: [],
-    meta: undefined,
+    meta: { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 },
 };
 
 export const getUsers = createAsyncThunk<GetUsersResponse, GetUsersRequest | undefined>('user/getUsers', async (params, { rejectWithValue }) => {
@@ -77,16 +76,6 @@ export const checkEmail = createAsyncThunk<CheckEmailResponse, string>('user/che
         return data;
     } catch (err: any) {
         toast.error(err.message || 'Failed to check email');
-        return rejectWithValue(err.message);
-    }
-});
-
-export const getAdminUsers = createAsyncThunk<GetAdminUsersResponse, GetAdminUsersRequest>('user/getAdminUsers', async (params, { rejectWithValue }) => {
-    try {
-        const { data } = await api.getAdminUsers(params);
-        return data;
-    } catch (err: any) {
-        toast.error(err.message || 'Failed to fetch admin users');
         return rejectWithValue(err.message);
     }
 });
@@ -193,6 +182,9 @@ const userSlice = createSlice({
             state.searchResults = [];
         },
         resetUserState: () => initialState,
+        setCurrentPage(state, action: PayloadAction<number>) {
+            state.meta.currentPage = action.payload;
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -200,14 +192,14 @@ const userSlice = createSlice({
             .addCase(getUsers.fulfilled, (state, action) => {
                 state.loading = false;
                 state.users = action.payload.data?.users || [];
-                state.meta = action.payload.meta;
+                state.meta = action.payload.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
             })
             .addCase(getUsers.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; })
             .addCase(searchUsers.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(searchUsers.fulfilled, (state, action) => {
                 state.loading = false;
                 state.searchResults = action.payload.data?.users || [];
-                state.meta = action.payload.meta;
+                state.meta = action.payload.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
             })
             .addCase(searchUsers.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; })
             .addCase(getUserById.pending, (state) => { state.loading = true; state.error = null; })
@@ -236,6 +228,17 @@ const userSlice = createSlice({
                 }
             })
             .addCase(deleteUser.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; })
+            .addCase(blockUser.pending, (state) => { state.error = null; })
+            .addCase(blockUser.fulfilled, (state, action) => {
+                if (action.payload && action.payload.data && action.payload.data.user) {
+                    const updated = action.payload.data.user;
+                    state.users = state.users.map(u => u._id === updated._id ? updated : u);
+                    if (state.selectedUser && state.selectedUser._id === updated._id) {
+                        state.selectedUser = updated;
+                    }
+                }
+            })
+            .addCase(blockUser.rejected, (state, action) => { state.error = action.payload as string; })
             .addCase(updateAvatar.fulfilled, (state, action) => {
                 if (action.payload && action.payload.data && action.payload.data.user) {
                     state.selectedUser = action.payload.data.user;
@@ -257,5 +260,5 @@ const userSlice = createSlice({
     },
 });
 
-export const { setSelectedUser, clearSelectedUser, clearSearchResults, resetUserState } = userSlice.actions;
+export const { setSelectedUser, clearSelectedUser, clearSearchResults, resetUserState, setCurrentPage } = userSlice.actions;
 export default userSlice.reducer; 

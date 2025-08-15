@@ -29,7 +29,6 @@ export interface Lawyer extends User {
   primarySpecialization?: string;
   jurisdictions?: Courts[];
   isActive: boolean;
-  isVerified?: boolean;
   profileVisibility?: {
     public: boolean;
     testimonialsEnabled: boolean;
@@ -37,6 +36,7 @@ export interface Lawyer extends User {
   settings?: LawyerSettings | null;
   createdAt: string;
   updatedAt: string;
+
 }
 
 export interface PaginatedLawyerResponse extends APIResponse<Lawyer[]> { }

@@ -559,7 +559,6 @@ export interface Admin {
 }
 
 // GET /admin/users
-export interface GetAdminListRequest {}
 export type GetAdminListResponse = APIResponse<Admin[]>;
 
 // POST /admin/users
@@ -575,8 +574,8 @@ export type CreateUserResponse = APIResponse<Admin>;
 export interface AIChatSession {
   _id: string;
   user:
-    | string
-    | { _id: string; firstname: string; lastname: string; email: string };
+  | string
+  | { _id: string; firstname: string; lastname: string; email: string };
   title: string;
   createdAt?: string;
   updatedAt?: string;
@@ -602,7 +601,6 @@ export interface ChatMetadata {
 }
 
 // GET /ai/sessions
-export interface GetChatSessionsRequest {}
 export type GetChatSessionsResponse = APIResponse<AIChatSession[]>;
 
 // GET /ai/sessions/:id
@@ -619,7 +617,6 @@ export type GetChatSessionResponse = APIResponse<{
 }>;
 
 // GET /ai/my-sessions
-export interface GetMyChatSessionsRequest {}
 export type GetMyChatSessionsResponse = APIResponse<AIChatSession[]>;
 
 // PATCH /ai/sessions/:id/rename
@@ -689,11 +686,9 @@ export interface SendMessageRequest {
 export type SendMessageResponse = APIResponse<Message>;
 
 // GET /api/chat/rooms
-export interface GetUserChatRoomsRequest {}
 export type GetUserChatRoomsResponse = APIResponse<ChatRoom[]>;
 
 // PATCH /api/chat/:roomId/read
-export interface MarkMessagesReadRequest {}
 export type MarkMessagesReadResponse = APIResponse<{ success: boolean }>;
 
 // GET /api/chat/:roomId/unread-count
@@ -894,11 +889,11 @@ export interface LegalGuide {
   category: string;
   urduTranslation?: GuideTranslation;
   status?:
-    | "draft"
-    | "pending_review"
-    | "approved"
-    | "needs_revision"
-    | "archived";
+  | "draft"
+  | "pending_review"
+  | "approved"
+  | "needs_revision"
+  | "archived";
   isApproved?: boolean;
   verifiedBy?: string | null;
   version?: string;
@@ -932,8 +927,7 @@ export interface GetGuideByIdRequest {
 export type GetGuideByIdResponse = APIResponse<LegalGuide>;
 
 // POST /guides
-export interface CreateGuideRequest
-  extends Omit<LegalGuide, "_id" | "createdAt" | "updatedAt"> {}
+export interface CreateGuideRequest extends Omit<LegalGuide, "_id" | "createdAt" | "updatedAt"> { }
 export type CreateGuideResponse = APIResponse<LegalGuide>;
 
 // PUT /guides/:id

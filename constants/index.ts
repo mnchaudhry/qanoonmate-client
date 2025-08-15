@@ -17,7 +17,7 @@ export const pricingPlans = [
     name: "Free Plan",
     price: 0,
     description:
-      "Test QanoonMate: get a taste of our AI, guides, and core legal resources.",
+      "Get a taste of our AI, guides, and core legal resources.",
     features: [
       "Basic AI chatbot support (up to 5 queries/day)",
       "Unlimited Legal Guides & Dictionary",
@@ -30,7 +30,7 @@ export const pricingPlans = [
     popular: false
   },
   {
-    name: "Student Plan",
+    name: "Basic Plan",
     price: 1000,
     description:
       "Everything a law student needs: deeper AI access, editing drafts, and saving work.",
@@ -47,7 +47,7 @@ export const pricingPlans = [
     popular: false
   },
   {
-    name: "Individual Plan",
+    name: "Pro Plan",
     price: 5000,
     description:
       "For professionals: full AI power, draft building, case law access, and document uploads.",

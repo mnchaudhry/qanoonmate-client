@@ -8,7 +8,6 @@ import type * as LawyerSettingsAPI from "../types/lawyerSettings.types";
 
 import { APIClient, FormDataAPI } from "./axios";
 import { UserRole } from "@/lib/enums";
-import { string } from "zod/v3";
 
 ////////////////////////////////////////////////////////// AUTH ////////////////////////////////////////////////////////////
 export const signup = (role: UserRole, data: AuthAPI.SignupRequest) =>
@@ -67,11 +66,9 @@ export const checkUsername = (username: string) =>
   );
 export const checkEmail = (email: string) =>
   APIClient.get<UserAPI.CheckEmailResponse>(`/user/check-email/${email}`);
-export const getAdminUsers = (params?: UserAPI.GetAdminUsersRequest) =>
-  APIClient.get<UserAPI.GetAdminUsersResponse>("/user/admin/users", { params });
 export const blockUser = (params: UserAPI.BlockUserRequest) =>
   APIClient.patch<UserAPI.BlockUserResponse>(
-    `/user/admin/users/${params.id}/block`,
+    `/user/admin/users/${params.id}/status`,
     { block: params.block }
   );
 export const updateAvatar = (file: File) => {

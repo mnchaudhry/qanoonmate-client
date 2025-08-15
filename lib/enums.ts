@@ -324,3 +324,11 @@ export enum Gender {
   FEMALE = "female",
   OTHER = "other",
 }
+
+export enum AccountStatus {
+  PENDING_ACTIVATION = "pending_activation", // Registered but awaiting admin review/verification
+  ACTIVE = "active",                         // Fully approved and verified
+  SUSPENDED = "suspended",                   // Temporarily disabled
+  BLOCKED = "blocked",                       // Permanently disabled after being active
+  REJECTED = "rejected"                      // Denied at onboarding stage
+}

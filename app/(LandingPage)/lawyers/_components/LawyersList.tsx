@@ -97,7 +97,7 @@ export const LawyersList = ({ lawyers, onSpecializationClick }: Props) => {
                                         <h3 className="text-xl font-semibold text-foreground">
                                             {lawyer.firstname} {lawyer.lastname}
                                         </h3>
-                                        {lawyer.isVerified && (
+                                        {lawyer.identityVerified && (
                                             <Badge variant="default" className="text-xs">
                                                 <BadgeCheck className="h-3 w-3 mr-1" />
                                                 Verified
@@ -169,12 +169,12 @@ export const LawyersList = ({ lawyers, onSpecializationClick }: Props) => {
 
                             <div className="flex flex-col gap-2 shrink-0">
                                 <Button asChild size="sm" className="flex items-center gap-2">
-                                    <Link href={`/lawyers/${lawyer._id}`}>
+                                    <Link href={`/lawyers/${lawyer.username}`}>
                                         View Profile
                                     </Link>
                                 </Button>
                                 <Button asChild variant="outline" size="sm" className="flex items-center gap-2">
-                                    <Link href={`/lawyers/${lawyer._id}/book`}>
+                                    <Link href={`/lawyers/${lawyer.username}/book`}>
                                         Book Consultation
                                     </Link>
                                 </Button>

@@ -2,7 +2,7 @@
 
 import LawyerNavbar from "./_components/LawyerNavbar"
 import { LawyerGuard } from "@/components/AuthGuard";
-import PageSkeleton from "@/components/PageSkeleton";
+import PageSkeleton from "@/components/skeletons/PageSkeleton";
 
 export default function LawyerLayout({ children }: { children: React.ReactNode }) {
 

@@ -5,35 +5,28 @@ import Link from 'next/link'
 import { toast } from 'react-hot-toast'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
+import { Blog } from '@/store/types/api'
 
-type BlogCardProps = {
-  id: string
-  title: string
-  summary: string
-  date: string
-  tag?: string
-  imageUrl: string
-  slug: string
-  author: string
-  likes: number
-  comments: number
-}
 
-const BlogCard = ({ id, title, summary, date, tag, imageUrl, slug, author, likes, comments }: BlogCardProps) => {
+
+const BlogCard = ({ blog }: { blog: Blog }) => {
+
+  ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
   const { user } = useSelector((state: RootState) => state.auth);
   const [isLiked, setIsLiked] = useState(false)
-  const [likeCount, setLikeCount] = useState(likes)
+  const [likeCount, setLikeCount] = useState(blog.likes)
   const [isLiking, setIsLiking] = useState(false)
 
+  ////////////////////////////////////////////////////////// HANDLERS /////////////////////////////////////////////////////////////
   const handleLike = async () => {
     if (!user) {
-              toast.error('Please sign in to like blogs')
+      toast.error('Please sign in to like blogs')
       return
     }
 
     setIsLiking(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/blogs/like-blog/${id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/blogs/like-blog/${blog._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,12 +50,12 @@ const BlogCard = ({ id, title, summary, date, tag, imageUrl, slug, author, likes
   }
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/blogs/${slug}`
+    const url = `${window.location.origin}/blogs/${blog.slug}`
     try {
       if (navigator.share) {
         await navigator.share({
-          title: title,
-          text: summary,
+          title: blog.title,
+          text: blog.excerpt,
           url: url
         })
       } else {
@@ -75,20 +68,21 @@ const BlogCard = ({ id, title, summary, date, tag, imageUrl, slug, author, likes
     }
   }
 
+  ////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////
   return (
     <div className="group overflow-hidden rounded-2xl border border-muted/30 shadow-sm bg-white transition hover:shadow-md flex flex-col">
       {/* Image */}
       <div className="relative w-full h-48 sm:h-64 overflow-hidden">
         <Image
-          src={imageUrl}
-          alt={title}
+          src={blog.featuredImage || '/default-blog-image.jpg'}
+          alt={blog.title}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        {tag && (
+        {blog.tags?.[0] && (
           <div className="absolute top-4 left-4">
             <span className="text-xs text-green-700 bg-green-100 font-medium px-3 py-1 rounded-full">
-              {tag}
+              {blog.tags?.[0]}
             </span>
           </div>
         )}
@@ -98,20 +92,20 @@ const BlogCard = ({ id, title, summary, date, tag, imageUrl, slug, author, likes
       <div className="p-5 flex flex-col justify-between flex-grow">
         {/* Title */}
         <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition line-clamp-2 mb-2">
-          {title}
+          {blog.title}
         </h3>
 
         {/* Summary */}
-        <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{summary}</p>
+        <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{blog.excerpt}</p>
 
         {/* Author and Date */}
         <div className="flex items-center justify-between mb-3">
           <div className="text-sm text-muted-foreground flex items-center gap-2">
-            <span>{author}</span>
+            <span>{blog.author?.name || `${blog.author?.firstname || ''} ${blog.author?.lastname || ''}`.trim() || 'QanoonMate Team'}</span>
             <span>•</span>
-            <span>{date}</span>
+            <span>{blog.createdAt}</span>
           </div>
-          <Link href={`/blogs/${slug}`} className='inline-flex items-center gap-1'>
+          <Link href={`/blogs/${blog.slug}`} className='inline-flex items-center gap-1'>
             <span className="text-primary hover:underline text-sm font-medium">Read More</span>
             <ArrowRight size={14} />
           </Link>
@@ -136,7 +130,7 @@ const BlogCard = ({ id, title, summary, date, tag, imageUrl, slug, author, likes
             </button>
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <MessageSquare size={16} />
-              <span>{comments}</span>
+              <span>{blog.comments?.length || 0}</span>
             </div>
             <div className="flex items-center gap-2 text-muted-foreground text-sm">
               <Star size={16} className="text-yellow-500" />

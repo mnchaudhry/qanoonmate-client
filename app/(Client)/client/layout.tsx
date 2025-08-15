@@ -2,7 +2,7 @@
 
 import ClientNavbar from "./_components/ClientNavbar";
 import { ClietGuard } from "@/components/AuthGuard";
-import PageSkeleton from "@/components/PageSkeleton";
+import PageSkeleton from "@/components/skeletons/PageSkeleton";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
 

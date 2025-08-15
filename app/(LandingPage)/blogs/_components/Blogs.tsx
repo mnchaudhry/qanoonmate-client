@@ -1,4 +1,4 @@
-import { Search, PenTool } from 'lucide-react'
+import { Search } from 'lucide-react'
 import React, { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import BlogCard from './BlogCard'
@@ -10,15 +10,19 @@ import { fetchBlogs } from '@/store/reducers/blogSlice';
 import { Blog } from '@/store/types/api'
 
 const Blogs = () => {
-    const { user } = useSelector((state: RootState) => state.auth)
+
+    ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
     const router = useRouter()
+    const dispatch = useDispatch();
+    const { user } = useSelector((state: RootState) => state.auth)
+    const { blogs, loading: isLoading } = useSelector((state: RootState) => state.blog);
+
+    ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
     const [search, setSearch] = useState('')
     const [selectedCategory, setSelectedCategory] = useState('all')
-
-    const dispatch = useDispatch();
-    const { blogs, loading: isLoading } = useSelector((state: RootState) => state.blog);
     const [filteredBlogs, setFilteredBlogs] = useState<Blog[]>([])
 
+    ////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////
     useEffect(() => {
         dispatch(fetchBlogs() as any)
     }, [dispatch])
@@ -47,6 +51,7 @@ const Blogs = () => {
         filterBlogs()
     }, [blogs, search, selectedCategory, filterBlogs])
 
+    ////////////////////////////////////////////////////////// HANDLERS /////////////////////////////////////////////////////////////
     const handleWriteBlog = () => {
         if (user) {
             router.push('/blogs/write')
@@ -59,13 +64,14 @@ const Blogs = () => {
         setSelectedCategory(category)
     }
 
+    ////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////
     if (isLoading) {
         return (
             <div className="lg:col-span-2 space-y-6">
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="h-10 bg-muted animate-pulse rounded-lg w-64"></div>
-                <div className="h-10 bg-muted animate-pulse rounded-lg w-32"></div>
-            </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="h-10 bg-muted animate-pulse rounded-lg w-64"></div>
+                    <div className="h-10 bg-muted animate-pulse rounded-lg w-32"></div>
+                </div>
                 <div className="space-y-6">
                     {[1, 2, 3].map((i) => (
                         <div key={i} className="h-96 bg-muted animate-pulse rounded-2xl"></div>
@@ -91,13 +97,13 @@ const Blogs = () => {
                         <Search size={20} />
                     </span>
                 </div>
-                <Button
+                {/* <Button
                     onClick={handleWriteBlog}
                     className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
                 >
                     <PenTool size={18} />
                     Write Blog
-                </Button>
+                </Button> */}
             </div>
 
             {/* Category Filters */}
@@ -115,19 +121,7 @@ const Blogs = () => {
             <div className="space-y-6">
                 {filteredBlogs.length > 0 ? (
                     filteredBlogs.map((blog) => (
-                        <BlogCard
-                            key={blog._id}
-                            id={blog._id}
-                            date={blog.createdAt}
-                            imageUrl={blog.featuredImage || '/default-blog-image.jpg'}
-                            slug={blog.slug}
-                            summary={blog.excerpt || blog.content.slice(0, 150) + '...'}
-                            tag={blog.tags?.[0] || ''}
-                            title={blog.title}
-                            author={blog.author?.name || `${blog.author?.firstname || ''} ${blog.author?.lastname || ''}`.trim() || 'QanoonMate Team'}
-                            likes={blog.likes}
-                            comments={blog.comments?.length || 0}
-                        />
+                        <BlogCard key={blog._id} blog={blog} />
                     ))
                 ) : (
                     <div className="text-center py-12">
