@@ -12,7 +12,7 @@ export default function RelatedInformation({ faqs, guides, laws, }: RelatedInfor
       <h2 className="text-xl font-bold mb-6">Related Information</h2>
 
       {/* FAQs Section */}
-      <section className="mb-6 py-0 ">
+      <section className="mb-6 !py-0 ">
         <h3 className="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">
           Related FAQs
         </h3>
@@ -29,7 +29,7 @@ export default function RelatedInformation({ faqs, guides, laws, }: RelatedInfor
       </section>
 
       {/* Legal Guides Section */}
-      <section className="mb-6 py-0 ">
+      <section className="mb-6 !py-0 ">
         <h3 className="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">
           Related Legal Guides
         </h3>
@@ -46,7 +46,7 @@ export default function RelatedInformation({ faqs, guides, laws, }: RelatedInfor
       </section>
 
       {/* Related Laws Section */}
-      <section className="py-0" >
+      <section className="!py-0" >
         <h3 className="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">
           Related Laws
         </h3>
