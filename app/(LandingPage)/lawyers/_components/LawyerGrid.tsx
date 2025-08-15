@@ -20,10 +20,10 @@ interface LawyerGridProps {
   onSpecializationClick?: (specialization: string) => void;
 }
 
-export const LawyerGrid: React.FC<LawyerGridProps> = ({
-  lawyers,
-  onSpecializationClick
-}) => {
+export const LawyerGrid: React.FC<LawyerGridProps> = ({ lawyers, onSpecializationClick }) => {
+  
+
+  /////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
   const renderStars = (rating: number) => {
     const stars: ReactNode[] = [];
     const fullStars = Math.floor(rating);
@@ -66,7 +66,8 @@ export const LawyerGrid: React.FC<LawyerGridProps> = ({
     return lawyer.settings?.consultation?.fees?.find(f => f.mode === ConsultationMode.VIDEO_CALL)?.amount || 3000;
   };
 
-  if (!lawyers || lawyers.length === 0) {
+  /////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////
+    if (!lawyers || lawyers.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-muted-foreground text-6xl mb-4">⚖️</div>
