@@ -28,10 +28,7 @@ const ChatbotClient = () => {
   // variables 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const {
-    defaultSocket: { socket, connectError, isConnected },
-    reconnect,
-  } = useSocketContext();
+  const { defaultSocket: { socket, isConnected } } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
   const {
     messages,
@@ -46,9 +43,8 @@ const ChatbotClient = () => {
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [regeneratingMessageId, _setRegeneratingMessageId] = useState<
-    string | null
-  >(null);
+  const [regeneratingMessageId, _setRegeneratingMessageId] = useState<string | null>(null);
+  console.log('regeneratingMessageId', regeneratingMessageId);
   const { cases, references, aiConfidence: confidence, legalContext, quickAction, } = useSelector((state: RootState) => state.aiSession);
 
   const [showContextPanel, setShowContextPanel] = useState(false);

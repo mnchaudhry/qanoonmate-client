@@ -1,31 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Logo from "@/components/Logo";
 import { AIChatSession } from "@/store/types/api";
-import {
-  deleteSession,
-  getMyChatSessions,
-  newChat,
-  renameSession,
-  setCurrentSession,
-  setCurrentSessionId,
-} from "@/store/reducers/aiSessionSlice";
+import { deleteSession, getMyChatSessions, newChat, renameSession, setCurrentSession, setCurrentSessionId, } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  MoreVertical,
-  Clock,
-  MessageSquare,
-  Settings,
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
+import { MoreVertical, Clock, MessageSquare, Settings, Plus, ChevronLeft, ChevronRight, } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import AlertModal from "@/components/alert-modal";

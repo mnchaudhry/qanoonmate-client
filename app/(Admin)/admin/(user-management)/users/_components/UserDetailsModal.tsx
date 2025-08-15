@@ -280,13 +280,10 @@ function EditUserButton() {
 
 function DangerZoneButton() {
   const [open, setOpen] = useState(false)
-  const { currentUser } = useSelector((s: RootState) => s.user)
   return (
     <>
       <Button variant="destructive" onClick={() => setOpen(true)}>Danger Zone</Button>
-      {currentUser?._id && (
-        <DangerZoneModal open={open} onOpenChange={setOpen} userId={currentUser._id} />
-      )}
+      <DangerZoneModal open={open} onOpenChange={setOpen} />
     </>
   )
 }
