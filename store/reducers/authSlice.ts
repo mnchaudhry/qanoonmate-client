@@ -265,7 +265,6 @@ export const revokeSession = createAsyncThunk('auth/revokeSession', async (sessi
 
 export const hydrateAuth = createAsyncThunk('auth/hydrateAuth', async (options: { silent?: boolean } = {}, { dispatch, rejectWithValue }) => {
   const { silent = false } = options;
-  console.log('silent', silent)
   try {
     await fetchAndSetCSRFToken();
     const { payload, meta } = await dispatch(getProfile());

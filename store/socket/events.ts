@@ -112,11 +112,9 @@ export const socketEvents = {
 
 ///////////////////////////////////////////////// LISTENING EVENTS (Server to Client) /////////////////////////////////////////////////
 export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
-  console.log("Setting up socket event listeners for socket:", socket?.id);
-
   // Test event to verify socket is working
   socket.on("test", (data: any) => {
-    console.log("Test event received:", data);
+    return;
   });
 
   // Emit a test event to verify socket is working
@@ -124,20 +122,18 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
 
   // Add a simple event listener to test socket functionality
   socket.on("connect", () => {
-    console.log("Socket connected in event listener setup");
+    return;
   });
 
   socket.on("disconnect", () => {
-    console.log("Socket disconnected in event listener setup");
+    return;
   });
 
   // Summary events
   socket.on("summary:progress", (data: SummaryProgress) => {
-    console.log("Progress mentioned here");
     dispatch(handleSummaryProgress(data));
   });
   socket.on("summary:complete", (data: SummaryComplete) => {
-    console.log(data);
     dispatch(handleSummaryComplete(data));
   });
   socket.on("summary:error", (data: SummaryError) => {
@@ -157,14 +153,12 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
 
   // Model events
   socket.on("model:message-received", (data: ModelMessageReceived) => {
-    console.log("model:message-received", data);
     dispatch(addAIMessage(data));
     dispatch(incrementInteractionCount());
     dispatch(updateLastModified());
   });
 
   socket.on("model:session-started", (data: ModelSessionStarted) => {
-    console.log("model:session-started", data);
     dispatch(setCurrentSessionId(data.sessionId));
   });
 
@@ -173,13 +167,10 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   let streamingId: string | null = null;
   let rafId: number | null = null;
   socket.on("model:message-stream", (data: ModelMessageStream) => {
-    console.log("Received streaming data:", data);
-
     // Initialize streaming if this is the first chunk
     if (streamingId !== data.id) {
       streamingBuffer = "";
       streamingId = data.id;
-      console.log("Starting new streaming session with ID:", data.id);
 
       // Initialize streaming state and create streaming message
       dispatch(setIsStreaming(true));
@@ -188,14 +179,8 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     // For streaming, we should replace the content, not append
     // The backend sends the complete content up to this point
     streamingBuffer = data.content;
-    console.log("Updated streaming buffer:", streamingBuffer);
 
     // Create streaming message with actual content (no empty placeholder)
-    console.log("Dispatching streaming message:", {
-      _id: streamingId,
-      content: streamingBuffer,
-      isStreaming: !data.done,
-    });
     dispatch(
       setStreamingMessage({
         _id: streamingId,
@@ -209,11 +194,10 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     );
 
     if (data.done) {
-      console.log("Streaming completed, finalizing message");
       dispatch(
         setStreamingMessage({
           _id: data.id,
-          content: streamingBuffer, // Use the accumulated buffer content
+          content: streamingBuffer,
           isStreaming: false,
           sender: "bot",
           createdAt: new Date().toISOString(),
@@ -248,17 +232,13 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   });
 
   socket.on("model:bot-message-updated", (data: any) => {
-    console.log("model:bot-message-updated", data);
     dispatch(updateBotMessage(data));
   });
 
   // Chat events
-  socket.on("chat:join-room-ack", (data: ChatJoinRoomAck) => {
-    console.log("chat:join-room-ack", data);
-  });
+  socket.on("chat:join-room-ack", (data: ChatJoinRoomAck) => {});
   socket.on("chat:leave-room-ack", (data: ChatLeaveRoomAck) => {});
   socket.on("chat:user-joined", (data: ChatUserJoined) => {
-    console.log("chat:user-joined", data);
     dispatch(
       setOnlineStatus({
         roomId: data.roomId,
@@ -268,8 +248,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     );
   });
   socket.on("chat:new-message", (data: ChatNewMessage) => {
-    console.log("chat:new-message", data);
-
     // Check if this message is already in our state to prevent duplicates
     const state = store.getState();
     const roomMessages = state.chat.messages[data.chatRoomId] || [];
@@ -298,25 +276,16 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
       dispatch(
         setUnreadCount({ roomId: data.chatRoomId, count: currentCount + 1 })
       );
-      console.log(
-        "Incremented unread count for room:",
-        data.chatRoomId,
-        "New count:",
-        currentCount + 1
-      );
     } else {
-      console.log(
-        "Not incrementing unread count - from current user or in current room"
-      );
+      return;
     }
   });
 
   socket.on("chat:message-sent-ack", (data: ChatMessageSentAck) => {
-    console.log("chat:message-sent-ack", data);
+    return;
     // Message was successfully sent and saved by the server
   });
   socket.on("chat:user-typing", (data: ChatUserTyping) => {
-    console.log("User typing event received:", data);
     dispatch(
       setTypingStatus({
         roomId: data.roomId,
@@ -326,7 +295,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     );
   });
   socket.on("chat:user-stop-typing", (data: ChatUserStopTyping) => {
-    console.log("User stopped typing event received:", data);
     dispatch(
       setTypingStatus({
         roomId: data.roomId,
@@ -342,7 +310,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     console.error("chat:error", data);
   });
   socket.on("user-online", (data: any) => {
-    console.log("user-online", data);
     dispatch(
       setOnlineStatus({
         roomId: data.roomId || "global",
@@ -352,7 +319,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     );
   });
   socket.on("user-offline", (data: any) => {
-    console.log("user-offline", data);
     dispatch(
       setOnlineStatus({
         roomId: data.roomId || "global",
@@ -362,7 +328,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     );
   });
   socket.on("chat:online-status", (data: any) => {
-    console.log("chat:online-status", data);
     if (data.onlineUserIds && Array.isArray(data.onlineUserIds)) {
       dispatch(
         updateRoomState({
@@ -378,29 +343,29 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
 
   // Consultation reschedule events
   socket.on("consultation:reschedule-requested", (data: any) => {
-    console.log("Reschedule request received:", data);
     // toast.success(data.message); // Assuming toast is available globally or imported
     // You can dispatch an action to update consultation state if needed
+    return;
   });
 
   socket.on("consultation:reschedule-approved", (data: any) => {
-    console.log("Reschedule request approved:", data);
     // toast.success(data.message); // Assuming toast is available globally or imported
     // You can dispatch an action to update consultation state if needed
+    return;
   });
 
   socket.on("consultation:reschedule-rejected", (data: any) => {
-    console.log("Reschedule request rejected:", data);
+    return;
     // toast.error(data.message); // Assuming toast is available globally or imported
     // You can dispatch an action to update consultation state if needed
   });
 
   // Connect and disconnect events
   socket.on("connect", () => {
-    console.log("Socket connected for chat events, ID:", socket?.id);
+    return;
   });
   socket.on("disconnect", () => {
-    console.log("Socket disconnected from chat events, ID:", socket?.id);
+    return;
   });
 
   // Cleanup typing users periodically

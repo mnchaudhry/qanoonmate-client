@@ -1,47 +1,36 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import MessageBox from "./MessageBox";
-import ChatbotSidebar from "./ChatbotSidebar";
-import ChatbotNavbar from "./ChatbotHeader";
-import { File, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useSocketContext } from "@/context/useSocketContext";
+import {
+  getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, updateBotMessage, updateStreamingMessage
+} from "@/store/reducers/aiSessionSlice";
+import { getLawyers } from "@/store/reducers/lawyerSlice";
+import { socketEvents } from "@/store/socket/events";
+import { AppDispatch, RootState } from "@/store/store";
+import { File, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DefaultScreen from "./DefaultScreen";
+import ChatbotNavbar from "./ChatbotHeader";
+import ChatbotSidebar from "./ChatbotSidebar";
 import ChatInput from "./ChatInput";
 import ChatRightbar from "./ChatRightbar";
-import { useSocketContext } from "@/context/useSocketContext";
-import { socketEvents } from "@/store/socket/events";
-import {
-  getMessagesBySession,
-  getChatSession,
-  updateBotMessage,
-  updateStreamingMessage,
-  setChatMetadata,
-  getChatMetadataBySession,
-} from "@/store/reducers/aiSessionSlice";
-import { AppDispatch, RootState } from "@/store/store";
-import { getLawyers } from "@/store/reducers/lawyerSlice";
+import DefaultScreen from "./DefaultScreen";
+import MessageBox from "./MessageBox";
 
-import { assistant, user as userRes } from "@openai/agents";
-import { AIChatMessage } from "@/lib/interfaces";
 import { Button } from "@/components/ui/button";
+import { AIChatMessage } from "@/lib/interfaces";
+import { assistant, user as userRes } from "@openai/agents";
 
-/**
- * Imports Done till here
- */
 
-/**
- *
- * Main Component
- */
 const ChatbotClient = () => {
-  ///////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////////////
+  // variables 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const {
     defaultSocket: { socket, connectError, isConnected },
+    reconnect,
   } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
   const {
@@ -49,7 +38,6 @@ const ChatbotClient = () => {
     currentSessionId: sessionId,
     sessionMetadata,
   } = useSelector((state: RootState) => state.aiSession);
-  console.log("messages", messages);
   ///////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////////////
   // UI States
   const [showDictionary, setShowDictionary] = useState(false);
@@ -60,18 +48,16 @@ const ChatbotClient = () => {
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [regeneratingMessageId, _setRegeneratingMessageId] = useState<string | null>(null);
-  console.log('regeneratedMessageId', regeneratingMessageId)
-  const {
-    cases,
-    references,
-    aiConfidence: confidence,
-    legalContext,
-    quickAction,
-  } = useSelector((state: RootState) => state.aiSession);
+  const [regeneratingMessageId, _setRegeneratingMessageId] = useState<
+    string | null
+  >(null);
+  const { cases, references, aiConfidence: confidence, legalContext, quickAction, } = useSelector((state: RootState) => state.aiSession);
 
   const [showContextPanel, setShowContextPanel] = useState(false);
-  ///////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////////////
+
+
+  // ---------------------------------------------------------------------------
+  //                                        useEffects
   // Get Lawyers
   useEffect(() => {
     dispatch(getLawyers({}));
@@ -86,85 +72,7 @@ const ChatbotClient = () => {
     setShowContextPanel(true);
   }, [sessionId, dispatch]);
 
-  useEffect(() => {
-    if (connectError) {
-      console.log("Connection error: ", connectError);
-    } else if (isConnected) {
-      console.log("Connected with socket ID: ", socket?.id);
-
-      // Test socket functionality
-      if (socket) {
-        console.log("Testing socket emit...");
-        socket.emit("test", { message: "Testing from ChatbotClient" });
-
-        // Listen for test response
-        socket.on("test-response", (data) => {
-          console.log("Test response received:", data);
-        });
-      }
-    } else {
-      console.log("Disconnected or connecting...");
-    }
-  }, [isConnected, connectError, socket]);
-  useEffect(() => {
-    console.log("mounted");
-  }, []);
-
-  // Derived data moved to useParsedMessages hook
-
-  ///////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////////////
-
-  const onRegenerate = async (botMessage: AIChatMessage) => {
-    _setRegeneratingMessageId(botMessage._id);
-    // Find userMessageId if it's missing
-    let userMessageId = botMessage.userMessageId;
-
-    if (!userMessageId && messages && messages.length > 0) {
-      // Find the bot message index in the messages array
-      const botMessageIndex = messages.findIndex(
-        (m) => m._id === botMessage._id
-      );
-      if (botMessageIndex > 0) {
-        // Look for the previous user message
-        for (let i = botMessageIndex - 1; i >= 0; i--) {
-          if (messages[i].sender === "user") {
-            userMessageId = messages[i]._id;
-            console.log(
-              "Found userMessageId from message history:",
-              userMessageId
-            );
-            break;
-          }
-        }
-      }
-    }
-
-    if (!socket || !sessionId || !userMessageId) {
-      console.log("Early return - missing:", {
-        socket: !socket,
-        sessionId: !sessionId,
-        userMessageId: !userMessageId,
-      });
-      return;
-    }
-
-    // Build history from messages (same as in ChatInput)
-    const builtHistory = messages.map((message) => {
-      return message.sender === "bot"
-        ? assistant(message.content)
-        : userRes(message.content);
-    });
-
-    console.log("Emitting regenerate_response event");
-    socketEvents.model.regenerateResponse(socket, {
-      sessionId,
-      userMessageId: userMessageId,
-      history: builtHistory,
-    });
-
-    setTimeout(() => _setRegeneratingMessageId(null), 100);
-  };
-
+  // derived data moved to useParsedMessages hook
   useEffect(() => {
     if (!socket) return;
 
@@ -189,7 +97,7 @@ const ChatbotClient = () => {
     const handleBotMessageUpdated = (
       updatedBotMessage: Partial<AIChatMessage> & { _id: string }
     ) => {
-      // Update the messages state with the new bot message (merge responses)
+      // update the messages state with the new bot message (merge responses)
       dispatch(updateBotMessage(updatedBotMessage));
     };
 
@@ -212,6 +120,48 @@ const ChatbotClient = () => {
       socket.off("model:bot-message-updated", handleBotMessageUpdated);
     };
   }, [socket, dispatch]);
+
+  // --------------------------------------------------------------
+  //                                    functions 
+  const onRegenerate = async (botMessage: AIChatMessage) => {
+    _setRegeneratingMessageId(botMessage._id);
+    // Find userMessageId if it's missing
+    let userMessageId = botMessage.userMessageId;
+
+    if (!userMessageId && messages && messages.length > 0) {
+      // Find the bot message index in the messages array
+      const botMessageIndex = messages.findIndex(
+        (m) => m._id === botMessage._id
+      );
+      if (botMessageIndex > 0) {
+        // Look for the previous user message
+        for (let i = botMessageIndex - 1; i >= 0; i--) {
+          if (messages[i].sender === "user") {
+            userMessageId = messages[i]._id;
+            break;
+          }
+        }
+      }
+    }
+
+    if (!socket || !sessionId || !userMessageId) {
+      return;
+    }
+
+    // Build history from messages (same as in ChatInput)
+    const builtHistory = messages.map((message) => {
+      return message.sender === "bot"
+        ? assistant(message.content)
+        : userRes(message.content);
+    });
+
+    socketEvents.model.regenerateResponse(socket, {
+      sessionId, userMessageId: userMessageId, history: builtHistory,
+    });
+
+    setTimeout(() => _setRegeneratingMessageId(null), 100);
+  };
+
 
   ///////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////////////
   return (

@@ -1,6 +1,6 @@
 import { useSocketContext } from "@/context/useSocketContext";
 import { cn } from "@/lib/utils";
-import { setIsStreaming } from "@/store/reducers/aiSessionSlice";
+import { newChat, setIsStreaming } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import React, {
   Dispatch,
@@ -30,28 +30,16 @@ interface Props {
 }
 
 const ChatInput: React.FC<Props> = memo(
-  ({
-    isConnected,
-    textSize,
-    textareaRef,
-    fileInputRef,
-    setUploadedFiles,
-    setShowContextPanel,
-  }) => {
+  ({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles, setShowContextPanel, }) => {
     ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
-    const {
-      isStreaming,
-      isLoading,
-      messages,
-      currentSessionId: sessionId,
-    } = useSelector((state: RootState) => state.aiSession);
-    const {
-      defaultSocket: { socket },
-    } = useSocketContext();
+    const { isStreaming, isLoading, messages, currentSessionId: sessionId } = useSelector((state: RootState) => state.aiSession);
+    const { defaultSocket: { socket } } = useSocketContext();
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
     const router = useRouter();
-    ///////////////////////////////////////////////////////////// STATES //////////////////////////////////////////////////////////////////////
+
+    // ---------------------------------------------------------------------
+    //                                States
     // const [isVoiceRecording, _setIsVoiceRecording] = useState(false);
     const [selectedLanguage, setSelectedLanguage] = useState<
       "english" | "urdu"
@@ -59,46 +47,36 @@ const ChatInput: React.FC<Props> = memo(
     const [inputValue, setInputValue] = useState("");
     const [extractedText, setExtractedText] = useState("");
 
-    ///////////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////////////
+    // ----------------------------------------------------
+    //                              functions
     const onSendMessage = async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
+
       if (inputValue.trim() === "" || !socket || !isConnected || isLoading)
         return;
 
+      // for aborting
       if (isStreaming) {
         socket.emit("abort_chat");
         return;
       }
 
-      console.log("Sending message with socket:", {
-        socketId: socket?.id,
-        isConnected,
-        isStreaming,
-        isLoading,
-      });
+      // if no sign in
       if (!user?._id) {
         router.push("/auth/sign-in");
+        dispatch(newChat());
+        return;
       }
+
+      // if everything is ok move on
       dispatch(setIsStreaming(true));
 
-      // Get user message for sending
-      const userMessage =
-        inputValue.trim() +
-        (extractedText ? `\nProvided Context is ${extractedText}` : "") +
-        "\nAnswer only in " +
-        selectedLanguage;
-
-      // Always log what we're about to send
-      console.log(
-        `Sending message: "${userMessage}" ${sessionId ? `with sessionId: ${sessionId}` : "without session"
-        }`
-      );
+      // building history
       const history: AgentInputItem[] = messages.map((message) => {
         return message.sender === "bot"
           ? assistant(message.content)
           : userRes(message.content);
       });
-
       history.push(
         userRes(
           extractedText
@@ -107,22 +85,19 @@ const ChatInput: React.FC<Props> = memo(
         )
       );
       history.push(userRes(inputValue.trim()));
-      // If no sessionId yet, we need to start a new chat
+
+
+
       if (!sessionId) {
         // Using a test user ID (replace with actual authentication)
-        const userId = user?._id; // Replace with actual user ID
+        const userId = user._id; // Replace with actual user ID
         if (!userId) return; // safety
 
-        console.log("Starting new chat session for user:", userId);
 
-        // Emit start_chat event
+        // emit start_chat event
         socketEvents.model.startChat(socket, { userId });
-        setInputValue("");
-        setExtractedText("");
 
-        // Wait for session to start before sending the message
         const onSessionStarted = (data: { sessionId: string }) => {
-          console.log("Got session, now sending message:", userMessage);
 
           // Update the route with the session ID as a query parameter without reloading the page
           const url = new URL(window.location.href);
@@ -140,22 +115,23 @@ const ChatInput: React.FC<Props> = memo(
           socket.off("model:session-started", onSessionStarted);
         };
 
+        // if any existing listener
         socket.off("model:session-started", onSessionStarted);
         socket.once("model:session-started", onSessionStarted);
       } else {
-        // We already have a session, send message directly
-        console.log("Sending message with existing session:", sessionId);
 
+        // we already have a session, send message directly
         socketEvents.model.chatMessage(socket, {
           sessionId: sessionId,
           history: history,
           newMessage: inputValue,
         });
-
-        setInputValue("");
-        setExtractedText("");
       }
-      setExtractedText(""); // Clear after sending
+
+      // reset everything
+      setInputValue("");
+      setExtractedText("");
+      setExtractedText("");
       setUploadedFiles([]);
       setShowContextPanel(true);
     };
@@ -190,49 +166,6 @@ const ChatInput: React.FC<Props> = memo(
     //   toast.success(
     //     isVoiceRecording ? "Voice recording stopped" : "Voice recording started"
     //   );
-    // };
-
-    // const handleExportSession = (format: "pdf" | "txt" | "json") => {
-    //   const chatMessages = messages;
-    //   if (format === "json") {
-    //     const blob = new Blob([JSON.stringify(chatMessages, null, 2)], {
-    //       type: "application/json",
-    //     });
-    //     const url = URL.createObjectURL(blob);
-    //     downloadFile(url, "chat-export.json");
-    //   } else if (format === "txt") {
-    //     const text = chatMessages
-    //       .map((m) => `[${m.sender}] ${m.content}`)
-    //       .join("\n\n");
-    //     const blob = new Blob([text], { type: "text/plain" });
-    //     const url = URL.createObjectURL(blob);
-    //     downloadFile(url, "chat-export.txt");
-    //   } else if (format === "pdf") {
-    //     const doc = new jsPDF();
-    //     let y = 10;
-    //     chatMessages.forEach((m) => {
-    //       doc.text(`[${m.sender}] ${m.content}`, 10, y);
-    //       y += 10;
-    //       if (y > 280) {
-    //         doc.addPage();
-    //         y = 10;
-    //       }
-    //     });
-    //     doc.save("chat-export.pdf");
-    //   }
-    // };
-
-    // const downloadFile = (url: string, filename: string) => {
-    //   const a = document.createElement("a");
-    //   a.href = url;
-    //   a.download = filename;
-    //   a.click();
-    //   URL.revokeObjectURL(url);
-    // };
-
-    // const handleShareSession = () => {
-    //   navigator.clipboard.writeText(window.location.href);
-    //   toast.success("Session link copied to clipboard!");
     // };
 
     ///////////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////////////

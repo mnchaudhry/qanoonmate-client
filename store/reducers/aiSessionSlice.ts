@@ -42,7 +42,6 @@ export const getChatSessions = createAsyncThunk(
       return data?.data;
     } catch (error: any) {
       const message = getErrorMessage(error, "Failed to fetch chat sessions.");
-      toast.error(message);
       return rejectWithValue(message);
     }
   }
@@ -54,14 +53,12 @@ export const getChatSession = createAsyncThunk(
     try {
       const { data } = await api.getChatSession(id);
       if (!data?.success) toast.error(data?.message);
-      console.log("data for chat session", data);
       return data?.data;
     } catch (error: any) {
       const message = getErrorMessage(
         error,
         `Failed to retrieve chat session with ID: ${id}.`
       );
-      toast.error(message);
       return rejectWithValue(message);
     }
   }
@@ -75,7 +72,6 @@ export const getMyChatSessions = createAsyncThunk(
         throw new Error("Id not provided in the req");
       }
       const { data } = await api.getMyChatSessions(userId);
-      console.log("data for sidebar is", data);
       if (!data?.success) toast.error(data?.message);
       return data?.data;
     } catch (error: any) {
@@ -83,7 +79,6 @@ export const getMyChatSessions = createAsyncThunk(
         error,
         "Failed to fetch your chat sessions."
       );
-      toast.error(message);
       return rejectWithValue(message);
     }
   }
@@ -95,14 +90,12 @@ export const renameSession = createAsyncThunk(
     try {
       const { data } = await api.renameSession(formData);
       if (data?.success) toast.success(data?.message);
-      else toast.error(data?.message);
       return data?.data;
     } catch (error: any) {
       const message = getErrorMessage(
         error,
         `Unable to rename session with ID: ${formData.id}.`
       );
-      toast.error(message);
       return rejectWithValue(message);
     }
   }
@@ -114,14 +107,12 @@ export const deleteSession = createAsyncThunk(
     try {
       const { data } = await api.deleteSession(id);
       if (data?.success) toast.success(data?.message);
-      else toast.error(data?.message);
       return id;
     } catch (error: any) {
       const message = getErrorMessage(
         error,
         `Failed to delete session with ID: ${id}.`
       );
-      toast.error(message);
       return rejectWithValue(message);
     }
   }
@@ -139,7 +130,6 @@ export const getMessage = createAsyncThunk(
         error,
         `Could not retrieve message with ID: ${messageId}.`
       );
-      toast.error(message);
       return rejectWithValue(message);
     }
   }
@@ -151,14 +141,12 @@ export const getMessagesBySession = createAsyncThunk(
     try {
       const { data } = await api.getMessagesBySession(sessionId);
       if (!data?.success) toast.error(data?.message);
-      console.log("data for getmessages by session", data);
       return data?.data;
     } catch (error: any) {
       const message = getErrorMessage(
         error,
         `Unable to fetch messages for session ID: ${sessionId}.`
       );
-      toast.error(message);
       return rejectWithValue(message);
     }
   }
@@ -189,14 +177,12 @@ export const updateMessage = createAsyncThunk(
     try {
       const { data } = await api.updateAIMessage(formData);
       if (data?.success) toast.success(data?.message);
-      else toast.error(data?.message);
       return data?.data;
     } catch (error: any) {
       const message = getErrorMessage(
         error,
         `Failed to update message with ID: ${formData.id}.`
       );
-      toast.error(message);
       return rejectWithValue(message);
     }
   }
@@ -208,14 +194,12 @@ export const deleteMessage = createAsyncThunk(
     try {
       const { data } = await api.deleteAIMessage(messageId);
       if (data?.success) toast.success(data?.message);
-      else toast.error(data?.message);
       return data?.data;
     } catch (error: any) {
       const message = getErrorMessage(
         error,
         `Could not delete message with ID: ${messageId}.`
       );
-      toast.error(message);
       return rejectWithValue(message);
     }
   }
@@ -290,7 +274,7 @@ const aiSessionSlice = createSlice({
       state.messages.push(action.payload);
     },
     updateAIMessageLocal: (state, action) => {
-      // Start finding message from the end for better performance (most updates are for the last message)
+      // start finding message from the end for better performance (most updates are for the last message)
       let idx = -1;
       for (let i = state.messages.length - 1; i >= 0; i--) {
         if (state.messages[i]._id === action.payload._id) {
@@ -303,7 +287,7 @@ const aiSessionSlice = createSlice({
       }
     },
     updateBotMessage: (state, action) => {
-      // Update bot message with new responses (for regeneration)
+      // update bot message with new responses (for regeneration)
       const idx = state.messages.findIndex(
         (msg) => msg._id === action.payload._id
       );
@@ -318,17 +302,22 @@ const aiSessionSlice = createSlice({
       const { id, content, done } = action.payload;
 
       // Find the message in the messages array
-      const messageIndex = state.messages.findIndex((msg) => msg._id === id);
+      let messageIndex = -1;
+      for (let i = state.messages.length - 1; i >= 0; i--) {
+        if (state.messages[i]._id == id) {
+          messageIndex = i
+        }
+      }
 
       if (messageIndex !== -1) {
-        // Update the existing message directly
+        // update the existing message directly
         const message = state.messages[messageIndex];
         message.content = content;
         message.isStreaming = !done;
 
-        // Update the current response content
+        // update the current response content
         if (message.responses && Array.isArray(message.responses)) {
-          const currentResponseIndex = /* you'll need to track this */ 0; // or get from your responseIndexes
+          const currentResponseIndex = message.responses.length - 1
           if (message.responses[currentResponseIndex]) {
             message.responses[currentResponseIndex].content = content;
           }
@@ -345,12 +334,10 @@ const aiSessionSlice = createSlice({
     },
     setIsStreaming: (state, action) => {
       state.isStreaming = action.payload;
-      console.log("setIsStreaming called with:", action.payload);
 
       // Only clear streaming message when stopping, don't initialize empty one
       if (action.payload === false) {
         state.streamingMessage = null;
-        console.log("Cleared streaming message");
       }
     },
     setError: (state, action) => {
@@ -375,35 +362,33 @@ const aiSessionSlice = createSlice({
       state.sessionMetadata.sessionDuration += action.payload;
     },
     setStreamingMessage: (state, action) => {
-      console.log("setStreamingMessage called with:", action.payload);
 
       // Remove placeholder if present (same _id and empty content)
-      const idx = state.messages.findIndex(
-        (msg) =>
-          msg._id === action.payload._id &&
-          (!msg.content || msg.content.trim() === "")
-      );
+      // const idx = state.messages.findIndex(
+      //   (msg) =>
+      //     msg._id === action.payload._id &&
+      //     (!msg.content || msg.content.trim() === "")
+      // );
+      let idx = -1
+      for (let i = state.messages.length - 1; i >= 0; i--) {
+        const msg = state.messages[i]
+        if (msg._id === action.payload._id &&
+          (!msg.content || msg.content.trim() === "")) {
+          idx = i
+          break
+        }
+      }
+
+
       if (idx !== -1) {
         state.messages.splice(idx, 1);
       }
       state.streamingMessage = action.payload;
-      console.log("Updated streaming message:", state.streamingMessage);
     },
     finalizeStreamingMessage: (state) => {
-      console.log("finalizeStreamingMessage called");
       if (state.streamingMessage) {
-        console.log(
-          "Adding streaming message to messages array:",
-          state.streamingMessage
-        );
         state.messages.push(state.streamingMessage);
         state.streamingMessage = null;
-        console.log(
-          "Finalized streaming message, total messages:",
-          state.messages.length
-        );
-      } else {
-        console.log("No streaming message to finalize");
       }
     },
   },
