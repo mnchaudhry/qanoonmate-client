@@ -265,7 +265,6 @@ export const revokeSession = createAsyncThunk('auth/revokeSession', async (sessi
 
 export const hydrateAuth = createAsyncThunk('auth/hydrateAuth', async (options: { silent?: boolean } = {}, { dispatch, rejectWithValue }) => {
   const { silent = false } = options;
-  console.log('silent', silent)
   try {
     await fetchAndSetCSRFToken();
     const { payload, meta } = await dispatch(getProfile());
@@ -280,7 +279,6 @@ export const hydrateAuth = createAsyncThunk('auth/hydrateAuth', async (options: 
     }
   } catch (err: any) {
     await dispatch(logout());
-    console.log('silent2', silent)
     if (!silent) toast.error('Hydration failed');
     const message = getErrorMessage(err, 'Hydration failed');
     return rejectWithValue('');

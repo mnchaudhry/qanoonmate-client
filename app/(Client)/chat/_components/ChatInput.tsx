@@ -1,6 +1,6 @@
 import { useSocketContext } from "@/context/useSocketContext";
 import { cn } from "@/lib/utils";
-import { setIsStreaming } from "@/store/reducers/aiSessionSlice";
+import { newChat, setIsStreaming } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import React, {
   Dispatch,
@@ -29,6 +29,23 @@ interface Props {
   setShowContextPanel: any;
 }
 
+const ChatInput: React.FC<Props> = memo(
+  ({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles, setShowContextPanel, }) => {
+    ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
+    const { isStreaming, isLoading, messages, currentSessionId: sessionId } = useSelector((state: RootState) => state.aiSession);
+    const { defaultSocket: { socket } } = useSocketContext();
+    const dispatch = useDispatch<AppDispatch>();
+    const { user } = useSelector((state: RootState) => state.auth);
+    const router = useRouter();
+
+    // ---------------------------------------------------------------------
+    //                                States
+    // const [isVoiceRecording, _setIsVoiceRecording] = useState(false);
+    const [selectedLanguage, setSelectedLanguage] = useState<
+      "english" | "urdu"
+    >("english");
+    const [inputValue, setInputValue] = useState("");
+    const [extractedText, setExtractedText] = useState("");
 const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles, }) => {
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
   const { isStreaming, isLoading, messages, currentSessionId: sessionId, } = useSelector((state: RootState) => state.aiSession);
@@ -42,21 +59,64 @@ const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, f
   const [inputValue, setInputValue] = useState("");
   const [extractedText, setExtractedText] = useState("");
 
+    // ----------------------------------------------------
+    //                              functions
+    const onSendMessage = async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      if (inputValue.trim() === "" || !socket || !isConnected || isLoading)
+        return;
   ///////////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////////////
   const onSendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (inputValue.trim() === "" || !socket || !isConnected || isLoading)
       return;
 
+      // for aborting
+      if (isStreaming) {
+        socket.emit("abort_chat");
+        return;
+      }
     if (isStreaming) {
       socket.emit("abort_chat");
       return;
     }
 
+      // if no sign in
+      if (!user?._id) {
+        router.push("/auth/sign-in");
+        dispatch(newChat());
+        return;
+      }
+
+      // if everything is ok move on
+      dispatch(setIsStreaming(true));
     if (!user?._id) {
       router.push("/auth/sign-in");
     }
     dispatch(setIsStreaming(true));
+
+      // building history
+      const history: AgentInputItem[] = messages.map((message) => {
+        return message.sender === "bot"
+          ? assistant(message.content)
+          : userRes(message.content);
+      });
+      history.push(
+        userRes(
+          extractedText
+            ? `\nProvided Context from pdf file is ${extractedText}\n\n Answer only in ${selectedLanguage}`
+            : `Answer only in ${selectedLanguage}`
+        )
+      );
+      history.push(userRes(inputValue.trim()));
+
+
+
+      if (!sessionId) {
+        // Using a test user ID (replace with actual authentication)
+        const userId = user._id; // Replace with actual user ID
+        if (!userId) return; // safety
 
     // Get user message for sending
     const history: AgentInputItem[] = messages.map((message) => {
@@ -79,11 +139,19 @@ const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, f
       const userId = user?._id; // Replace with actual user ID
       if (!userId) return; // safety
 
+        // emit start_chat event
+        socketEvents.model.startChat(socket, { userId });
       // Emit start_chat event
       socketEvents.model.startChat(socket, { userId });
       setInputValue("");
       setExtractedText("");
 
+        const onSessionStarted = (data: { sessionId: string }) => {
+
+          // Update the route with the session ID as a query parameter without reloading the page
+          const url = new URL(window.location.href);
+          url.searchParams.set("id", data.sessionId);
+          window.history.pushState({}, "", url.toString());
       // Wait for session to start before sending the message
       const onSessionStarted = (data: { sessionId: string }) => {
         // Update the route with the session ID as a query parameter without reloading the page
@@ -102,6 +170,18 @@ const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, f
         socket.off("model:session-started", onSessionStarted);
       };
 
+        // if any existing listener
+        socket.off("model:session-started", onSessionStarted);
+        socket.once("model:session-started", onSessionStarted);
+      } else {
+
+        // we already have a session, send message directly
+        socketEvents.model.chatMessage(socket, {
+          sessionId: sessionId,
+          history: history,
+          newMessage: inputValue,
+        });
+      }
       socket.off("model:session-started", onSessionStarted);
       socket.once("model:session-started", onSessionStarted);
     } else {
@@ -112,6 +192,13 @@ const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, f
         newMessage: inputValue,
       });
 
+      // reset everything
+      setInputValue("");
+      setExtractedText("");
+      setExtractedText("");
+      setUploadedFiles([]);
+      setShowContextPanel(true);
+    };
       setInputValue("");
       setExtractedText("");
     }
@@ -144,6 +231,12 @@ const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, f
     );
   };
 
+    // const handleVoiceToggle = () => {
+    //   setIsVoiceRecording(!isVoiceRecording);
+    //   toast.success(
+    //     isVoiceRecording ? "Voice recording stopped" : "Voice recording started"
+    //   );
+    // };
   // const handleVoiceToggle = () => {
   //   setIsVoiceRecording(!isVoiceRecording);
   //   toast.success(

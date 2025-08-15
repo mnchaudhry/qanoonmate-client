@@ -24,7 +24,6 @@ interface MessageBoxProps {
 
 const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChatMessage) => Promise<void>; }> = memo(({ chatViewMode = "card", textSize = 16, messages, onRegenerate }) => {
   ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////
-  console.log("messages", messages);
   const { quickAction, streamingMessage } = useSelector((state: RootState) => state.aiSession);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);

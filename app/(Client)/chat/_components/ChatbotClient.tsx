@@ -1,34 +1,43 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import MessageBox from "./MessageBox";
-import ChatbotSidebar from "./ChatbotSidebar";
-import ChatbotNavbar from "./ChatbotHeader";
-import { File, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useSocketContext } from "@/context/useSocketContext";
+import {
+  getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, updateBotMessage, updateStreamingMessage
+} from "@/store/reducers/aiSessionSlice";
+import { getLawyers } from "@/store/reducers/lawyerSlice";
+import { socketEvents } from "@/store/socket/events";
+import { AppDispatch, RootState } from "@/store/store";
+import { File, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import DefaultScreen from "./DefaultScreen";
+import ChatbotNavbar from "./ChatbotHeader";
+import ChatbotSidebar from "./ChatbotSidebar";
 import ChatInput from "./ChatInput";
 import ChatRightbar from "./ChatRightbar";
-import { useSocketContext } from "@/context/useSocketContext";
-import { socketEvents } from "@/store/socket/events";
-import { getMessagesBySession, getChatSession, updateBotMessage, updateStreamingMessage, setChatMetadata, getChatMetadataBySession, } from "@/store/reducers/aiSessionSlice";
-import { AppDispatch, RootState } from "@/store/store";
-import { getLawyers } from "@/store/reducers/lawyerSlice";
+import DefaultScreen from "./DefaultScreen";
+import MessageBox from "./MessageBox";
 
-import { assistant, user as userRes } from "@openai/agents";
-import { AIChatMessage } from "@/lib/interfaces";
 import { Button } from "@/components/ui/button";
+import { AIChatMessage } from "@/lib/interfaces";
+import { assistant, user as userRes } from "@openai/agents";
+
 
 const ChatbotClient = () => {
-  ///////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////////////
+  // variables 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const { defaultSocket: { socket, connectError, isConnected }, } = useSocketContext();
+  const {
+    defaultSocket: { socket, connectError, isConnected },
+    reconnect,
+  } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
-  const { messages, currentSessionId: sessionId, sessionMetadata, } = useSelector((state: RootState) => state.aiSession);
-  console.log("messages", messages);
+  const {
+    messages,
+    currentSessionId: sessionId,
+    sessionMetadata,
+  } = useSelector((state: RootState) => state.aiSession);
   ///////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////////////
   // UI States
   const [showDictionary, setShowDictionary] = useState(false);
@@ -37,12 +46,16 @@ const ChatbotClient = () => {
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [regeneratingMessageId, _setRegeneratingMessageId] = useState<string | null>(null);
-  console.log('regeneratedMessageId', regeneratingMessageId)
+  const [regeneratingMessageId, _setRegeneratingMessageId] = useState<
+    string | null
+  >(null);
   const { cases, references, aiConfidence: confidence, legalContext, quickAction, } = useSelector((state: RootState) => state.aiSession);
 
   const [showContextPanel, setShowContextPanel] = useState(false);
-  ///////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////////////
+
+
+  // ---------------------------------------------------------------------------
+  //                                        useEffects
   // Get Lawyers
   useEffect(() => {
     dispatch(getLawyers({}));
@@ -57,40 +70,32 @@ const ChatbotClient = () => {
     setShowContextPanel(true);
   }, [sessionId, dispatch]);
 
-  useEffect(() => {
-    if (connectError) {
-      console.log("Connection error: ", connectError);
-    } else if (isConnected) {
-      console.log("Connected with socket ID: ", socket?.id);
-
-      // Test socket functionality
-      if (socket) {
-        console.log("Testing socket emit...");
-        socket.emit("test", { message: "Testing from ChatbotClient" });
-
-        // Listen for test response
-        socket.on("test-response", (data) => {
-          console.log("Test response received:", data);
-        });
-      }
-    } else {
-      console.log("Disconnected or connecting...");
-    }
-  }, [isConnected, connectError, socket]);
-
+  // derived data moved to useParsedMessages hook
   useEffect(() => {
     if (!socket) return;
 
-    const handleMessageStream = (data: { id: string; content: string; done: boolean; }) => {
+    const handleMessageStream = (data: {
+      id: string;
+      content: string;
+      done: boolean;
+    }) => {
       dispatch(updateStreamingMessage(data));
     };
 
-    const handleMetadataDisplay = (data: { aiConfidence: number; references: string[]; cases: string[]; legalContext: string; quickAction: string; }) => {
+    const handleMetadataDisplay = (data: {
+      aiConfidence: number;
+      references: string[];
+      cases: string[];
+      legalContext: string;
+      quickAction: string;
+    }) => {
       dispatch(setChatMetadata(data));
     };
 
-    const handleBotMessageUpdated = (updatedBotMessage: Partial<AIChatMessage> & { _id: string }) => {
-      // Update the messages state with the new bot message (merge responses)
+    const handleBotMessageUpdated = (
+      updatedBotMessage: Partial<AIChatMessage> & { _id: string }
+    ) => {
+      // update the messages state with the new bot message (merge responses)
       dispatch(updateBotMessage(updatedBotMessage));
     };
 
@@ -114,8 +119,8 @@ const ChatbotClient = () => {
     };
   }, [socket, dispatch]);
 
-  ///////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////////////
-
+  // --------------------------------------------------------------
+  //                                    functions 
   const onRegenerate = async (botMessage: AIChatMessage) => {
     _setRegeneratingMessageId(botMessage._id);
     // Find userMessageId if it's missing
@@ -131,10 +136,6 @@ const ChatbotClient = () => {
         for (let i = botMessageIndex - 1; i >= 0; i--) {
           if (messages[i].sender === "user") {
             userMessageId = messages[i]._id;
-            console.log(
-              "Found userMessageId from message history:",
-              userMessageId
-            );
             break;
           }
         }
@@ -142,11 +143,6 @@ const ChatbotClient = () => {
     }
 
     if (!socket || !sessionId || !userMessageId) {
-      console.log("Early return - missing:", {
-        socket: !socket,
-        sessionId: !sessionId,
-        userMessageId: !userMessageId,
-      });
       return;
     }
 
@@ -157,15 +153,13 @@ const ChatbotClient = () => {
         : userRes(message.content);
     });
 
-    console.log("Emitting regenerate_response event");
     socketEvents.model.regenerateResponse(socket, {
-      sessionId,
-      userMessageId: userMessageId,
-      history: builtHistory,
+      sessionId, userMessageId: userMessageId, history: builtHistory,
     });
 
     setTimeout(() => _setRegeneratingMessageId(null), 100);
   };
+
 
   ///////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////////////
   return (
