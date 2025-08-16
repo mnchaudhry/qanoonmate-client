@@ -5,6 +5,7 @@ import type * as ClientAPI from "../types/client.types";
 import type * as LawyerAPI from "../types/lawyer.types";
 import type * as ClientSettingsAPI from "../types/clientSettings.types";
 import type * as LawyerSettingsAPI from "../types/lawyerSettings.types";
+import type * as BetaRequestAPI from "../types/beta-request.types";
 
 import { APIClient, FormDataAPI } from "./axios";
 import { UserRole } from "@/lib/enums";
@@ -266,6 +267,9 @@ export const createDirectory = (data: API.DirectoryCreateInput) => APIClient.pos
 export const getDirectories = (params: { ownerId: string; parentId?: string; }) => APIClient.get<API.DirectoryListResponse>("/document/directories", { params });
 export const updateDirectory = (id: string, data: API.DirectoryUpdateInput) => APIClient.put<API.DirectoryResponse>(`/document/directories/${id}`, data);
 export const deleteDirectory = (id: string) => APIClient.delete<API.DirectoryDeleteResponse>(`/document/directories/${id}`);
+
+////////////////////////////////////////////////////////// BETA REQUEST ////////////////////////////////////////////////////////////
+export const createBetaRequest = (data: BetaRequestAPI.BetaRequestInput) => APIClient.post<BetaRequestAPI.CreateBetaRequestResponse>(`/beta-request`, data);
 
 ////////////////////////////////////////////////////////// WAITLIST ////////////////////////////////////////////////////////////
 export const joinWaitlist = (data: API.CreateWaitlistRequest) => APIClient.post<API.CreateWaitlistResponse>(`/waitlist`, data);

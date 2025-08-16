@@ -106,7 +106,6 @@ function LaunchPage() {
           </motion.div>
 
           {/* Headline */}
-          {/* Headline */}
           <motion.h1
             className="flex flex-col items-center text-center text-6xl md:text-8xl font-semibold tracking-tighter leading-tight md:leading-[1.1]"
             initial={{ opacity: 0, y: 30 }}
@@ -209,7 +208,7 @@ function LaunchPage() {
           )}
 
           <div className='mt-4' >
-            <span className="text-muted-foreground" >Are you a beta user user? <Link href='/beta' className='text-primary underline'>Click here</Link></span>
+            <span className="text-muted-foreground" >Are you a beta user user? <Link href='/beta' className='text-primary underline'>Click here</Link> or <Link href='/request-beta' className='text-primary underline'>Request Beta</Link></span>
           </div>
 
         </div>

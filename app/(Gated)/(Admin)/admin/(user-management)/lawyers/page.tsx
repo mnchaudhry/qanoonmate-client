@@ -15,6 +15,7 @@ import UserDetailsModal from './_components/UserDetailsModal'
 import { TableSkeleton } from '@/components/skeletons'
 import AddUserModal from './_components/AddUserModal'
 import { getLawyers, bulkUploadLawyers } from '@/store/reducers/lawyerSlice'
+import { ReleaseChannel } from '@/lib/enums'
 
 
 const PAGE_SIZE = 42
@@ -140,7 +141,7 @@ const AdminLawyers = () => {
       }
       const header = lines[0].split(',').map(h => h.trim().toLowerCase())
       console.log('header', header)
-      const required = ['firstname', 'lastname', 'email', 'username', 'phone', 'password']
+      const required = ['firstname', 'lastname', 'email', 'username', 'phone', 'password', 'releaseChannel']
       const missing = required.filter(c => !header.includes(c))
       if (missing.length) {
         toast.error(`Missing required columns: ${missing.join(', ')}`)
@@ -151,18 +152,22 @@ const AdminLawyers = () => {
       const phoneIdx = header.indexOf('phone')
       const usernameIdx = header.indexOf('username')
       const pwdIdx = header.indexOf('password')
+      const releaseChannelIdx = header.indexOf('releaseChannel')
       const errors: string[] = []
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      const allowedReleaseChannels = Object.values(ReleaseChannel)
       for (let i = 1; i < lines.length && i <= 1000; i++) {
         const parts = lines[i].split(',')
         const email = parts[emailIdx]?.trim() || ''
         const phone = parts[phoneIdx]?.trim() || ''
         const username = parts[usernameIdx]?.trim() || ''
         const pwd = parts[pwdIdx]?.trim() || ''
+        const releaseChannel = releaseChannelIdx >= 0 ? (parts[releaseChannelIdx]?.trim()?.toLowerCase() || '') : ReleaseChannel.PUBLIC
         if (!emailRegex.test(email)) errors.push(`Row ${i + 1}: invalid email`)
         if (!username) errors.push(`Row ${i + 1}: username is required`)
         if (phone.length < 6) errors.push(`Row ${i + 1}: phone too short`)
         if (pwd.length < 6) errors.push(`Row ${i + 1}: password too short`)
+        if (!allowedReleaseChannels.includes(releaseChannel as ReleaseChannel)) errors.push(`Row ${i + 1}: invalid release channel '${releaseChannel}'`)
       }
       console.log('errors', errors)
       if (errors.length) {
