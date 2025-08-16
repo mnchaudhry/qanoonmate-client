@@ -23,7 +23,7 @@ const LawyersDirectory = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { lawyers, error, totalPages: reduxTotalPages, totalCount, isLoading } = useSelector((state: any) => state.lawyer);
+  const { lawyers, error, meta: { totalPages: reduxTotalPages, totalCount }, isLoading } = useSelector((state: any) => state.lawyer);
 
   const urlSearch = searchParams.get("search") || "";
   const urlView = searchParams.get("view") || "list";

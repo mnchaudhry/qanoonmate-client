@@ -7,6 +7,7 @@ import { MapPin, Star, Clock, Globe, DollarSign, Calendar, BadgeCheck } from "lu
 import Link from "next/link";
 import { Lawyer } from "@/store/types/lawyer.types";
 import { ConsultationMode } from "@/lib/enums";
+import { enumToLabel } from "@/lib/utils";
 
 interface Props {
     lawyers: Lawyer[];
@@ -107,7 +108,7 @@ export const LawyersList = ({ lawyers, onSpecializationClick }: Props) => {
 
                                     <div className="flex items-center gap-2 mb-3 text-sm text-muted-foreground">
                                         <MapPin className="h-4 w-4" />
-                                        <span>{lawyer?.location?.city}, {lawyer?.location?.province}</span>
+                                        <span>{enumToLabel(lawyer?.location?.city as string)}, {enumToLabel(lawyer?.location?.province as string)}</span>
                                     </div>
 
                                     <div className="flex items-center space-x-2 mb-3">
@@ -127,7 +128,7 @@ export const LawyersList = ({ lawyers, onSpecializationClick }: Props) => {
                                                 className={`text-xs ${onSpecializationClick ? 'cursor-pointer hover:underline hover:bg-secondary/80 transition-colors' : ''}`}
                                                 onClick={onSpecializationClick ? () => onSpecializationClick(spec) : undefined}
                                             >
-                                                {spec.replace(/_/g, ' ')}
+                                                {enumToLabel(spec)}
                                             </Badge>
                                         ))}
                                         {lawyer.specializations && lawyer.specializations.length > 3 && (
@@ -148,7 +149,7 @@ export const LawyersList = ({ lawyers, onSpecializationClick }: Props) => {
                                         </div>
                                         <div className="flex items-center space-x-1">
                                             <Globe className="h-3 w-3" />
-                                            <span>{lawyer.languages?.join(", ") || "English"}</span>
+                                            <span>{lawyer.languages?.map(lang => enumToLabel(lang)).join(", ") || "English"}</span>
                                         </div>
                                         <div className="flex items-center space-x-1">
                                             <DollarSign className="h-3 w-3" />

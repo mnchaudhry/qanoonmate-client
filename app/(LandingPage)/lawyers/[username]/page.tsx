@@ -8,12 +8,11 @@ import LawyerDetails from "./_components/LawyerDetails";
 import ConsultationModule from "./_components/ConsultationModule";
 import ReviewsSection from "./_components/ReviewsSection";
 import RelatedInformation from "./_components/RelatedInformation";
-import { getLawyerById } from "@/store/reducers/lawyerSlice";
+import { getLawyerByUsername } from "@/store/reducers/lawyerSlice";
 import { RootState, AppDispatch } from "@/store/store";
 import LawyerNotFound from "./_components/LawyerNotFound";
 import LawyerSkeleton from "@/components/skeletons/LawyerSkeleton";
 import NavigationTabs, { TabId } from "./_components/NavigationTabs";
-import AvailabilitySection from "./_components/AvailabilitySection";
 import ArticlesSection from "./_components/ArticlesSection";
 import DocumentsSection from "./_components/DocumentsSection";
 import ContactSection from "./_components/ContactSection";
@@ -22,7 +21,7 @@ import { getLawyerAvailability, getLawyerReviews } from "@/store/reducers/lawyer
 export default function LawyerProfilePage() {
 
   /////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////
-  const { id }: { id: string } = useParams();
+  const { username }: { username: string } = useParams();
 
   const dispatch = useDispatch<AppDispatch>();
   const { selectedLawyer } = useSelector((state: RootState) => state.lawyer);
@@ -31,21 +30,19 @@ export default function LawyerProfilePage() {
   const [loading, setLoading] = useState(false);
   const [lawyer, setLawyer] = useState(selectedLawyer || null);
   const [activeTab, setActiveTab] = useState<TabId>('about')
-  const availability = useSelector((s: RootState) => s.lawyer.availability)
 
   /////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////
   useEffect(() => {
     const fetchLawyerData = async () => {
-      if (!id) return;
+      if (!username) return;
 
-      console.log("Fetching lawyer details for ID:", id);
       setLoading(true);
 
       try {
-        const resultAction = await dispatch(getLawyerById(id));
+        const resultAction = await dispatch(getLawyerByUsername(username));
 
         // Check if we got the data
-        if (getLawyerById.fulfilled.match(resultAction)) {
+        if (getLawyerByUsername.fulfilled.match(resultAction)) {
           console.log("Lawyer data fetched successfully:", resultAction.payload);
 
           // If payload is empty or undefined
@@ -53,11 +50,11 @@ export default function LawyerProfilePage() {
             console.error("API returned empty lawyer data");
           }
         } else {
-          console.error("Failed to fetch lawyer:", resultAction.error);
+          console.error("Failed to fetch lawyer:", resultAction.payload);
         }
         // Fetch additional data for tabs
-        dispatch(getLawyerAvailability(id))
-        dispatch(getLawyerReviews(id))
+        dispatch(getLawyerAvailability(username))
+        dispatch(getLawyerReviews(username))
 
       } catch (error) {
         console.error("Exception when fetching lawyer details:", error);
@@ -67,7 +64,7 @@ export default function LawyerProfilePage() {
     };
 
     fetchLawyerData();
-  }, [dispatch, id]);
+  }, [dispatch, username]);
   useEffect(() => {
     setLawyer(selectedLawyer)
   }, [selectedLawyer])
@@ -96,10 +93,7 @@ export default function LawyerProfilePage() {
                   {activeTab === 'reviews' && (
                     <ReviewsSection lawyer={lawyer} />
                   )}
-                  {activeTab === 'availability' && (
-                    <AvailabilitySection availability={availability} />
-                  )}
-                  {activeTab === 'articles' && (
+                  {activeTab === 'blog' && (
                     <ArticlesSection articles={[]} />
                   )}
                   {activeTab === 'documents' && (
