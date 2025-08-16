@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Gavel, Minimize2, Plus, FileText, Calendar, } from "lucide-react";
+import { BookOpen, Gavel, Minimize2, Plus, FileText, Calendar, Link, } from "lucide-react";
 
 interface ChatRightbarProps {
   showContextPanel: boolean;
@@ -9,10 +9,11 @@ interface ChatRightbarProps {
   setShowDictionary: (show: boolean) => void;
   keyReferences?: string[];
   relatedCases?: string[];
+  referencedLinks?: string[]
   legalContext?: string | null;
 }
 
-const ChatRightbar: React.FC<ChatRightbarProps> = ({ showContextPanel, setShowContextPanel, showDictionary, keyReferences = [], relatedCases = [], legalContext = null, }) => {
+const ChatRightbar: React.FC<ChatRightbarProps> = ({ showContextPanel, setShowContextPanel, showDictionary, keyReferences = [], relatedCases = [], legalContext = null, referencedLinks = [] }) => {
   return (
     <>
       <div
@@ -55,7 +56,7 @@ const ChatRightbar: React.FC<ChatRightbarProps> = ({ showContextPanel, setShowCo
             </Card>
 
             {/* Key References */}
-            <Card className="py-0">
+            <Card className="py-0 overflow-y-scroll">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <FileText className="w-4 h-4" />
@@ -110,6 +111,28 @@ const ChatRightbar: React.FC<ChatRightbarProps> = ({ showContextPanel, setShowCo
                   <div key={idx} className="p-2 bg-muted rounded text-xs">
                     <p className="font-medium">{c}</p>
                   </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/** Referenced links */}
+            <Card className="py-0 overflow-y-scroll">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Link className="w-4 h-4" />
+                  Referenced Links
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2 overflow-x-scroll">
+                {referencedLinks.length === 0 && (
+                  <div className="text-xs text-muted-foreground">
+                    No referenced links yet.
+                  </div>
+                )}
+                {referencedLinks.map((c, idx) => (
+                  <a key={idx} href={c} target="_blank" className="p-2 bg-muted rounded text-xs">
+                    <p className="font-medium">{c}</p>
+                  </a>
                 ))}
               </CardContent>
             </Card>
