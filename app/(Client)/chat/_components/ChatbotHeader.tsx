@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useRouter } from "next/navigation";
 
 interface ChatNavbarProps {
   showAccessibilityPanel: boolean;
@@ -25,6 +26,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
   ////////////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////////////
   const reduxConfidence = useSelector((state: RootState) => state.aiSession.aiConfidence);
   const displayConfidence = aiConfidence ?? reduxConfidence ?? 0;
+  const router = useRouter();
 
   ////////////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////////////////
   const getConfidenceColor = (confidence: number) => {
@@ -199,10 +201,11 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
           <Button
             variant="default"
             size="sm"
+            onClick={() => router.push('/pricing')}
             className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0 shadow-md"
           >
             <Crown className="w-4 h-4 mr-2" />
-            Premium
+            Upgrade
           </Button>
 
           {/* Profile Button */}

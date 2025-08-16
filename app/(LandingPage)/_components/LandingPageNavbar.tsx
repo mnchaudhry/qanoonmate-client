@@ -30,7 +30,7 @@ const LandingPageNavbar: React.FC = () => {
         { label: 'Acts', link: '/knowledgebase/acts', description: 'Browse a comprehensive collection of Pakistan’s laws, categorized by legal domain.' },
         { label: 'Case Laws', link: '/knowledgebase/case-laws', description: 'Explore key judgments and case summaries from the Supreme Court and High Courts.' },
         { label: 'Legal Dictionary', link: '/knowledgebase/dictionary', description: 'Quick reference for legal terms and phrases to simplify complex jargon.' },
-        { label: 'Legal Guides', link: '/knowledgebase/guides', description: 'Step-by-step guides for legal processes like business registration or IP protection.' },
+        // { label: 'Legal Guides', link: '/knowledgebase/guides', description: 'Step-by-step guides for legal processes like business registration or IP protection.' },
         { label: 'Drafts', link: '/knowledgebase/drafts', description: "Access legal document drafts." },
         { label: 'FAQs', link: '/knowledgebase/faqs', description: 'Find answers to commonly asked legal questions across different topics.' },
         // { label: 'Legal Forums', link: '/knowledgebase/forums', description: 'Coming soon: Engage with a community of learners and experts in legal discussions.' }

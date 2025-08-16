@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Search, X, ChevronDown } from "lucide-react";
+import { enumToLabel } from "@/lib/utils";
 
 interface LawyersSidebarProps {
   searchTerm: string;
@@ -84,19 +85,7 @@ const LawyersSidebar: React.FC<LawyersSidebarProps> = ({
     );
   };
 
-  const FilterSection = ({
-    title,
-    items,
-    category,
-    isExpanded,
-    isRange = false
-  }: {
-    title: string;
-    items: string[] | Array<{ label: string; value: string }>;
-    category: string;
-    isExpanded: boolean;
-    isRange?: boolean;
-  }) => (
+  const FilterSection = ({ title, items, category, isExpanded, isRange = false }: { title: string; items: string[] | Array<{ label: string; value: string }>; category: string; isExpanded: boolean; isRange?: boolean; }) => (
     <div className="space-y-3">
       <button
         onClick={() => toggleSection(category)}
@@ -131,7 +120,7 @@ const LawyersSidebar: React.FC<LawyersSidebarProps> = ({
                   className="w-4 h-4 text-primary !border-border focus:ring-primary rounded"
                 />
                 <span className="text-sm text-muted-foreground hover:text-foreground">
-                  {itemLabel}
+                  {enumToLabel(itemLabel || '')}
                 </span>
               </label>
             );
@@ -184,7 +173,7 @@ const LawyersSidebar: React.FC<LawyersSidebarProps> = ({
           <div className="flex flex-wrap gap-1">
             {selectedFilters.specialization.map(spec => (
               <Badge key={spec} variant="secondary" className="text-xs">
-                {spec}
+                {enumToLabel(spec || '')}
                 <button
                   onClick={() => onFilterChange("specialization", spec)}
                   className="ml-1 hover:bg-muted rounded-full"
@@ -195,7 +184,7 @@ const LawyersSidebar: React.FC<LawyersSidebarProps> = ({
             ))}
             {selectedFilters.language.map(lang => (
               <Badge key={lang} variant="secondary" className="text-xs">
-                {lang}
+                {enumToLabel(lang || '')}
                 <button
                   onClick={() => onFilterChange("language", lang)}
                   className="ml-1 hover:bg-muted rounded-full"
@@ -206,7 +195,7 @@ const LawyersSidebar: React.FC<LawyersSidebarProps> = ({
             ))}
             {selectedFilters.city.map(city => (
               <Badge key={city} variant="secondary" className="text-xs">
-                {city}
+                {enumToLabel(city || '')}
                 <button
                   onClick={() => onFilterChange("city", city)}
                   className="ml-1 hover:bg-muted rounded-full"
@@ -217,7 +206,7 @@ const LawyersSidebar: React.FC<LawyersSidebarProps> = ({
             ))}
             {selectedFilters.province.map(province => (
               <Badge key={province} variant="secondary" className="text-xs">
-                {province}
+                {enumToLabel(province || '')}
                 <button
                   onClick={() => onFilterChange("province", province)}
                   className="ml-1 hover:bg-muted rounded-full"

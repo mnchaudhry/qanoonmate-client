@@ -158,7 +158,7 @@ function HeroGeometric() {
 
                         {/* Secondary CTA - Try AI Chatbot */}
                         <Button variant="outline" size="lg" asChild className="cursor-pointer">
-                            <Link href="/chatbot">
+                            <Link href="/chat">
                                 Try AI Chatbot
                             </Link>
                         </Button>

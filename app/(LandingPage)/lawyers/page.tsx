@@ -14,7 +14,7 @@ import ViewToggle from "../knowledgebase/acts/_components/ViewToggle";
 import EmptyState from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LawCategory, LawyerLanguage, AvailabilityDay, LawyerCity, Province, LawyerRating, LawyerFeeRange, LawyerExperienceRange } from "@/lib/enums";
+import { LawCategory, LawyerLanguage, AvailabilityDay, LawyerCity, Province, LawyerRating, LawyerFeeRange, LawyerExperienceRange, AccountStatus } from "@/lib/enums";
 
 const PAGE_SIZE = 42;
 
@@ -102,7 +102,7 @@ const LawyersDirectory = () => {
   }, [debouncedSearch, selectedFilters, currentPage, view, updateURL]);
 
   useEffect(() => {
-    const params: any = {};
+    const params: any = { accountStatus: AccountStatus.ACTIVE };
 
     // Add filters
     if (selectedFilters.specialization.length > 0) params.specialization = selectedFilters.specialization;
@@ -110,20 +110,27 @@ const LawyersDirectory = () => {
     if (selectedFilters.availability.length > 0) params.availability = selectedFilters.availability;
     if (selectedFilters.city.length > 0) params.city = selectedFilters.city;
     if (selectedFilters.province.length > 0) params.province = selectedFilters.province;
-    if (selectedFilters.rating.length > 0) params.rating_gte = Math.min(...selectedFilters.rating.map(Number));
+    if (selectedFilters.rating.length > 0) {
+      const numericRatings = selectedFilters.rating
+        .map((r) => parseFloat(r))
+        .filter((n) => !Number.isNaN(n));
+      if (numericRatings.length > 0) {
+        params.rating_gte = Math.min(...numericRatings);
+      }
+    }
 
     // Fee range
     if (selectedFilters.fee_range) {
       const [min, max] = selectedFilters.fee_range.split("-").map(Number);
-      if (min !== undefined) params.fee_gte = min;
-      if (max !== undefined && max !== 999999) params.fee_lte = max;
+      if (!Number.isNaN(min)) params.fee_gte = min;
+      if (!Number.isNaN(max) && max !== 999999) params.fee_lte = max;
     }
 
     // Experience range
     if (selectedFilters.experience_range) {
       const [min, max] = selectedFilters.experience_range.split("-").map(Number);
-      if (min !== undefined) params.experience_gte = min;
-      if (max !== undefined && max !== 999) params.experience_lte = max;
+      if (!Number.isNaN(min)) params.experience_gte = min;
+      if (!Number.isNaN(max) && max !== 999) params.experience_lte = max;
     }
 
     // Search and sorting
@@ -236,16 +243,21 @@ const LawyersDirectory = () => {
 
           {/* Main Content */}
           <section className="col-span-3 !pt-0">
+
             {/* View Toggle and Count */}
             {lawyers.length > 0 && (
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between items-center mb-4">
                 <div className="text-sm text-muted-foreground">
-                  Showing {lawyers.length} of {totalCount} lawyers
-                  {isSearching && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      • Updating...
-                    </span>
-                  )}
+                  {process.env.NODE_ENV == 'development' &&
+                    <>
+                      Showing {lawyers.length} of {totalCount} lawyers
+                      {isSearching && (
+                        <span className="ml-2 text-xs text-muted-foreground">
+                          • Updating...
+                        </span>
+                      )}
+                    </>
+                  }
                 </div>
                 <ViewToggle view={view} onViewChange={handleViewChange} />
               </div>
