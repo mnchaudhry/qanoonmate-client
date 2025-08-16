@@ -1,5 +1,5 @@
 @import "tailwindcss";
-
+@import "highlight.js/styles/github-dark.css";
 section {
   padding: 180px 0px;
 }
@@ -369,4 +369,13 @@ section {
 
 .ql-editor::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground));
+}
+
+.chat-markdown a {
+  text-decoration: underline;
+  color: #2563eb; 
+}
+
+.chat-markdown a:hover {
+  color: #1d4ed8;
 }
