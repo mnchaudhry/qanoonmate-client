@@ -10,6 +10,7 @@ interface SessionState {
   quickAction: string;
   references: string[];
   cases: string[];
+  referencedLinks: string[];
   legalContext: string;
   sessions: AIChatSession[];
   sidebarSessions: SidebarChatItem[];
@@ -26,6 +27,7 @@ interface SessionState {
     sessionDuration: number;
   };
   streamingMessage: AIChatMessage | null;
+  regeneratingMessageId: string | null;
 }
 
 export interface SidebarChatItem {
@@ -210,6 +212,7 @@ const initialState: SessionState = {
   legalContext: "",
   references: [],
   cases: [],
+  referencedLinks: [],
   quickAction: "",
   sessions: [],
   sidebarSessions: [],
@@ -226,6 +229,7 @@ const initialState: SessionState = {
     sessionDuration: 0,
   },
   streamingMessage: null,
+  regeneratingMessageId: null
 };
 
 const aiSessionSlice = createSlice({
@@ -251,6 +255,7 @@ const aiSessionSlice = createSlice({
       state.currentSession = null;
       state.currentSessionId = null;
       state.messages = [];
+      state.referencedLinks = [];
     },
     setChatMetadata: (state, action) => {
       state.aiConfidence = action.payload.aiConfidence;
@@ -258,6 +263,7 @@ const aiSessionSlice = createSlice({
       state.references = action.payload.references;
       state.legalContext = action.payload.legalContext;
       state.quickAction = action.payload.quickAction;
+      state.referencedLinks = action.payload.referencedLinks
     },
     setCurrentSession: (state, action) => {
       state.currentSession = action.payload;
@@ -267,6 +273,9 @@ const aiSessionSlice = createSlice({
     },
     setAIMessages: (state, action) => {
       state.messages = action.payload;
+    },
+    setRegeneratingMessageId: (state, action) => {
+      state.regeneratingMessageId = action.payload;
     },
     addAIMessage: (state, action) => {
       state.messages.push(action.payload);
@@ -386,6 +395,7 @@ const aiSessionSlice = createSlice({
     finalizeStreamingMessage: (state) => {
       if (state.streamingMessage) {
         state.messages.push(state.streamingMessage);
+        state.sessionMetadata.interactionCount += 1;
         state.streamingMessage = null;
       }
     },
@@ -428,6 +438,7 @@ const aiSessionSlice = createSlice({
         state.references = action.payload.references;
         state.legalContext = action.payload.legalContext;
         state.quickAction = action.payload.quickAction;
+        state.referencedLinks = action.payload.referencedLinks
       })
       .addCase(getChatMetadataBySession.rejected, (state, action) => {
         state.error = action.payload as string;
@@ -543,6 +554,7 @@ export const {
   setCurrentMessage,
   setCurrentSession,
   setCurrentSessionId,
+  setRegeneratingMessageId,
   setError,
   setIsLoading,
   setIsStreaming,

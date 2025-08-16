@@ -75,7 +75,8 @@ export const createSummary = createAsyncThunk(
   async (formData: any, { rejectWithValue }) => {
     try {
       const { data } = await createTextSummary(formData);
-      return data;
+      console.log("summary data", data)
+      return data.data;
     } catch (error: any) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to create summary"

@@ -10,10 +10,15 @@ import { parseAIResponse } from "@/utils/parseAIResponse";
 import { Bookmark, Bot, ChevronLeft, ChevronRight, Clock, Copy, Flag, MessageSquare, RotateCcw, Save, ThumbsDown, ThumbsUp, User, } from "lucide-react";
 import { Nunito } from "next/font/google";
 import React, { memo, useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import ReactMarkdown from "react-markdown";
 import { useSelector } from "react-redux";
-import toast from "react-hot-toast";
 const nunito = Nunito({ subsets: ["latin"] });
+import { MDXEditor, headingsPlugin, linkPlugin, listsPlugin, quotePlugin, thematicBreakPlugin } from '@mdxeditor/editor'
+import '@mdxeditor/editor/style.css'
+
+
+
 
 interface MessageBoxProps {
   chatViewMode?: "compact" | "card" | "timeline";
@@ -326,12 +331,17 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
                 className={nunito.className}
                 style={{ fontSize: `${textSize}px` }}
               >
-                <ReactMarkdown>{buildMarkdown(parsed)}</ReactMarkdown>
+                <MDXEditor
+                  markdown={buildMarkdown(parsed)}
+                  readOnly={true}
+                  className="chat-markdown"
+                  plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(), linkPlugin()]}
+                />
                 {message.sender == "bot" &&
                   !message.isStreaming &&
                   !message.isStreaming &&
                   quickAction && (
-                    <div className="text-gray-500">
+                    <div className="text-gray-500 ms-2">
                       Quick Action : {quickAction}
                     </div>
                   )}
@@ -397,11 +407,16 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
                 className={nunito.className}
                 style={{ fontSize: `${textSize}px` }}
               >
-                <ReactMarkdown>{buildMarkdown(parsed)}</ReactMarkdown>
+                <MDXEditor
+                  markdown={buildMarkdown(parsed)}
+                  readOnly={true}
+                  className="chat-markdown"
+                  plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(), linkPlugin()]}
+                />
                 {message.sender == "bot" &&
                   !message.isStreaming &&
                   quickAction && (
-                    <div className="text-gray-500">
+                    <div className="text-gray-500 ms-2">
                       Quick Action : {quickAction}
                     </div>
                   )}
@@ -453,9 +468,14 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
             className={nunito.className}
             style={{ fontSize: `${textSize}px` }}
           >
-            <ReactMarkdown>{buildMarkdown(parsed)}</ReactMarkdown>
+            <MDXEditor
+              markdown={buildMarkdown(parsed)}
+              readOnly={true}
+              className="chat-markdown"
+              plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(), linkPlugin()]}
+            />
             {message.sender == "bot" && !message.isStreaming && quickAction && (
-              <div className="text-gray-500">
+              <div className="text-gray-500 ms-2">
                 Quick Action :{" "}
                 {quickAction ? quickAction : "Search for related articles"}
               </div>

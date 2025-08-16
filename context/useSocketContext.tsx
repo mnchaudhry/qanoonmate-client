@@ -65,10 +65,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const socketInstance = io(fullUrl, {
       withCredentials: true,
-      transports: ["websocket", "polling"],
-      reconnectionAttempts: 10,
-      reconnectionDelay: 1000,
-      timeout: 5000,
+      transports: ["websocket"],
+      reconnection: true,
+      reconnectionAttempts: 50,
+      reconnectionDelay: 2000,
+      timeout: 60000,
+      autoConnect: true
     });
 
     const connection: SocketConnection = {
@@ -117,7 +119,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Authentication events
     socketInstance.on("auth:success", (data: any) => {
-     
+
       setConnections((prev) => ({
         ...prev,
         [namespace]: {
@@ -129,7 +131,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     socketInstance.on("auth:error", (data: any) => {
-     
+
       setConnections((prev) => ({
         ...prev,
         [namespace]: {
@@ -187,7 +189,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!userId) return;
     const connection = getSocket(namespace);
     if (connection.socket) {
-      socketEvents.auth.authenticate(connection.socket, { userId });   
+      socketEvents.auth.authenticate(connection.socket, { userId });
     }
   };
 
