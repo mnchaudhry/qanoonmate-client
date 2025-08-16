@@ -7,7 +7,6 @@ import { AppDispatch, RootState } from '@/store/store'
 import { uploadDocument, createSummary, clearError } from '@/store/reducers/summarySlice'
 import { useSocketContext } from '@/context/useSocketContext'
 import toast from 'react-hot-toast'
-import { X } from 'lucide-react'
 
 interface DropboxProps {
     selectedType: string

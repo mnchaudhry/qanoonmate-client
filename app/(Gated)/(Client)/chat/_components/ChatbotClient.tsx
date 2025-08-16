@@ -44,7 +44,7 @@ const ChatbotClient = () => {
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const { cases, references, aiConfidence: confidence, legalContext, quickAction, referencedLinks, regeneratingMessageId } = useSelector((state: RootState) => state.aiSession);
+  const { cases, references, aiConfidence: confidence, legalContext, quickAction, referencedLinks } = useSelector((state: RootState) => state.aiSession);
 
   const [showContextPanel, setShowContextPanel] = useState(false);
 

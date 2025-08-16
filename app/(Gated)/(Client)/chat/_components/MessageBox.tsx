@@ -11,7 +11,6 @@ import { Bookmark, Bot, ChevronLeft, ChevronRight, Clock, Copy, Flag, MessageSqu
 import { Nunito } from "next/font/google";
 import React, { memo, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import ReactMarkdown from "react-markdown";
 import { useSelector } from "react-redux";
 const nunito = Nunito({ subsets: ["latin"] });
 import { MDXEditor, headingsPlugin, linkPlugin, listsPlugin, quotePlugin, thematicBreakPlugin } from '@mdxeditor/editor'
