@@ -10,12 +10,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '@/store/store'
 import { getActs, deleteAct } from '@/store/reducers/actSlice'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
 import { LawCategory } from '@/lib/enums'
 import AlertModal from '@/components/alert-modal'
 import { PageHeader } from '../../../_components/PageHeader'
 import AdminSkeleton from '@/components/skeletons/AdminPageSkeleton'
 import { Pagination } from '@/components/ui/pagination'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
+import { enumToLabel } from '@/lib/utils'
+import SearchBar from '@/components/SearchBar'
 
 const PAGE_SIZE = 40;
 
@@ -89,49 +91,51 @@ const Acts = () => {
       <PageHeader
         title="Acts & Laws"
         description="Manage legal acts, statutes, and legislative documents."
+        actions={
+          <Button
+            onClick={() => setAddModalOpen(true)}
+            className="flex gap-2"
+          >
+            <PlusCircle size={18} />
+            Add Act
+          </Button>
+        }
       />
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
-        <div className="flex gap-2 items-center flex-wrap">
-          <Input
+        <div className="flex gap-2 justify-between items-center w-full">
+          <SearchBar
             placeholder="Search acts..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs"
+            containerClassName='mx-0 mb-0 w-1/3'
           />
-          <div className="flex flex-wrap gap-2">
-            <button
-              className={`px-3 py-1 text-xs rounded-full border ${category === 'all' ? 'border-foreground text-foreground' : 'border-muted text-muted-foreground'} hover:border-foreground hover:text-foreground transition`}
-              onClick={() => setCategory('all')}
-            >
-              All
-            </button>
-            {Object.values(LawCategory).map(cat => (
-              <button
-                key={cat}
-                className={`px-3 py-1 text-xs rounded-full border ${category === cat ? 'border-foreground text-foreground' : 'border-muted text-muted-foreground'} hover:border-foreground hover:text-foreground transition`}
-                onClick={() => setCategory(category === cat ? 'all' : cat)}
-              >
-                {getLawCategoryLabel(cat)}
-              </button>
-            ))}
+
+          <div className="flex gap-4">
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="min-w-[160px] bg-white">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {Object.values(LawCategory).map(area => (
+                  <SelectItem key={area} value={area}>{enumToLabel(area)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={sort} onValueChange={setSort}>
+              <SelectTrigger className="min-w-[160px] bg-white">
+                <SelectValue placeholder="Sort" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="latest">Latest</SelectItem>
+                <SelectItem value="alphabetical">Alphabetical (A-Z)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <select
-            className="px-3 py-2 rounded-md border border-input bg-background text-foreground"
-            value={sort}
-            onChange={e => setSort(e.target.value)}
-          >
-            <option value="latest">Latest</option>
-            <option value="alphabetical">Alphabetical (A-Z)</option>
-          </select>
+
         </div>
-        <Button
-          onClick={() => setAddModalOpen(true)}
-          className="flex gap-2"
-        >
-          <PlusCircle size={18} />
-          Add Act
-        </Button>
       </div>
 
       <AddActModal
@@ -141,86 +145,86 @@ const Acts = () => {
         onActSaved={() => dispatch(getActs({ page, limit: PAGE_SIZE, search: search || undefined, category: category !== 'all' ? category : undefined }))}
       />
 
-              {isLoading ? (
-          <AdminSkeleton tableRows={8} />
-        ) : (
-          <Table>
-            <TableCaption>
-              {acts.length
-                ? `Showing ${acts.length} of ${totalActs} acts (Page ${currentPage} of ${totalPages})`
-                : 'No acts found'}
-            </TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Slug</TableHead>
-            <TableHead>Year</TableHead>
-            <TableHead>Law Category</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {acts.map((act) => {
-            if (!act._id) return null
+      {isLoading ? (
+        <AdminSkeleton tableRows={8} />
+      ) : (
+        <Table>
+          <TableCaption>
+            {acts.length
+              ? `Showing ${acts.length} of ${totalActs} acts (Page ${currentPage} of ${totalPages})`
+              : 'No acts found'}
+          </TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead>Year</TableHead>
+              <TableHead>Law Category</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {acts.map((act) => {
+              if (!act._id) return null
 
-            return (
-              <TableRow key={act._id}>
-                <TableCell className="font-medium">{act.name || '-'}</TableCell>
-                <TableCell className="max-w-xs truncate">{act.description || '-'}</TableCell>
-                <TableCell className="max-w-xs truncate">{act.slug || '-'}</TableCell>
-                <TableCell>{act.year || '-'}</TableCell>
-                <TableCell>
-                  {act.category ? (
-                    <Badge variant="secondary">
-                      {getLawCategoryLabel(act.category)}
-                    </Badge>
-                  ) : (
-                    '-'
-                  )}
-                </TableCell>
-                <TableCell>
-                  {act.createdAt
-                    ? new Date(act.createdAt).toLocaleDateString()
-                    : '-'}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setEditAct(act)}
-                    >
-                      <Edit2 size={16} className="text-blue-500" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => act.pdfUrl && window.open(act.pdfUrl, '_blank')}
-                      disabled={!act.pdfUrl}
-                    >
-                      <Download size={16} className="text-green-600" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setDeleteTargetId(act._id!);
-                        setDeleteModalOpen(true);
-                      }}
-                    >
-                      <Trash2 size={16} className="text-red-500" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
+              return (
+                <TableRow key={act._id}>
+                  <TableCell className="font-medium">{act.name || '-'}</TableCell>
+                  <TableCell className="max-w-xs truncate">{act.description || '-'}</TableCell>
+                  <TableCell className="max-w-xs truncate">{act.slug || '-'}</TableCell>
+                  <TableCell>{act.year || '-'}</TableCell>
+                  <TableCell>
+                    {act.category ? (
+                      <Badge variant="secondary">
+                        {getLawCategoryLabel(act.category)}
+                      </Badge>
+                    ) : (
+                      '-'
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {act.createdAt
+                      ? new Date(act.createdAt).toLocaleDateString()
+                      : '-'}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setEditAct(act)}
+                      >
+                        <Edit2 size={16} className="text-blue-500" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => act.pdfUrl && window.open(act.pdfUrl, '_blank')}
+                        disabled={!act.pdfUrl}
+                      >
+                        <Download size={16} className="text-green-600" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setDeleteTargetId(act._id!);
+                          setDeleteModalOpen(true);
+                        }}
+                      >
+                        <Trash2 size={16} className="text-red-500" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
       )}
-      
+
       {!isLoading && (
         <Pagination
           currentPage={page}

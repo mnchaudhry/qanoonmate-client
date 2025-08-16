@@ -25,7 +25,6 @@ type UILawyer = {
   expertise: string[]
   city: string
   rating: number
-  available: boolean
   image: string
   consultationTypes: ConsultationType[]
 }
@@ -54,7 +53,6 @@ const Consultations: React.FC = () => {
           expertise: l.specializations || [],
           city: l.location?.city || 'Unknown',
           rating: l.avgRating || 0,
-          available: l.isActive,
           image: l.profilePicture || Lawyer1,
           consultationTypes: ['Phone', 'Video'],
         }))
@@ -100,7 +98,7 @@ const Consultations: React.FC = () => {
           return b.rating - a.rating
         default:
           // relevance heuristic
-          return Number(b.available) - Number(a.available)
+          return 0
       }
     })
 
@@ -234,7 +232,7 @@ function CardSkeleton() {
 }
 
 function LawyerCard({ lawyer }: { lawyer: UILawyer }) {
-  const { name, expertise, city, rating, available, image, consultationTypes } = lawyer
+  const { name, expertise, city, rating, image, consultationTypes } = lawyer
 
   return (
     <div className={cn(
@@ -300,8 +298,8 @@ function LawyerCard({ lawyer }: { lawyer: UILawyer }) {
         <Link href="#" className="flex-1">
           <Button variant="outline" size="sm" className="w-full">View Profile</Button>
         </Link>
-        <Button size="sm" disabled={!available} className="flex-1">
-          {available ? 'Book Now' : 'Unavailable'}
+        <Button size="sm" className="flex-1">
+          Book Now
         </Button>
       </div>
     </div>

@@ -7,13 +7,15 @@ import { Trash2, PlusCircle, Edit2, Download } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '@/store/store'
 import { fetchCaseLaws, deleteCaseLawThunk } from '@/store/reducers/caseLawSlice'
-import { Input } from '@/components/ui/input'
 import { LawCategory } from '@/lib/enums'
 import AddCaseLawModal from './_components/AddCaseLawModal'
 import AlertModal from '@/components/alert-modal'
 import { Pagination } from '@/components/ui/pagination'
 import { CaseLaw } from '@/store/types/api'
 import { PageHeader } from '@/app/(Admin)/_components/PageHeader'
+import { Select, SelectItem, SelectTrigger, SelectContent, SelectValue } from '@/components/ui/select'
+import { enumToLabel } from '@/lib/utils'
+import SearchBar from '@/components/SearchBar'
 
 const PAGE_SIZE = 40;
 
@@ -63,15 +65,6 @@ const CaseLaws = () => {
     }
   }
 
-  const getLawCategoryLabel = (key: string): string => {
-    const entry = Object.entries(LawCategory).find(([, value]) => value === key)
-    if (!entry) return key
-    return entry[0]
-      .toLowerCase()
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ')
-  }
 
   //////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
@@ -79,49 +72,50 @@ const CaseLaws = () => {
       <PageHeader
         title="Case Laws"
         description="Manage case laws and judgments."
+        actions={
+          <Button
+            onClick={() => setAddModalOpen(true)}
+            className="flex gap-2"
+          >
+            <PlusCircle size={18} />
+            Add Case Law
+          </Button>
+        }
       />
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
-        <div className="flex gap-2 items-center flex-wrap">
-          <Input
-            placeholder="Search case laws..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs"
-          />
-          <div className="flex flex-wrap gap-2">
-            <button
-              className={`px-3 py-1 text-xs rounded-full border ${category === 'all' ? 'border-foreground text-foreground' : 'border-muted text-muted-foreground'} hover:border-foreground hover:text-foreground transition`}
-              onClick={() => setCategory('all')}
-            >
-              All
-            </button>
-            {Object.values(LawCategory).map(cat => (
-              <button
-                key={cat}
-                className={`px-3 py-1 text-xs rounded-full border ${category === cat ? 'border-foreground text-foreground' : 'border-muted text-muted-foreground'} hover:border-foreground hover:text-foreground transition`}
-                onClick={() => setCategory(category === cat ? 'all' : cat)}
-              >
-                {getLawCategoryLabel(cat)}
-              </button>
-            ))}
-          </div>
-          <select
-            className="px-3 py-2 rounded-md border border-input bg-background text-foreground"
-            value={sort}
-            onChange={e => setSort(e.target.value)}
-          >
-            <option value="latest">Latest</option>
-            <option value="alphabetical">Alphabetical (A-Z)</option>
-          </select>
+        <SearchBar
+          placeholder="Search case laws..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          containerClassName='mx-0 mb-0 w-1/3'
+        />
+
+
+        <div className="flex gap-4">
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger className="min-w-[160px] bg-white">
+              <SelectValue placeholder="Category" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {Object.values(LawCategory).map(area => (
+                <SelectItem key={area} value={area}>{enumToLabel(area)}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={sort} onValueChange={setSort}>
+            <SelectTrigger className="min-w-[160px] bg-white">
+              <SelectValue placeholder="Sort" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="latest">Latest</SelectItem>
+              <SelectItem value="alphabetical">Alphabetical (A-Z)</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-        <Button
-          onClick={() => setAddModalOpen(true)}
-          className="flex gap-2"
-        >
-          <PlusCircle size={18} />
-          Add Case Law
-        </Button>
+
       </div>
 
       <AddCaseLawModal

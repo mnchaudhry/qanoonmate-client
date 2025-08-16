@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { fetchAdminDictionaryTerms, createAdminDictionaryTerm, updateAdminDictionaryTerm, deleteAdminDictionaryTerm, verifyAdminDictionaryTerm, } from "@/store/reducers/dictionarySlice";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Trash2, PlusCircle, CheckCircle, Edit2 } from "lucide-react";
@@ -14,6 +13,9 @@ import AlertModal from '@/components/alert-modal';
 import { Pagination } from '@/components/ui/pagination';
 import { LawCategory } from '@/lib/enums';
 import { PageHeader } from '@/app/(Admin)/_components/PageHeader';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
+import { enumToLabel } from '@/lib/utils'
+import SearchBar from '@/components/SearchBar'
 
 const LETTERS = Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i));
 const PAGE_SIZE = 20;
@@ -89,14 +91,6 @@ const AdminDictionaryPage = () => {
     dispatch(fetchAdminDictionaryTerms({ search, page: localPage, limit: PAGE_SIZE, sort, letter, category }));
   };
 
-  const getCategoryLabel = (value: string): string => {
-    return value
-      .toLowerCase()
-      .split('_')
-      .map((word) => word[0].toUpperCase() + word.slice(1))
-      .join(' ');
-  };
-
   //////////////////////////////////////////////////// RENDER /////////////////////////////////////////////
   return (
     <div className="space-y-6">
@@ -104,66 +98,59 @@ const AdminDictionaryPage = () => {
       <PageHeader
         title="Dictionary"
         description="View and manage dictionary terms."
+        actions={
+          <Button onClick={openAddModal} className="flex gap-2">
+            <PlusCircle size={18} /> Add Dictionary Term
+          </Button>
+        }
       />
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2 flex-wrap">
-        <div className="flex gap-2 items-center flex-wrap">
-          <Input
-            placeholder="Search terms..."
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
+        <div className="flex gap-2 justify-between items-center w-full">
+          <SearchBar
+            placeholder="Search dictionary..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs"
+            containerClassName='mx-0 mb-0 w-1/3'
           />
-          <div className="flex flex-wrap gap-2">
-            <button
-              className={`px-3 py-1 text-xs rounded-full border ${category === 'all' ? 'border-foreground text-foreground' : 'border-muted text-muted-foreground'} hover:border-foreground hover:text-foreground transition`}
-              onClick={() => setCategory('all')}
-            >
-              All
-            </button>
-            {Object.values(LawCategory).map(cat => (
-              <button
-                key={cat}
-                className={`px-3 py-1 text-xs rounded-full border ${category === cat ? 'border-foreground text-foreground' : 'border-muted text-muted-foreground'} hover:border-foreground hover:text-foreground transition`}
-                onClick={() => setCategory(category === cat ? 'all' : cat)}
-              >
-                {getCategoryLabel(cat)}
-              </button>
-            ))}
-          </div>
-          <select
-            className="px-3 py-2 rounded-md border border-input bg-background text-foreground"
-            value={sort}
-            onChange={e => setSort(e.target.value)}
-          >
-            <option value="latest">Latest</option>
-            <option value="alphabetical">Alphabetical (A-Z)</option>
-          </select>
-        </div>
-        <Button onClick={openAddModal} className="flex gap-2">
-          <PlusCircle size={18} /> Add Term
-        </Button>
-      </div>
 
-      {/* Letter Filter */}
-      <div className="flex flex-wrap gap-1 mb-4">
-        <Button
-          size="sm"
-          variant={letter === "" ? "default" : "outline"}
-          onClick={() => setLetter("")}
-        >
-          All
-        </Button>
-        {LETTERS.map(l => (
-          <Button
-            key={l}
-            size="sm"
-            variant={letter === l ? "default" : "outline"}
-            onClick={() => setLetter(l)}
-          >
-            {l}
-          </Button>
-        ))}
+          <div className="flex gap-4">
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="min-w-[160px] bg-white">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {Object.values(LawCategory).map(area => (
+                  <SelectItem key={area} value={area}>{enumToLabel(area)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={sort} onValueChange={setSort}>
+              <SelectTrigger className="min-w-[160px] bg-white">
+                <SelectValue placeholder="Sort" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="latest">Latest</SelectItem>
+                <SelectItem value="alphabetical">Alphabetical (A-Z)</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={letter || ''} onValueChange={setLetter}>
+              <SelectTrigger className="min-w-[100px] bg-white">
+                <SelectValue placeholder="Letter" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                {LETTERS.map(l => (
+                  <SelectItem key={l} value={l}>{l}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+        </div>
       </div>
 
       {/* Modal */}

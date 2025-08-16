@@ -5,18 +5,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { fetchAdminFaqs, createAdminFaq, updateAdminFaq, deleteAdminFaq, verifyAdminFaq, } from "@/store/reducers/faqSlice";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow, } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, PlusCircle, CheckCircle, Edit2 } from "lucide-react";
+import { Trash2, CheckCircle, Edit2, PlusCircle } from "lucide-react";
 import AddFaqModal from './_components/AddFaqModal';
 import AlertModal from '@/components/alert-modal';
 import { LawCategory } from '@/lib/enums';
 import { Pagination } from '@/components/ui/pagination';
 import { PageHeader } from '@/app/(Admin)/_components/PageHeader';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
+import { enumToLabel } from '@/lib/utils'
+import SearchBar from '@/components/SearchBar'
 
 const PAGE_SIZE = 40;
-const categoryList = ["all", "general", ...Object.values(LawCategory)];
 
 const AdminFaqPage = () => {
   //////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////
@@ -85,15 +86,7 @@ const AdminFaqPage = () => {
     setEditId(null);
     setModalInitialData(null);
     dispatch(fetchAdminFaqs({ page, limit: PAGE_SIZE, search: search || undefined, category: category !== 'all' ? category : undefined, sort: sort || undefined }));
-  };
-
-  const getCategoryLabel = (value: string): string => {
-    return value
-      .toLowerCase()
-      .split('_')
-      .map((word) => word[0].toUpperCase() + word.slice(1))
-      .join(' ');
-  };
+  }
 
   //////////////////////////////////////////////////// RENDER /////////////////////////////////////////////
   return (
@@ -101,47 +94,48 @@ const AdminFaqPage = () => {
       <PageHeader
         title="FAQs"
         description="View and manage FAQs."
+        actions={
+          <Button onClick={openAddModal} className="flex gap-2">
+            <PlusCircle size={18} /> Add FAQ
+          </Button>
+        }
       />
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-2">
-        <div className="flex gap-2 items-center flex-wrap">
-          <Input
+        <div className="flex gap-2 justify-between items-center w-full">
+          <SearchBar
             placeholder="Search FAQs..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-xs"
+            containerClassName='mx-0 mb-0 w-1/3'
           />
-          <div className="flex flex-wrap gap-2">
-            <button
-              className={`px-3 py-1 text-xs rounded-full border ${category === 'all' ? 'border-foreground text-foreground' : 'border-muted text-muted-foreground'} hover:border-foreground hover:text-foreground transition`}
-              onClick={() => setCategory('all')}
-            >
-              All
-            </button>
-            {categoryList.slice(1).map(cat => (
-              <button
-                key={cat}
-                className={`px-3 py-1 text-xs rounded-full border ${category === cat ? 'border-foreground text-foreground' : 'border-muted text-muted-foreground'} hover:border-foreground hover:text-foreground transition`}
-                onClick={() => setCategory(category === cat ? 'all' : cat)}
-              >
-                {getCategoryLabel(cat)}
-              </button>
-            ))}
-          </div>
-          <select
-            className="px-3 py-2 rounded-md border border-input bg-background text-foreground"
-            value={sort}
-            onChange={e => setSort(e.target.value)}
-          >
-            <option value="latest">Latest</option>
-            <option value="alphabetical">Alphabetical (A-Z)</option>
-          </select>
-        </div>
-        <Button onClick={openAddModal} className="flex gap-2">
-          <PlusCircle size={18} /> Add FAQ
-        </Button>
-      </div>
 
+          <div className="flex gap-4">
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="min-w-[160px] bg-white">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {Object.values(LawCategory).map(area => (
+                  <SelectItem key={area} value={area}>{enumToLabel(area)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={sort} onValueChange={setSort}>
+              <SelectTrigger className="min-w-[160px] bg-white">
+                <SelectValue placeholder="Sort" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="latest">Latest</SelectItem>
+                <SelectItem value="alphabetical">Alphabetical (A-Z)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+        </div>
+      </div>
       {/* Modal */}
       <AddFaqModal
         open={modalOpen}

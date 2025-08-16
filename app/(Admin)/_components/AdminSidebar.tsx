@@ -15,15 +15,7 @@ const mainItems = [
 // User Management items
 const userManagementItems = [
     { title: "All Users", url: "/admin/users", icon: Users },
-    {
-        title: "Lawyers", url: "/admin/lawyers", icon: UserCheck,
-        subItems: [
-            { title: "All Lawyers", url: "/admin/lawyers" },
-            { title: "Pending", url: "/admin/lawyers/pending" },
-            { title: "Approved", url: "/admin/lawyers/approved" },
-            { title: "Rejected", url: "/admin/lawyers/rejected" }
-        ]
-    },
+    { title: "Lawyers", url: "/admin/lawyers", icon: UserCheck },
     { title: "Admins", url: "/admin/admins", icon: Shield },
 ]
 
@@ -53,9 +45,9 @@ const legalContentItems = [
         ]
     },
     {
-        title: "Legal Drafts", url: "/admin/drafts", icon: Newspaper,
+        title: "Legal Drafts", url: "/admin/legal-db/drafts", icon: Newspaper,
         subItems: [
-            { title: "All Drafts", url: "/admin/drafts" },
+            { title: "All Drafts", url: "/admin/legal-db/drafts" },
             { title: "Templates & Categories", url: "/admin/legal-db/drafts/templates" }
         ]
     },
@@ -171,7 +163,7 @@ export function AdminSidebar() {
                 newState[section] = true;
             }
         });
-        
+
         if (JSON.stringify(newState) !== JSON.stringify(manualOpen)) {
             setManualOpen(newState);
             if (typeof window !== 'undefined') {
@@ -249,52 +241,17 @@ export function AdminSidebar() {
                                     <CollapsibleContent>
                                         <SidebarMenuSub>
                                             {userManagementItems.map((item) => (
-                                                item.subItems ? (
-                                                    <SidebarMenuSubItem key={item.title}>
-                                                        <Collapsible>
-                                                            <CollapsibleTrigger asChild>
-                                                                <SidebarMenuButton
-                                                                    className={`hover:bg-primary-100 text-primary-600 hover:text-primary-700 ${item.subItems.some((subItem: any) => isActive(subItem.url)) ? 'bg-primary-100 text-primary-700 font-medium' : ''
-                                                                        }`}
-                                                                >
-                                                                    <item.icon className="w-4 h-4" />
-                                                                    <span>{item.title}</span>
-                                                                    <ChevronRight className="w-3 h-3 ml-auto" />
-                                                                </SidebarMenuButton>
-                                                            </CollapsibleTrigger>
-                                                            <CollapsibleContent>
-                                                                <SidebarMenuSub>
-                                                                    {item.subItems.map((subItem) => (
-                                                                        <SidebarMenuSubItem key={subItem.title}>
-                                                                            <SidebarMenuButton
-                                                                                asChild
-                                                                                className={`hover:bg-primary-100 text-primary-600 hover:text-primary-700 ${isActive(subItem.url) ? 'bg-primary-100 text-primary-700 font-medium' : ''
-                                                                                    }`}
-                                                                            >
-                                                                                <a href={subItem.url} className="flex items-center gap-2">
-                                                                                    <span className="text-sm">{subItem.title}</span>
-                                                                                </a>
-                                                                            </SidebarMenuButton>
-                                                                        </SidebarMenuSubItem>
-                                                                    ))}
-                                                                </SidebarMenuSub>
-                                                            </CollapsibleContent>
-                                                        </Collapsible>
-                                                    </SidebarMenuSubItem>
-                                                ) : (
-                                                    <SidebarMenuSubItem key={item.title}>
-                                                        <SidebarMenuButton
-                                                            asChild
-                                                            className={`hover:bg-primary-100 text-primary-600 hover:text-primary-700 ${isActive(item.url) ? 'bg-primary-100 text-primary-700 font-medium' : ''
-                                                                }`}
-                                                        >
-                                                            <a href={item.url} className="flex items-center gap-2">
-                                                                <item.icon className="w-4 h-4" />
-                                                                <span className="text-sm">{item.title}</span>
-                                                            </a>
-                                                        </SidebarMenuButton>
-                                                    </SidebarMenuSubItem>
-                                                )
+                                                <SidebarMenuSubItem key={item.title}>
+                                                    <SidebarMenuButton
+                                                        asChild
+                                                        className={`hover:bg-primary-100 text-primary-600 hover:text-primary-700 ${isActive(item.url) ? 'bg-primary-100 text-primary-700 font-medium' : ''}`}
+                                                    >
+                                                        <a href={item.url} className="flex items-center gap-2">
+                                                            <item.icon className="w-4 h-4" />
+                                                            <span className="text-sm">{item.title}</span>
+                                                        </a>
+                                                    </SidebarMenuButton>
+                                                </SidebarMenuSubItem>
                                             ))}
                                         </SidebarMenuSub>
                                     </CollapsibleContent>
