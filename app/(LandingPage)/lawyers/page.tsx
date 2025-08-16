@@ -43,18 +43,7 @@ const LawyersDirectory = () => {
   const [searchTerm, setSearchTerm] = useState(urlSearch);
   const [currentPage, setCurrentPage] = useState(urlPage);
   const [view, setView] = useState<"list" | "grid">(urlView as "list" | "grid");
-  const [selectedFilters, setSelectedFilters] = useState({
-    specialization: urlSpecialization,
-    language: urlLanguage,
-    availability: urlAvailability,
-    city: urlCity,
-    province: urlProvince,
-    rating: urlRating,
-    fee_range: urlFeeRange,
-    experience_range: urlExperienceRange,
-    sortBy: urlSortBy,
-    order: urlOrder
-  });
+  const [selectedFilters, setSelectedFilters] = useState({ specialization: urlSpecialization, language: urlLanguage, availability: urlAvailability, city: urlCity, province: urlProvince, rating: urlRating, fee_range: urlFeeRange, experience_range: urlExperienceRange, sortBy: urlSortBy, order: urlOrder });
 
   /////////////////////////////////////////////////// STATIC FILTER OPTIONS /////////////////////////////////////////////////////////
   const filterOptions = {

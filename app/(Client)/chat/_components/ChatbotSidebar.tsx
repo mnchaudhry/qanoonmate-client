@@ -1,31 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Logo from "@/components/Logo";
 import { AIChatSession } from "@/store/types/api";
-import {
-  deleteSession,
-  getMyChatSessions,
-  newChat,
-  renameSession,
-  setCurrentSession,
-  setCurrentSessionId,
-} from "@/store/reducers/aiSessionSlice";
+import { deleteSession, getMyChatSessions, newChat, renameSession, setCurrentSession, setCurrentSessionId, } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  MoreVertical,
-  Clock,
-  MessageSquare,
-  Settings,
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
+import { MoreVertical, Clock, MessageSquare, Settings, Plus, ChevronLeft, ChevronRight, } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import AlertModal from "@/components/alert-modal";
@@ -41,28 +21,19 @@ interface ChatSidebarProps {
   };
 }
 
-const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
-  sessionMetadata,
-}: ChatSidebarProps) => {
+const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata, }: ChatSidebarProps) => {
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { sidebarSessions: sessions, currentSessionId: sessionId } =
-    useSelector((state: RootState) => state.aiSession);
+  const { sidebarSessions: sessions, currentSessionId: sessionId } = useSelector((state: RootState) => state.aiSession);
   const router = useRouter();
   const searchParams = useSearchParams();
   const paramSessionId = searchParams.get("id");
 
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
-  const [loading, setLoading] = useState<{
-    fetch: boolean;
-    rename: boolean;
-    delete: boolean;
-  }>({ fetch: false, rename: false, delete: false });
+  const [loading, setLoading] = useState<{ fetch: boolean; rename: boolean; delete: boolean; }>({ fetch: false, rename: false, delete: false });
   const [renaming, setRenaming] = useState<string>("");
-  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(
-    null
-  );
+  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -74,10 +45,10 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
     }
   }, [paramSessionId, dispatch]);
   useEffect(() => {
+    if (!user) return;
     setLoading((pre) => ({ ...pre, fetch: true }));
-    dispatch(getMyChatSessions(user ? user._id : null)).finally(() =>
-      setLoading((pre) => ({ ...pre, fetch: false }))
-    );
+    dispatch(getMyChatSessions(user._id))
+      .finally(() => setLoading((pre) => ({ ...pre, fetch: false })));
   }, [dispatch, user]);
 
   ///////////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////////////

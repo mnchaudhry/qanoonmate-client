@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { Lawyer } from "@/store/types/lawyer.types";
+import { enumToLabel } from "@/lib/utils";
 
 
 export default function LawyerBanner({ lawyer }: { lawyer: Lawyer }) {
@@ -14,7 +15,7 @@ export default function LawyerBanner({ lawyer }: { lawyer: Lawyer }) {
         {/* Profile Picture */}
         <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-primary/20">
           <Image
-            src={lawyer.profilePicture || "/placeholder-lawyer.jpg"}
+            src={lawyer.profilePicture || "/placeholder-lawyer.png"}
             alt={`${lawyer.firstname} ${lawyer.lastname}`}
             fill
             className="object-cover"
@@ -28,7 +29,7 @@ export default function LawyerBanner({ lawyer }: { lawyer: Lawyer }) {
               {/* Name and Verified Badge */}
               <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold">{lawyer.firstname} {lawyer.lastname}</h1>
-                {lawyer.isVerified && (
+                {lawyer.identityVerified && (
                   <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -56,7 +57,7 @@ export default function LawyerBanner({ lawyer }: { lawyer: Lawyer }) {
               <div className="mt-2 flex flex-wrap gap-2">
                 {lawyer.specializations?.map((specialization) => (
                   <Badge key={specialization} variant="secondary" className="text-xs">
-                    {specialization}
+                    {enumToLabel(specialization)}
                   </Badge>
                 ))}
               </div>
@@ -64,12 +65,12 @@ export default function LawyerBanner({ lawyer }: { lawyer: Lawyer }) {
               {/* Location and Languages */}
               <div className="mt-4 flex flex-col md:flex-row gap-4 text-sm text-gray-600">
                 <div>
-                  <span className="font-medium">{lawyer.location?.city}, {lawyer.location?.province}</span>
+                  <span className="font-medium">{enumToLabel(lawyer.location?.city || "")}, {enumToLabel(lawyer.location?.province || "")}</span>
                 </div>
                 <div className="hidden md:block">|</div>
                 <div>
                   <span className="font-medium">
-                    Languages: {lawyer.languages?.join(", ") || "English"}
+                    Languages: {lawyer.languages?.map(l => enumToLabel(l)).join(", ") || "English"}
                   </span>
                 </div>
               </div>

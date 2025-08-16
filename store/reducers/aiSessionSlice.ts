@@ -153,20 +153,18 @@ export const getMessagesBySession = createAsyncThunk(
   }
 );
 
-export const getChatMetadataBySession = createAsyncThunk(
-  "aiMessage/getChatMetadataBySession",
-  async (sessionId: string, { rejectWithValue }) => {
-    try {
-      const { data } = await api.getChatMetadataBySession(sessionId);
-      return data?.data;
-    } catch (err: any) {
-      const message = getErrorMessage(
-        err,
-        `Could not load metadata with session ID: ${sessionId}.`
-      );
-      return rejectWithValue(message);
-    }
+export const getChatMetadataBySession = createAsyncThunk("aiMessage/getChatMetadataBySession", async (sessionId: string, { rejectWithValue }) => {
+  try {
+    const { data } = await api.getChatMetadataBySession(sessionId);
+    return data?.data;
+  } catch (err: any) {
+    const message = getErrorMessage(
+      err,
+      `Could not load metadata with session ID: ${sessionId}.`
+    );
+    return rejectWithValue(message);
   }
+}
 );
 
 export const updateMessage = createAsyncThunk(

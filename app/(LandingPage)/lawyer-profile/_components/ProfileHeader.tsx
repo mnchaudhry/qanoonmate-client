@@ -86,7 +86,7 @@ const ProfileHeader = ({ lawyer }: Props) => {
                         <div className="flex items-center gap-4 mb-3">
                             <h1 className="text-3xl font-bold text-primary-900">{lawyer.name}</h1>
 
-                            {lawyer.isVerified && (
+                            {lawyer.identityVerified && (
                                 <Badge className="bg-success-100 text-success-700 border-success-200 hover:bg-success-100">
                                     <Shield className="w-4 h-4 mr-1" />
                                     Verified

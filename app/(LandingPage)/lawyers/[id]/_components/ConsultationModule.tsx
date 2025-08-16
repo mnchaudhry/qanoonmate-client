@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConsultationMode, AvailabilityDay } from "@/lib/enums";
+import { enumToLabel } from "@/lib/utils";
 import { Lawyer } from "@/store/types/lawyer.types";
 import { useRouter } from "next/navigation";
 
@@ -40,7 +41,7 @@ export default function ConsultationModule({ lawyer }: { lawyer: Lawyer }) {
   ////////////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////
   const handleBookNow = () => {
     console.log(`Booking consultation with lawyer ID: ${lawyer._id}`);
-    router.push(`/lawyers/${lawyer._id}/book`);
+    router.push(`/lawyers/${lawyer.username}/book`);
   };
 
   ////////////////////////////////////////////////////// RENDER ///////////////////////////////////////////
@@ -51,7 +52,7 @@ export default function ConsultationModule({ lawyer }: { lawyer: Lawyer }) {
       </CardHeader>
       <CardContent className="pt-6">
         {/* Available Days & Time Slots */}
-        <section className="mb-6 py-0 ">
+        <section className="mb-6 !py-0 ">
           <h3 className="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">
             Available Days & Time Slots
           </h3>
@@ -72,7 +73,7 @@ export default function ConsultationModule({ lawyer }: { lawyer: Lawyer }) {
         </section>
 
         {/* Fee */}
-        <section className="mb-6 py-0 ">
+        <section className="mb-6 !py-0 ">
           <h3 className="text-lg font-semibold mb-3 pb-2 border-b border-gray-200">
             Fee
           </h3>
@@ -89,7 +90,7 @@ export default function ConsultationModule({ lawyer }: { lawyer: Lawyer }) {
             <li className="flex items-center gap-2">
               <span className="text-gray-500">•</span>
               <span>
-                Mode: {modes.join(" / ")}
+                Mode: {modes.map(m => enumToLabel(m)).join(" / ")}
               </span>
             </li>
           </ul>

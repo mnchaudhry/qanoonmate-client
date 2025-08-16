@@ -16,7 +16,7 @@ export default function BookingHeader() {
   return (
     <div className="mb-8">
       <Link
-        href={`/lawyers/${lawyer?._id}`}
+        href={`/lawyers/${lawyer?.username}`}
         className="flex items-center text-primary hover:underline mb-4"
       >
         <ArrowLeft className="h-4 w-4 mr-1" />

@@ -11,15 +11,27 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'qanoonmate.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'randomuser.me',
+      },
+      {
+        protocol: 'https',
+        hostname: 'encrypted-tbn0.gstatic.com'
+      },
+      {
+        protocol: 'https',
+        hostname: 'courtingthelaw.com'
+      }
     ],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
   },
-  
+
   // SEO and Performance optimizations
   poweredByHeader: false,
   compress: true,
-  
+
   // Enable experimental features for better SEO
   experimental: {
     optimizePackageImports: ['lucide-react'],

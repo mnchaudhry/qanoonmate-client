@@ -76,7 +76,7 @@ export default function LawyerInformation({ consultation }: LawyerInformationPro
             </div>
             <div>
               <p className="text-gray-600 font-medium mb-1">Profile:</p>
-              <Link href={`/lawyers/${lawyer._id}`} passHref>
+              <Link href={`/lawyers/${lawyer.username}`} passHref>
                 <Button variant="link" className="p-0 h-auto text-blue-600">
                   View Profile →
                 </Button>

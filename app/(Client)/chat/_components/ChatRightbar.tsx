@@ -1,22 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  BookOpen,
-  Gavel,
-  Minimize2,
-  Plus,
-  FileText,
-  Calendar,
-} from "lucide-react";
+import { BookOpen, Gavel, Minimize2, Plus, FileText, Calendar, } from "lucide-react";
 
-const ChatRightbar = ({
-  showContextPanel,
-  setShowContextPanel,
-  showDictionary,
-  keyReferences = [],
-  relatedCases = [],
-  legalContext = null,
-}: {
+interface ChatRightbarProps {
   showContextPanel: boolean;
   setShowContextPanel: (show: boolean) => void;
   showDictionary: boolean;
@@ -24,27 +10,18 @@ const ChatRightbar = ({
   keyReferences?: string[];
   relatedCases?: string[];
   legalContext?: string | null;
-}) => {
+}
+
+const ChatRightbar: React.FC<ChatRightbarProps> = ({ showContextPanel, setShowContextPanel, showDictionary, keyReferences = [], relatedCases = [], legalContext = null, }) => {
   return (
     <>
       <div
-        className={`
-                    relative
-                    h-screen
-                    transition-all
-                    duration-300
-                    ease-in-out
-                    overflow-y-auto
-                    ${
-                      showContextPanel
-                        ? "w-[22rem] min-w-[22rem] max-w-[22rem] opacity-100 pointer-events-auto bg-surface border-l !border-border p-4 pt-8"
-                        : "w-8 min-w-8 max-w-8 opacity-100 bg-surface border-l !border-border p-0"
-                    }
-                `}
-        style={{
-          // Prevent content interaction when closed
-          pointerEvents: showContextPanel ? "auto" : "auto",
-        }}
+        className={`relative h-screen transition-all duration-300 ease-in-out overflow-y-auto 
+          ${showContextPanel
+            ? "w-[22rem] min-w-[22rem] max-w-[22rem] opacity-100 pointer-events-auto bg-surface border-l !border-border p-4 pt-8"
+            : "w-8 min-w-8 max-w-8 opacity-100 bg-surface border-l !border-border p-0"
+          }`}
+        style={{ pointerEvents: showContextPanel ? "auto" : "auto", }}
       >
         {showContextPanel ? (
           <div className="space-y-4">
@@ -164,21 +141,11 @@ const ChatRightbar = ({
             )}
           </div>
         ) : (
-          // The whole strip is clickable to open the panel
           <button
             type="button"
             aria-label="Open context panel"
             onClick={() => setShowContextPanel(true)}
-            className={`
-                            w-full h-full flex items-center justify-center
-                            focus:outline-none
-                            transition-colors duration-200
-                            hover:bg-accent
-                            group
-                        `}
-            style={{
-              minHeight: "100vh",
-            }}
+            className={`min-h-screen w-full h-full flex items-center justify-center focus:outline-none transition-colors duration-200 hover:bg-accent group`}
           >
             <Plus className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
           </button>

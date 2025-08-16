@@ -1,261 +1,262 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { FiltersActionBar, UsersTable, UserDetailsModal } from './_components'
+import { useEffect, useState, useRef } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useDebounce } from '@/hooks/use-debounce'
+import { useDispatch, useSelector } from 'react-redux'
 import { PageHeader } from '../../../_components/PageHeader'
+import { AppDispatch, RootState } from '@/store/store'
+import { getUsers, setCurrentPage, exportUsersCsv, bulkUploadUsers } from '@/store/reducers/userSlice'
+import { Plus, Upload, Download, RefreshCw } from "lucide-react"
+import { Button } from '@/components/ui/button'
+import toast from 'react-hot-toast'
+import FiltersActionBar from './_components/FiltersActionBar'
+import UsersTable from './_components/UsersTable'
+import UserDetailsModal from './_components/UserDetailsModal'
+import { TableSkeleton } from '@/components/skeletons'
+import AddUserModal from './_components/AddUserModal'
 
-// Mock data for demonstration
-const mockUsers = [
-  {
-    id: 1,
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+1 (555) 123-4567',
-    location: 'New York, NY',
-    role: 'lawyer',
-    status: 'active',
-    isVerified: true,
-    signupDate: '2024-01-15',
-    lastLogin: '2024-01-20 10:30 AM',
-    consultations: 15,
-    flags: 0,
-    totalCases: 15,
-    casesWon: 12,
-    activeCases: 3,
-    notes: 'Experienced lawyer with excellent track record.'
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    phone: '+1 (555) 987-6543',
-    location: 'Los Angeles, CA',
-    role: 'user',
-    status: 'pending',
-    isVerified: false,
-    signupDate: '2024-01-18',
-    lastLogin: '2024-01-19 2:15 PM',
-    consultations: 2,
-    flags: 1,
-    totalCases: 2,
-    casesWon: 0,
-    activeCases: 2,
-    notes: 'New user, requires verification.'
-  },
-  {
-    id: 3,
-    name: 'Mike Johnson',
-    email: 'mike@example.com',
-    phone: '+1 (555) 456-7890',
-    location: 'Chicago, IL',
-    role: 'lawyer',
-    status: 'suspended',
-    isVerified: true,
-    signupDate: '2023-12-10',
-    lastLogin: '2024-01-10 8:45 AM',
-    consultations: 8,
-    flags: 2,
-    totalCases: 8,
-    casesWon: 5,
-    activeCases: 0,
-    notes: 'Suspended due to policy violation.'
-  },
-  {
-    id: 4,
-    name: 'Sarah Wilson',
-    email: 'sarah@example.com',
-    phone: '+1 (555) 321-0987',
-    location: 'Houston, TX',
-    role: 'user',
-    status: 'active',
-    isVerified: true,
-    signupDate: '2024-01-12',
-    lastLogin: '2024-01-20 4:20 PM',
-    consultations: 5,
-    flags: 0,
-    totalCases: 5,
-    casesWon: 3,
-    activeCases: 2,
-    notes: 'Regular user with good engagement.'
-  },
-  {
-    id: 5,
-    name: 'David Brown',
-    email: 'david@example.com',
-    phone: '+1 (555) 654-3210',
-    location: 'Phoenix, AZ',
-    role: 'lawyer',
-    status: 'active',
-    isVerified: true,
-    signupDate: '2023-11-20',
-    lastLogin: '2024-01-20 9:10 AM',
-    consultations: 22,
-    flags: 0,
-    totalCases: 22,
-    casesWon: 18,
-    activeCases: 4,
-    notes: 'Top performing lawyer.'
-  }
-]
+
+const PAGE_SIZE = 20
 
 const AdminUsers = () => {
-  const [users, setUsers] = useState(mockUsers)
-  const [filteredUsers, setFilteredUsers] = useState(mockUsers)
-  const [selectedUser, setSelectedUser] = useState<any>(null)
+
+  ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
+  const dispatch = useDispatch<AppDispatch>()
+  const { users, meta } = useSelector((s: RootState) => s.user)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const initialSearch = searchParams.get('q') || ''
+  const initialRole = (() => { const r = searchParams.get('role') || ''; return r === 'all' ? '' : r })()
+  const initialStatus = (() => { const s = searchParams.get('status') || ''; return s === 'all' ? '' : s })()
+  const initialSort = searchParams.get('sort') || ''
+  const currentPage = meta?.currentPage || 1
+
+  ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
+  const [searchTerm, setSearchTerm] = useState(initialSearch)
+  const [selectedRole, setSelectedRole] = useState(initialRole)
+  const [selectedStatus, setSelectedStatus] = useState(initialStatus)
+  const [sortBy, setSortBy] = useState(initialSort)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(10)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedRole, setSelectedRole] = useState('')
-  const [selectedStatus, setSelectedStatus] = useState('')
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  // Filter users based on search and filters
+  const debouncedSearch = useDebounce(searchTerm, 400)
+
+  ////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////
+  const initializedFromUrl = useRef(false)
   useEffect(() => {
-    let filtered = users
-
-    // Search filter
-    if (searchTerm) {
-      filtered = filtered.filter(user =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+    if (initializedFromUrl.current) return
+    initializedFromUrl.current = true
+    const pageParam = Number(searchParams.get('page') || '1')
+    if (pageParam && pageParam !== currentPage) {
+      dispatch(setCurrentPage(pageParam))
     }
+  }, [dispatch, searchParams, currentPage])
 
-    // Role filter
-    if (selectedRole) {
-      filtered = filtered.filter(user => user.role === selectedRole)
-    }
+  useEffect(() => {
+    setLoading(true)
+    dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
+      .finally(() => setLoading(false))
+  }, [dispatch, currentPage, debouncedSearch, selectedRole, selectedStatus, sortBy])
 
-    // Status filter
-    if (selectedStatus) {
-      filtered = filtered.filter(user => user.status === selectedStatus)
-    }
+  useEffect(() => {
+    dispatch(setCurrentPage(1))
+  }, [dispatch, debouncedSearch, selectedRole, selectedStatus, sortBy])
 
-    setFilteredUsers(filtered)
-    setCurrentPage(1)
-  }, [searchTerm, selectedRole, selectedStatus, users])
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (debouncedSearch) params.set('q', debouncedSearch)
+    if (selectedRole) params.set('role', selectedRole)
+    if (selectedStatus) params.set('status', selectedStatus)
+    if (sortBy) params.set('sort', sortBy)
+    if (currentPage > 1) params.set('page', String(currentPage))
+    const qs = params.toString()
+    router.replace(qs ? `?${qs}` : '?', { scroll: false })
+  }, [debouncedSearch, selectedRole, selectedStatus, sortBy, currentPage, router])
 
-  // Pagination
-  const indexOfLastUser = currentPage * itemsPerPage
-  const indexOfFirstUser = indexOfLastUser - itemsPerPage
-  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser)
-
-  // Handlers
-  const handleSearch = (term: string) => {
-    setSearchTerm(term)
-  }
-
-  const handleRoleFilter = (role: string) => {
-    setSelectedRole(role)
-  }
-
-  const handleStatusFilter = (status: string) => {
-    setSelectedStatus(status)
-  }
-
-  const handleViewUser = (user: any) => {
-    setSelectedUser(user)
-    setIsModalOpen(true)
-  }
-
-  const handleEditUser = (user: any) => {
-    // TODO: Implement edit functionality
-    console.log('Edit user:', user)
-  }
-
-  const handleApproveUser = (user: any) => {
-    setUsers(prev => prev.map(u =>
-      u.id === user.id ? { ...u, status: 'active' } : u
-    ))
-  }
-
-  const handleSuspendUser = (user: any) => {
-    setUsers(prev => prev.map(u =>
-      u.id === user.id ? { ...u, status: 'suspended' } : u
-    ))
-  }
-
-  const handleDeleteUser = (user: any) => {
-    if (confirm('Are you sure you want to delete this user?')) {
-      setUsers(prev => prev.filter(u => u.id !== user.id))
-    }
-  }
-
-  const handleAddUser = () => {
-    // TODO: Implement add user functionality
-    console.log('Add new user')
-  }
-
-  const handleBulkUpload = () => {
-    // TODO: Implement bulk upload functionality
-    console.log('Bulk upload users')
-  }
-
-  const handleExportCSV = () => {
-    // TODO: Implement export functionality
-    console.log('Export users')
-  }
-
-  const handleSortChange = (sort: string) => {
-    // TODO: Implement sort functionality
-    console.log('Sort by:', sort)
-  }
-
-  const handleResetFilters = () => {
-    setSearchTerm('')
-    setSelectedRole('')
-    setSelectedStatus('')
-  }
-
-  const handleResetPassword = (user: any) => {
-    // TODO: Implement reset password functionality
-    console.log('Reset password for:', user)
-  }
-
-  const handleViewLogs = (user: any) => {
-    // TODO: Implement view logs functionality
-    console.log('View logs for:', user)
-  }
-
+  ////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////
   const handleRefresh = () => {
-    // TODO: Implement refresh functionality
-    console.log('Refresh users data')
+    setLoading(true)
+    dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
+      .finally(() => setLoading(false))
+  }
+  const handleSortChange = (sort: string) => {
+    setSortBy(sort)
+  }
+  const handleRoleFilter = (role: string) => {
+    setSelectedRole(role === 'all' ? '' : role)
+  }
+  const handleStatusFilter = (status: string) => {
+    setSelectedStatus(status === 'all' ? '' : status)
+  }
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedRole('');
+    setSelectedStatus('');
+    setSortBy('');
+    dispatch(setCurrentPage(1))
+  }
+  const handleAddUser = () => {
+    setIsAddModalOpen(true)
+  }
+  const handleBulkUpload = async () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.csv,text/csv'
+    input.onchange = async () => {
+      const file = input.files?.[0]
+      if (!file) return
+      // basic client-side validation before upload
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        toast.error('Please select a .csv file')
+        return
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('CSV file is too large (max 5MB)')
+        return
+      }
+      const text = await file.text()
+      const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0)
+      if (lines.length < 2) {
+        toast.error('CSV must include header and at least one data row')
+        return
+      }
+      const header = lines[0].split(',').map(h => h.trim().toLowerCase())
+      console.log('header', header)
+      const required = ['firstname', 'lastname', 'email', 'username', 'phone', 'password']
+      const missing = required.filter(c => !header.includes(c))
+      if (missing.length) {
+        toast.error(`Missing required columns: ${missing.join(', ')}`)
+        return
+      }
+      // per-row checks (lightweight)
+      const emailIdx = header.indexOf('email')
+      const phoneIdx = header.indexOf('phone')
+      const usernameIdx = header.indexOf('username')
+      const pwdIdx = header.indexOf('password')
+      const roleIdx = header.indexOf('role')
+      const errors: string[] = []
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      const allowedRoles = ['admin', 'client', 'lawyer']
+      for (let i = 1; i < lines.length && i <= 1000; i++) {
+        const parts = lines[i].split(',')
+        const email = parts[emailIdx]?.trim() || ''
+        const phone = parts[phoneIdx]?.trim() || ''
+        const username = parts[usernameIdx]?.trim() || ''
+        const pwd = parts[pwdIdx]?.trim() || ''
+        const role = roleIdx >= 0 ? (parts[roleIdx]?.trim()?.toLowerCase() || '') : ''
+        if (!emailRegex.test(email)) errors.push(`Row ${i + 1}: invalid email`)
+        if (!username) errors.push(`Row ${i + 1}: username is required`)
+        if (phone.length < 6) errors.push(`Row ${i + 1}: phone too short`)
+        if (pwd.length < 6) errors.push(`Row ${i + 1}: password too short`)
+        if (role && !allowedRoles.includes(role)) errors.push(`Row ${i + 1}: invalid role '${role}'`)
+      }
+      console.log('errors', errors)
+      if (errors.length) {
+        toast.error(`CSV has ${errors.length} issue(s). Fix and retry. First: ${errors[0]}`)
+        return
+      }
+      setLoading(true)
+      try {
+        await dispatch(bulkUploadUsers(file)).unwrap()
+        await dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
+      } finally { setLoading(false) }
+    }
+    input.click()
+  }
+  const handleExportCSV = async () => {
+    const { payload } = await dispatch(exportUsersCsv({ search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc', limit: 100000 }))
+    if (payload instanceof Blob) {
+      const url = URL.createObjectURL(payload)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'users-export.csv'
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
+    }
   }
 
+  ////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////
   return (
     <div className="space-y-6">
+
       <PageHeader
         title="Users Management"
         description="Manage platform users, their accounts, and permissions."
+        actions={<>
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={handleAddUser}
+              size="sm"
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add User
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleBulkUpload}
+              className="border-border hover:bg-primary/5"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Bulk Upload
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCSV}
+              className="border-border hover:bg-primary/5"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              className="border-border hover:bg-primary/5"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+          </div>
+        </>}
       />
 
       <FiltersActionBar
-        onSearch={handleSearch}
+        onSearch={setSearchTerm}
         onRoleFilter={handleRoleFilter}
         onStatusFilter={handleStatusFilter}
         onSortChange={handleSortChange}
         onResetFilters={handleResetFilters}
-        onAddUser={handleAddUser}
-        onBulkUpload={handleBulkUpload}
-        onExportCSV={handleExportCSV}
-        onRefresh={handleRefresh}
+        searchValue={searchTerm}
+        roleValue={selectedRole || undefined}
+        statusValue={selectedStatus || undefined}
+        sortValue={sortBy || undefined}
       />
 
-      <UsersTable
-        users={currentUsers}
-        onViewUser={handleViewUser}
-        onEditUser={handleEditUser}
-        onApproveUser={handleApproveUser}
-        onSuspendUser={handleSuspendUser}
-        onResetPassword={handleResetPassword}
-        onDeleteUser={handleDeleteUser}
-        onViewLogs={handleViewLogs}
-      />
+      {
+        loading ? (
+          <TableSkeleton />
+        ) : users.length === 0 ? (
+          <div className="bg-surface border !border-border rounded-lg p-10 text-center text-muted-foreground">
+            <div className="text-2xl mb-2">No users found</div>
+            <div className="mb-6">Try adjusting your search or filters.</div>
+            <Button variant="outline" size="sm" onClick={handleResetFilters} className="border-border">Reset filters</Button>
+          </div>
+        ) : (
+          <UsersTable setIsModalOpen={setIsModalOpen} />
+        )}
 
-      <UserDetailsModal
-        user={selectedUser}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      <UserDetailsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AddUserModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
+
     </div>
   )
 }

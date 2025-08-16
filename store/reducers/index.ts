@@ -17,6 +17,7 @@ import notification from './notificationSlice'
 import document from './documentSlice';
 import clientSettings from './clientSettingsSlice';
 import lawyerSettings from './lawyerSettingsSlice';
+import user from './userSlice';
 
 const rootReducer = combineReducers({
     auth,
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
     document,
     clientSettings,
     lawyerSettings,
+    user,
 });
 
 export default rootReducer;

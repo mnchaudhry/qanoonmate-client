@@ -22,18 +22,20 @@ export default function ReviewsSection({ lawyer }: { lawyer: Lawyer }) {
 
   return (
     <div className="rounded-lg border border-gray-200 shadow-sm p-6 bg-white">
-      <h2 className="text-xl font-bold mb-4">
-        Reviews
-      </h2>
+
+      <h2 className="text-xl font-bold mb-4">Reviews</h2>
 
       {/* Overall Rating */}
-      <div className="flex items-center mb-6">
-        <div className="flex items-center gap-1 mr-2">
-          <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-          <span className="font-bold text-lg">{lawyer.avgRating || 0}</span>
+      {
+        lawyer.reviews && lawyer.reviews.length > 0 &&
+        <div className="flex items-center mb-6">
+          <div className="flex items-center gap-1 mr-2">
+            <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+            <span className="font-bold text-lg">{lawyer.avgRating || 0}</span>
+          </div>
+          <span className="text-gray-500">from {lawyer.reviews?.length || 0} clients</span>
         </div>
-        <span className="text-gray-500">from {lawyer.reviews?.length || 0} clients</span>
-      </div>
+      }
 
       {/* Review Cards */}
       <div className="space-y-4">

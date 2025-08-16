@@ -10,8 +10,14 @@ import ReviewsSection from "./_components/ReviewsSection";
 import RelatedInformation from "./_components/RelatedInformation";
 import { getLawyerById } from "@/store/reducers/lawyerSlice";
 import { RootState, AppDispatch } from "@/store/store";
-import LawyerSkeleton from "./_components/LawyerSkeleton";
 import LawyerNotFound from "./_components/LawyerNotFound";
+import LawyerSkeleton from "@/components/skeletons/LawyerSkeleton";
+import NavigationTabs, { TabId } from "./_components/NavigationTabs";
+import AvailabilitySection from "./_components/AvailabilitySection";
+import ArticlesSection from "./_components/ArticlesSection";
+import DocumentsSection from "./_components/DocumentsSection";
+import ContactSection from "./_components/ContactSection";
+import { getLawyerAvailability, getLawyerReviews } from "@/store/reducers/lawyerSlice";
 
 export default function LawyerProfilePage() {
 
@@ -24,6 +30,8 @@ export default function LawyerProfilePage() {
   /////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////
   const [loading, setLoading] = useState(false);
   const [lawyer, setLawyer] = useState(selectedLawyer || null);
+  const [activeTab, setActiveTab] = useState<TabId>('about')
+  const availability = useSelector((s: RootState) => s.lawyer.availability)
 
   /////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////
   useEffect(() => {
@@ -47,6 +55,10 @@ export default function LawyerProfilePage() {
         } else {
           console.error("Failed to fetch lawyer:", resultAction.error);
         }
+        // Fetch additional data for tabs
+        dispatch(getLawyerAvailability(id))
+        dispatch(getLawyerReviews(id))
+
       } catch (error) {
         console.error("Exception when fetching lawyer details:", error);
       } finally {
@@ -68,17 +80,34 @@ export default function LawyerProfilePage() {
         loading ? <LawyerSkeleton />
           : !lawyer ? <LawyerNotFound />
             :
-            <div className="container mx-auto px-4 py-8 max-w-6xl">
+            <div className="container mx-auto px-4 pt-24 py-8 max-w-6xl">
               <LawyerBanner lawyer={lawyer} />
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-                <div className="md:col-span-2">
-                  <LawyerDetails lawyer={lawyer} />
-                  <div className="mt-8">
+              <div className="mt-6">
+                <NavigationTabs activeTab={activeTab} onTabChange={(t: TabId) => setActiveTab(t)} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-6">
+                <div className="md:col-span-2 space-y-6">
+                  {activeTab === 'about' && (
+                    <>
+                      <LawyerDetails lawyer={lawyer} />
+                      <RelatedInformation faqs={[]} guides={[]} laws={[]} />
+                    </>
+                  )}
+                  {activeTab === 'reviews' && (
                     <ReviewsSection lawyer={lawyer} />
-                  </div>
-                  <div className="mt-8">
-                    <RelatedInformation faqs={[]} guides={[]} laws={[]} />
-                  </div>
+                  )}
+                  {activeTab === 'availability' && (
+                    <AvailabilitySection availability={availability} />
+                  )}
+                  {activeTab === 'articles' && (
+                    <ArticlesSection articles={[]} />
+                  )}
+                  {activeTab === 'documents' && (
+                    <DocumentsSection documents={[]} />
+                  )}
+                  {activeTab === 'contact' && (
+                    <ContactSection email={lawyer.email} phone={lawyer.phone} />
+                  )}
                 </div>
                 <div className="md:col-span-1">
                   <ConsultationModule lawyer={lawyer} />

@@ -26,13 +26,10 @@ import store, { AppDispatch } from "../store";
 import type {
   AuthAuthenticateEmit,
   ChatError,
-  ChatJoinRoomAck,
   ChatJoinRoomEmit,
-  ChatLeaveRoomAck,
   ChatLeaveRoomEmit,
   ChatMarkReadEmit,
   ChatMessageRead,
-  ChatMessageSentAck,
   ChatNewMessage,
   ChatSendMessageEmit,
   ChatStopTypingEmit,
@@ -41,7 +38,6 @@ import type {
   ChatUserStopTyping,
   ChatUserTyping,
   ModelChatMessageEmit,
-  ModelError,
   ModelMessageReceived,
   ModelMessageStream,
   ModelSessionStarted,
@@ -58,55 +54,80 @@ import type {
 export const socketEvents = {
   auth: {
     authenticate: (socket: any, data: AuthAuthenticateEmit) => {
-      socket && socket.emit("auth:authenticate", data);
+      if (socket) {
+        socket.emit("auth:authenticate", data);
+      }
     },
   },
   summary: {
     submit: (socket: any, data: SummarySubmitEmit) => {
-      socket && socket.emit("summary:submit", data);
+      if (socket) {
+        socket.emit("summary:submit", data);
+      }
     },
     retry: (socket: any, summaryId: string) => {
-      socket && socket.emit("summary:retry", { summaryId });
+      if (socket) {
+        socket.emit("summary:retry", { summaryId });
+      }
     },
     abort: (socket: any, summaryId: string) => {
-      socket && socket.emit("summary:abort", { summaryId });
+      if (socket) {
+        socket.emit("summary:abort", { summaryId });
+      }
     },
   },
   model: {
     startChat: (socket: any, data: ModelStartChatEmit) => {
-      socket && socket.emit("start_chat", data);
+      if (socket) {
+        socket.emit("start_chat", data);
+      }
     },
     updateTitle: (socket: any, data: ModelUpdateTitleEmit) => {
-      socket && socket.emit("update_title", data);
+      if (socket) {
+        socket.emit("update_title", data);
+      }
     },
     chatMessage: (socket: any, data: ModelChatMessageEmit) => {
-      socket && socket.emit("chat_message", data);
+      if (socket) {
+        socket.emit("chat_message", data);
+      }
     },
-    regenerateResponse: (
-      socket: any,
-      data: { sessionId: string; userMessageId: string; history: any[] }
-    ) => {
-      socket && socket.emit("regenerate_response", data);
+    regenerateResponse: (socket: any, data: { sessionId: string; userMessageId: string; history: any[] }) => {
+      if (socket) {
+        socket.emit("regenerate_response", data);
+      }
     },
   },
   chat: {
     joinRoom: (socket: any, data: ChatJoinRoomEmit) => {
-      socket && socket.emit("chat:join-room", data);
+      if (socket) {
+        socket.emit("chat:join-room", data);
+      }
     },
     leaveRoom: (socket: any, data: ChatLeaveRoomEmit) => {
-      socket && socket.emit("chat:leave-room", data);
+      if (socket) {
+        socket.emit("chat:leave-room", data);
+      }
     },
     sendMessage: (socket: any, data: ChatSendMessageEmit) => {
-      socket && socket.emit("chat:send-message", data);
+      if (socket) {
+        socket.emit("chat:send-message", data);
+      }
     },
     typing: (socket: any, data: ChatTypingEmit) => {
-      socket && socket.emit("chat:typing", data);
+      if (socket) {
+        socket.emit("chat:typing", data);
+      }
     },
     stopTyping: (socket: any, data: ChatStopTypingEmit) => {
-      socket && socket.emit("chat:stop-typing", data);
+      if (socket) {
+        socket.emit("chat:stop-typing", data);
+      }
     },
     markRead: (socket: any, data: ChatMarkReadEmit) => {
-      socket && socket.emit("chat:mark-read", data);
+      if (socket) {
+        socket.emit("chat:mark-read", data);
+      }
     },
   },
 };
@@ -114,43 +135,23 @@ export const socketEvents = {
 ///////////////////////////////////////////////// LISTENING EVENTS (Server to Client) /////////////////////////////////////////////////
 export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   // Test event to verify socket is working
-  socket.on("test", (data: any) => {
-    return;
-  });
+  socket.on("test", () => { return; });
 
   // Emit a test event to verify socket is working
   socket.emit("test", { message: "Testing socket connection" });
 
   // Add a simple event listener to test socket functionality
-  socket.on("connect", () => {
-    return;
-  });
+  socket.on("connect", () => { return; });
 
-  socket.on("disconnect", () => {
-    return;
-  });
+  socket.on("disconnect", () => { return; });
 
   // Summary events
-  socket.on("summary:progress", (data: SummaryProgress) => {
-    dispatch(handleSummaryProgress(data));
-  });
-  socket.on("summary:complete", (data: SummaryComplete) => {
-    dispatch(handleSummaryComplete(data));
-  });
+  socket.on("summary:progress", (data: SummaryProgress) => { dispatch(handleSummaryProgress(data)); });
+  socket.on("summary:complete", (data: SummaryComplete) => { dispatch(handleSummaryComplete(data)); });
   socket.on("summary:error", (data: SummaryError) => {
-    dispatch(
-      handleSummaryError({
-        summaryId: data.summaryId || "",
-        error: data.error || data.message || "Unknown error",
-      })
-    );
+    dispatch(handleSummaryError({ summaryId: data.summaryId || "", error: data.error || data.message || "Unknown error", }));
   });
-  socket.on(
-    "summary:stream",
-    (data: { summaryId: string; content: string }) => {
-      dispatch(handleSummaryStream(data));
-    }
-  );
+  socket.on("summary:stream", (data: { summaryId: string; content: string }) => { dispatch(handleSummaryStream(data)); });
 
   // Model events
   socket.on("model:message-received", (data: ModelMessageReceived) => {
@@ -212,7 +213,7 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     }
   });
 
-  socket.on("model:error", (data: ModelError) => {
+  socket.on("model:error", () => {
     dispatch(
       addAIMessage({
         _id: Date.now().toString(),
@@ -232,15 +233,11 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   });
 
   // Chat events
-  socket.on("chat:join-room-ack", (data: ChatJoinRoomAck) => {});
-  socket.on("chat:leave-room-ack", (data: ChatLeaveRoomAck) => {});
+  socket.on("chat:join-room-ack", () => { });
+  socket.on("chat:leave-room-ack", () => { });
   socket.on("chat:user-joined", (data: ChatUserJoined) => {
     dispatch(
-      setOnlineStatus({
-        roomId: data.roomId,
-        userId: data.userId,
-        isOnline: true,
-      })
+      setOnlineStatus({ roomId: data.roomId, userId: data.userId, isOnline: true, })
     );
   });
   socket.on("chat:new-message", (data: ChatNewMessage) => {
@@ -252,10 +249,7 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     if (!messageExists) {
       dispatch(addMessage(data));
       dispatch(
-        updateRoomState({
-          roomId: data.chatRoomId,
-          updates: { lastActivity: Date.now() },
-        })
+        updateRoomState({ roomId: data.chatRoomId, updates: { lastActivity: Date.now() }, })
       );
     }
 
@@ -269,34 +263,24 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
 
     if (!isFromCurrentUser && !isInCurrentRoom) {
       const currentCount = state.chat.unreadCounts[data.chatRoomId] || 0;
-      dispatch(
-        setUnreadCount({ roomId: data.chatRoomId, count: currentCount + 1 })
-      );
+      dispatch(setUnreadCount({ roomId: data.chatRoomId, count: currentCount + 1 }));
     } else {
       return;
     }
   });
 
-  socket.on("chat:message-sent-ack", (data: ChatMessageSentAck) => {
+  socket.on("chat:message-sent-ack", () => {
     return;
     // Message was successfully sent and saved by the server
   });
   socket.on("chat:user-typing", (data: ChatUserTyping) => {
     dispatch(
-      setTypingStatus({
-        roomId: data.roomId,
-        userId: data.userId,
-        isTyping: true,
-      })
+      setTypingStatus({ roomId: data.roomId, userId: data.userId, isTyping: true, })
     );
   });
   socket.on("chat:user-stop-typing", (data: ChatUserStopTyping) => {
     dispatch(
-      setTypingStatus({
-        roomId: data.roomId,
-        userId: data.userId,
-        isTyping: false,
-      })
+      setTypingStatus({ roomId: data.roomId, userId: data.userId, isTyping: false, })
     );
   });
   socket.on("chat:message-read", (data: ChatMessageRead) => {
@@ -307,50 +291,36 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   });
   socket.on("user-online", (data: any) => {
     dispatch(
-      setOnlineStatus({
-        roomId: data.roomId || "global",
-        userId: data.userId,
-        isOnline: true,
-      })
+      setOnlineStatus({ roomId: data.roomId || "global", userId: data.userId, isOnline: true, })
     );
   });
   socket.on("user-offline", (data: any) => {
     dispatch(
-      setOnlineStatus({
-        roomId: data.roomId || "global",
-        userId: data.userId,
-        isOnline: false,
-      })
+      setOnlineStatus({ roomId: data.roomId || "global", userId: data.userId, isOnline: false, })
     );
   });
   socket.on("chat:online-status", (data: any) => {
     if (data.onlineUserIds && Array.isArray(data.onlineUserIds)) {
       dispatch(
-        updateRoomState({
-          roomId: data.roomId,
-          updates: {
-            onlineUsers: data.onlineUserIds,
-            lastActivity: Date.now(),
-          },
-        })
+        updateRoomState({ roomId: data.roomId, updates: { onlineUsers: data.onlineUserIds, lastActivity: Date.now(), }, })
       );
     }
   });
 
   // Consultation reschedule events
-  socket.on("consultation:reschedule-requested", (data: any) => {
+  socket.on("consultation:reschedule-requested", () => {
     // toast.success(data.message); // Assuming toast is available globally or imported
     // You can dispatch an action to update consultation state if needed
     return;
   });
 
-  socket.on("consultation:reschedule-approved", (data: any) => {
+  socket.on("consultation:reschedule-approved", () => {
     // toast.success(data.message); // Assuming toast is available globally or imported
     // You can dispatch an action to update consultation state if needed
     return;
   });
 
-  socket.on("consultation:reschedule-rejected", (data: any) => {
+  socket.on("consultation:reschedule-rejected", () => {
     return;
     // toast.error(data.message); // Assuming toast is available globally or imported
     // You can dispatch an action to update consultation state if needed
@@ -366,8 +336,8 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
 
   // Cleanup typing users periodically
   const cleanupInterval = setInterval(() => {
-    const now = Date.now();
-    const timeout = 5000; // 5 seconds timeout for typing indicators
+    // const now = Date.now();
+    // const timeout = 5000; // 5 seconds timeout for typing indicators
 
     // This would be handled by the backend, but we can also clean up stale typing indicators
     // dispatch(cleanupTypingUsers({ roomId: 'all', userId: 'all' }));

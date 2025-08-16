@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 import { getDrafts, deleteDraft } from '@/store/api/index'
 import { Badge } from '@/components/ui/badge'
 import { PageHeader } from '@/app/(Admin)/_components/PageHeader'
-import AdminSkeleton from '../../_components/AdminSkeleton'
+import AdminSkeleton from '@/components/skeletons/AdminPageSkeleton'
 
 interface Draft {
   _id: string

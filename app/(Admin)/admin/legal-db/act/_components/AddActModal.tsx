@@ -35,7 +35,6 @@ const AddActModal: React.FC<AddActModalProps> = ({ open, onClose, act, onActSave
 
   //////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////
   useEffect(() => {
-    console.log('act', act)
     if (act) {
       setTitle(act.name || '')
       setDescription(act.description || '')

@@ -3,29 +3,29 @@
 import React, { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table'
-import { PlusCircle, Edit2, Search, Eye, CheckCircle } from 'lucide-react'
+import { PlusCircle, Edit2, Eye, CheckCircle } from 'lucide-react'
 import AddLawyerModal from './_components/AddLawyerModal'
 import ViewLawyerModal from './_components/ViewLawyerModal'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState, AppDispatch } from '@/store/store'
-import AdminSkeleton from '../../../_components/AdminSkeleton'
 import { getLawyers } from '@/store/reducers/lawyerSlice'
 import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
 import { Pagination } from '@/components/ui/pagination'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PageHeader } from '../../../_components/PageHeader'
 import { Lawyer } from '@/store/types/lawyer.types'
-import { ConsultationMode } from '@/lib/enums'
+import { AccountStatus, ConsultationMode } from '@/lib/enums'
+import SearchBar from '@/components/SearchBar'
+import { AdminSkeleton } from '@/components/skeletons'
 
 const PAGE_SIZE = 20;
 
 const LawyersPage = () => {
-  //////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>()
   const { lawyers = [], isLoading, totalPages, totalCount } = useSelector((state: RootState) => state.lawyer)
 
-  //////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
   const [search, setSearch] = useState('')
   const [addModalOpen, setAddModalOpen] = useState(false)
   const [viewModalOpen, setViewModalOpen] = useState(false)
@@ -39,7 +39,7 @@ const LawyersPage = () => {
   const [filterVerified, setFilterVerified] = useState('all')
   const [sort, setSort] = useState('latest')
 
-  //////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////
   useEffect(() => {
     dispatch(getLawyers({
       page,
@@ -55,7 +55,7 @@ const LawyersPage = () => {
   // Reset page to 1 on search/filter/sort change
   useEffect(() => { setPage(1) }, [search, filterSpecialization, filterStatus, filterVerified, sort])
 
-  //////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////
   const handleEdit = (lawyer: Lawyer) => {
     setEditLawyer(lawyer)
     setAddModalOpen(true)
@@ -146,13 +146,10 @@ const LawyersPage = () => {
   }
 
   const getStatusBadge = (lawyer: Lawyer) => {
-    if (!lawyer.isBlocked) {
-      return <Badge variant="destructive">Inactive</Badge>
+    if (lawyer.accountStatus === AccountStatus.ACTIVE) {
+      return <Badge variant="default">Active</Badge>
     }
-    if (lawyer.isVerified) {
-      return <Badge variant="default">Verified</Badge>
-    }
-    return <Badge variant="secondary">Unverified</Badge>
+    return <Badge variant="destructive">Inactive</Badge>
   }
 
   //////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
@@ -191,15 +188,12 @@ const LawyersPage = () => {
         {/* Filters and Search */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4 mt-6">
           <div className="flex gap-2 items-center flex-wrap">
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search lawyers..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-9 max-w-xs"
-              />
-            </div>
+            <SearchBar
+              value={search}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+              containerClassName="mb-0 mx-0"
+              className="max-w-xs"
+            />
 
             <Select value={filterSpecialization} onValueChange={setFilterSpecialization}>
               <SelectTrigger className="w-[180px]">
@@ -314,7 +308,7 @@ const LawyersPage = () => {
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
-                        {!lawyer.isVerified && (
+                        {!lawyer.identityVerified && (
                           <Button
                             size="sm"
                             onClick={() => handleVerify(lawyer._id!)}

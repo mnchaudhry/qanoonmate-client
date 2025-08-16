@@ -24,7 +24,7 @@ const Acts = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { acts = [], isLoading, currentPage, totalPages, totalCount: totalActs } = useSelector((state: RootState) => state.act)
-  const minYear = 1947;
+  const minYear = 1857;
   const maxYear = new Date().getFullYear();
   const years: string[] = Array.from({ length: maxYear - minYear + 1 }, (_, i) => String(maxYear - i));
 

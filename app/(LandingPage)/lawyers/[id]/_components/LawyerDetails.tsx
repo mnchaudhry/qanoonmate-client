@@ -1,12 +1,13 @@
 "use client";
 
+import { enumToLabel } from "@/lib/utils";
 import { Lawyer } from "@/store/types/lawyer.types";
 
 export default function LawyerDetails({ lawyer }: { lawyer: Lawyer }) {
   return (
     <div className="rounded-lg border border-gray-200 shadow-sm p-6 bg-white">
       {/* About Me Section */}
-      <section className="mb-6 py-0 ">
+      <section className="mb-6 !py-0 ">
         <h2 className="text-xl font-bold mb-3 pb-2 border-b border-gray-200">
           About Me
         </h2>
@@ -16,7 +17,7 @@ export default function LawyerDetails({ lawyer }: { lawyer: Lawyer }) {
       </section>
 
       {/* License & Identity Section */}
-      <section className="mb-6 py-0 ">
+      <section className="mb-6 !py-0 ">
         <h2 className="text-xl font-bold mb-3 pb-2 border-b border-gray-200">
           License & Identity
         </h2>
@@ -29,7 +30,7 @@ export default function LawyerDetails({ lawyer }: { lawyer: Lawyer }) {
             <span className="text-gray-500">•</span>
             <span>License Number: {lawyer.licenseNumber || "Not provided"}</span>
           </li>
-          {lawyer.isVerified && (
+          {lawyer.identityVerified && (
             <li className="flex items-center gap-2 text-green-600">
               <span className="text-gray-500">•</span>
               <span className="flex items-center">
@@ -53,7 +54,7 @@ export default function LawyerDetails({ lawyer }: { lawyer: Lawyer }) {
       </section>
 
       {/* Experience & Practice Section */}
-      <section className="mb-6 py-0 ">
+      <section className="mb-6 !py-0 ">
         <h2 className="text-xl font-bold mb-3 pb-2 border-b border-gray-200">
           Experience & Practice
         </h2>
@@ -65,38 +66,38 @@ export default function LawyerDetails({ lawyer }: { lawyer: Lawyer }) {
           <li className="flex items-center gap-2">
             <span className="text-gray-500">•</span>
             <span>
-              Areas of Practice: {lawyer.specializations?.join(", ") || "Not specified"}
+              Areas of Practice: {lawyer.specializations?.map(s => enumToLabel(s)).join(", ") || "Not specified"}
             </span>
           </li>
           <li className="flex items-center gap-2">
             <span className="text-gray-500">•</span>
-            <span>Jurisdictions: {lawyer.jurisdictions?.join(", ") || lawyer.location?.province || "Not specified"}</span>
+            <span>Jurisdictions: {lawyer.jurisdictions?.map(j => enumToLabel(j)).join(", ") || enumToLabel(lawyer.location?.province || "") || "Not specified"}</span>
           </li>
           {lawyer.primarySpecialization && (
             <li className="flex items-center gap-2">
               <span className="text-gray-500">•</span>
-              <span>Primary Specialization: {lawyer.primarySpecialization}</span>
+              <span>Primary Specialization: {enumToLabel(lawyer.primarySpecialization)}</span>
             </li>
           )}
         </ul>
       </section>
 
       {/* Languages Section */}
-      <section className="py-0" >
+      <section className="mb-6 !py-0 ">
         <h2 className="text-xl font-bold mb-3 pb-2 border-b border-gray-200">
           Languages
         </h2>
         <ul className="space-y-2 text-sm text-gray-700">
           <li className="flex items-center gap-2">
             <span className="text-gray-500">•</span>
-            <span>{lawyer.languages?.join(", ") || "English"}</span>
+            <span>{lawyer.languages?.map(l => enumToLabel(l)).join(", ") || "English"}</span>
           </li>
         </ul>
       </section>
 
       {/* Education Section */}
       {lawyer.education && lawyer.education.length > 0 && (
-        <section className="py-0" >
+        <section className="mb-6 !py-0 ">
           <h2 className="text-xl font-bold mb-3 pb-2 border-b border-gray-200">
             Education
           </h2>
@@ -113,7 +114,7 @@ export default function LawyerDetails({ lawyer }: { lawyer: Lawyer }) {
 
       {/* Certifications Section */}
       {lawyer.certifications && lawyer.certifications.length > 0 && (
-        <section className="py-0" >
+        <section className="mb-6 !py-0 ">
           <h2 className="text-xl font-bold mb-3 pb-2 border-b border-gray-200">
             Certifications & Training
           </h2>

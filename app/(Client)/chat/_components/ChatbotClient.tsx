@@ -28,10 +28,7 @@ const ChatbotClient = () => {
   // variables 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const {
-    defaultSocket: { socket, connectError, isConnected },
-    reconnect,
-  } = useSocketContext();
+  const { defaultSocket: { socket, isConnected } } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
   const {
     messages,
@@ -41,9 +38,7 @@ const ChatbotClient = () => {
   ///////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////////////
   // UI States
   const [showDictionary, setShowDictionary] = useState(false);
-  const [chatViewMode, setChatViewMode] = useState<
-    "compact" | "card" | "timeline"
-  >("card");
+  const [chatViewMode, setChatViewMode] = useState<"compact" | "card" | "timeline">("card");
   const [textSize, setTextSize] = useState(16);
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
@@ -166,7 +161,7 @@ const ChatbotClient = () => {
         <ChatbotSidebar sessionMetadata={sessionMetadata} />
 
         {/* Main Content Area (Chat + Rightbar) */}
-        <div className="flex flex-[8] flex-col h-full w-full bg-background overflow-scroll">
+        <div className="flex flex-[8] flex-col h-full w-full bg-background overflow-hidden">
           {/* Navbar covers both chat and rightbar */}
           <div className="w-full z-30 bg-background">
             <ChatbotNavbar

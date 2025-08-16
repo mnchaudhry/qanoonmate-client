@@ -20,7 +20,6 @@ export function useParsedMessages(
     for (const msg of messages || []) {
       if (msg.sender !== "bot") continue;
       const parsed = parseAIResponse(msg.content);
-      console.log("parsed", parsed);
       parsed.referencedActs?.forEach((a) => {
         if (!a) return;
         const exists = references.some(
@@ -39,7 +38,6 @@ export function useParsedMessages(
         if (!Number.isNaN(val)) confidence = val;
       }
     }
-    console.log("references", references);
     return { references, cases, legalContext, confidence };
   }, [messages]);
 }

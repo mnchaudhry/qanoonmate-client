@@ -1,4 +1,4 @@
-import { Gender, UserRole } from "@/lib/enums";
+import { AccountStatus, Gender, UserRole } from "@/lib/enums";
 import { APIResponse, PaginationMeta } from "./api";
 import { Review } from "./review.types";
 
@@ -23,7 +23,7 @@ export interface User {
     emailVerified?: boolean;
     phoneVerified?: boolean;
     identityVerified?: boolean;
-    isBlocked?: boolean;
+    accountStatus: AccountStatus;
     reviews?: Review[];
     avgRating?: number | null;
     createdAt: string;
@@ -48,7 +48,9 @@ export interface UserQuery {
     [key: string]: any;
 }
 
-export interface GetUsersRequest extends UserQuery { }
+export interface GetUsersRequest extends UserQuery {
+    [key: string]: any;
+}
 export type GetUsersResponse = APIResponse<{ users: User[] } & PaginationMeta>;
 
 export interface SearchUsersRequest extends UserQuery {
@@ -66,8 +68,26 @@ export interface CheckEmailRequest {
 }
 export type CheckEmailResponse = APIResponse<{ exists: boolean }>;
 
-export interface GetAdminUsersRequest extends UserQuery { }
-export type GetAdminUsersResponse = APIResponse<{ users: User[] } & PaginationMeta>;
+export interface AddUserRequest {
+    firstname: string;
+    lastname: string;
+    email: string;
+    phone: string;
+    password: string;
+    role?: UserRole;
+    bio?: string;
+    profilePicture?: string;
+    languages?: string[];
+    preferredLanguage?: string;
+    location?: {
+        city?: string;
+        province?: string;
+    };
+    [key: string]: any;
+}
+
+
+export type AddUserResponse = APIResponse<{ user: User }>;
 
 export interface BlockUserRequest {
     id: string;
