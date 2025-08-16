@@ -6,7 +6,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@/store/store'
 import { uploadDocument, createSummary, clearError } from '@/store/reducers/summarySlice'
 import { useSocketContext } from '@/context/useSocketContext'
-import { toast } from 'sonner'
+import toast from 'react-hot-toast'
+import { X } from 'lucide-react'
 
 interface DropboxProps {
     selectedType: string
@@ -157,7 +158,7 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating }: DropboxProps) 
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     className="min-h-[120px] p-4 text-sm placeholder:text-muted-foreground border border-muted/50 focus:ring-2 focus:ring-primary focus:outline-none"
-                    disabled={isGenerating}
+                    disabled={isGenerating || file ? true : false}
                 />
 
                 {/* File upload */}

@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSocketContext } from "@/context/useSocketContext";
 import {
-  getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, setRegeneratingMessageId, updateAIMessageLocal, updateBotMessage, updateStreamingMessage
+  getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, setRegeneratingMessageId,
+  updateBotMessage, updateStreamingMessage
 } from "@/store/reducers/aiSessionSlice";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
 import { socketEvents } from "@/store/socket/events";

@@ -23,7 +23,6 @@ const Summary = ({ selectedType }: SummaryProps) => {
     const handleFeedback = (type: 'helpful' | 'not-helpful') => {
         setFeedback(type)
         // In a real app, this would send feedback to the backend
-        console.log(`Feedback: ${type}`)
     }
 
     const handleCopy = async () => {
