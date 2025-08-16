@@ -1,362 +1,286 @@
 'use client'
-
-import React, { useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table'
-import { PlusCircle, Edit2, Eye, CheckCircle } from 'lucide-react'
-import AddLawyerModal from './_components/AddLawyerModal'
-import ViewLawyerModal from './_components/ViewLawyerModal'
+import { useEffect, useState, useRef } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useDebounce } from '@/hooks/use-debounce'
 import { useDispatch, useSelector } from 'react-redux'
-import { RootState, AppDispatch } from '@/store/store'
-import { getLawyers } from '@/store/reducers/lawyerSlice'
-import { Badge } from '@/components/ui/badge'
-import { Pagination } from '@/components/ui/pagination'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { PageHeader } from '../../../_components/PageHeader'
-import { Lawyer } from '@/store/types/lawyer.types'
-import { AccountStatus, ConsultationMode } from '@/lib/enums'
-import SearchBar from '@/components/SearchBar'
-import { AdminSkeleton } from '@/components/skeletons'
+import { AppDispatch, RootState } from '@/store/store'
+import { setCurrentPage, exportLawyersCsv } from '@/store/reducers/lawyerSlice'
+import { Plus, Upload, Download, RefreshCw } from "lucide-react"
+import { Button } from '@/components/ui/button'
+import toast from 'react-hot-toast'
+import FiltersActionBar from './_components/FiltersActionBar'
+import LawyersTable from './_components/LawyersTable'
+import UserDetailsModal from './_components/UserDetailsModal'
+import { TableSkeleton } from '@/components/skeletons'
+import AddUserModal from './_components/AddUserModal'
+import { getLawyers, bulkUploadLawyers } from '@/store/reducers/lawyerSlice'
 
-const PAGE_SIZE = 20;
 
-const LawyersPage = () => {
+const PAGE_SIZE = 42
+
+const AdminLawyers = () => {
+
   ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>()
-  const { lawyers = [], isLoading, totalPages, totalCount } = useSelector((state: RootState) => state.lawyer)
+  const { lawyers, meta } = useSelector((s: RootState) => s.lawyer)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const initialSearch = searchParams.get('q') || ''
+  const initialStatus = (() => { const s = searchParams.get('status') || ''; return s === 'all' ? '' : s })()
+  const initialSort = searchParams.get('sort') || ''
+  const currentPage = meta?.currentPage || 1
 
   ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
-  const [search, setSearch] = useState('')
-  const [addModalOpen, setAddModalOpen] = useState(false)
-  const [viewModalOpen, setViewModalOpen] = useState(false)
-  const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null)
-  const [editLawyer, setEditLawyer] = useState<Lawyer | null>(null)
-  const [verifyLoading, setVerifyLoading] = useState(false)
-  const [disableLoading, setDisableLoading] = useState(false)
-  const [page, setPage] = useState(1)
-  const [filterSpecialization, setFilterSpecialization] = useState('all')
-  const [filterStatus, setFilterStatus] = useState('all')
-  const [filterVerified, setFilterVerified] = useState('all')
-  const [sort, setSort] = useState('latest')
+  const [searchTerm, setSearchTerm] = useState(initialSearch)
+  const [selectedStatus, setSelectedStatus] = useState(initialStatus)
+  const [sortBy, setSortBy] = useState(initialSort)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [specialization, setSpecialization] = useState('all')
+  const [province, setProvince] = useState('all')
+  const [city, setCity] = useState('all')
+
+  const debouncedSearch = useDebounce(searchTerm, 400)
 
   ////////////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////////////
+  const initializedFromUrl = useRef(false)
   useEffect(() => {
-    dispatch(getLawyers({
-      page,
-      limit: PAGE_SIZE,
-      search: search || undefined,
-      // specialization: filterSpecialization !== 'all' ? filterSpecialization : undefined,
-      // status: filterStatus !== 'all' ? filterStatus : undefined,
-      // verified: filterVerified !== 'all' ? filterVerified === 'verified' : undefined,
-      sort: sort || undefined,
-    }))
-  }, [dispatch, page, search, filterSpecialization, filterStatus, filterVerified, sort])
+    if (initializedFromUrl.current) return
+    initializedFromUrl.current = true
+    const pageParam = Number(searchParams.get('page') || '1')
+    if (pageParam && pageParam !== currentPage) {
+      dispatch(setCurrentPage(pageParam))
+    }
+  }, [dispatch, searchParams, currentPage])
 
-  // Reset page to 1 on search/filter/sort change
-  useEffect(() => { setPage(1) }, [search, filterSpecialization, filterStatus, filterVerified, sort])
+  useEffect(() => {
+    setLoading(true)
+    const initialParams: any = {
+      page: currentPage,
+      limit: PAGE_SIZE,
+      search: debouncedSearch || undefined,
+      sort: sortBy || undefined,
+      order: sortBy === 'createdAt' ? 'desc' : 'asc',
+    }
+    if (specialization && specialization !== 'all') initialParams.specialization = specialization
+    if (province && province !== 'all') initialParams.province = province
+    if (city && city !== 'all') initialParams.city = city
+    if (selectedStatus && selectedStatus !== 'all') initialParams.accountStatus = selectedStatus
+
+    dispatch(getLawyers(initialParams as any))
+      .finally(() => setLoading(false))
+  }, [dispatch, currentPage, debouncedSearch, selectedStatus, sortBy, specialization, province, city])
+
+  useEffect(() => {
+    dispatch(setCurrentPage(1))
+  }, [dispatch, debouncedSearch, selectedStatus, sortBy, specialization, province, city])
+
+  useEffect(() => {
+    const params = new URLSearchParams()
+    if (debouncedSearch) params.set('q', debouncedSearch)
+    if (selectedStatus) params.set('status', selectedStatus)
+    if (sortBy) params.set('sort', sortBy)
+    if (specialization && specialization !== 'all') params.set('specialization', specialization)
+    if (province && province !== 'all') params.set('province', province)
+    if (city && city !== 'all') params.set('city', city)
+    if (currentPage > 1) params.set('page', String(currentPage))
+    const qs = params.toString()
+    router.replace(qs ? `?${qs}` : '?', { scroll: false })
+  }, [debouncedSearch, selectedStatus, sortBy, currentPage, router, city, specialization, province])
 
   ////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////
-  const handleEdit = (lawyer: Lawyer) => {
-    setEditLawyer(lawyer)
-    setAddModalOpen(true)
+  const handleRefresh = () => {
+    setLoading(true)
+    dispatch(getLawyers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, sort: sortBy || undefined, order: sortBy === 'createdAt' ? 'desc' : 'asc' }))
+      .finally(() => setLoading(false))
   }
-
-  const handleAdd = () => {
-    setEditLawyer(null)
-    setAddModalOpen(true)
+  const handleSortChange = (sort: string) => {
+    setSortBy(sort)
   }
-
-  const handleModalClose = () => {
-    setAddModalOpen(false)
-    setEditLawyer(null)
+  const handleStatusFilter = (status: string) => {
+    setSelectedStatus(status === 'all' ? '' : status)
   }
-
-  const handleLawyerSaved = () => {
-    dispatch(getLawyers({
-      page,
-      limit: PAGE_SIZE,
-      search: search || undefined,
-      // specialization: filterSpecialization !== 'all' ? filterSpecialization : undefined,
-      // status: filterStatus !== 'all' ? filterStatus : undefined,
-      // verified: filterVerified !== 'all' ? filterVerified === 'verified' : undefined,
-      sort: sort || undefined,
-    }))
+  const handleSpecializationFilter = (spec: string) => { setSpecialization(spec) }
+  const handleLocationFilter = (prov: string, c: string) => { setProvince(prov); setCity(c) }
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedStatus('');
+    setSortBy('');
+    setSpecialization('all');
+    setProvince('all');
+    setCity('all');
+    dispatch(setCurrentPage(1))
   }
-
-  const handleView = (lawyer: Lawyer) => {
-    setSelectedLawyer(lawyer)
-    setViewModalOpen(true)
+  const handleAddUser = () => {
+    setIsAddModalOpen(true)
   }
-
-  const handleCloseViewModal = () => {
-    setViewModalOpen(false)
-    setSelectedLawyer(null)
-  }
-
-  const handleVerify = async (id: string) => {
-    setVerifyLoading(true)
-    try {
-      // await dispatch(verifyLawyer(id)).unwrap()
-      // Refresh lawyers list
-      dispatch(getLawyers({
-        page,
-        limit: PAGE_SIZE,
-        search: search || undefined,
-        // specialization: filterSpecialization !== 'all' ? filterSpecialization : undefined,
-        // status: filterStatus !== 'all' ? filterStatus : undefined,
-        // verified: filterVerified !== 'all' ? filterVerified === 'verified' : undefined,
-        sort: sort || undefined,
-      }))
-      // Close modal if lawyer was being viewed
-      if (selectedLawyer && selectedLawyer._id === id) {
-        setViewModalOpen(false)
-        setSelectedLawyer(null)
+  const handleBulkUpload = async () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.csv,text/csv'
+    input.onchange = async () => {
+      const file = input.files?.[0]
+      if (!file) return
+      // basic client-side validation before upload
+      if (!file.name.toLowerCase().endsWith('.csv')) {
+        toast.error('Please select a .csv file')
+        return
       }
-    } catch (error) {
-      console.error('Error verifying lawyer:', error)
-    } finally {
-      setVerifyLoading(false)
-    }
-  }
-
-  const handleDisable = async (id: string) => {
-    setDisableLoading(true)
-    try {
-      // await dispatch(disableLawyer(id)).unwrap()
-      // Refresh lawyers list
-      dispatch(getLawyers({
-        page,
-        limit: PAGE_SIZE,
-        search: search || undefined,
-        // specialization: filterSpecialization !== 'all' ? filterSpecialization : undefined,
-        // status: filterStatus !== 'all' ? filterStatus : undefined,
-        // verified: filterVerified !== 'all' ? filterVerified === 'verified' : undefined,
-        sort: sort || undefined,
-      }))
-      // Close modal if lawyer was being viewed
-      if (selectedLawyer && selectedLawyer._id === id) {
-        setViewModalOpen(false)
-        setSelectedLawyer(null)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('CSV file is too large (max 5MB)')
+        return
       }
-    } catch (error) {
-      console.error('Error disabling lawyer:', error)
-    } finally {
-      setDisableLoading(false)
+      const text = await file.text()
+      const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0)
+      if (lines.length < 2) {
+        toast.error('CSV must include header and at least one data row')
+        return
+      }
+      const header = lines[0].split(',').map(h => h.trim().toLowerCase())
+      console.log('header', header)
+      const required = ['firstname', 'lastname', 'email', 'username', 'phone', 'password']
+      const missing = required.filter(c => !header.includes(c))
+      if (missing.length) {
+        toast.error(`Missing required columns: ${missing.join(', ')}`)
+        return
+      }
+      // per-row checks (lightweight)
+      const emailIdx = header.indexOf('email')
+      const phoneIdx = header.indexOf('phone')
+      const usernameIdx = header.indexOf('username')
+      const pwdIdx = header.indexOf('password')
+      const errors: string[] = []
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      for (let i = 1; i < lines.length && i <= 1000; i++) {
+        const parts = lines[i].split(',')
+        const email = parts[emailIdx]?.trim() || ''
+        const phone = parts[phoneIdx]?.trim() || ''
+        const username = parts[usernameIdx]?.trim() || ''
+        const pwd = parts[pwdIdx]?.trim() || ''
+        if (!emailRegex.test(email)) errors.push(`Row ${i + 1}: invalid email`)
+        if (!username) errors.push(`Row ${i + 1}: username is required`)
+        if (phone.length < 6) errors.push(`Row ${i + 1}: phone too short`)
+        if (pwd.length < 6) errors.push(`Row ${i + 1}: password too short`)
+      }
+      console.log('errors', errors)
+      if (errors.length) {
+        toast.error(`CSV has ${errors.length} issue(s). Fix and retry. First: ${errors[0]}`)
+        return
+      }
+      setLoading(true)
+      try {
+        await dispatch(bulkUploadLawyers(file)).unwrap()
+        await dispatch(getLawyers({
+          page: currentPage,
+          limit: PAGE_SIZE,
+          search: debouncedSearch || undefined,
+          sort: sortBy || undefined,
+          order: sortBy === 'createdAt' ? 'desc' : 'asc',
+          specialization: specialization === 'all' ? undefined : specialization,
+          province: province === 'all' ? undefined : province,
+          city: city === 'all' ? undefined : city,
+        }))
+      } finally { setLoading(false) }
+    }
+    input.click()
+  }
+  const handleExportCSV = async () => {
+    const { payload } = await dispatch(exportLawyersCsv({ search: debouncedSearch || undefined, sort: sortBy || undefined, order: sortBy === 'createdAt' ? 'desc' : 'asc', limit: 100000 }))
+    if (payload instanceof Blob) {
+      const url = URL.createObjectURL(payload)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'users-export.csv'
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      URL.revokeObjectURL(url)
     }
   }
 
-  const getStatusBadge = (lawyer: Lawyer) => {
-    if (lawyer.accountStatus === AccountStatus.ACTIVE) {
-      return <Badge variant="default">Active</Badge>
-    }
-    return <Badge variant="destructive">Inactive</Badge>
-  }
-
-  //////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
+  ////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////
   return (
-    <>
-      <AddLawyerModal
-        open={addModalOpen}
-        onClose={handleModalClose}
-        lawyer={editLawyer}
-        onLawyerSaved={handleLawyerSaved}
-      />
+    <div className="space-y-6">
 
-      <ViewLawyerModal
-        open={viewModalOpen}
-        onClose={handleCloseViewModal}
-        lawyer={selectedLawyer}
-        onVerify={handleVerify}
-        onDisable={handleDisable}
-        isVerifying={verifyLoading}
-        isDisabling={disableLoading}
-      />
-
-      <div className="space-y-6">
-        {/* Page Header */}
-        <PageHeader
-          title="Lawyers Management"
-          description={`Manage registered lawyers (${totalCount} total)`}
-          actions={
-            <Button onClick={handleAdd}>
-              <PlusCircle className="h-4 w-4" />
-              Add New Lawyer
+      <PageHeader
+        title="Lawyers Management"
+        description="Manage platform lawyers, their accounts, and permissions."
+        actions={<>
+          <div className="flex items-center gap-4">
+            <Button
+              onClick={handleAddUser}
+              size="sm"
+              className="bg-primary hover:bg-primary/90"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Lawyer
             </Button>
-          }
-        />
 
-        {/* Filters and Search */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4 mt-6">
-          <div className="flex gap-2 items-center flex-wrap">
-            <SearchBar
-              value={search}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-              containerClassName="mb-0 mx-0"
-              className="max-w-xs"
-            />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleBulkUpload}
+              className="border-border hover:bg-primary/5"
+            >
+              <Upload className="h-4 w-4 mr-2" />
+              Bulk Upload
+            </Button>
 
-            <Select value={filterSpecialization} onValueChange={setFilterSpecialization}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Specialization" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Specializations</SelectItem>
-                <SelectItem value="Criminal Law">Criminal Law</SelectItem>
-                <SelectItem value="Civil Law">Civil Law</SelectItem>
-                <SelectItem value="Family Law">Family Law</SelectItem>
-                <SelectItem value="Corporate Law">Corporate Law</SelectItem>
-                <SelectItem value="Property Law">Property Law</SelectItem>
-              </SelectContent>
-            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCSV}
+              className="border-border hover:bg-primary/5"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export CSV
+            </Button>
 
-            <Select value={filterVerified} onValueChange={setFilterVerified}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Verification" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="verified">Verified</SelectItem>
-                <SelectItem value="unverified">Unverified</SelectItem>
-              </SelectContent>
-            </Select>
-
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="w-[120px]">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRefresh}
+              className="border-border hover:bg-primary/5"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
           </div>
+        </>}
+      />
 
-          <Select value={sort} onValueChange={setSort}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="latest">Latest</SelectItem>
-              <SelectItem value="oldest">Oldest</SelectItem>
-              <SelectItem value="name">Name A-Z</SelectItem>
-              <SelectItem value="experience">Experience</SelectItem>
-              <SelectItem value="fee">Fee (Low to High)</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+      <FiltersActionBar
+        onSearch={setSearchTerm}
+        onStatusFilter={handleStatusFilter}
+        onSpecializationFilter={handleSpecializationFilter}
+        onLocationFilter={handleLocationFilter}
+        onSortChange={handleSortChange}
+        onResetFilters={handleResetFilters}
+        searchValue={searchTerm}
+        statusValue={selectedStatus || undefined}
+        sortValue={sortBy || undefined}
+      />
 
-        {/* Loading State */}
-        {isLoading && (
-          <AdminSkeleton />
-        )}
-
-        {/* Lawyers Table */}
-        {!isLoading && lawyers.length > 0 ? (
-          <div className="bg-white rounded-lg border">
-            <Table>
-              <TableCaption>
-                Showing {lawyers.length} of {totalCount} lawyers
-              </TableCaption>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Specialization</TableHead>
-                  <TableHead>Experience</TableHead>
-                  <TableHead>Fee</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {lawyers.map((lawyer) => (
-                  <TableRow key={lawyer._id}>
-                    <TableCell className="font-medium">
-                      {lawyer.firstname} {lawyer.lastname}
-                    </TableCell>
-                    <TableCell>{lawyer.email}</TableCell>
-                    <TableCell>{lawyer.phone}</TableCell>
-                    <TableCell>
-                      {lawyer.location?.city}, {lawyer.location?.province}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {lawyer.specializations?.slice(0, 2).map((spec, index) => (
-                          <Badge key={index} variant="outline" className="text-xs">
-                            {spec}
-                          </Badge>
-                        ))}
-                        {lawyer.specializations?.length && lawyer.specializations?.length > 2 && (
-                          <Badge variant="outline" className="text-xs">
-                            +{lawyer.specializations?.length - 2}
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>{lawyer.experience} years</TableCell>
-                    <TableCell>PKR {lawyer.settings?.consultation?.fees?.find(f => f.mode === ConsultationMode.VIDEO_CALL)?.amount || 3000}</TableCell>
-                    <TableCell>{getStatusBadge(lawyer)}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleView(lawyer)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        {!lawyer.identityVerified && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleVerify(lawyer._id!)}
-                            disabled={verifyLoading}
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            <CheckCircle className="h-4 w-4" />
-                          </Button>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(lawyer)}
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+      {
+        loading ? (
+          <TableSkeleton />
+        ) : lawyers.length === 0 ? (
+          <div className="bg-surface border !border-border rounded-lg p-10 text-center text-muted-foreground">
+            <div className="text-2xl mb-2">No lawyers found</div>
+            <div className="mb-6">Try adjusting your search or filters.</div>
+            <Button variant="outline" size="sm" onClick={handleResetFilters} className="border-border">Reset filters</Button>
           </div>
         ) : (
-          !isLoading && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">No lawyers found.</p>
-              <Button onClick={handleAdd} className="mt-4">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add First Lawyer
-              </Button>
-            </div>
-          )
+          <LawyersTable setIsModalOpen={setIsModalOpen} />
         )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-6 flex justify-center">
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={setPage}
-            />
-          </div>
-        )}
-      </div>
-    </>
+      <UserDetailsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <AddUserModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
+
+    </div>
   )
 }
 
-export default LawyersPage
+export default AdminLawyers

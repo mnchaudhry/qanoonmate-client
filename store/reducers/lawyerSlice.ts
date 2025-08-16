@@ -5,20 +5,19 @@ import { Lawyer, PaginatedLawyerResponse, SingleLawyerResponse, LawyerReviewsRes
 import { Review } from '@/store/types/review.types';
 import { Availability } from '@/store/types/lawyerSettings.types';
 import { Client } from '../types/client.types';
+import { PaginationMeta } from '../types/api';
 
 interface LawyerState {
     lawyers: Lawyer[];
     selectedLawyer: Lawyer | null;
     isLoading: boolean;
     error: string | null;
-    totalCount: number;
-    currentPage: number;
-    totalPages: number;
     reviews: Review[];
     categories: string[];
     availability: Availability[] | null;
-    meta: any;
+    meta: PaginationMeta;
     clients: Client[];
+    logs?: any[];
 }
 
 ////////////////////////////////////////////////////////// LAWYER ////////////////////////////////////////////////////////////
@@ -35,6 +34,15 @@ export const getLawyers = createAsyncThunk<PaginatedLawyerResponse, LawyerQuery>
 export const getLawyerById = createAsyncThunk<SingleLawyerResponse, string>('lawyer/getLawyerById', async (id, { rejectWithValue }) => {
     try {
         const { data } = await api.getLawyerById(id);
+        return data;
+    } catch (err: any) {
+        return rejectWithValue(err.response?.data || 'Error fetching lawyer details');
+    }
+});
+
+export const getLawyerByUsername = createAsyncThunk<SingleLawyerResponse, string>('lawyer/getLawyerByUsername', async (username, { rejectWithValue }) => {
+    try {
+        const { data } = await api.getLawyerByUsername(username);
         return data;
     } catch (err: any) {
         return rejectWithValue(err.response?.data || 'Error fetching lawyer details');
@@ -142,25 +150,63 @@ export const searchLawyers = createAsyncThunk<PaginatedLawyerResponse, { query: 
     }
 });
 
+// Admin helpers (replicating users module capabilities)
+export const exportLawyersCsv = createAsyncThunk<Blob, LawyerQuery | undefined>('lawyer/exportLawyersCsv', async (params, { rejectWithValue }) => {
+    try {
+        const { data } = await api.exportLawyersCsv(params as any);
+        return data as unknown as Blob;
+    } catch (err: any) {
+        return rejectWithValue(err.message || 'Failed to export lawyers');
+    }
+});
+
+export const bulkUploadLawyers = createAsyncThunk<any, File>('lawyer/bulkUploadLawyers', async (file, { rejectWithValue }) => {
+    try {
+        const { data } = await api.bulkUploadLawyers(file);
+        return data;
+    } catch (err: any) {
+        return rejectWithValue(err.message || 'Failed to upload CSV');
+    }
+});
+
+export const resetLawyerPassword = createAsyncThunk<any, { id: string; password?: string }>('lawyer/resetLawyerPassword', async ({ id, password }, { rejectWithValue }) => {
+    try {
+        const { data } = await api.resetLawyerPassword(id, password);
+        return data;
+    } catch (err: any) {
+        return rejectWithValue(err.message || 'Failed to reset password');
+    }
+});
+
+export const getLawyerLogs = createAsyncThunk<any, string>('lawyer/getLawyerLogs', async (id, { rejectWithValue }) => {
+    try {
+        const { data } = await api.getLawyerLogs(id);
+        return data;
+    } catch (err: any) {
+        return rejectWithValue(err.message || 'Failed to fetch logs');
+    }
+});
+
 const initialState: LawyerState = {
     lawyers: [],
     selectedLawyer: null,
     isLoading: false,
     error: null,
-    totalCount: 0,
-    currentPage: 1,
-    totalPages: 1,
     reviews: [],
     categories: [],
     availability: null,
-    meta: null,
-    clients: []
+    meta: { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 },
+    clients: [],
+    logs: []
 };
 
 const lawyerSlice = createSlice({
     name: 'lawyer',
     initialState,
     reducers: {
+        setCurrentPage: (state, action) => {
+            state.meta.currentPage = action.payload;
+        },
         resetState: () => initialState,
     },
     extraReducers: (builder) => {
@@ -171,10 +217,7 @@ const lawyerSlice = createSlice({
             .addCase(getLawyers.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.lawyers = action.payload.data || [];
-                state.meta = action.payload.meta;
-                state.totalCount = action.payload.meta?.totalCount || 0;
-                state.currentPage = action.payload.meta?.currentPage || 1;
-                state.totalPages = action.payload.meta?.totalPages || 1;
+                state.meta = action.payload.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
                 state.error = null;
             })
             .addCase(getLawyers.rejected, (state, action) => {
@@ -192,15 +235,23 @@ const lawyerSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
+            .addCase(getLawyerByUsername.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getLawyerByUsername.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.selectedLawyer = action.payload?.data || null;
+            })
+            .addCase(getLawyerByUsername.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
             .addCase(getLawyerAvailability.fulfilled, (state, action) => {
                 state.availability = Array.isArray(action.payload?.data) ? action.payload.data : [];
             })
             .addCase(getLawyerReviews.fulfilled, (state, action) => {
                 state.reviews = Array.isArray(action.payload?.data)
-                    ? action.payload.data.map((r: any) => ({
-                        verifiedInteraction: false,
-                        ...r
-                    }))
+                    ? action.payload.data.map((r: any) => ({ verifiedInteraction: false, ...r }))
                     : [];
             })
             .addCase(getMeLawyer.fulfilled, (state, action) => {
@@ -208,7 +259,7 @@ const lawyerSlice = createSlice({
             })
             .addCase(getMyClients.fulfilled, (state, action) => {
                 state.clients = action.payload?.data || [];
-                state.meta = action.payload?.meta || null;
+                // state.meta = action.payload?.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
             })
             .addCase(updateMeLawyer.fulfilled, (state, action) => {
                 state.selectedLawyer = action.payload?.data || null;
@@ -239,11 +290,14 @@ const lawyerSlice = createSlice({
             })
             .addCase(searchLawyers.fulfilled, (state, action) => {
                 state.lawyers = action.payload.data || [];
-                state.meta = action.payload.meta;
+                state.meta = action.payload.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
+            })
+            .addCase(getLawyerLogs.fulfilled, (state, action) => {
+                state.logs = action.payload?.data?.logs || [];
             })
             .addDefaultCase((state) => state);
     },
 });
 
 export default lawyerSlice.reducer;
-export const { resetState } = lawyerSlice.actions;
+export const { resetState, setCurrentPage } = lawyerSlice.actions;
