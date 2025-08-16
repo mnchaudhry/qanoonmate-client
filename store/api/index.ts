@@ -266,3 +266,11 @@ export const createDirectory = (data: API.DirectoryCreateInput) => APIClient.pos
 export const getDirectories = (params: { ownerId: string; parentId?: string; }) => APIClient.get<API.DirectoryListResponse>("/document/directories", { params });
 export const updateDirectory = (id: string, data: API.DirectoryUpdateInput) => APIClient.put<API.DirectoryResponse>(`/document/directories/${id}`, data);
 export const deleteDirectory = (id: string) => APIClient.delete<API.DirectoryDeleteResponse>(`/document/directories/${id}`);
+
+////////////////////////////////////////////////////////// WAITLIST ////////////////////////////////////////////////////////////
+export const joinWaitlist = (data: API.CreateWaitlistRequest) => APIClient.post<API.CreateWaitlistResponse>(`/waitlist`, data);
+export const getWaitlist = (params?: { page?: number; limit?: number; status?: 'pending' | 'invited' | 'joined'; search?: string }) => APIClient.get<API.GetWaitlistResponse>(`/waitlist`, { params });
+export const getWaitlistEntry = (id: string) => APIClient.get<API.APIResponse<API.WaitlistEntry>>(`/waitlist/${id}`);
+export const updateWaitlistEntry = (id: string, data: API.UpdateWaitlistRequest) => APIClient.put<API.UpdateWaitlistResponse>(`/waitlist/${id}`, data);
+export const inviteWaitlistEntry = (id: string) => APIClient.post<API.APIResponse<API.WaitlistEntry>>(`/waitlist/${id}/invite`, {});
+export const deleteWaitlistEntry = (id: string) => APIClient.delete<API.APIResponse<null>>(`/waitlist/${id}`);

@@ -4,25 +4,27 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { LayoutDashboard, LogOut, Settings, User } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux'
 import { AppDispatch, RootState } from '@/store/store'
-import { logout } from '@/store/reducers/authSlice'
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { UserRole } from "@/lib/enums";
+import { onLogout } from "@/lib/utils";
+import { useStateContext } from "@/context/useStateContext";
 
 const ProfileButton = () => {
 
   //////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>()
+  const { setIsBetaUser } = useStateContext();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
   const showDashboardButton = true;
 
   //////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
-  const onLogout = () => {
-    dispatch(logout())
-      .then(() => {
-        router.push('/')
-      })
+  const handleLogout = () => {
+    onLogout(dispatch, () => {
+      router.push('/');
+      setIsBetaUser(false);
+    });
   }
 
   //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
@@ -81,7 +83,7 @@ const ProfileButton = () => {
             <span>Settings</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={onLogout} className="flex items-center gap-x-2">
+        <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-x-2">
           <LogOut className="h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>

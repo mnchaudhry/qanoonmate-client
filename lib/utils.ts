@@ -3,6 +3,9 @@ import toast from "react-hot-toast"
 import { twMerge } from "tailwind-merge"
 import { SidebarChatItem } from "@/store/reducers/aiSessionSlice"
 import { AIChatSession } from "@/store/types/api"
+import { logout } from "@/store/reducers/authSlice"
+import { AppDispatch } from "@/store/store"
+import localStorageManager from "@/utils/localStorage"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -163,4 +166,12 @@ export const formatFileType = (fileType: string): string => {
 
 export const enumToLabel = (enumValue: string) => {
   return enumValue.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+}
+
+export const onLogout = (dispatch: AppDispatch, callback: () => void) => {
+  dispatch(logout())
+    .then(() => {
+      callback();
+      localStorageManager.clear();
+    });
 }
