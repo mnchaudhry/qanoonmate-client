@@ -177,7 +177,7 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
       dispatch(setIsStreaming(true));
     }
     streamingBuffer = data.content;
-    
+
     dispatch(
       setStreamingMessage({
         _id: streamingId,

@@ -105,6 +105,7 @@ const ChatInput: React.FC<Props> = memo(
           window.history.pushState({}, "", url.toString());
 
           // Now we have sessionId, send the message
+          dispatch(setIsStreaming(true))
           socketEvents.model.chatMessage(socket, {
             sessionId: data.sessionId,
             history: history,
@@ -121,6 +122,7 @@ const ChatInput: React.FC<Props> = memo(
       } else {
 
         // we already have a session, send message directly
+        dispatch(setIsStreaming(true))
         socketEvents.model.chatMessage(socket, {
           sessionId: sessionId,
           history: history,
