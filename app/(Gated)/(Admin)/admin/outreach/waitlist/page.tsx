@@ -3,26 +3,89 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { PageHeader } from '../../../_components/PageHeader'
 import { AppDispatch, RootState } from '@/store/store'
-import { fetchWaitlistThunk, inviteWaitlistEntryThunk, deleteWaitlistEntryThunk, updateWaitlistEntryThunk } from '@/store/reducers/waitlistSlice'
+import { fetchWaitlistThunk } from '@/store/reducers/waitlistSlice'
 import { Button } from '@/components/ui/button'
 import { TableSkeleton } from '@/components/skeletons'
 import { RefreshCw } from 'lucide-react'
+import WaitlistFilters from './_components/WaitlistFilters'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useDebounce } from '@/hooks/use-debounce'
+import WaitlistTable from './_components/WaitlistTable'
 
 const PAGE_SIZE = 20
 
 export default function AdminWaitlistPage() {
+
+  //////////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>()
-  const { list, isLoading, totalPages } = useSelector((s: RootState) => s.waitlist)
-  const [page, setPage] = useState(1)
+  const pathname = usePathname();
+  const router = useRouter()
+  const { isLoading, meta } = useSelector((s: RootState) => s.waitlist)
+  const searchParams = useSearchParams()
+  const initialSearch = searchParams.get('q') || ''
+  const initialStatus = (() => { const s = searchParams.get('status') || ''; return s === 'all' ? '' : s })()
+  const initialSortBy = searchParams.get('sortBy') || 'createdAt'
+  const initialSortOrder = (searchParams.get('sortOrder') as 'asc' | 'desc') || 'desc'
 
+  //////////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////////////
+  const [search, setSearch] = useState(initialSearch)
+  const [status, setStatus] = useState(initialStatus)
+  const [sortBy, setSortBy] = useState(initialSortBy)
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(initialSortOrder)
+
+  const debouncedSearch = useDebounce(search, 400)
+
+  //////////////////////////////////////////////////////// EFFECTS ////////////////////////////////////////////////////////////////
   useEffect(() => {
-    dispatch(fetchWaitlistThunk({ page, limit: PAGE_SIZE }))
-  }, [dispatch, page])
+    const params: any = {
+      page: meta.currentPage,
+      limit: PAGE_SIZE,
+      status: (!status || status == 'all') ? undefined : status,
+      search: debouncedSearch || undefined,
+      sortBy,
+      sortOrder
+    }
+    dispatch(fetchWaitlistThunk(params))
+  }, [dispatch, meta.currentPage, debouncedSearch, status, sortBy, sortOrder])
 
+  //////////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////////////////
   const handleRefresh = () => {
-    dispatch(fetchWaitlistThunk({ page, limit: PAGE_SIZE }))
+    const params: any = {
+      page: meta.currentPage,
+      limit: PAGE_SIZE,
+      status: (!status || status == 'all') ? undefined : status,
+      search: debouncedSearch || undefined,
+      sortBy,
+      sortOrder
+    }
+    dispatch(fetchWaitlistThunk(params))
   }
 
+  const handleResetFilters = () => {
+    setSearch('')
+    setStatus('')
+    setSortBy('createdAt')
+    setSortOrder('desc')
+  }
+
+  const query = new URLSearchParams()
+  if (debouncedSearch) query.set('q', debouncedSearch)
+  if (status) query.set('status', status)
+  if (sortBy) query.set('sortBy', sortBy)
+  if (sortOrder) query.set('sortOrder', sortOrder)
+  if (meta.currentPage && meta.currentPage !== 1) query.set('page', String(meta.currentPage))
+  const qs = query.toString()
+
+  if (typeof window !== 'undefined') {
+    const target = qs ? `${pathname}?${qs}` : pathname
+    // Avoid push storms by replacing only when different
+    if (window.location.search !== (qs ? `?${qs}` : '')) {
+      router.replace(target, { scroll: false })
+    }
+  }
+
+
+  //////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////////////////
   return (
     <div className="space-y-6">
       <PageHeader
@@ -36,44 +99,23 @@ export default function AdminWaitlistPage() {
         </>}
       />
 
+      <WaitlistFilters
+        onSearch={setSearch}
+        onStatusFilter={setStatus}
+        onSortByChange={setSortBy}
+        onSortOrderChange={setSortOrder}
+        onResetFilters={handleResetFilters}
+        searchValue={search}
+        statusValue={status}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+      />
+
       {isLoading ? (
         <TableSkeleton />
       ) : (
-        <div className="bg-surface border !border-border rounded-lg overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="text-left p-3">Name</th>
-                <th className="text-left p-3">Email</th>
-                <th className="text-left p-3">Status</th>
-                <th className="text-left p-3">Created</th>
-                <th className="text-right p-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.map((e) => (
-                <tr key={e._id} className="border-t border-border">
-                  <td className="p-3">{e.name || '-'}</td>
-                  <td className="p-3">{e.email}</td>
-                  <td className="p-3 capitalize">{e.status || 'pending'}</td>
-                  <td className="p-3">{new Date(e.createdAt as any).toLocaleString()}</td>
-                  <td className="p-3 text-right space-x-2">
-                    <Button size="sm" onClick={() => dispatch(inviteWaitlistEntryThunk(e._id))}>Invite</Button>
-                    <Button variant="outline" size="sm" onClick={() => dispatch(updateWaitlistEntryThunk({ id: e._id, update: { status: 'joined' } }))}>Mark Joined</Button>
-                    <Button variant="destructive" size="sm" onClick={() => dispatch(deleteWaitlistEntryThunk(e._id))}>Delete</Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="flex items-center justify-between p-3 border-t border-border">
-            <div className="text-sm text-muted-foreground">Page {page} of {totalPages}</div>
-            <div className="space-x-2">
-              <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Prev</Button>
-              <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
-            </div>
-          </div>
+        <div className="border !border-border rounded-lg overflow-hidden">
+          <WaitlistTable />
         </div>
       )}
     </div>

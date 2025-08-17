@@ -32,9 +32,9 @@ const ProfileButton = () => {
 
   //////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
   const getProfileLink = () => {
-    if (user.role === UserRole.LAWYER) return "/lawyer/profile";
-    else if (user.role === UserRole.ADMIN) return "/admin/profile";
-    else return "/client/profile";
+    if (user.role === UserRole.LAWYER) return "/profile";
+    else if (user.role === UserRole.ADMIN) return "/profile";
+    else return "/profile";
   }
 
   const getDashboardLink = () => {
