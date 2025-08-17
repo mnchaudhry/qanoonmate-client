@@ -3,6 +3,7 @@
 import Hint from "@/components/Hint";
 import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { TextShimmer } from "@/components/ui/text-shimmer";
 import { AIChatMessage, MessageItemProps } from "@/lib/interfaces";
 import { cn } from "@/lib/utils";
 import { RootState } from "@/store/store";
@@ -25,7 +26,7 @@ interface MessageBoxProps {
 
 const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChatMessage) => Promise<void>; }> = memo(({ chatViewMode = "card", textSize = 16, messages, onRegenerate }) => {
   ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////
-  const { quickAction, streamingMessage } = useSelector((state: RootState) => state.aiSession);
+  const { quickAction, streamingMessage, isStreaming } = useSelector((state: RootState) => state.aiSession);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const endAnchorRef = useRef<HTMLDivElement>(null);
@@ -239,7 +240,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
     return null;
   };
   // Memoized MessageItem component
-  const MessageItem = React.memo(function MessageItem({ message, index, chatViewMode, textSize, quickAction, }: MessageItemProps) {
+  const MessageItem = React.memo(function MessageItem({ message, index, chatViewMode, textSize, quickAction }: MessageItemProps) {
     // Defensive: default sender to 'bot' if missing
     const isModel = (message.sender ?? "bot") === "bot";
     const responses = getBotResponses(message);
@@ -282,7 +283,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
             bufferRef.current = bufferRef.current.slice(1);
             return prev + nextChar;
           });
-          timer = window.setTimeout(tick, 6);
+          timer = window.setTimeout(tick, 1);
         }
       }
       tick();
@@ -333,7 +334,6 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
                   plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(), linkPlugin()]}
                 />
                 {message.sender == "bot" &&
-                  !message.isStreaming &&
                   !message.isStreaming &&
                   quickAction && (
                     <div className="text-gray-500 ms-2">
@@ -522,6 +522,9 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
               quickAction={quickAction}
             />
           )}
+          {isStreaming && !streamingMessage && <TextShimmer className='font-mono text-sm' duration={1}>
+            Generating ...
+          </TextShimmer>}
         </div>
         <div ref={endAnchorRef} />
       </div>
