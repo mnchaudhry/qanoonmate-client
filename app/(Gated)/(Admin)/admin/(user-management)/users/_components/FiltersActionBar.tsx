@@ -5,22 +5,24 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { X } from "lucide-react"
 import SearchBar from "@/components/SearchBar"
-import { AccountStatus, UserRole } from "@/lib/enums"
+import { AccountStatus, ReleaseChannel, UserRole } from "@/lib/enums"
 import { enumToLabel } from "@/lib/utils"
 
 interface FiltersActionBarProps {
   onSearch: (query: string) => void
   onRoleFilter: (role: string) => void
   onStatusFilter: (status: string) => void
+  onReleaseChannelFilter: (releaseChannel: string) => void
   onSortChange: (sort: string) => void
   onResetFilters: () => void
   searchValue?: string
   roleValue?: string
   statusValue?: string
+  releaseChannelValue?: string
   sortValue?: string
 }
 
-export default function FiltersActionBar({ onSearch, onRoleFilter, onStatusFilter, onSortChange, onResetFilters, searchValue, roleValue, statusValue, sortValue }: FiltersActionBarProps) {
+export default function FiltersActionBar({ onSearch, onRoleFilter, onStatusFilter, onReleaseChannelFilter, onSortChange, onResetFilters, searchValue, roleValue, statusValue, releaseChannelValue, sortValue }: FiltersActionBarProps) {
 
   ////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////
   const [searchQuery, setSearchQuery] = useState(searchValue || "")
@@ -56,7 +58,7 @@ export default function FiltersActionBar({ onSearch, onRoleFilter, onStatusFilte
 
       {/* Filters */}
       <div className="flex items-center gap-4">
-        {(searchQuery || roleValue || statusValue || sortValue) && (
+        {(searchQuery || roleValue || statusValue || releaseChannelValue || sortValue) && (
           <Button
             variant="outline"
             size="sm"
@@ -91,6 +93,20 @@ export default function FiltersActionBar({ onSearch, onRoleFilter, onStatusFilte
             {
               Object.values(AccountStatus).map((status) => (
                 <SelectItem key={status} value={status}>{enumToLabel(status)}</SelectItem>
+              ))
+            }
+          </SelectContent>
+        </Select>
+
+        <Select onValueChange={onReleaseChannelFilter} value={releaseChannelValue || undefined}>
+          <SelectTrigger className="w-40 bg-background !border-border">
+            <SelectValue placeholder="Release Channel" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Release Channels</SelectItem>
+            {
+              Object.values(ReleaseChannel).map((releaseChannel) => (
+                <SelectItem key={releaseChannel} value={releaseChannel}>{enumToLabel(releaseChannel)}</SelectItem>
               ))
             }
           </SelectContent>

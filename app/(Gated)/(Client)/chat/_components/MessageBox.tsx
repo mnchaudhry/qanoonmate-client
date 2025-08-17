@@ -16,9 +16,6 @@ const nunito = Nunito({ subsets: ["latin"] });
 import { MDXEditor, headingsPlugin, linkPlugin, listsPlugin, quotePlugin, thematicBreakPlugin } from '@mdxeditor/editor'
 import '@mdxeditor/editor/style.css'
 
-
-
-
 interface MessageBoxProps {
   chatViewMode?: "compact" | "card" | "timeline";
   textSize?: number;

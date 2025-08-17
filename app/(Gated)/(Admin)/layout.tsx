@@ -4,37 +4,43 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 import { AdminSidebar } from "./_components/AdminSidebar"
 import Breadcrumbs from "@/components/bread-crumb"
 import AdminNavbar from "./_components/AdminNavbar"
+import { AdminGuard } from "@/components/AuthGuard"
+import { PageSkeleton } from "@/components/skeletons"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <SidebarProvider>
-            <div className="flex w-full min-h-screen bg-background">
-                {/* Sidebar */}
-                <AdminSidebar />
+        <AdminGuard redirectTo="/" fallback={<PageSkeleton />}    >
 
-                {/* Main Content Area */}
-                <div className="flex-1 flex flex-col min-h-screen">
-                    {/* Fixed Navbar */}
-                    <div className="sticky top-0 z-40">
-                        <AdminNavbar />
-                    </div>
+            <SidebarProvider>
+                <div className="flex w-full min-h-screen bg-background">
+                    {/* Sidebar */}
+                    <AdminSidebar />
 
-                    {/* Scrollable Content */}
-                    <div className="flex-1 overflow-auto">
-                        {/* Breadcrumb */}
-                        <div className="px-4 sm:px-6 pt-4 ">
-                            <Breadcrumbs />
+                    {/* Main Content Area */}
+                    <div className="flex-1 flex flex-col min-h-screen">
+                        {/* Fixed Navbar */}
+                        <div className="sticky top-0 z-40">
+                            <AdminNavbar />
                         </div>
 
-                        {/* Page Content */}
-                        <main className="flex-1 p-4 sm:p-6">
-                            <div className="max-w-full">
-                                {children}
+                        {/* Scrollable Content */}
+                        <div className="flex-1 overflow-auto">
+                            {/* Breadcrumb */}
+                            <div className="px-4 sm:px-6 pt-4 ">
+                                <Breadcrumbs />
                             </div>
-                        </main>
+
+                            {/* Page Content */}
+                            <main className="flex-1 p-4 sm:p-6">
+                                <div className="max-w-full">
+                                    {children}
+                                </div>
+                            </main>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </SidebarProvider>
+            </SidebarProvider>
+
+        </AdminGuard>
     )
 }

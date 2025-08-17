@@ -14,12 +14,12 @@ const PlanButton = () => {
 
     const components: { title: string; href: string; description: string }[] = [
         {
-            title: "LegalEase Plus",
+            title: "QanoonMate Plus",
             href: "/docs/primitives/alert-dialog",
             description: "Our smart model.",
         },
         {
-            title: "LegalEase Standard",
+            title: "QanoonMate Standard",
             href: "/docs/primitives/hover-card",
             description:
                 "Best for most users.",
@@ -32,7 +32,7 @@ const PlanButton = () => {
             <NavigationMenu>
                 <NavigationMenuList>
                     <NavigationMenuItem>
-                        <NavigationMenuTrigger>LegalEase</NavigationMenuTrigger>
+                        <NavigationMenuTrigger>QanoonMate</NavigationMenuTrigger>
                         <NavigationMenuContent>
                             <ul className="grid w-[300px] gap-1 p-2">
                                 {components.map((component) => (

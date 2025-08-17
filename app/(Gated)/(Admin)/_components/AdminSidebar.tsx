@@ -1,6 +1,6 @@
 "use client"
 
-import { Settings, Gavel, Users, Shield, BarChart, Bell, Newspaper, LayoutDashboard, MessageSquare, AlertTriangle, HeadphonesIcon, TrendingUp, CheckCircle, Flag, BookOpen, FileStack, DollarSign, Clock, UserCheck, HelpCircle, ChevronRight, ChevronDown } from "lucide-react"
+import { Settings, Gavel, Users, Shield, BarChart, Bell, Newspaper, LayoutDashboard, MessageSquare, AlertTriangle, HeadphonesIcon, TrendingUp, CheckCircle, Flag, BookOpen, FileStack, DollarSign, Clock, UserCheck, HelpCircle, ChevronRight, ChevronDown, Mail, Send } from "lucide-react"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem, } from '../../../../components/ui/sidebar';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { usePathname } from "next/navigation";
@@ -89,6 +89,15 @@ const systemConfigItems = [
     { title: "Notification Templates", url: "/admin/system/notifications", icon: Bell },
 ]
 
+// Outreach items
+const outreachItems = [
+    { title: "Communication Logs", url: "/admin/outreach/communications", icon: Bell },
+    { title: "Waitlist", url: "/admin/outreach/waitlist", icon: Users },
+    { title: "Newsletter", url: "/admin/outreach/newsletter", icon: Newspaper },
+    { title: "Send Email", url: "/admin/outreach/email", icon: Mail },
+    { title: "Send Notifications", url: "/admin/outreach/notifications", icon: Send },
+]
+
 // Support Tickets items
 const supportTicketsItems = [
     { title: "Open", url: "/admin/support/open", icon: HeadphonesIcon },
@@ -149,6 +158,7 @@ export function AdminSidebar() {
         if (isSectionActive(legalContentItems)) sections.push("legal-content");
         if (isSectionActive(feedbackReportsItems)) sections.push("feedback-reports");
         if (isSectionActive(systemConfigItems)) sections.push("system-config");
+        if (isSectionActive(outreachItems)) sections.push("outreach");
         if (isSectionActive(supportTicketsItems)) sections.push("support-tickets");
         if (isSectionActive(analyticsItems)) sections.push("analytics");
         if (isSectionActive(contentVerificationItems)) sections.push("content-verification");
@@ -440,6 +450,45 @@ export function AdminSidebar() {
                                                         asChild
                                                         className={`hover:bg-primary-100 text-primary-600 hover:text-primary-700 ${isActive(item.url) ? 'bg-primary-100 text-primary-700 font-medium' : ''
                                                             }`}
+                                                    >
+                                                        <a href={item.url} className="flex items-center gap-2">
+                                                            <item.icon className="w-4 h-4" />
+                                                            <span className="text-sm">{item.title}</span>
+                                                        </a>
+                                                    </SidebarMenuButton>
+                                                </SidebarMenuSubItem>
+                                            ))}
+                                        </SidebarMenuSub>
+                                    </CollapsibleContent>
+                                </Collapsible>
+                            </SidebarMenuItem>
+
+                            {/* Outreach */}
+                            <SidebarMenuItem>
+                                <Collapsible
+                                    open={isSectionOpen('outreach')}
+                                    onOpenChange={() => handleToggleSection('outreach')}
+                                >
+                                    <CollapsibleTrigger asChild>
+                                        <SidebarMenuButton
+                                            className={`hover:bg-primary-100 text-primary-700 hover:text-primary-800 ${isSectionActive(outreachItems) ? 'bg-primary-100 text-primary-800 font-medium' : ''
+                                                }`}
+                                        >
+                                            <Mail className="w-5 h-5" />
+                                            <span>Outreach</span>
+                                            {isSectionOpen('outreach') ?
+                                                <ChevronDown className="w-4 h-4 ml-auto" /> :
+                                                <ChevronRight className="w-4 h-4 ml-auto" />
+                                            }
+                                        </SidebarMenuButton>
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent>
+                                        <SidebarMenuSub>
+                                            {outreachItems.map((item) => (
+                                                <SidebarMenuSubItem key={item.title}>
+                                                    <SidebarMenuButton
+                                                        asChild
+                                                        className={`hover:bg-primary-100 text-primary-600 hover:text-primary-700 ${isActive(item.url) ? 'bg-primary-100 text-primary-700 font-medium' : ''}`}
                                                     >
                                                         <a href={item.url} className="flex items-center gap-2">
                                                             <item.icon className="w-4 h-4" />

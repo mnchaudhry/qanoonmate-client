@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useAnimate, motion } from "framer-motion";
 import clsx from "clsx";
 
-const COUNTDOWN_FROM = "2025-08-22T00:00:00";
+const COUNTDOWN_FROM = "2025-08-21T00:00:00";
 const END_TIME_MS = new Date(COUNTDOWN_FROM).getTime();
 
 const SECOND = 1000;
