@@ -7,15 +7,14 @@ import { AIChatMessage, MessageItemProps } from "@/lib/interfaces";
 import { cn } from "@/lib/utils";
 import { RootState } from "@/store/store";
 import { parseAIResponse } from "@/utils/parseAIResponse";
+import { MDXEditor, headingsPlugin, linkPlugin, listsPlugin, markdownShortcutPlugin, quotePlugin, thematicBreakPlugin } from '@mdxeditor/editor';
+import '@mdxeditor/editor/style.css';
 import { Bookmark, Bot, ChevronLeft, ChevronRight, Clock, Copy, Flag, MessageSquare, RotateCcw, Save, ThumbsDown, ThumbsUp, User, } from "lucide-react";
-import { Nunito } from "next/font/google";
 import React, { memo, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import ReactMarkdown from "react-markdown";
 import { useSelector } from "react-redux";
+import { Nunito } from "next/font/google";
 const nunito = Nunito({ subsets: ["latin"] });
-import { MDXEditor, headingsPlugin, linkPlugin, listsPlugin, quotePlugin, thematicBreakPlugin } from '@mdxeditor/editor'
-import '@mdxeditor/editor/style.css'
 
 
 
@@ -328,13 +327,12 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
               )}
             >
               <div
-                className={nunito.className}
                 style={{ fontSize: `${textSize}px` }}
               >
                 <MDXEditor
                   markdown={buildMarkdown(parsed)}
                   readOnly={true}
-                  className="chat-markdown"
+                  className={`chat-markdown ${nunito.className}`}
                   plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(), linkPlugin()]}
                 />
                 {message.sender == "bot" &&
@@ -404,13 +402,12 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
               )}
             >
               <div
-                className={nunito.className}
                 style={{ fontSize: `${textSize}px` }}
               >
                 <MDXEditor
                   markdown={buildMarkdown(parsed)}
                   readOnly={true}
-                  className="chat-markdown"
+                  className={`chat-markdown ${nunito.className}`}
                   plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(), linkPlugin()]}
                 />
                 {message.sender == "bot" &&
@@ -465,14 +462,13 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
           )}
         >
           <div
-            className={nunito.className}
             style={{ fontSize: `${textSize}px` }}
           >
             <MDXEditor
               markdown={buildMarkdown(parsed)}
               readOnly={true}
-              className="chat-markdown"
-              plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(), linkPlugin()]}
+              className={`chat-markdown ${nunito.className}`}
+              plugins={[headingsPlugin({ allowedHeadingLevels: [1, 2, 3, 4, 5, 6] }), listsPlugin(), quotePlugin(), thematicBreakPlugin(), linkPlugin({ validateUrl: (url) => /^https?:\/\//.test(url), }), markdownShortcutPlugin()]}
             />
             {message.sender == "bot" && !message.isStreaming && quickAction && (
               <div className="text-gray-500 ms-2">
