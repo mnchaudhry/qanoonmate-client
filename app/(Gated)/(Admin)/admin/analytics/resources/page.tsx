@@ -15,6 +15,7 @@ const MostViewedResourcesAnalyticsPage = () => {
         const res = await APIClient.get('/analytics/resources');
         setData(res.data?.data);
       } catch (e) {
+        console.log(e)
         // noop
       } finally {
         setLoading(false);
@@ -32,7 +33,7 @@ const MostViewedResourcesAnalyticsPage = () => {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <Skeleton height={240} />
+            <Skeleton />
           ) : (
             <div className="space-y-3">
               {data?.topPages?.map((p) => (

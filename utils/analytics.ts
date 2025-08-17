@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 const ANALYTICS_ENABLED = process.env.NEXT_PUBLIC_ANALYTICS_ENABLED !== 'false';
 
 type EventPayload = {
@@ -24,9 +23,9 @@ const getClientSessionId = (): string => {
     let sid = localStorage.getItem(key);
     if (!sid) {
       sid = (typeof crypto !== 'undefined' && 'randomUUID' in crypto ? (crypto as any).randomUUID() : Math.random().toString(36).slice(2));
-      localStorage.setItem(key, sid);
+      localStorage.setItem(key, sid!);
     }
-    return sid;
+    return sid!;
   } catch {
     // SSR or blocked storage
     return 'no-storage';

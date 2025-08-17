@@ -15,6 +15,7 @@ const PlatformUsageAnalyticsPage = () => {
         const res = await APIClient.get('/analytics/usage');
         setData(res.data?.data);
       } catch (e) {
+        console.log(e)
         // noop
       } finally {
         setLoading(false);
@@ -29,7 +30,7 @@ const PlatformUsageAnalyticsPage = () => {
 
       <div className="grid md:grid-cols-3 gap-4">
         {loading ? (
-          <Skeleton height={120} className="col-span-3" />
+          <Skeleton className="col-span-3" />
         ) : (
           data && data.byType.map((m) => (
             <Card key={m.type} className="border-border">
@@ -50,7 +51,7 @@ const PlatformUsageAnalyticsPage = () => {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <Skeleton height={240} />
+            <Skeleton />
           ) : (
             <div className="space-y-3">
               {data?.byRoute?.map((r) => (

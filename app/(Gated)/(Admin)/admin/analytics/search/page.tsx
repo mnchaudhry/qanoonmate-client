@@ -15,6 +15,7 @@ const SearchTrendsAnalyticsPage = () => {
         const res = await APIClient.get('/analytics/search-trends');
         setData(res.data?.data);
       } catch (e) {
+        console.log(e)
         // noop
       } finally {
         setLoading(false);
@@ -32,7 +33,7 @@ const SearchTrendsAnalyticsPage = () => {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <Skeleton height={240} />
+            <Skeleton />
           ) : (
             <div className="space-y-3">
               {data?.topSearches?.map((s) => (
