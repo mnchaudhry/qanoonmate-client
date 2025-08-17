@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Newspaper } from "lucide-react";
 import NewsCard from "./NewsCard";
 
@@ -15,11 +15,7 @@ const News = () => {
   const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
   const [visibleCount, setVisibleCount] = useState(5);
 
-  useEffect(() => {
-    fetchNews();
-  }, []);
-
-  const fetchNews = async () => {
+  const fetchNews = useCallback(async () => {
     try {
       const res = await fetch(
         `https://gnews.io/api/v4/search?q=Pakistan%20law&country=pk&lang=en&max=20&nullable=image&apikey=f469f54797e777cd2433cda4827aa52c`
@@ -41,7 +37,11 @@ const News = () => {
     } catch {
       setNewsItems(fallback());
     }
-  };
+  }, []);
+  useEffect(() => {
+    fetchNews();
+  }, [fetchNews]);
+
 
   const fallback = (): NewsItem[] => [
     {

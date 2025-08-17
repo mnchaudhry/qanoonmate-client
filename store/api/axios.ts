@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL + '/api'
+// Use first-party proxy to avoid third-party cookie issues
+const BASE_URL = '/api'
 
 export const APIClient = axios.create({
     baseURL: BASE_URL, withCredentials: true, headers: { "Content-Type": "application/json", },

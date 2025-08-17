@@ -1,5 +1,6 @@
 import React from "react";
 import { Clock } from "lucide-react";
+import Image from "next/image";
 
 interface NewsCardProps {
   title: string;
@@ -23,9 +24,10 @@ const NewsCard: React.FC<NewsCardProps> = ({
   >
     {image && (
       <div style={{ width: "100%", paddingTop: "56.25%", position: "relative" }}>
-        <img
+        <Image
           src={image}
           alt={title}
+          fill
           style={{
             position: "absolute",
             top: 0, left: 0, width: "100%", height: "100%",
