@@ -142,7 +142,7 @@ function LaunchPage() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            Launching <strong>August 20, 2025</strong>. Your AI-powered partner for legal knowledge, case management, and seamless lawyer–client collaboration.
+            Launching <strong>August 21, 2025</strong>. Your AI-powered partner for legal knowledge, case management, and seamless lawyer–client collaboration.
           </motion.p>
 
           {/* Countdown */}
@@ -207,7 +207,7 @@ function LaunchPage() {
             </>
           )}
 
-          <div className='mt-4' >
+          <div className='' >
             <span className="text-muted-foreground" >Are you a beta user user? <Link href='/beta' className='text-primary underline'>Click here</Link> or <Link href='/request-beta' className='text-primary underline'>Request Beta</Link></span>
           </div>
 

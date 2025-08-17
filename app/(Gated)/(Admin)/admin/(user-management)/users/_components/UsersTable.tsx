@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Eye, Edit, MoreVertical, ShieldAlert, FileText, Key } from "lucide-react"
-import { AccountStatus, UserRole } from "@/lib/enums"
+import { AccountStatus, ReleaseChannel, UserRole } from "@/lib/enums"
 import { User } from "@/store/types/user.types"
 import { Pagination } from "@/components/ui/pagination"
 import { useDispatch, useSelector } from "react-redux"
@@ -17,6 +17,7 @@ import EditUserModal from "./EditUserModal"
 import DangerZoneModal from "./DangerZoneModal"
 import ViewLogsModal from "./ViewLogsModal"
 import ResetPasswordModal from "./ResetPasswordModal"
+import { cn } from "@/lib/utils"
 
 interface UsersTableProps {
   setIsModalOpen: Dispatch<SetStateAction<boolean>>
@@ -59,6 +60,21 @@ const getRoleColor = (role: UserRole) => {
   }
 }
 
+const getReleaseChannelColor = (releaseChannel: ReleaseChannel) => {
+
+  switch (releaseChannel) {
+    case ReleaseChannel.PUBLIC:
+      return "bg-primary text-primary-foreground border-primary/20 hover:bg-primary "
+    case ReleaseChannel.ALPHA:
+      return "bg-secondary text-secondary-foreground border-secondary/20 hover:bg-secondary "
+    case ReleaseChannel.BETA:
+      return "bg-info text-info-foreground border-info/20 hover:bg-info "
+    case ReleaseChannel.INTERNAL:
+      return "bg-success/10 text-success border-success/20"
+    default:
+      return "bg-muted text-muted-foreground !border-border hover:bg-muted "
+  }
+}
 export default function UsersTable({ setIsModalOpen }: UsersTableProps) {
 
   ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
@@ -99,8 +115,10 @@ export default function UsersTable({ setIsModalOpen }: UsersTableProps) {
                 <TableHead className="text-left p-4 font-semibold text-foreground">Email</TableHead>
                 <TableHead className="text-left p-4 font-semibold text-foreground">Username</TableHead>
                 <TableHead className="text-left p-4 font-semibold text-foreground">Phone</TableHead>
-                <TableHead className="text-left p-4 font-semibold text-foreground">Role</TableHead>
-                <TableHead className="text-left p-4 font-semibold text-foreground">Status</TableHead>
+                <TableHead className="text-left p-4 font-semibold text-foreground">Password</TableHead>
+                <TableHead className="text-left p-4 font-semibold text-foreground">Last Login</TableHead>
+                <TableHead className="text-left p-4 font-semibold text-foreground">Role & Status</TableHead>
+                <TableHead className="text-left p-4 font-semibold text-foreground">Verification</TableHead>
                 <TableHead className="text-left p-4 font-semibold text-foreground">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -109,7 +127,6 @@ export default function UsersTable({ setIsModalOpen }: UsersTableProps) {
                 <TableRow key={user._id} className="border-b !border-border hover:bg-primary/5 transition-colors">
                   <TableCell className="p-4 text-muted-foreground">{(meta?.currentPage * meta?.limit - meta?.limit) + index + 1}</TableCell>
                   <TableCell className="p-4">
-
                     <div className="flex items-center gap-3">
                       <Avatar className="w-8 h-8">
                         <AvatarImage src={user.profilePicture} />
@@ -133,14 +150,36 @@ export default function UsersTable({ setIsModalOpen }: UsersTableProps) {
                     <div className="text-muted-foreground">{user.phone}</div>
                   </TableCell>
                   <TableCell className="p-4">
-                    <Badge className={getRoleColor(user.role)}>
-                      {user.role}
-                    </Badge>
+                    <div className="text-muted-foreground">{user?.password ? "Yes" : "No"}</div>
                   </TableCell>
                   <TableCell className="p-4">
-                    <Badge className={getStatusColor(user.accountStatus)}>
-                      {user.accountStatus}
-                    </Badge>
+                    <div className="text-muted-foreground">{user?.lastLogin ? new Date(user.lastLogin).toLocaleString() : "N/A"}</div>
+                  </TableCell>
+                  <TableCell className="">
+                    <div className="flex flex-col justify-center gap-1">
+                      <Badge className={getRoleColor(user.role)}>
+                        {user.role}
+                      </Badge>
+                      <Badge className={getStatusColor(user.accountStatus)}>
+                        {user.accountStatus}
+                      </Badge>
+                      <Badge className={getReleaseChannelColor(user.releaseChannel!)}>
+                        {user.releaseChannel}
+                      </Badge>
+                    </div>
+                  </TableCell>
+                  <TableCell className="p-4">
+                    <div className="flex flex-col justify-center gap-1">
+                      <Badge className={cn(user.emailVerified ? 'bg-success/10 text-success border-success/20' : 'bg-destructive/10 text-destructive border-destructive/20')}>
+                        Email
+                      </Badge>
+                      <Badge className={cn(user.phoneVerified ? 'bg-success/10 text-success border-success/20' : 'bg-destructive/10 text-destructive border-destructive/20')}>
+                        Phone
+                      </Badge>
+                      <Badge className={cn(user.identityVerified ? 'bg-success/10 text-success border-success/20' : 'bg-destructive/10 text-destructive border-destructive/20')}>
+                        Identity
+                      </Badge>
+                    </div>
                   </TableCell>
                   <TableCell className="p-4">
                     <div className="flex items-center gap-2">

@@ -329,7 +329,7 @@ const ChatInput: React.FC<Props> = memo(
           </div>
         </form>
         <div className="text-xs text-muted-foreground text-right w-full mt-2">
-          LegalEase can make mistakes. Check important info.
+        QanoonMate can make mistakes. Check important info.
         </div>
       </div>
     );

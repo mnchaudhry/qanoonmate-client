@@ -4,6 +4,7 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import StateProvider from "@/wrappers/StateProvider";
 import { Toaster } from "react-hot-toast";
+import AnalyticsProvider from "@/wrappers/AnalyticsProvider";
 const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"] });
 
 export const metadata: Metadata = {
@@ -68,8 +69,10 @@ export default function RootLayout({ children, }: { children: React.ReactNode; }
     <html lang="en">
       <body className={`${roboto.className} bg-neutral text-foreground`}>
         <StateProvider>
-          <Toaster />
-          {children}
+          <AnalyticsProvider>
+            <Toaster />
+            {children}
+          </AnalyticsProvider>
         </StateProvider>
       </body>
     </html>

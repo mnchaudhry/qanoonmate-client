@@ -1,6 +1,7 @@
 import { APIClient } from './axios';
 import { AppDispatch, RootState } from '../store';
 import { refreshToken as refreshTokenThunk, logout as logoutThunk } from '../reducers/authSlice';
+import { track, trackApiError } from '@/utils/analytics';
 
 // --- Token/Session Management ---
 let isRefreshing = false;
@@ -28,6 +29,7 @@ export const setupInterceptors = (store: { getState: () => RootState; dispatch: 
                 config.headers = config.headers || {};
                 config.headers['Authorization'] = `Bearer ${token}`;
             }
+            (config as any).metadata = { startedAt: Date.now() };
             return config;
         },
         (error) => Promise.reject(error)
@@ -35,7 +37,23 @@ export const setupInterceptors = (store: { getState: () => RootState; dispatch: 
 
     // Response interceptor for token refresh
     APIClient.interceptors.response.use(
-        (response) => response,
+        (response) => {
+            try {
+                const startedAt = (response.config as any).metadata?.startedAt as number | undefined;
+                const duration = startedAt ? Date.now() - startedAt : undefined;
+                const reqId = response.headers?.['x-request-id'] as string | undefined;
+                if (!response.config.url?.includes('/analytics/track')) {
+                    track('api_call', {
+                        url: response.config.url,
+                        method: response.config.method,
+                        status: response.status,
+                        durationMs: duration,
+                        requestId: reqId || null,
+                    });
+                }
+            } catch {}
+            return response;
+        },
         async (error) => {
             const originalRequest = error.config;
 
@@ -73,6 +91,15 @@ export const setupInterceptors = (store: { getState: () => RootState; dispatch: 
                     isRefreshing = false;
                 }
             }
+            try {
+                const startedAt = (originalRequest as any)?.metadata?.startedAt as number | undefined;
+                const duration = startedAt ? Date.now() - startedAt : undefined;
+                const status = error?.response?.status;
+                const reqId = error?.response?.headers?.['x-request-id'] as string | undefined;
+                if (!originalRequest?.url?.includes('/analytics/track')) {
+                    trackApiError({ url: originalRequest?.url, method: originalRequest?.method, status, durationMs: duration, requestId: reqId || null, message: error?.message });
+                }
+            } catch {}
             return Promise.reject(error);
         }
     );

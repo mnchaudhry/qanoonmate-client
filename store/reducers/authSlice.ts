@@ -6,7 +6,7 @@ import { UserRole } from '@/lib/enums';
 import { ChangePasswordRequest, ForgetPasswordRequest, ForgetPasswordUpdateRequest, LoginRequest, SignupRequest, UpdateProfileRequest, VerifyOtpRequest } from '../types/auth.types';
 import { Client } from '../types/client.types';
 import { Lawyer } from '../types/lawyer.types';
-import { User, UserPreferences, UserSecurity } from '../types/user.types';
+import { User } from '../types/user.types';
 import localStorageManager from '@/utils/localStorage';
 import { getErrorMessage } from '@/lib/utils';
 
@@ -268,6 +268,7 @@ export const hydrateAuth = createAsyncThunk('auth/hydrateAuth', async (options: 
   try {
     await fetchAndSetCSRFToken();
     const { payload, meta } = await dispatch(getProfile());
+    console.log('payload', payload);
     if (meta.requestStatus === 'fulfilled') {
       return payload;
     } else {

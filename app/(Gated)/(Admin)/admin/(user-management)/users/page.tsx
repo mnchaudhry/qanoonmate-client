@@ -29,6 +29,7 @@ const AdminUsers = () => {
   const initialSearch = searchParams.get('q') || ''
   const initialRole = (() => { const r = searchParams.get('role') || ''; return r === 'all' ? '' : r })()
   const initialStatus = (() => { const s = searchParams.get('status') || ''; return s === 'all' ? '' : s })()
+  const initialReleaseChannel = (() => { const r = searchParams.get('releaseChannel') || ''; return r === 'all' ? '' : r })()
   const initialSort = searchParams.get('sort') || ''
   const currentPage = meta?.currentPage || 1
 
@@ -36,6 +37,7 @@ const AdminUsers = () => {
   const [searchTerm, setSearchTerm] = useState(initialSearch)
   const [selectedRole, setSelectedRole] = useState(initialRole)
   const [selectedStatus, setSelectedStatus] = useState(initialStatus)
+  const [selectedReleaseChannel, setSelectedReleaseChannel] = useState(initialReleaseChannel)
   const [sortBy, setSortBy] = useState(initialSort)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -56,29 +58,48 @@ const AdminUsers = () => {
 
   useEffect(() => {
     setLoading(true)
-    dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
+    dispatch(getUsers({
+      page: currentPage,
+      limit: PAGE_SIZE,
+      search: debouncedSearch || undefined,
+      role: (!selectedRole || selectedRole === 'all') ? undefined : selectedRole,
+      accountStatus: (!selectedStatus || selectedStatus === 'all') ? undefined : selectedStatus,
+      releaseChannel: (!selectedReleaseChannel || selectedReleaseChannel === 'all') ? undefined : selectedReleaseChannel,
+      sortBy: sortBy || undefined,
+      sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc'
+    }))
       .finally(() => setLoading(false))
-  }, [dispatch, currentPage, debouncedSearch, selectedRole, selectedStatus, sortBy])
+  }, [dispatch, currentPage, debouncedSearch, selectedRole, selectedStatus, selectedReleaseChannel, sortBy])
 
   useEffect(() => {
     dispatch(setCurrentPage(1))
-  }, [dispatch, debouncedSearch, selectedRole, selectedStatus, sortBy])
+  }, [dispatch, debouncedSearch, selectedRole, selectedStatus, selectedReleaseChannel, sortBy])
 
   useEffect(() => {
     const params = new URLSearchParams()
     if (debouncedSearch) params.set('q', debouncedSearch)
     if (selectedRole) params.set('role', selectedRole)
     if (selectedStatus) params.set('status', selectedStatus)
+    if (selectedReleaseChannel) params.set('releaseChannel', selectedReleaseChannel)
     if (sortBy) params.set('sort', sortBy)
     if (currentPage > 1) params.set('page', String(currentPage))
     const qs = params.toString()
     router.replace(qs ? `?${qs}` : '?', { scroll: false })
-  }, [debouncedSearch, selectedRole, selectedStatus, sortBy, currentPage, router])
+  }, [debouncedSearch, selectedRole, selectedStatus, selectedReleaseChannel, sortBy, currentPage, router])
 
   ////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////
   const handleRefresh = () => {
     setLoading(true)
-    dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
+    dispatch(getUsers({
+      page: currentPage,
+      limit: PAGE_SIZE,
+      search: debouncedSearch || undefined,
+      role: (!selectedRole || selectedRole === 'all') ? undefined : selectedRole,
+      accountStatus: (!selectedStatus || selectedStatus === 'all') ? undefined : selectedStatus,
+      releaseChannel: (!selectedReleaseChannel || selectedReleaseChannel === 'all') ? undefined : selectedReleaseChannel,
+      sortBy: sortBy || undefined,
+      sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc'
+    }))
       .finally(() => setLoading(false))
   }
   const handleSortChange = (sort: string) => {
@@ -90,10 +111,14 @@ const AdminUsers = () => {
   const handleStatusFilter = (status: string) => {
     setSelectedStatus(status === 'all' ? '' : status)
   }
+  const handleReleaseChannelFilter = (releaseChannel: string) => {
+    setSelectedReleaseChannel(releaseChannel === 'all' ? '' : releaseChannel)
+  }
   const handleResetFilters = () => {
     setSearchTerm('');
     setSelectedRole('');
     setSelectedStatus('');
+    setSelectedReleaseChannel('');
     setSortBy('');
     dispatch(setCurrentPage(1))
   }
@@ -117,13 +142,25 @@ const AdminUsers = () => {
         return
       }
       const text = await file.text()
-      const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0)
+      // Split lines, filter out empty lines and lines that are just empty CSV fields (e.g. ",,,,,,,")
+      const lines = text
+        .split(/\r?\n/)
+        .filter(l => {
+          // Remove lines that are empty or only contain commas/whitespace
+          if (!l.trim()) return false;
+          // Remove lines where all fields are empty after splitting by comma
+          const fields = l.split(',').map(f => f.trim());
+          // If at least one field is non-empty, keep the line
+          return fields.some(f => f.length > 0);
+        });
+
       if (lines.length < 2) {
-        toast.error('CSV must include header and at least one data row')
-        return
+        toast.error('CSV must include header and at least one data row');
+        return;
       }
-      const header = lines[0].split(',').map(h => h.trim().toLowerCase())
-      console.log('header', header)
+      const header = lines[0].split(',').map(h => h.trim());
+      console.log('lines', lines);
+      console.log('header', header);
       const required = ['firstname', 'lastname', 'email', 'username', 'phone', 'password', 'releaseChannel']
       const missing = required.filter(c => !header.includes(c))
       if (missing.length) {
@@ -164,13 +201,22 @@ const AdminUsers = () => {
       setLoading(true)
       try {
         await dispatch(bulkUploadUsers(file)).unwrap()
-        await dispatch(getUsers({ page: currentPage, limit: PAGE_SIZE, search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc' }))
+        await dispatch(getUsers({
+          page: currentPage,
+          limit: PAGE_SIZE,
+          search: debouncedSearch || undefined,
+          role: (!selectedRole || selectedRole === 'all') ? undefined : selectedRole,
+          accountStatus: (!selectedStatus || selectedStatus === 'all') ? undefined : selectedStatus,
+          releaseChannel: (!selectedReleaseChannel || selectedReleaseChannel === 'all') ? undefined : selectedReleaseChannel,
+          sortBy: sortBy || undefined,
+          sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc'
+        }))
       } finally { setLoading(false) }
     }
     input.click()
   }
   const handleExportCSV = async () => {
-    const { payload } = await dispatch(exportUsersCsv({ search: debouncedSearch || undefined, role: selectedRole || undefined, accountStatus: selectedStatus || undefined, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc', limit: 100000 }))
+    const { payload } = await dispatch(exportUsersCsv({ search: debouncedSearch || undefined, role: (!selectedRole || selectedRole === 'all') ? undefined : selectedRole, accountStatus: (!selectedStatus || selectedStatus === 'all') ? undefined : selectedStatus, releaseChannel: (!selectedReleaseChannel || selectedReleaseChannel === 'all') ? undefined : selectedReleaseChannel, sortBy: sortBy || undefined, sortOrder: sortBy === 'createdAt' ? 'desc' : 'asc', limit: 100000 }))
     if (payload instanceof Blob) {
       const url = URL.createObjectURL(payload)
       const a = document.createElement('a')
@@ -238,11 +284,13 @@ const AdminUsers = () => {
         onSearch={setSearchTerm}
         onRoleFilter={handleRoleFilter}
         onStatusFilter={handleStatusFilter}
+        onReleaseChannelFilter={handleReleaseChannelFilter}
         onSortChange={handleSortChange}
         onResetFilters={handleResetFilters}
         searchValue={searchTerm}
         roleValue={selectedRole || undefined}
         statusValue={selectedStatus || undefined}
+        releaseChannelValue={selectedReleaseChannel || undefined}
         sortValue={sortBy || undefined}
       />
 

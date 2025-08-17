@@ -26,7 +26,7 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
 
     setIsLiking(true)
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/blogs/like-blog/${blog._id}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/blogs/like-blog/${blog._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

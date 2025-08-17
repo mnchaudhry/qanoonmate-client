@@ -9,6 +9,7 @@ export interface User {
     username: string;
     email: string;
     phone: string;
+    password?: string;
     role: UserRole;
     bio?: string;
     gender?: Gender;
@@ -24,10 +25,11 @@ export interface User {
     phoneVerified?: boolean;
     identityVerified?: boolean;
     accountStatus: AccountStatus;
-    releaseChannel?: ReleaseChannel;
+    releaseChannel: ReleaseChannel;
     reviews?: Review[];
     avgRating?: number | null;
     createdAt: string;
+    lastLogin: string;
     updatedAt: string;
 }
 

@@ -16,9 +16,6 @@ import { useSelector } from "react-redux";
 import { Nunito } from "next/font/google";
 const nunito = Nunito({ subsets: ["latin"] });
 
-
-
-
 interface MessageBoxProps {
   chatViewMode?: "compact" | "card" | "timeline";
   textSize?: number;
