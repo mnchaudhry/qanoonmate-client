@@ -248,51 +248,9 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
     const currentResponse = responses[currentIdx] || responses[0];
     const messageTime = getMessageTime(message.createdAt);
 
-    // True character-by-character streaming
-    const [displayedContent, setDisplayedContent] = useState(
-      currentResponse.content
-    );
-    const bufferRef = useRef("");
-    const prevContentRef = useRef(currentResponse.content);
 
-    useEffect(() => {
-      // Only buffer new characters
-      const prev = prevContentRef.current;
-      const next = currentResponse.content;
-      if (next.startsWith(prev)) {
-        bufferRef.current += next.slice(prev.length);
-      } else {
-        // If content resets (e.g., new message), reset everything
-        bufferRef.current = next;
-        setDisplayedContent("");
-      }
-      prevContentRef.current = next;
-    }, [currentResponse.content]);
 
-    useEffect(() => {
-      if (!message.isStreaming) {
-        setDisplayedContent(currentResponse.content);
-        bufferRef.current = "";
-        return;
-      }
-      let timer: number;
-      function tick() {
-        if (bufferRef.current.length > 0) {
-          setDisplayedContent((prev: string) => {
-            const nextChar = bufferRef.current[0];
-            bufferRef.current = bufferRef.current.slice(1);
-            return prev + nextChar;
-          });
-          timer = window.setTimeout(tick, 1);
-        }
-      }
-      tick();
-      return () => clearTimeout(timer);
-    }, [message.isStreaming, currentResponse.content]);
-
-    const contentToRender = message.isStreaming
-      ? displayedContent
-      : currentResponse.content;
+    const contentToRender = currentResponse.content;
     const parsed = parseAIResponse(contentToRender);
 
     if (chatViewMode === "compact") {

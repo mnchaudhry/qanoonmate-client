@@ -81,7 +81,7 @@ const Summary = ({ selectedType }: SummaryProps) => {
             </div>
 
             <div className="bg-background border rounded-lg p-4 mb-4">
-                <div className="prose prose-sm max-w-none text-muted-foreground font-sans leading-relaxed">
+                <div className="chat-markdown prose prose-sm max-w-none text-muted-foreground font-sans leading-relaxed">
                     <ReactMarkdown>
                         {streamingSummary || currentSummary?.summary || currentSummary?.content || 'No summary available'}
                     </ReactMarkdown>
