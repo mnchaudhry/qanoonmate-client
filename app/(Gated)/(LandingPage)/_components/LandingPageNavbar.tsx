@@ -10,14 +10,14 @@ import ProfileButton from '@/components/profile-button';
 import Logo from '@/components/Logo';
 import { cn } from '@/lib/utils';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle, } from "@/components/ui/navigation-menu"
-import { UserRole } from '@/lib/enums';
+import { ReleaseChannel, UserRole } from '@/lib/enums';
 
 const LandingPageNavbar: React.FC = () => {
 
   //////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
   const pathname = usePathname();
   const { isScrolled } = useStateContext();
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
   //////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
   const links = [
@@ -45,92 +45,109 @@ const LandingPageNavbar: React.FC = () => {
 
   //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
-    <nav
-      className={cn(
-        "fixed top-0 z-[60] w-full transition-all duration-300 ease-in-out ",
-        isScrolled
-          ? 'h-[80px] shadow-md bg-background text-neutral-foreground'
-          : 'h-[100px] bg-transparent text-foreground'
-      )}
-    >
-      <div className="h-full w-full flex items-center justify-between px-4 mx-auto md:px-6">
-        <Logo size="md" />
+    <>
+      {
+        user?.releaseChannel === ReleaseChannel.BETA &&
+        <div className='bg-indigo-500 text-white p-2 text-center'>
+          <p className="text-sm">You are using the beta version of QanoonMate. Please report any issues to <a href="mailto:support@qanoonmate.com" className='underline'>support@qanoonmate.com</a></p>
+        </div>
+      }
+      {
+        user?.role === UserRole.ADMIN &&
+        <div className='bg-lime-700 text-white p-2 text-center'>
+          <p className="text-sm">
+            Welcome, Supreme Admin! You now possess godlike powers. Please use them only for good (and maybe a little mischief).
+          </p>
+        </div>
+      }
+      <nav
+        className={cn(
+          "fixed top-0 z-[60] w-full transition-all duration-300 ease-in-out",
+          (user?.releaseChannel === ReleaseChannel.BETA || user?.role === UserRole.ADMIN) && !isScrolled && 'pt-16',
+          isScrolled
+            ? 'h-[80px] shadow-md bg-background text-neutral-foreground'
+            : 'h-[100px] bg-transparent text-foreground'
+        )}
+      >
+        <div className="h-full w-full flex items-center justify-between px-4 mx-auto md:px-6">
+          <Logo size="md" />
 
-        <ul className="hidden md:flex items-center space-x-6">
+          <ul className="hidden md:flex items-center space-x-6">
 
-          <NavigationMenu>
-            <NavigationMenuList>
+            <NavigationMenu>
+              <NavigationMenuList>
 
-              {links.map((item, index) => {
+                {links.map((item, index) => {
 
-                const isActive = item.subLinks?.length > 0 ? pathname.includes(item.link) : pathname === item.link;
+                  const isActive = item.subLinks?.length > 0 ? pathname.includes(item.link) : pathname === item.link;
 
-                return (
-                  <NavigationMenuItem key={index} >
-                    {
-                      item.subLinks.length > 0
-                        ?
-                        <>
-                          <NavigationMenuTrigger className={cn(isActive ? 'bg-muted' : 'bg-transparent')} >{item.label}</NavigationMenuTrigger>
-                          <NavigationMenuContent>
-                            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
-                              {item.subLinks.map((subLink, index) => (
-                                <Link key={index} prefetch={true} href={subLink.link} passHref className='cursor-pointer' >
-                                  <span className={cn("group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-muted focus:bg-accent focus:text-accent-foreground",)}>
-                                    <div className="text-sm font-medium leading-none">{subLink.label}</div>
-                                    <p className="line-clamp-2 text-xs leading-snug text-muted-foreground ">
-                                      {subLink.description}
-                                    </p>
-                                  </span>
-                                </Link>
-                              ))}
-                            </ul>
-                          </NavigationMenuContent>
-                        </>
-                        :
-                        <Link prefetch={true} href={item.link} passHref className='cursor-pointer' >
-                          <span className={cn(navigationMenuTriggerStyle(), isActive ? 'bg-muted' : 'bg-transparent')}>
-                            {item.label}
-                          </span>
-                        </Link>
-                    }
-                  </NavigationMenuItem>
-                )
-              })}
+                  return (
+                    <NavigationMenuItem key={index} >
+                      {
+                        item.subLinks.length > 0
+                          ?
+                          <>
+                            <NavigationMenuTrigger className={cn(isActive ? 'bg-muted' : 'bg-transparent')} >{item.label}</NavigationMenuTrigger>
+                            <NavigationMenuContent>
+                              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
+                                {item.subLinks.map((subLink, index) => (
+                                  <Link key={index} prefetch={true} href={subLink.link} passHref className='cursor-pointer' >
+                                    <span className={cn("group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-muted focus:bg-accent focus:text-accent-foreground",)}>
+                                      <div className="text-sm font-medium leading-none">{subLink.label}</div>
+                                      <p className="line-clamp-2 text-xs leading-snug text-muted-foreground ">
+                                        {subLink.description}
+                                      </p>
+                                    </span>
+                                  </Link>
+                                ))}
+                              </ul>
+                            </NavigationMenuContent>
+                          </>
+                          :
+                          <Link prefetch={true} href={item.link} passHref className='cursor-pointer' >
+                            <span className={cn(navigationMenuTriggerStyle(), isActive ? 'bg-muted' : 'bg-transparent')}>
+                              {item.label}
+                            </span>
+                          </Link>
+                      }
+                    </NavigationMenuItem>
+                  )
+                })}
 
-            </NavigationMenuList>
-          </NavigationMenu>
+              </NavigationMenuList>
+            </NavigationMenu>
 
-          {/* Profile/Sign-In/Sign-Up buttons */}
-          {isAuthenticated ? (
-            <>
-              <ProfileButton />
-            </>
-          ) : (
-            <div className="flex gap-3 ml-4">
-              <Button
-                variant="outline"
-                asChild
-              >
-                <Link href={`/auth/sign-in`} prefetch={true} passHref className='cursor-pointer'>
-                  Sign In
-                </Link>
-              </Button>
-              <Button
-                variant="default"
-                asChild
-              >
-                <Link href={`/auth/sign-up?role=${UserRole.LAWYER}`} prefetch={true} passHref className='cursor-pointer'>
-                  Register as Lawyer
-                </Link>
-              </Button>
-            </div>
-          )}
-        </ul>
+            {/* Profile/Sign-In/Sign-Up buttons */}
+            {isAuthenticated ? (
+              <>
+                <ProfileButton />
+              </>
+            ) : (
+              <div className="flex gap-3 ml-4">
+                <Button
+                  variant="outline"
+                  asChild
+                >
+                  <Link href={`/auth/sign-in`} prefetch={true} passHref className='cursor-pointer'>
+                    Sign In
+                  </Link>
+                </Button>
+                <Button
+                  variant="default"
+                  asChild
+                >
+                  <Link href={`/auth/sign-up?role=${UserRole.LAWYER}`} prefetch={true} passHref className='cursor-pointer'>
+                    Register as Lawyer
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </ul>
 
 
-      </div>
-    </nav >
+        </div>
+      </nav >
+    </>
   );
 };
 

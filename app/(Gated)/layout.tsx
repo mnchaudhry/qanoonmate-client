@@ -4,10 +4,13 @@ import React, { ReactNode, useEffect } from 'react'
 import ComingSoonWrapper from '@/wrappers/ComingSoonWrapper';
 import localStorageManager from '@/utils/localStorage';
 import { useStateContext } from '@/context/useStateContext';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
 
 const LandingPageLayout = ({ children }: { children: ReactNode }) => {
 
     const { isBetaUser, setIsBetaUser } = useStateContext();
+    const { isAuthenticated } = useSelector((state: RootState) => state.auth)
 
     useEffect(() => {
         const isIt = localStorageManager.getItem('beta_user') as boolean;
@@ -17,7 +20,7 @@ const LandingPageLayout = ({ children }: { children: ReactNode }) => {
     }, [setIsBetaUser]);
 
     return (
-        isBetaUser
+        (isBetaUser || isAuthenticated)
             ?
             children
             :
