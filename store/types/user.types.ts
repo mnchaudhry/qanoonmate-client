@@ -24,7 +24,7 @@ export interface User {
     phoneVerified?: boolean;
     identityVerified?: boolean;
     accountStatus: AccountStatus;
-    releaseChannel?: ReleaseChannel;
+    releaseChannel: ReleaseChannel;
     reviews?: Review[];
     avgRating?: number | null;
     createdAt: string;

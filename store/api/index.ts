@@ -6,6 +6,8 @@ import type * as LawyerAPI from "../types/lawyer.types";
 import type * as ClientSettingsAPI from "../types/clientSettings.types";
 import type * as LawyerSettingsAPI from "../types/lawyerSettings.types";
 import type * as BetaRequestAPI from "../types/beta-request.types";
+import type * as EmailAPI from "../types/email.types";
+import type * as CommAPI from "../types/communication.types";
 
 import { APIClient, FormDataAPI } from "./axios";
 import { UserRole } from "@/lib/enums";
@@ -278,3 +280,11 @@ export const getWaitlistEntry = (id: string) => APIClient.get<API.APIResponse<AP
 export const updateWaitlistEntry = (id: string, data: API.UpdateWaitlistRequest) => APIClient.put<API.UpdateWaitlistResponse>(`/waitlist/${id}`, data);
 export const inviteWaitlistEntry = (id: string) => APIClient.post<API.APIResponse<API.WaitlistEntry>>(`/waitlist/${id}/invite`, {});
 export const deleteWaitlistEntry = (id: string) => APIClient.delete<API.APIResponse<null>>(`/waitlist/${id}`);
+
+////////////////////////////////////////////////////////// EMAIL (ADMIN) ////////////////////////////////////////////////////////////
+export const sendAdminEmail = (data: EmailAPI.SendEmailRequest) => APIClient.post<EmailAPI.SendEmailResponse>(`/email/send`, data);
+
+////////////////////////////////////////////////////////// COMMUNICATION LOGS ////////////////////////////////////////////////////////////
+export const getCommunications = (params?: CommAPI.GetCommunicationsRequest) => APIClient.get<CommAPI.GetCommunicationsResponse>(`/communication`, { params });
+export const getCommunicationById = (id: string) => APIClient.get<CommAPI.GetCommunicationResponse>(`/communication/${id}`);
+export const createCommunication = (data: CommAPI.CreateCommunicationRequest) => APIClient.post<CommAPI.CreateCommunicationResponse>(`/communication`, data);
