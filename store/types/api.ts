@@ -7,6 +7,7 @@ import {
   Currency,
   NotificationDeliveryChannel,
   NotificationType,
+  NotificationContextType,
 } from "@/lib/enums";
 import { User } from "./user.types";
 import { Lawyer } from "./lawyer.types";
@@ -20,6 +21,30 @@ export interface APIResponse<T = any> {
   other?: object;
   meta?: PaginationMeta;
 }
+
+// ================= NEWSLETTER =================
+export interface NewsletterSubscriber {
+  _id: string;
+  email: string;
+  name?: string;
+  status: 'subscribed' | 'unsubscribed';
+  source?: string;
+  ipAddress?: string;
+  unsubscribedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type SubscribeNewsletterRequest = { email: string; name?: string; source?: string };
+export type SubscribeNewsletterResponse = APIResponse<NewsletterSubscriber>;
+export type UnsubscribeNewsletterRequest = { email: string };
+export type UnsubscribeNewsletterResponse = APIResponse<NewsletterSubscriber>;
+export type GetNewsletterSubscribersRequest = { page?: number; limit?: number; status?: 'subscribed' | 'unsubscribed'; search?: string; source?: string; dateFrom?: string; dateTo?: string; sortBy?: string; sortOrder?: 'asc' | 'desc' };
+export type GetNewsletterSubscribersResponse = APIResponse<NewsletterSubscriber[]>;
+export type GetNewsletterSubscriberResponse = APIResponse<NewsletterSubscriber>;
+export type UpdateNewsletterSubscriberRequest = Partial<Pick<NewsletterSubscriber, 'name' | 'status'>>;
+export type UpdateNewsletterSubscriberResponse = APIResponse<NewsletterSubscriber>;
+export type DeleteNewsletterSubscriberResponse = APIResponse<null>;
 
 // ================= WAITLIST =================
 export interface WaitlistEntry {
@@ -954,7 +979,7 @@ export interface GetGuideByIdRequest {
 export type GetGuideByIdResponse = APIResponse<LegalGuide>;
 
 // POST /guides
-export interface CreateGuideRequest extends Omit<LegalGuide, "_id" | "createdAt" | "updatedAt"> { }
+export type CreateGuideRequest = Omit<LegalGuide, "_id" | "createdAt" | "updatedAt">;
 export type CreateGuideResponse = APIResponse<LegalGuide>;
 
 // PUT /guides/:id
@@ -1245,6 +1270,7 @@ export interface Notification {
   recipient: string; // userId
   sender?: string | null;
   type: NotificationType;
+  contextType?: NotificationContextType;
   title: string;
   message: string;
   contextId?: string;
@@ -1259,6 +1285,7 @@ export interface Notification {
 
 export interface GetNotificationsRequest {
   type?: NotificationType;
+  contextType?: NotificationContextType;
   isRead?: boolean;
   delivered?: boolean;
   dateFrom?: string;
@@ -1277,6 +1304,7 @@ export interface GetNotificationsResponse {
 export interface CreateNotificationRequest {
   recipient: string;
   type: NotificationType;
+  contextType?: NotificationContextType;
   title: string;
   message: string;
   contextId?: string;

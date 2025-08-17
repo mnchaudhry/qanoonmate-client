@@ -22,6 +22,7 @@ import waitlist from './waitlistSlice';
 import betaRequest from './betaRequestSlice';
 import email from './emailSlice';
 import communication from './communicationSlice';
+import newsletter from './newsletterSlice';
 
 const rootReducer = combineReducers({
     auth,
@@ -47,6 +48,7 @@ const rootReducer = combineReducers({
     betaRequest,
     email,
     communication,
+    newsletter,
 });
 
 export default rootReducer;

@@ -1,16 +1,14 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import type { WaitlistEntry, CreateWaitlistRequest, UpdateWaitlistRequest, APIResponse } from '@/store/types/api';
+import type { WaitlistEntry, CreateWaitlistRequest, UpdateWaitlistRequest, APIResponse, PaginationMeta } from '@/store/types/api';
 
 interface WaitlistState {
   list: WaitlistEntry[];
   selected: WaitlistEntry | null;
   isLoading: boolean;
   error: string | null;
-  currentPage: number;
-  totalPages: number;
-  totalCount: number;
+  meta: PaginationMeta;
 }
 
 const initialState: WaitlistState = {
@@ -18,9 +16,12 @@ const initialState: WaitlistState = {
   selected: null,
   isLoading: false,
   error: null,
-  currentPage: 1,
-  totalPages: 1,
-  totalCount: 0,
+  meta: {
+    currentPage: 1,
+    limit: 10,
+    totalCount: 0,
+    totalPages: 1,
+  },
 };
 
 export const joinWaitlistThunk = createAsyncThunk('waitlist/join', async (payload: CreateWaitlistRequest) => {
@@ -34,7 +35,7 @@ export const joinWaitlistThunk = createAsyncThunk('waitlist/join', async (payloa
   }
 });
 
-export const fetchWaitlistThunk = createAsyncThunk('waitlist/list', async (params: { page?: number; limit?: number; status?: 'pending' | 'invited' | 'joined'; search?: string } = {}) => {
+export const fetchWaitlistThunk = createAsyncThunk('waitlist/list', async (params: { page?: number; limit?: number; status?: 'pending' | 'invited' | 'joined'; search?: string; sortBy?: string; sortOrder?: 'asc' | 'desc' } = {}) => {
   try {
     const { data } = await api.getWaitlist(params);
     return data;
@@ -92,6 +93,9 @@ const waitlistSlice = createSlice({
   initialState,
   reducers: {
     resetWaitlistState: () => initialState,
+    setCurrentPage: (state, action: PayloadAction<number>) => {
+      state.meta.currentPage = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -104,9 +108,7 @@ const waitlistSlice = createSlice({
         state.isLoading = false;
         const payload = action.payload as APIResponse<WaitlistEntry[]>;
         state.list = (payload?.data || []).filter((x) => x._id);
-        state.currentPage = payload?.meta?.currentPage || 1;
-        state.totalPages = payload?.meta?.totalPages || 1;
-        state.totalCount = payload?.meta?.totalCount || 0;
+        state.meta = payload?.meta || initialState.meta;
       })
       .addCase(fetchWaitlistThunk.rejected, (state, action) => { state.isLoading = false; state.error = action.error.message || null; })
 
@@ -135,7 +137,6 @@ const waitlistSlice = createSlice({
 });
 
 export default waitlistSlice.reducer;
-export const { resetWaitlistState } = waitlistSlice.actions;
-export const { actions: waitlistActions } = waitlistSlice;
+export const { resetWaitlistState, setCurrentPage } = waitlistSlice.actions;
 
 

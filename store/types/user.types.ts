@@ -29,6 +29,7 @@ export interface User {
     reviews?: Review[];
     avgRating?: number | null;
     createdAt: string;
+    lastLogin: string;
     updatedAt: string;
 }
 
