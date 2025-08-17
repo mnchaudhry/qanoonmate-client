@@ -332,3 +332,10 @@ export enum AccountStatus {
   BLOCKED = "blocked",                       // Permanently disabled after being active
   REJECTED = "rejected"                      // Denied at onboarding stage
 }
+
+export enum ReleaseChannel {
+  ALPHA = "alpha",
+  BETA = "beta",
+  PUBLIC = "public",
+  INTERNAL = "internal",
+}

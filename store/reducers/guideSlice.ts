@@ -45,7 +45,7 @@ export const getGuideById = createAsyncThunk('guide/getGuideById', async (id: st
 export const getAdminGuides = createAsyncThunk('guide/getAdminGuides', async (params: any, { rejectWithValue }) => {
   try {
     const { data } = await api.getAdminGuides(params);
-    return data.data;
+    return data;
   } catch (err: any) {
     return rejectWithValue(err.response?.data?.message || 'Failed to xfetch admin guides');
   }

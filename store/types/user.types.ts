@@ -1,4 +1,4 @@
-import { AccountStatus, Gender, UserRole } from "@/lib/enums";
+import { AccountStatus, Gender, ReleaseChannel, UserRole } from "@/lib/enums";
 import { APIResponse, PaginationMeta } from "./api";
 import { Review } from "./review.types";
 
@@ -24,6 +24,7 @@ export interface User {
     phoneVerified?: boolean;
     identityVerified?: boolean;
     accountStatus: AccountStatus;
+    releaseChannel?: ReleaseChannel;
     reviews?: Review[];
     avgRating?: number | null;
     createdAt: string;
@@ -83,6 +84,7 @@ export interface AddUserRequest {
         city?: string;
         province?: string;
     };
+    releaseChannel?: ReleaseChannel;
     [key: string]: any;
 }
 

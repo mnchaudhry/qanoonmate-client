@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import { User, GetUsersRequest, GetUsersResponse, SearchUsersRequest, SearchUsersResponse, CheckUsernameResponse, CheckEmailResponse, BlockUserResponse, UpdateAvatarResponse, UpdateUsernameResponse, GetUserRoleResponse, GetUserByUsernameOrIdResponse, GetUserByIdResponse, UpdateUserRequest, UpdateUserResponse, DeleteUserResponse, BlockUserRequest, AddUserResponse, AddUserRequest } from '../types/user.types';
+import { User, GetUsersRequest, GetUsersResponse, SearchUsersRequest, SearchUsersResponse, CheckUsernameResponse, CheckEmailResponse, BlockUserResponse, UpdateAvatarResponse, UpdateUsernameResponse, GetUserRoleResponse, GetUserByUsernameOrIdResponse, GetUserByIdResponse, UpdateUserRequest, UpdateUserResponse, BlockUserRequest, AddUserResponse, AddUserRequest } from '../types/user.types';
 import { PaginationMeta } from '../types/api';
 
 interface UserState {
@@ -158,21 +158,23 @@ export const getUserById = createAsyncThunk<GetUserByIdResponse, string>('user/g
 export const updateUser = createAsyncThunk<UpdateUserResponse, UpdateUserRequest>('user/updateUser', async (params, { rejectWithValue }) => {
     try {
         const { data } = await api.updateUser(params);
-        toast.success('User updated');
+        if (data.success) toast.success('User updated');
+        else toast.error(data.message || 'Failed to update user');
         return data;
     } catch (err: any) {
-        toast.error(err.message || 'Failed to update user');
+        toast.error(err.response?.data?.message || 'Failed to update user');
         return rejectWithValue(err.message);
     }
 });
 
-export const deleteUser = createAsyncThunk<DeleteUserResponse, string>('user/deleteUser', async (id, { rejectWithValue }) => {
+export const deleteUser = createAsyncThunk<string, string>('user/deleteUser', async (id, { rejectWithValue }) => {
     try {
         const { data } = await api.deleteUser(id);
-        toast.success('User deleted');
-        return data;
+        if (data.success) toast.success('User deleted');
+        else toast.error(data.message || 'Failed to delete user');
+        return id;
     } catch (err: any) {
-        toast.error(err.message || 'Failed to delete user');
+        toast.error(err.response?.data?.message || 'Failed to delete user');
         return rejectWithValue(err.message);
     }
 }
@@ -181,7 +183,8 @@ export const deleteUser = createAsyncThunk<DeleteUserResponse, string>('user/del
 export const resetUserPassword = createAsyncThunk<any, { id: string; password?: string }>('user/resetUserPassword', async ({ id, password }, { rejectWithValue }) => {
     try {
         const { data } = await api.resetUserPassword(id, password);
-        toast.success('Password reset');
+        if (data.success) toast.success('Password reset');
+        else toast.error(data.message || 'Failed to reset password');
         return data;
     } catch (err: any) {
         toast.error(err.message || 'Failed to reset password');
@@ -267,9 +270,9 @@ const userSlice = createSlice({
             .addCase(deleteUser.pending, (state) => { state.loading = true; state.error = null; })
             .addCase(deleteUser.fulfilled, (state, action) => {
                 state.loading = false;
-                if (action.payload && action.payload.data && action.payload.data.user) {
-                    state.users = state.users.filter(u => u._id !== action.payload.data?.user?._id);
-                    if (state.currentUser && state.currentUser._id === action.payload.data.user._id) {
+                if (action.payload) {
+                    state.users = state.users.filter(u => u._id !== action.payload);
+                    if (state.currentUser && state.currentUser._id === action.payload) {
                         state.currentUser = null;
                     }
                 }

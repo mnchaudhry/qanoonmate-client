@@ -21,6 +21,33 @@ export interface APIResponse<T = any> {
   meta?: PaginationMeta;
 }
 
+// ================= WAITLIST =================
+export interface WaitlistEntry {
+  _id: string;
+  email: string;
+  name?: string;
+  referralCode?: string;
+  referredBy?: string;
+  signupSource?: string;
+  ipAddress?: string;
+  status: 'pending' | 'invited' | 'joined';
+  notes?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CreateWaitlistRequest = {
+  email: string;
+  name?: string;
+  referredBy?: string;
+  signupSource?: string;
+  notes?: string;
+};
+export type CreateWaitlistResponse = APIResponse<WaitlistEntry>;
+export type GetWaitlistResponse = APIResponse<WaitlistEntry[]>;
+export type UpdateWaitlistRequest = Partial<Pick<WaitlistEntry, 'name' | 'status' | 'notes'>>;
+export type UpdateWaitlistResponse = APIResponse<WaitlistEntry>;
+
 // ================= ACTS =================
 
 // GET /get-acts

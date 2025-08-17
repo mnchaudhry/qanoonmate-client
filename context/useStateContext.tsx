@@ -7,6 +7,7 @@ import { User } from '@/store/types/user.types';
 import React, { createContext, useContext, useState, ReactNode, useEffect, Dispatch, SetStateAction } from 'react';
 
 interface StateContextType {
+    isBetaUser: boolean, setIsBetaUser: Dispatch<SetStateAction<boolean>>,
     OTPType: OtpVerificationType, setOTPType: (value: OtpVerificationType) => void
     selectedUser: User | null, setSelectedUser: Dispatch<SetStateAction<User | null>>,
     selectedLawyer: Lawyer | null, setSelectedLawyer: Dispatch<SetStateAction<Lawyer | null>>,
@@ -21,6 +22,8 @@ export const ContextProvider: React.FC<{ children: ReactNode }> = ({ children })
     ///////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////////
 
     ///////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////////
+    const [isBetaUser, setIsBetaUser] = useState<boolean>(false);
+
     const [isScrolled, setIsScrolled] = useState(false);
 
     // For Auth Screens
@@ -46,6 +49,7 @@ export const ContextProvider: React.FC<{ children: ReactNode }> = ({ children })
     return (
         <StateContext.Provider
             value={{
+                isBetaUser, setIsBetaUser,
                 OTPType, setOTPType,
                 selectedUser, setSelectedUser,
                 selectedLawyer, setSelectedLawyer,

@@ -18,6 +18,8 @@ import document from './documentSlice';
 import clientSettings from './clientSettingsSlice';
 import lawyerSettings from './lawyerSettingsSlice';
 import user from './userSlice';
+import waitlist from './waitlistSlice';
+import betaRequest from './betaRequestSlice';
 
 const rootReducer = combineReducers({
     auth,
@@ -39,6 +41,8 @@ const rootReducer = combineReducers({
     clientSettings,
     lawyerSettings,
     user,
+    waitlist,
+    betaRequest,
 });
 
 export default rootReducer;

@@ -5,6 +5,7 @@ import type * as ClientAPI from "../types/client.types";
 import type * as LawyerAPI from "../types/lawyer.types";
 import type * as ClientSettingsAPI from "../types/clientSettings.types";
 import type * as LawyerSettingsAPI from "../types/lawyerSettings.types";
+import type * as BetaRequestAPI from "../types/beta-request.types";
 
 import { APIClient, FormDataAPI } from "./axios";
 import { UserRole } from "@/lib/enums";
@@ -66,6 +67,7 @@ export const deleteClientSettings = () => APIClient.delete<ClientSettingsAPI.Del
 ////////////////////////////////////////////////////////// LAWYERS ////////////////////////////////////////////////////////////
 export const getLawyers = (params?: LawyerAPI.LawyerQuery) => APIClient.get<LawyerAPI.PaginatedLawyerResponse>(`/lawyer/all`, { params });
 export const getLawyerById = (id: string) => APIClient.get<LawyerAPI.SingleLawyerResponse>(`/lawyer/id/${id}`);
+export const getLawyerByUsername = (username: string) => APIClient.get<LawyerAPI.SingleLawyerResponse>(`/lawyer/username/${username}`);
 export const getLawyerAvailability = (id: string) => APIClient.get<LawyerAPI.LawyerAvailabilityResponse>(`/lawyer/id/${id}/availability`);
 export const getLawyerReviews = (id: string) => APIClient.get<LawyerAPI.LawyerReviewsResponse>(`/lawyer/id/${id}/reviews`);
 export const getMeLawyer = () => APIClient.get<LawyerAPI.SingleLawyerResponse>(`/lawyer/me`);
@@ -76,6 +78,10 @@ export const updateLawyerStatus = (id: string, isActive: boolean) => APIClient.p
 export const deleteLawyer = (id: string) => APIClient.delete<LawyerAPI.LawyerDeleteResponse>(`/lawyer/admin/lawyers/${id}`);
 export const submitReview = (id: string, data: { rating: number; comment?: string; context?: string }) => APIClient.post<LawyerAPI.SubmitReviewResponse>(`/lawyer/id/${id}/review`, data);
 export const searchLawyers = (params: { query: string } & LawyerAPI.LawyerQuery) => APIClient.get<LawyerAPI.PaginatedLawyerResponse>(`/lawyer/search`, { params, });
+export const exportLawyersCsv = (params?: LawyerAPI.LawyerQuery) => APIClient.get(`/lawyer/export/csv`, { params, responseType: 'blob' });
+export const bulkUploadLawyers = (file: File) => { const formData = new FormData(); formData.append('file', file); return FormDataAPI.post(`/lawyer/admin/lawyers/bulk-upload`, formData); };
+export const resetLawyerPassword = (id: string, password?: string) => APIClient.post(`/lawyer/admin/lawyers/${id}/reset-password`, password ? { password } : {});
+export const getLawyerLogs = (id: string) => APIClient.get(`/lawyer/admin/lawyers/${id}/logs`);
 
 ////////////////////////////////////////////////////////// LAWYER_SETTINGS ///////////////////////////////////////////////////////
 export const getLawyerSettings = () => APIClient.get<LawyerSettingsAPI.GetLawyerSettingsResponse>("/lawyer/settings");
@@ -95,29 +101,17 @@ export const updateBilling = (data: LawyerSettingsAPI.UpdateBillingRequest) => A
 export const deleteLawyerSettings = () => APIClient.delete<LawyerSettingsAPI.DeleteLawyerSettingsResponse>("/lawyer/settings");
 
 ////////////////////////////////////////////////////////// LEGAL-BD ////////////////////////////////////////////////////////////
-export const getLawCategories = () =>
-  APIClient.get("/law-category/get-law-categories");
-export const getLawCategoryById = (id: string) =>
-  APIClient.get(`/law-category/get-law-category/${id}`);
-export const createLawCategory = (formData: {
-  category: string;
-  description: string;
-}) => APIClient.post("/law-category/create-law-category", formData);
+export const getLawCategories = () => APIClient.get("/law-category/get-law-categories");
+export const getLawCategoryById = (id: string) => APIClient.get(`/law-category/get-law-category/${id}`);
+export const createLawCategory = (formData: { category: string; description: string; }) => APIClient.post("/law-category/create-law-category", formData);
 export const updateLawCategory = (id: string, formData: { category: string; description: string }) => APIClient.put(`/law-category/update/${id}`, formData);
-export const deleteLawCategory = (id: string) =>
-  APIClient.delete(`/law-category/delete-law-category/${id}`);
+export const deleteLawCategory = (id: string) => APIClient.delete(`/law-category/delete-law-category/${id}`);
 
-export const getActs = (params?: API.GetActsRequest) =>
-  APIClient.get<API.GetActsResponse>("/act/get-acts", { params });
-export const getActById = (idOrSlug: string) =>
-  APIClient.get<API.GetActResponse>(`/act/get-act/${idOrSlug}`);
-export const createAct = (formData: FormData) =>
-  APIClient.post<API.UploadActResponse>("/act/upload", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+export const getActs = (params?: API.GetActsRequest) => APIClient.get<API.GetActsResponse>("/act/get-acts", { params });
+export const getActById = (idOrSlug: string) => APIClient.get<API.GetActResponse>(`/act/get-act/${idOrSlug}`);
+export const createAct = (formData: FormData) => APIClient.post<API.UploadActResponse>("/act/upload", formData, { headers: { "Content-Type": "multipart/form-data" }, });
 export const updateAct = (id: string, data: FormData) => APIClient.put<API.UpdateActResponse>(`/act/update-act/${id}`, data);
-export const deleteAct = (id: string) =>
-  APIClient.delete<API.DeleteActResponse>(`/act/delete-act/${id}`);
+export const deleteAct = (id: string) => APIClient.delete<API.DeleteActResponse>(`/act/delete-act/${id}`);
 
 ////////////////////////////////////////////////////////// AI CHAT SESSION ////////////////////////////////////////////////////////////
 export const getChatSessions = () => APIClient.get<API.GetChatSessionsResponse>(`/ai/session/get-sessions`);
@@ -273,3 +267,14 @@ export const createDirectory = (data: API.DirectoryCreateInput) => APIClient.pos
 export const getDirectories = (params: { ownerId: string; parentId?: string; }) => APIClient.get<API.DirectoryListResponse>("/document/directories", { params });
 export const updateDirectory = (id: string, data: API.DirectoryUpdateInput) => APIClient.put<API.DirectoryResponse>(`/document/directories/${id}`, data);
 export const deleteDirectory = (id: string) => APIClient.delete<API.DirectoryDeleteResponse>(`/document/directories/${id}`);
+
+////////////////////////////////////////////////////////// BETA REQUEST ////////////////////////////////////////////////////////////
+export const createBetaRequest = (data: BetaRequestAPI.BetaRequestInput) => APIClient.post<BetaRequestAPI.CreateBetaRequestResponse>(`/beta-request`, data);
+
+////////////////////////////////////////////////////////// WAITLIST ////////////////////////////////////////////////////////////
+export const joinWaitlist = (data: API.CreateWaitlistRequest) => APIClient.post<API.CreateWaitlistResponse>(`/waitlist`, data);
+export const getWaitlist = (params?: { page?: number; limit?: number; status?: 'pending' | 'invited' | 'joined'; search?: string }) => APIClient.get<API.GetWaitlistResponse>(`/waitlist`, { params });
+export const getWaitlistEntry = (id: string) => APIClient.get<API.APIResponse<API.WaitlistEntry>>(`/waitlist/${id}`);
+export const updateWaitlistEntry = (id: string, data: API.UpdateWaitlistRequest) => APIClient.put<API.UpdateWaitlistResponse>(`/waitlist/${id}`, data);
+export const inviteWaitlistEntry = (id: string) => APIClient.post<API.APIResponse<API.WaitlistEntry>>(`/waitlist/${id}/invite`, {});
+export const deleteWaitlistEntry = (id: string) => APIClient.delete<API.APIResponse<null>>(`/waitlist/${id}`);

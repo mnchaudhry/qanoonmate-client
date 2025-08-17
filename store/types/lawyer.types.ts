@@ -10,6 +10,14 @@ export interface LawyerQuery {
   order?: 'asc' | 'desc';
   page?: number;
   limit?: number;
+  status?: 'active' | 'inactive';
+  verified?: 'verified' | 'unverified';
+  specialization?: string;
+  province?: string;
+  city?: string;
+  minExperience?: number;
+  maxExperience?: number;
+  [key: string]: any
 }
 
 export interface Lawyer extends User {
@@ -28,7 +36,6 @@ export interface Lawyer extends User {
   specializations?: string[];
   primarySpecialization?: string;
   jurisdictions?: Courts[];
-  isActive: boolean;
   profileVisibility?: {
     public: boolean;
     testimonialsEnabled: boolean;
