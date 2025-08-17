@@ -12,7 +12,7 @@ const PAGE_SIZE = 20
 
 export default function AdminWaitlistPage() {
   const dispatch = useDispatch<AppDispatch>()
-  const { list, isLoading, currentPage, totalPages } = useSelector((s: RootState) => s.waitlist)
+  const { list, isLoading, totalPages } = useSelector((s: RootState) => s.waitlist)
   const [page, setPage] = useState(1)
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function AdminWaitlistPage() {
         description="Manage users who have joined the waitlist."
         actions={<>
           <Button variant="outline" size="sm" onClick={handleRefresh} className="border-border hover:bg-primary/5">
-            <RefreshCw className="h-4 w-4 mr-2"/>
+            <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
         </>}
@@ -70,8 +70,8 @@ export default function AdminWaitlistPage() {
           <div className="flex items-center justify-between p-3 border-t border-border">
             <div className="text-sm text-muted-foreground">Page {page} of {totalPages}</div>
             <div className="space-x-2">
-              <Button size="sm" variant="outline" disabled={page<=1} onClick={() => setPage(p => Math.max(1, p-1))}>Prev</Button>
-              <Button size="sm" variant="outline" disabled={page>=totalPages} onClick={() => setPage(p => p+1)}>Next</Button>
+              <Button size="sm" variant="outline" disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>Prev</Button>
+              <Button size="sm" variant="outline" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Next</Button>
             </div>
           </div>
         </div>

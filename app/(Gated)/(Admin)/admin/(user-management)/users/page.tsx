@@ -142,13 +142,25 @@ const AdminUsers = () => {
         return
       }
       const text = await file.text()
-      const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0)
+      // Split lines, filter out empty lines and lines that are just empty CSV fields (e.g. ",,,,,,,")
+      const lines = text
+        .split(/\r?\n/)
+        .filter(l => {
+          // Remove lines that are empty or only contain commas/whitespace
+          if (!l.trim()) return false;
+          // Remove lines where all fields are empty after splitting by comma
+          const fields = l.split(',').map(f => f.trim());
+          // If at least one field is non-empty, keep the line
+          return fields.some(f => f.length > 0);
+        });
+
       if (lines.length < 2) {
-        toast.error('CSV must include header and at least one data row')
-        return
+        toast.error('CSV must include header and at least one data row');
+        return;
       }
-      const header = lines[0].split(',').map(h => h.trim())
-      console.log('header', header)
+      const header = lines[0].split(',').map(h => h.trim());
+      console.log('lines', lines);
+      console.log('header', header);
       const required = ['firstname', 'lastname', 'email', 'username', 'phone', 'password', 'releaseChannel']
       const missing = required.filter(c => !header.includes(c))
       if (missing.length) {

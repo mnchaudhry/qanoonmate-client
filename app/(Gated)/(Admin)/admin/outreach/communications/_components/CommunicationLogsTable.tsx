@@ -1,15 +1,18 @@
 import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/ui/pagination'
 import { TableCell, TableBody, TableHead, TableRow, TableHeader, Table } from '@/components/ui/table'
+import { setCurrentPage } from '@/store/reducers/communicationSlice'
 import { RootState } from '@/store/store'
 import { CommunicationDoc } from '@/store/types/communication.types'
 import React from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 const CommunicationLogsTable = ({ items }: { items: CommunicationDoc[] | any[] }) => {
 
     /////////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
     const { meta } = useSelector((s: RootState) => s.communication)
+
+    const dispatch = useDispatch()
 
     /////////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////
     return (
@@ -39,11 +42,13 @@ const CommunicationLogsTable = ({ items }: { items: CommunicationDoc[] | any[] }
                 </TableBody>
             </Table>
 
-            {meta &&
+            {meta && meta.totalPages > 1 &&
                 <Pagination
                     currentPage={meta.currentPage}
                     totalPages={meta.totalPages}
-                    onPageChange={() => { }}
+                    onPageChange={(page) => {
+                        dispatch(setCurrentPage(page))
+                    }}
                 />
             }
 

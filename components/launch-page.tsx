@@ -207,7 +207,7 @@ function LaunchPage() {
             </>
           )}
 
-          <div className='mt-4' >
+          <div className='' >
             <span className="text-muted-foreground" >Are you a beta user user? <Link href='/beta' className='text-primary underline'>Click here</Link> or <Link href='/request-beta' className='text-primary underline'>Request Beta</Link></span>
           </div>
 

@@ -115,6 +115,7 @@ export default function UsersTable({ setIsModalOpen }: UsersTableProps) {
                 <TableHead className="text-left p-4 font-semibold text-foreground">Email</TableHead>
                 <TableHead className="text-left p-4 font-semibold text-foreground">Username</TableHead>
                 <TableHead className="text-left p-4 font-semibold text-foreground">Phone</TableHead>
+                <TableHead className="text-left p-4 font-semibold text-foreground">Password</TableHead>
                 <TableHead className="text-left p-4 font-semibold text-foreground">Role & Status</TableHead>
                 <TableHead className="text-left p-4 font-semibold text-foreground">Verification</TableHead>
                 <TableHead className="text-left p-4 font-semibold text-foreground">Actions</TableHead>
@@ -146,6 +147,9 @@ export default function UsersTable({ setIsModalOpen }: UsersTableProps) {
                   </TableCell>
                   <TableCell className="p-4">
                     <div className="text-muted-foreground">{user.phone}</div>
+                  </TableCell>
+                  <TableCell className="p-4">
+                    <div className="text-muted-foreground">{user?.password || "N/A"}</div>
                   </TableCell>
                   <TableCell className="">
                     <div className="flex flex-col justify-center gap-1">
