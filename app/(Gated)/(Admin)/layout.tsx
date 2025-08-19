@@ -10,7 +10,6 @@ import { PageSkeleton } from "@/components/skeletons"
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <AdminGuard redirectTo="/" fallback={<PageSkeleton />}    >
-
             <SidebarProvider>
                 <div className="flex w-full min-h-screen bg-background">
                     {/* Sidebar */}
