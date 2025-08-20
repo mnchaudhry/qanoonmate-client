@@ -29,7 +29,7 @@ const ChatbotClient = () => {
   // variables 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const { defaultSocket: { socket, isConnected } } = useSocketContext();
+  const { defaultSocket: { socket, isConnected }, connectAgain } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
   const {
     messages,
@@ -55,6 +55,13 @@ const ChatbotClient = () => {
   useEffect(() => {
     dispatch(getLawyers({}));
   }, [dispatch]);
+
+  // connectAgain 
+  useEffect(() => {
+    if (!isConnected) {
+      connectAgain()
+    }
+  }, [isConnected, connectAgain])
 
   // Add session management state and effect
   useEffect(() => {
