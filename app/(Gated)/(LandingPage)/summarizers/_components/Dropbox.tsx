@@ -172,7 +172,7 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating }: DropboxProps) 
                     <Input
                         type="file"
                         onChange={(e) => setFile(e.target.files?.[0] || null)}
-                        className="border border-muted/50 text-sm text-muted-foreground file:border-0 file:bg-muted file:text-foreground focus:ring-2 focus:ring-primary"
+                        className="primary border border-muted/50 text-sm text-muted-foreground file:border-0 file:bg-muted file:text-foreground focus:ring-2 focus:ring-primary"
                         disabled={isGenerating}
                         accept=".pdf,.doc,.docx,.txt"
                     />
