@@ -13,6 +13,10 @@ import LandingPageHeader from '../../_components/LandingPageHeader'
 import { Skeleton } from '@/components/ui/skeleton'
 import EmptyState from '@/components/ui/empty-state'
 import { useDebounce } from '@/hooks/use-debounce'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Filter } from 'lucide-react'
 
 const PAGE_SIZE = 42
 
@@ -150,8 +154,49 @@ const Drafts = () => {
       />
 
       <div className="container mx-auto px-6 py-8">
-        <div className="grid grid-cols-4 gap-6">
-          <div className="col-span-1">
+        {/* Mobile Filters: search + dropdown */}
+        <div className="md:hidden mb-6">
+          <div className="flex items-center gap-2">
+            <div className="flex-1">
+              <Input
+                type="text"
+                placeholder="Search drafts..."
+                value={search}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="h-10"
+              />
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="shrink-0 h-10">
+                  <Filter className="w-4 h-4 mr-2" /> Filters
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="p-0">
+                <div className="p-3 w-[calc(100vw-2rem)] max-w-sm max-h-[70vh] overflow-y-auto [&>aside>div:nth-child(2)]:hidden">
+                  <DraftSidebar
+                    search={search}
+                    onSearch={handleSearch}
+                    category={category}
+                    onCategory={handleCategory}
+                    format={format}
+                    onFormat={handleFormat}
+                    isFree={isFree}
+                    onIsFree={handleIsFree}
+                    sort={sort}
+                    onSort={handleSort}
+                    hasActiveFilters={hasActiveFilters}
+                    onClearFilters={handleClearFilters}
+                    isSearching={isSearching}
+                  />
+                </div>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-4 grid-cols-1 gap-6">
+          <div className="md:col-span-1 hidden md:block">
             <DraftSidebar
               search={search}
               onSearch={handleSearch}
@@ -169,7 +214,7 @@ const Drafts = () => {
             />
           </div>
 
-          <section className="col-span-3 !pt-0">
+          <section className="md:col-span-3 col-span-1 !pt-0">
             {/* View Toggle and Count */}
             {drafts.length > 0 && (
               <div className="flex justify-between items-center mb-6">
@@ -181,7 +226,9 @@ const Drafts = () => {
                     </span>
                   )}
                 </div>
-                <ViewToggle view={view} onViewChange={handleViewChange} />
+                <div className="hidden md:flex">
+                  <ViewToggle view={view} onViewChange={handleViewChange} />
+                </div>
               </div>
             )}
 
@@ -206,7 +253,7 @@ const Drafts = () => {
               <>
                 <DraftGrid
                   drafts={drafts}
-                  view={view}
+                  view={(typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches) ? 'grid' : view}
                   onCategoryClick={handleCategoryClick}
                   onTagClick={handleTagClick}
                 />
