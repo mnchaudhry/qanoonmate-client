@@ -13,6 +13,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import { File, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useSearchParams } from "next/navigation";
 import ChatbotNavbar from "./ChatbotHeader";
 import ChatbotSidebar from "./ChatbotSidebar";
 import ChatInput from "./ChatInput";
@@ -31,6 +32,7 @@ const ChatbotClient = () => {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const { defaultSocket: { socket, isConnected }, connectAgain } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
+  const searchParams = useSearchParams();
   const {
     messages,
     currentSessionId: sessionId,
@@ -46,9 +48,23 @@ const ChatbotClient = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const { cases, references, aiConfidence: confidence, legalContext, quickAction, referencedLinks } = useSelector((state: RootState) => state.aiSession);
 
-  const [showContextPanel, setShowContextPanel] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Check if screen is desktop size for default sidebar states
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024; // lg breakpoint
+    }
+    return false;
+  });
+  
+  const [showContextPanel, setShowContextPanel] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth >= 1024; // lg breakpoint
+    }
+    return false;
+  });
 
+  // Extract message from URL parameters
+  const urlMessage = searchParams.get('message');
 
   // ---------------------------------------------------------------------------
   //                                        useEffects
@@ -72,6 +88,32 @@ const ChatbotClient = () => {
     dispatch(getChatMetadataBySession(sessionId));
     // setShowContextPanel(true);
   }, [sessionId, dispatch]);
+
+  // Handle window resize for responsive sidebar behavior
+  useEffect(() => {
+    const handleResize = () => {
+      const isDesktop = window.innerWidth >= 1024; // lg breakpoint
+      
+      if (isDesktop) {
+        // On desktop, open both sidebars by default
+        setSidebarOpen(true);
+        setShowContextPanel(true);
+      } else {
+        // On mobile/tablet, close both sidebars by default
+        setSidebarOpen(false);
+        setShowContextPanel(false);
+      }
+    };
+
+    // Set initial state
+    handleResize();
+
+    // Add event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // derived data moved to useParsedMessages hook
   useEffect(() => {
@@ -265,6 +307,7 @@ const ChatbotClient = () => {
                     textareaRef={textareaRef}
                     fileInputRef={fileInputRef}
                     setShowContextPanel={setShowContextPanel}
+                    initialMessage={urlMessage}
                   />
                 </div>
               </div>

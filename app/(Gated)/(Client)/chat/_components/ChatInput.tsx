@@ -2,14 +2,7 @@ import { useSocketContext } from "@/context/useSocketContext";
 import { cn } from "@/lib/utils";
 import { newChat, setIsStreaming } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
-import React, {
-  Dispatch,
-  FormEvent,
-  RefObject,
-  SetStateAction,
-  memo,
-  useState,
-} from "react";
+import React, { Dispatch, FormEvent, RefObject, SetStateAction, memo, useState, useEffect, } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 // import { AIMessage } from "@/store/types/api";
@@ -27,10 +20,11 @@ interface Props {
   textareaRef: RefObject<HTMLTextAreaElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
   setShowContextPanel: any;
+  initialMessage?: string | null;
 }
 
 const ChatInput: React.FC<Props> = memo(
-  ({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles, setShowContextPanel, }) => {
+  ({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles, setShowContextPanel, initialMessage }) => {
     ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
     const { isStreaming, isLoading, messages, currentSessionId: sessionId } = useSelector((state: RootState) => state.aiSession);
     const { defaultSocket: { socket } } = useSocketContext();
@@ -46,6 +40,13 @@ const ChatInput: React.FC<Props> = memo(
     >("english");
     const [inputValue, setInputValue] = useState("");
     const [extractedText, setExtractedText] = useState("");
+
+    // Set initial message from URL parameter
+    useEffect(() => {
+      if (initialMessage && !inputValue) {
+        setInputValue(decodeURIComponent(initialMessage));
+      }
+    }, [initialMessage, inputValue]);
 
     // ----------------------------------------------------
     //                              functions

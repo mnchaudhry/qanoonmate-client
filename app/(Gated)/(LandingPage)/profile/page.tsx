@@ -89,17 +89,17 @@ export default function ProfilePage() {
   const handleUpdateUser = async (updatedData: Partial<User>) => {
     try {
       const res = await fetch('/api/user/me', {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedData),
-        credentials: "include",
-      });
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedData),
+          credentials: "include",
+        });
 
-      if (!res.ok) throw new Error("Failed to update profile");
+        if (!res.ok) throw new Error("Failed to update profile");
 
-      const json = await res.json();
-      const updated = (json?.data as User) || updatedData;
-      setUser(prev => (prev ? { ...prev, ...updated } as User : (updated as User)));
+        const json = await res.json();
+        const updated = (json?.data as User) || updatedData;
+        setUser(prev => (prev ? { ...prev, ...updated } as User : (updated as User)));
 
       toast.success("Profile updated successfully!");
       setIsEditing(false);
@@ -169,7 +169,7 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className="container mx-auto py-6 pt-24">
-          <div className="animate-pulse">
+        <div className="animate-pulse">
             <div className="h-12 bg-slate-200 rounded w-48 mb-6"></div>
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
               <div className="lg:col-span-1">
@@ -177,7 +177,7 @@ export default function ProfilePage() {
               </div>
               <div className="lg:col-span-3">
                 <div className="h-96 bg-slate-200 rounded-xl"></div>
-              </div>
+            </div>
             </div>
           </div>
         </div>
@@ -188,7 +188,7 @@ export default function ProfilePage() {
   if (!authUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center">
-        <div className="container py-12 text-center">
+      <div className="container py-12 text-center">
           <div className="max-w-md mx-auto">
             <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <UserIcon className="w-10 h-10 text-slate-400" />
@@ -197,7 +197,7 @@ export default function ProfilePage() {
             <p className="text-slate-600 mb-6">Access your personalized dashboard and manage your account settings.</p>
             <Button asChild size="lg" className="w-full">
               <Link href="/auth/sign-in">Sign In to Continue</Link>
-            </Button>
+        </Button>
           </div>
         </div>
       </div>
@@ -465,13 +465,13 @@ export default function ProfilePage() {
                 <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
                   <h3 className="text-xl font-semibold text-slate-900 mb-6">Personal Information</h3>
                   {userData && (
-                    <PersonalInfo
-                      user={userData}
-                      onUpdate={handleUpdateUser}
+            <PersonalInfo
+              user={userData}
+              onUpdate={handleUpdateUser}
                       isEditing={isEditing}
-                    />
-                  )}
-                </div>
+            />
+          )}
+        </div>
               </TabsContent>
 
               <TabsContent value="security" className="mt-6">

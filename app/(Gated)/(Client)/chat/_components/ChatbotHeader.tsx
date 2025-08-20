@@ -190,7 +190,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
             </Tooltip>
 
             {/* Help Button */}
-            <Tooltip>
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
@@ -203,10 +203,10 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
               <TooltipContent>
                 <p>Help & Support</p>
               </TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
 
             {/* Settings Button */}
-            <Tooltip>
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
@@ -219,7 +219,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
               <TooltipContent>
                 <p>Settings</p>
               </TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
           </div>
 
           {/* Premium Button */}

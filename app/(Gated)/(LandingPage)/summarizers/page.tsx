@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useSearchParams } from 'next/navigation'
 import { AppDispatch, RootState } from '@/store/store'
 import { fetchUserSummaries, fetchSummaryStats, clearCurrentSummary } from '@/store/reducers/summarySlice'
 import LandingPageHeader from '../_components/LandingPageHeader'
@@ -17,16 +18,32 @@ const Summarizers = () => {
     /////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////
     const dispatch = useDispatch<AppDispatch>()
     const { stats, currentSummary } = useSelector((state: RootState) => state.summary)
+    const searchParams = useSearchParams()
 
     /////////////////////////////////////////////// STATES /////////////////////////////////////////////////////
     const [selectedType, setSelectedType] = useState('act')
     const [isGenerating, setIsGenerating] = useState(false)
+    const [initialExample, setInitialExample] = useState('')
 
     /////////////////////////////////////////////// USE EFFECTS //////////////////////////////////////////////////
     useEffect(() => {
         dispatch(fetchUserSummaries({}))
         dispatch(fetchSummaryStats())
     }, [dispatch])
+
+    // Extract URL parameters on component mount
+    useEffect(() => {
+        const mode = searchParams.get('mode')
+        const example = searchParams.get('example')
+        
+        if (mode && ['act', 'case', 'document', 'topic'].includes(mode)) {
+            setSelectedType(mode)
+        }
+        
+        if (example) {
+            setInitialExample(decodeURIComponent(example))
+        }
+    }, [searchParams])
 
     /////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////
     const handleTypeChange = (type: string) => {
@@ -75,6 +92,7 @@ const Summarizers = () => {
                             selectedType={selectedType}
                             isGenerating={isGenerating}
                             setIsGenerating={setIsGenerating}
+                            initialExample={initialExample}
                         />
 
                         {!currentSummary ? (
