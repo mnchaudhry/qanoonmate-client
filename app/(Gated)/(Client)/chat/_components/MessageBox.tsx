@@ -523,7 +523,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
             />
           )}
           {isStreaming && !streamingMessage && <TextShimmer className='font-mono text-sm' duration={1}>
-            Generating ...
+            Thinking ...
           </TextShimmer>}
         </div>
         <div ref={endAnchorRef} />
