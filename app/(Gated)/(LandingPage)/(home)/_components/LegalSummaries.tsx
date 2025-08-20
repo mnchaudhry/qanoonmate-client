@@ -107,15 +107,26 @@ const LegalSummaries: React.FC = () => {
         {/* Studio Shell */}
         <div className="bg-neutral rounded-xl border !border-border shadow-sm p-4 md:p-6">
           <Tabs value={active} onValueChange={(v) => setActive(v as SummaryModeKey)}>
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <TabsList>
-                {MODES.map(({ key, title, icon: Icon }) => (
-                  <TabsTrigger key={key} value={key} className="gap-2">
-                    <Icon className="h-4 w-4 text-primary" />
-                    <span>{title}</span>
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+            <div className="flex flex-col gap-3">
+              {/* Scrollable pills on mobile */}
+              <div className="relative">
+                <TabsList className="flex w-full overflow-x-auto no-scrollbar gap-2 rounded-lg bg-background/60 p-1.5 shadow-sm backdrop-blur">
+                  {MODES.map(({ key, title, icon: Icon }) => (
+                    <TabsTrigger
+                      key={key}
+                      value={key}
+                      className="gap-2 whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-3 py-2"
+                    >
+                      <Icon className="h-4 w-4 text-primary data-[state=active]:text-primary-foreground" />
+                      <span className="hidden sm:inline">{title}</span>
+                      <span className="sm:hidden capitalize">{key}</span>
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                {/* subtle edges for overflow hint */}
+                <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-neutral to-transparent rounded-l-lg sm:hidden" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-neutral to-transparent rounded-r-lg sm:hidden" />
+              </div>
 
               <div className="hidden md:flex items-center gap-3 text-muted-foreground">
                 <Sparkles className="h-4 w-4" />

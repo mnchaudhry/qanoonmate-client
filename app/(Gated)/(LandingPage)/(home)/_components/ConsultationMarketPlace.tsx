@@ -298,7 +298,7 @@ function LawyerCard({ lawyer }: { lawyer: UILawyer }) {
 
       {/* Actions */}
       <div className="px-4 py-3 border-t flex gap-2">
-        <Link href="#" className="flex-1">
+        <Link href={`/lawyers/${lawyer?.id}`} className="flex-1">
           <Button variant="outline" size="sm" className="w-full">View Profile</Button>
         </Link>
         <Button size="sm" className="flex-1">
