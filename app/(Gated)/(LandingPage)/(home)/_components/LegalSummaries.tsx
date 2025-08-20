@@ -83,7 +83,7 @@ const LegalSummaries: React.FC = () => {
     // Placeholder action; wire to your API later
     await new Promise(res => setTimeout(res, 700));
     setResult(
-      `Preview summary for “${query || 'Sample'}”.` +
+      `Preview summary for "${query || 'Sample'}".` +
       (active === 'document' && files.length ? ` Processed ${files.length} file(s).` : '')
     );
     setLoading(false);
@@ -110,22 +110,22 @@ const LegalSummaries: React.FC = () => {
             <div className="flex flex-col gap-3">
               {/* Scrollable pills on mobile */}
               <div className="relative">
-                <TabsList className="flex w-full overflow-x-auto no-scrollbar gap-2 rounded-lg bg-background/60 p-1.5 shadow-sm backdrop-blur">
+                <TabsList className="flex w-full overflow-x-auto no-scrollbar gap-1 sm:gap-2 rounded-lg bg-background/60 p-1.5 shadow-sm backdrop-blur">
                   {MODES.map(({ key, title, icon: Icon }) => (
                     <TabsTrigger
                       key={key}
                       value={key}
-                      className="gap-2 whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-3 py-2"
+                      className="gap-1 sm:gap-2 whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground px-2 sm:px-3 py-1.5 sm:py-2 text-sm flex-shrink-0"
                     >
-                      <Icon className="h-4 w-4 text-primary data-[state=active]:text-primary-foreground" />
+                      <Icon className="h-3 w-3 sm:h-4 sm:w-4 text-primary data-[state=active]:text-primary-foreground" />
                       <span className="hidden sm:inline">{title}</span>
                       <span className="sm:hidden capitalize">{key}</span>
                     </TabsTrigger>
                   ))}
                 </TabsList>
                 {/* subtle edges for overflow hint */}
-                <div className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-gradient-to-r from-neutral to-transparent rounded-l-lg sm:hidden" />
-                <div className="pointer-events-none absolute inset-y-0 right-0 w-6 bg-gradient-to-l from-neutral to-transparent rounded-r-lg sm:hidden" />
+                <div className="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-neutral to-transparent rounded-l-lg sm:hidden" />
+                <div className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-neutral to-transparent rounded-r-lg sm:hidden" />
               </div>
 
               <div className="hidden md:flex items-center gap-3 text-muted-foreground">
@@ -135,13 +135,13 @@ const LegalSummaries: React.FC = () => {
             </div>
 
             {MODES.map((mode) => (
-              <TabsContent key={mode.key} value={mode.key} className="mt-6">
-                <div className="grid md:grid-cols-2 gap-6">
+              <TabsContent key={mode.key} value={mode.key} className="mt-4 sm:mt-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
                   {/* Left: Prompt + Examples + (Upload) */}
                   <div className="flex flex-col gap-4">
                     <div>
-                      <h3 className="text-lg font-semibold text-foreground">{mode.title}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">{mode.description}</p>
+                      <h3 className="text-base sm:text-lg font-semibold text-foreground">{mode.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{mode.description}</p>
                     </div>
 
                     {/* Examples */}
@@ -150,7 +150,7 @@ const LegalSummaries: React.FC = () => {
                         <button
                           key={i}
                           onClick={() => handleExampleClick(ex)}
-                          className="text-xs px-3 py-1 rounded-md bg-muted text-foreground hover:opacity-90 transition"
+                          className="text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-md bg-muted text-foreground hover:opacity-90 transition text-left leading-tight"
                         >
                           {ex}
                         </button>
@@ -164,7 +164,7 @@ const LegalSummaries: React.FC = () => {
                         value={active === mode.key ? query : ''}
                         onChange={(e) => setQuery(e.target.value)}
                         placeholder="Type your question or paste text to summarize..."
-                        className="min-h-28"
+                        className="min-h-24 sm:min-h-28 resize-none"
                       />
                     </div>
 
@@ -177,30 +177,40 @@ const LegalSummaries: React.FC = () => {
                     )}
 
                     {/* Actions */}
-                    <div className="flex items-center gap-3 pt-1">
-                      <Button onClick={handleSummarize} disabled={loading || (!query && mode.key !== 'document')}>
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 pt-1">
+                      <Button 
+                        onClick={handleSummarize} 
+                        disabled={loading || (!query && mode.key !== 'document')}
+                        className="flex-1 sm:flex-none"
+                      >
                         <Wand2 className="h-4 w-4 mr-2" />
                         {loading ? 'Summarizing…' : 'Summarize'}
                       </Button>
-                      <Button variant="ghost" onClick={handleClear} disabled={loading}>
+                      <Button 
+                        variant="ghost" 
+                        onClick={handleClear} 
+                        disabled={loading}
+                        className="flex-1 sm:flex-none"
+                      >
                         Clear
                       </Button>
-                      <Link href="../summarizers" className="ml-auto">
-                        <Button variant="secondary">
+                      <Link href="../summarizers" className="flex-1 sm:flex-none">
+                        <Button variant="secondary" className="w-full sm:w-auto">
                           <FileOutput className="h-4 w-4 mr-2" />
-                          Open full tool
+                          <span className="hidden sm:inline">Open full tool</span>
+                          <span className="sm:hidden">Full tool</span>
                         </Button>
                       </Link>
                     </div>
                   </div>
 
                   {/* Right: Preview */}
-                  <div className="bg-background border rounded-lg p-4 md:p-5">
+                  <div className="bg-background border rounded-lg p-3 sm:p-4 md:p-5">
                     <div className="flex items-center justify-between mb-3">
                       <div className="text-sm font-medium text-foreground">Preview</div>
-                      <span className="text-xs text-muted-foreground">{activeMode.title}</span>
+                      <span className="text-xs text-muted-foreground truncate ml-2">{activeMode.title}</span>
                     </div>
-                    <div className="min-h-40">
+                    <div className="min-h-32 sm:min-h-40">
                       {loading ? (
                         <div className="space-y-3 animate-pulse">
                           <div className="h-4 bg-muted rounded w-2/3" />
@@ -211,7 +221,7 @@ const LegalSummaries: React.FC = () => {
                       ) : result ? (
                         <div className="text-sm leading-6 text-foreground whitespace-pre-wrap">{result}</div>
                       ) : (
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-muted-foreground leading-relaxed">
                           No summary yet. Pick an example or enter a prompt, then press Summarize.
                         </div>
                       )}
@@ -224,20 +234,22 @@ const LegalSummaries: React.FC = () => {
         </div>
 
         {/* Disclaimer */}
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           <Alert className="bg-muted">
             <ShieldAlert className="h-4 w-4" />
-            <AlertTitle>Disclaimer</AlertTitle>
-            <AlertDescription>
+            <AlertTitle className="text-sm sm:text-base">Disclaimer</AlertTitle>
+            <AlertDescription className="text-sm">
               AI summaries are not a replacement for professional legal consultation. Use with caution, especially for sensitive matters. Incorrect or misleading content can be reported for review.
             </AlertDescription>
           </Alert>
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12">
+        <div className="text-center mt-8 sm:mt-12">
           <Link href="../summarizers">
-            <Button>Explore Legal Summaries</Button>
+            <Button size="lg" className="w-full sm:w-auto">
+              Explore Legal Summaries
+            </Button>
           </Link>
         </div>
       </div>

@@ -51,13 +51,13 @@ const LandingPageNavbar: React.FC = () => {
     <>
       {
         user?.releaseChannel === ReleaseChannel.BETA &&
-        <div className='bg-indigo-500 text-white p-2 text-center'>
+        <div className='bg-indigo-500 text-white p-2 text-center hidden md:block'>
           <p className="text-sm">You are using the beta version of QanoonMate. Please report any issues to <a href="mailto:support@qanoonmate.com" className='underline'>support@qanoonmate.com</a></p>
         </div>
       }
       {
         user?.role === UserRole.ADMIN &&
-        <div className='bg-lime-700 text-white p-2 text-center'>
+        <div className='bg-lime-700 text-white p-2 text-center hidden md:block'>
           <p className="text-sm">
             Welcome, Supreme Admin! You now possess godlike powers. Please use them only for good (and maybe a little mischief).
           </p>
@@ -66,7 +66,7 @@ const LandingPageNavbar: React.FC = () => {
       <nav
         className={cn(
           "fixed top-0 z-[60] w-full transition-all duration-300 ease-in-out",
-          (user?.releaseChannel === ReleaseChannel.BETA || user?.role === UserRole.ADMIN) && !isScrolled && 'pt-16',
+          (user?.releaseChannel === ReleaseChannel.BETA || user?.role === UserRole.ADMIN) && !isScrolled && 'md:pt-16',
           isScrolled
             ? 'h-[80px] shadow-md bg-background text-neutral-foreground'
             : 'h-[100px] bg-transparent text-foreground'

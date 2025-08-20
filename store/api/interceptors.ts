@@ -42,7 +42,7 @@ export const setupInterceptors = (store: { getState: () => RootState; dispatch: 
                 const startedAt = (response.config as any).metadata?.startedAt as number | undefined;
                 const duration = startedAt ? Date.now() - startedAt : undefined;
                 const reqId = response.headers?.['x-request-id'] as string | undefined;
-                if (!response.config.url?.includes('/analytics/track')) {
+                if (!response.config.url?.includes('/analytics/en12')) {
                     track('api_call', {
                         url: response.config.url,
                         method: response.config.method,
@@ -51,7 +51,7 @@ export const setupInterceptors = (store: { getState: () => RootState; dispatch: 
                         requestId: reqId || null,
                     });
                 }
-            } catch {}
+            } catch { }
             return response;
         },
         async (error) => {
@@ -96,10 +96,10 @@ export const setupInterceptors = (store: { getState: () => RootState; dispatch: 
                 const duration = startedAt ? Date.now() - startedAt : undefined;
                 const status = error?.response?.status;
                 const reqId = error?.response?.headers?.['x-request-id'] as string | undefined;
-                if (!originalRequest?.url?.includes('/analytics/track')) {
+                if (!originalRequest?.url?.includes('/analytics/en12')) {
                     trackApiError({ url: originalRequest?.url, method: originalRequest?.method, status, durationMs: duration, requestId: reqId || null, message: error?.message });
                 }
-            } catch {}
+            } catch { }
             return Promise.reject(error);
         }
     );

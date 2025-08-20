@@ -22,7 +22,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'courtingthelaw.com'
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: '**'
+      },
     ],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
