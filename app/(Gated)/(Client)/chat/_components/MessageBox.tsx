@@ -22,9 +22,10 @@ interface MessageBoxProps {
   textSize?: number;
   messages: AIChatMessage[];
   quickAction: string;
+  onRegenerate: (botMessage: AIChatMessage) => Promise<void>;
 }
 
-const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChatMessage) => Promise<void>; }> = memo(({ chatViewMode = "card", textSize = 16, messages, onRegenerate }) => {
+const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", textSize = 16, messages, onRegenerate }) => {
   ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////
   const { quickAction, streamingMessage, isStreaming } = useSelector((state: RootState) => state.aiSession);
 
@@ -318,7 +319,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
           >
             <div
               className={cn(
-                "px-4 py-3 rounded-lg shadow-sm border",
+                "px-0 py-0 rounded-lg shadow-sm border",
                 isModel
                   ? "bg-primary/10 text-foreground border-primary/10"
                   : "bg-muted text-foreground border-border"
@@ -330,13 +331,13 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
                 <MDXEditor
                   markdown={buildMarkdown(parsed)}
                   readOnly={true}
-                  className={`chat-markdown ${nunito.className}`}
+                  className={`chat-markdown p-0 ${nunito.className}`}
                   plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(), linkPlugin()]}
                 />
                 {message.sender == "bot" &&
                   !message.isStreaming &&
                   quickAction && (
-                    <div className="text-gray-500 ms-2">
+                    <div className="text-gray-500 ms-2 text-sm pb-3 ">
                       Quick Action : {quickAction}
                     </div>
                   )}
@@ -392,7 +393,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
           >
             <div
               className={cn(
-                "px-4 py-3 rounded-lg shadow-sm border",
+                "px-0 py-0 rounded-lg shadow-sm border",
                 isModel
                   ? "bg-primary/10 text-foreground border-primary/10"
                   : "bg-muted text-foreground border-border"
@@ -410,7 +411,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
                 {message.sender == "bot" &&
                   !message.isStreaming &&
                   quickAction && (
-                    <div className="text-gray-500 ms-2">
+                    <div className="text-gray-500 ms-2 text-sm pb-3">
                       Quick Action : {quickAction}
                     </div>
                   )}
@@ -452,7 +453,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
         {/* Message Bubble */}
         <div
           className={cn(
-            "px-4 py-3 rounded-lg w-fit max-w-[80%] shadow-sm border",
+            "px-0 py-0 rounded-lg w-fit max-w-[80%] shadow-sm border",
             isModel
               ? "bg-primary/10 text-foreground border-primary/10"
               : "bg-muted text-foreground border-border"
@@ -468,7 +469,7 @@ const MessageBox: React.FC<MessageBoxProps & { onRegenerate: (botMessage: AIChat
               plugins={[headingsPlugin({ allowedHeadingLevels: [1, 2, 3, 4, 5, 6] }), listsPlugin(), quotePlugin(), thematicBreakPlugin(), linkPlugin({ validateUrl: (url) => /^https?:\/\//.test(url), }), markdownShortcutPlugin()]}
             />
             {message.sender == "bot" && !message.isStreaming && quickAction && (
-              <div className="text-gray-500 ms-2">
+              <div className="text-gray-500 ms-2 text-sm pb-3">
                 Quick Action :{" "}
                 {quickAction ? quickAction : "Search for related articles"}
               </div>

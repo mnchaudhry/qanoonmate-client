@@ -135,7 +135,7 @@ const ChatInput: React.FC<Props> = memo(
       setExtractedText("");
       setExtractedText("");
       setUploadedFiles([]);
-      setShowContextPanel(true);
+      // setShowContextPanel(true);
     };
 
     const handleFileUpload = async (
