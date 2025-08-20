@@ -27,6 +27,7 @@ interface SocketContextType {
   getAllConnections: () => Record<string, SocketConnection>;
   // Authenticate socket with user ID
   authenticateSocket: (userId: string, namespace?: string) => void;
+  connectAgain: () => Promise<boolean>;
   // Reconnect to default socket
   reconnect: () => Promise<boolean>;
 }
@@ -193,6 +194,46 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
+  const connectAgain = async (): Promise<boolean> => {
+    try {
+      // if socket exists return
+      const currentConnection = connections["/"];
+      if (currentConnection?.socket) {
+        return true;
+      }
+
+      const newConnection = createSocketConnection("/");
+      setConnections((prev) => ({ ...prev, "/": newConnection }));
+
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(
+          () => reject(new Error("Connection timeout")),
+          5000
+        );
+
+        newConnection.socket!.on("connect", () => {
+          clearTimeout(timeout);
+          resolve(true);
+        });
+
+        newConnection.socket!.on("connect_error", (err) => {
+          clearTimeout(timeout);
+          reject(err);
+        });
+      });
+
+      // Authenticate if user is available
+      if (user?._id) {
+        authenticateSocket(user._id, "/");
+      }
+
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+
   // Reconnect to default socket
   const reconnect = async (): Promise<boolean> => {
     try {
@@ -290,6 +331,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         disconnectFromNamespace,
         getAllConnections,
         authenticateSocket,
+        connectAgain,
         reconnect,
       }}
     >

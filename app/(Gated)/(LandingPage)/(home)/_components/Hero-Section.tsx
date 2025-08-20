@@ -15,12 +15,12 @@ const HeroSection: React.FC = () => {
         {/* <BackgroundBeams /> */}
       </div>
 
-      <div className="container h-full relative z-10 px-4 mx-auto flex gap-10 items-center">
+      <div className="container h-full relative z-10 px-4 mx-auto flex gap-6 md:gap-10 items-center flex-col md:flex-row">
 
-        <div className='flex-[6] '>
-          <h1 className="flex flex-col gap-8 text-7xl sm:text-6xl font-bold tracking-tight text-foreground leading-loose mb-6">
-            <span className="leading-[4rem] block">Legal Access Simplified</span>
-            <span className="leading-[4rem] text-primary drop-shadow-md">AI Meets Law in Pakistan</span>
+        <div className='flex-[6] w-full'>
+          <h1 className="flex flex-col gap-4 md:gap-8 text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground leading-tight md:leading-loose mb-4 md:mb-6">
+            <span className="leading-tight md:leading-[4rem] block">Legal Access Simplified</span>
+            <span className="leading-tight md:leading-[4rem] text-primary drop-shadow-md">AI Meets Law in Pakistan</span>
           </h1>
 
           <p className="text-xl text-muted-foreground mb-8 max-w-lg">
@@ -28,7 +28,7 @@ const HeroSection: React.FC = () => {
             QanoonMate is your smart legal companion, accessible anywhere, anytime.
           </p>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-3 md:gap-4">
             {isAuthenticated && user ? (
               <Link href="/client/dashboard">
                 <Button>
@@ -57,7 +57,7 @@ const HeroSection: React.FC = () => {
         </div>
 
         {/* Right Column: Image / Visual */}
-        <div className="flex-[4] relative rounded-lg overflow-hidden">
+        <div className="flex-[4] relative rounded-lg overflow-hidden w-full md:w-auto">
           <Image
             src="/Pictures/pk-map.svg"
             alt="QanoonMate preview"

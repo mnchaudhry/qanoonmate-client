@@ -19,13 +19,20 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating }: DropboxProps) 
     /////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////
     const dispatch = useDispatch<AppDispatch>()
     const { error, currentSummary, progress, streamingSummary } = useSelector((state: RootState) => state.summary)
-    const { defaultSocket } = useSocketContext()
+    const { defaultSocket: { isConnected, isAuthenticated }, connectAgain } = useSocketContext()
 
     /////////////////////////////////////////////// STATES /////////////////////////////////////////////////////
     const [input, setInput] = useState('')
     const [file, setFile] = useState<File | null>(null)
 
     /////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////
+
+    // connect again for socket
+    useEffect(() => {
+        if (!isConnected) {
+            connectAgain()
+        }
+    }, [isConnected, connectAgain])
     // Handle real-time summary updates
     useEffect(() => {
         if (currentSummary) {
@@ -172,10 +179,10 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating }: DropboxProps) 
 
                     {/* Socket connection status */}
                     <div className="flex items-center gap-2 text-xs">
-                        <div className={`w-2 h-2 rounded-full ${defaultSocket.isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                        <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
                         <span className="text-muted-foreground">
-                            {defaultSocket.isConnected
-                                ? defaultSocket.isAuthenticated
+                            {isConnected
+                                ? isAuthenticated
                                     ? 'Real-time updates connected and authenticated'
                                     : 'Connecting to real-time updates...'
                                 : 'Connecting to real-time updates...'

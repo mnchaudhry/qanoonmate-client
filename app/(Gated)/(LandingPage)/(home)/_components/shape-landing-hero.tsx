@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { Circle, ArrowRight, Play } from "lucide-react";
+import { Circle, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -47,7 +47,7 @@ function HeroGeometric() {
     };
 
     return (
-        <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-background">
+        <div className="relative md:min-h-screen min-h-[80vh] w-full flex items-center justify-center overflow-hidden bg-background">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.05] via-transparent to-primary-dark/[0.05] blur-3xl" />
 
             <div className="absolute inset-0 overflow-hidden">
@@ -116,7 +116,7 @@ function HeroGeometric() {
                         initial="hidden"
                         animate="visible"
                     >
-                        <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold mb-6 md:mb-8 tracking-tight">
+                        <h1 className="text-5xl sm:text-6xl md:text-8xl font-bold mb-6 md:mb-8 tracking-tight">
                             <span className="bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/80">
                                 Your Smart
                             </span>
@@ -164,7 +164,7 @@ function HeroGeometric() {
                         </Button>
 
                         {/* Tertiary CTA - Watch Demo */}
-                        <Button
+                        {/* <Button
                             variant="ghost"
                             size="lg"
                             className="px-8 py-3 text-lg cursor-pointer text-muted-foreground hover:text-foreground"
@@ -178,7 +178,7 @@ function HeroGeometric() {
                         >
                             <Play className="mr-2 h-5 w-5" />
                             Watch Demo
-                        </Button>
+                        </Button> */}
                     </motion.div>
 
                     {/* Social Proof */}

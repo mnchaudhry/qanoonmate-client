@@ -21,11 +21,11 @@ export default function ChatbotPage() {
 
       <div className="container mx-auto mt-8">
         {/* Existing Sections */}
-        <div className="grid grid-cols-10 gap-2 px-6 py-8">
-          <div className="col-span-4">
+        <div className="grid grid-cols-1 md:grid-cols-10 gap-4 sm:gap-6 px-4 sm:px-6 py-6 sm:py-8">
+          <div className="md:col-span-4 order-2 md:order-1">
             <ChatFeatures />
           </div>
-          <div className="col-span-6">
+          <div className="md:col-span-6 order-1 md:order-2">
             <ChatDemo />
           </div>
         </div>

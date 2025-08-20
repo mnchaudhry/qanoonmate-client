@@ -19,7 +19,7 @@ const CaseLawGrid: React.FC<CaseLawGridProps> = ({ caseLaws, onCourtClick, onCat
           <CardContent className="flex-1 p-6">
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold mb-2 line-clamp-2">{caseLaw.title}</h3>
+                <h3 className="text-base md:text-lg font-semibold mb-2 line-clamp-2">{caseLaw.title}</h3>
                 <div className="flex items-center gap-2 mb-3">
                 <Badge variant="outline" className="text-xs">{caseLaw.year}</Badge>
                 {caseLaw.court && (

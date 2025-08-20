@@ -29,7 +29,7 @@ const ChatbotClient = () => {
   // variables 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const { defaultSocket: { socket, isConnected } } = useSocketContext();
+  const { defaultSocket: { socket, isConnected }, connectAgain } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
   const {
     messages,
@@ -47,6 +47,7 @@ const ChatbotClient = () => {
   const { cases, references, aiConfidence: confidence, legalContext, quickAction, referencedLinks } = useSelector((state: RootState) => state.aiSession);
 
   const [showContextPanel, setShowContextPanel] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
 
   // ---------------------------------------------------------------------------
@@ -56,13 +57,20 @@ const ChatbotClient = () => {
     dispatch(getLawyers({}));
   }, [dispatch]);
 
+  // connectAgain 
+  useEffect(() => {
+    if (!isConnected) {
+      connectAgain()
+    }
+  }, [isConnected, connectAgain])
+
   // Add session management state and effect
   useEffect(() => {
     if (!sessionId) return;
     dispatch(getChatSession(sessionId));
     dispatch(getMessagesBySession(sessionId));
     dispatch(getChatMetadataBySession(sessionId));
-    setShowContextPanel(true);
+    // setShowContextPanel(true);
   }, [sessionId, dispatch]);
 
   // derived data moved to useParsedMessages hook
@@ -159,7 +167,22 @@ const ChatbotClient = () => {
   return (
     <TooltipProvider>
       <div className="flex h-screen w-full transition-colors duration-200 bg-background">
-        <ChatbotSidebar sessionMetadata={sessionMetadata} />
+        {/* Mobile backdrop for left sidebar */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 z-30 bg-black/40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+        {/* Mobile backdrop for right sidebar */}
+        {showContextPanel && (
+          <div
+            className="fixed inset-0 z-30 bg-black/40 md:hidden"
+            onClick={() => setShowContextPanel(false)}
+          />
+        )}
+
+        <ChatbotSidebar sessionMetadata={sessionMetadata} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         {/* Main Content Area (Chat + Rightbar) */}
         <div className="flex flex-[8] flex-col h-full w-full bg-background overflow-hidden">
@@ -175,18 +198,14 @@ const ChatbotClient = () => {
               chatViewMode={chatViewMode}
               setChatViewMode={setChatViewMode}
               aiConfidence={confidence}
+              onToggleSidebar={() => setSidebarOpen((s) => !s)}
+              onToggleRightbar={() => setShowContextPanel((s) => !s)}
             />
           </div>
-          <div
-            style={{ height: "calc(100vh - 80px)" }}
-            className="flex h-full w-full"
-          >
+          <div className="flex h-full w-full min-h-0">
             {/* Main Chat Area */}
-            <div className="flex flex-col h-full w-full bg-background overflow-scroll">
-              <div
-                style={{ height: "calc(100vh - 64px)" }}
-                className="w-full mx-auto flex flex-1 flex-col"
-              >
+            <div className="flex flex-col h-full w-full bg-background overflow-hidden">
+              <div className="w-full mx-auto flex flex-1 flex-col min-h-0">
                 {/* Main Chat Content */}
                 {messages?.length < 1 ? (
                   <DefaultScreen />

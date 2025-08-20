@@ -15,7 +15,7 @@ function LegalChatbotDemo() {
     };
 
     return (
-        <section className="bg-surface py-24">
+        <section className="bg-surface py-24 !px-4">
             <motion.div
                 variants={fadeUpVariants}
                 initial="hidden"
@@ -35,12 +35,12 @@ function LegalChatbotDemo() {
             </motion.div>
             <div className="container px-4 mx-auto max-w-7xl md:px-6">
                 {/* Existing Sections */}
-                <div className="grid grid-cols-10 gap-2 px-6 py-8">
-                    <div className="col-span-4">
-                        <ChatFeatures />
-                    </div>
-                    <div className="col-span-6">
+                <div className="grid grid-cols-1 md:grid-cols-10 gap-4 md:gap-2 px-0 md:px-6 py-4 md:py-8">
+                    <div className="md:col-span-6 order-1">
                         <ChatDemo />
+                    </div>
+                    <div className="md:col-span-4 order-2">
+                        <ChatFeatures />
                     </div>
                 </div>
             </div>

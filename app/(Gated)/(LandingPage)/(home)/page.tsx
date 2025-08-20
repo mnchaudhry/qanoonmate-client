@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import About from "./_components/About"
 import Contact from "./_components/Contact"
-import ChatBotButton from "./_components/ChatBotButton"
+// import ChatBotButton from "./_components/ChatBotButton"
 import { LegalChatbotDemo } from "./_components/LegalChatbotDemo"
 import BlogNewsTeaser from "./_components/LegalBlogs"
 import ConsultationMarketplace from "./_components/ConsultationMarketPlace"
@@ -62,7 +62,7 @@ export default function Home() {
         <Pricing />
         <CTA />
         <Contact />
-        <ChatBotButton />
+        {/* <ChatBotButton /> */}
       </main>
     </>
   )

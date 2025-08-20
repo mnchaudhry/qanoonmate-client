@@ -31,7 +31,7 @@ const About: React.FC = () => {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Text Content */}
           <motion.div
             variants={fadeUpVariants}
@@ -39,7 +39,7 @@ const About: React.FC = () => {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <h3 className="text-3xl font-bold mb-6 leading-snug text-foreground">
+            <h3 className="text-2xl md:text-3xl font-bold mb-6 leading-snug text-foreground">
               The QanoonMate Solution
             </h3>
             <p className="text-muted-foreground text-lg leading-relaxed mb-8">

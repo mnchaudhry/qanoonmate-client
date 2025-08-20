@@ -14,6 +14,10 @@ import EmptyState from '@/components/ui/empty-state'
 import { Pagination } from '@/components/ui/pagination'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useDebounce } from '@/hooks/use-debounce'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Filter } from 'lucide-react'
 
 const PAGE_SIZE = 42;
 
@@ -159,8 +163,49 @@ const LegalDictionary = () => {
                 description="Explore our comprehensive legal dictionary to understand key legal terms and concepts."
             />
             <div className="container mx-auto px-6 py-8">
-                <div className="grid grid-cols-4 gap-6">
-                    <div className="col-span-1">
+                {/* Mobile Filters: search + dropdown */}
+                <div className="md:hidden mb-6">
+                    <div className="flex items-center gap-2">
+                        <div className="flex-1">
+                            <Input
+                                type="text"
+                                placeholder="Search legal terms..."
+                                value={searchTerm}
+                                onChange={(e) => handleSearchChange(e.target.value)}
+                                className="h-10"
+                            />
+                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="shrink-0 h-10">
+                                    <Filter className="w-4 h-4 mr-2" /> Filters
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="p-0">
+                                <div className="p-3 w-[calc(100vw-2rem)] max-w-sm max-h-[70vh] overflow-y-auto [&>aside>div:nth-child(2)]:hidden">
+                                    <DictionarySidebar
+                                        search={searchTerm}
+                                        onSearch={handleSearchChange}
+                                        category={category}
+                                        onCategory={handleCategoryChange}
+                                        urdu={urdu}
+                                        onUrdu={handleUrduChange}
+                                        letter={letter}
+                                        onLetter={handleLetterChange}
+                                        sort={sort}
+                                        onSort={handleSortChange}
+                                        hasActiveFilters={hasActiveFilters}
+                                        onClearFilters={handleClearFilters}
+                                        isSearching={isSearching}
+                                    />
+                                </div>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-4 grid-cols-1 gap-6">
+                    <div className="md:col-span-1 hidden md:block">
                         <DictionarySidebar
                             search={searchTerm}
                             onSearch={handleSearchChange}
@@ -177,7 +222,7 @@ const LegalDictionary = () => {
                             isSearching={isSearching}
                         />
                     </div>
-                    <section className="col-span-3 !pt-0">
+                    <section className="md:col-span-3 col-span-1 !pt-0">
                         {/* View Toggle and Count */}
                         {terms.length > 0 && (
                         <div className="flex justify-between items-center mb-6">
@@ -189,7 +234,9 @@ const LegalDictionary = () => {
                                     </span>
                                 )}
                             </div>
-                            <ViewToggle view={view} onViewChange={handleViewChange} />
+                            <div className="hidden md:flex">
+                              <ViewToggle view={view} onViewChange={handleViewChange} />
+                            </div>
                         </div>
                         )}
 
@@ -212,23 +259,23 @@ const LegalDictionary = () => {
                             </div>
                         ) : (
                             <>
-                                {view === 'list' ? (
-                                    <div className="grid gap-3">
-                                        {terms.map(term => (
-                                            <TermCard
-                                                key={term._id}
-                                                {...term}
-                                                onRelatedTermClick={handleRelatedTermClick}
-                                                onCategoryClick={handleCategoryClick}
-                                            />
-                                        ))}
-                                    </div>
+                                {(view === 'list' && !(typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches)) ? (
+                                  <div className="grid gap-3">
+                                      {terms.map(term => (
+                                          <TermCard
+                                              key={term._id}
+                                              {...term}
+                                              onRelatedTermClick={handleRelatedTermClick}
+                                              onCategoryClick={handleCategoryClick}
+                                          />
+                                      ))}
+                                  </div>
                                 ) : (
-                                    <DictionaryGrid
-                                        terms={terms}
-                                        onRelatedTermClick={handleRelatedTermClick}
-                                        onCategoryClick={handleCategoryClick}
-                                    />
+                                  <DictionaryGrid
+                                      terms={terms}
+                                      onRelatedTermClick={handleRelatedTermClick}
+                                      onCategoryClick={handleCategoryClick}
+                                  />
                                 )}
                                 <div className="mt-8">
                                     <Pagination

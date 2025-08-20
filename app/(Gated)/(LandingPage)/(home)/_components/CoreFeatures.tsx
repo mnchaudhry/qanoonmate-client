@@ -31,7 +31,7 @@ function CoreFeatures() {
                     <div className="absolute bottom-8 left-8 w-12 h-12 bg-primary/30 rounded-full animate-pulse delay-1000" />
                     <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-primary/40 rounded-full animate-pulse delay-500" />
                     {/* Chat bubbles */}
-                    <div className="absolute bottom-16 right-12 bg-neutral p-3 rounded-2xl shadow-lg max-w-xs">
+                    <div className="absolute bottom-28 md:bottom-16 right-12 bg-neutral p-3 rounded-2xl shadow-lg max-w-xs">
                         <div className="flex items-center gap-2 mb-1">
                             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                             <span className="text-xs font-medium text-primary">AI Assistant</span>
@@ -80,7 +80,7 @@ function CoreFeatures() {
                     <div className="absolute top-8 left-8 w-16 h-20 bg-neutral/60 rounded-lg shadow-md transform rotate-3" />
                     <div className="absolute top-10 left-10 w-16 h-20 bg-neutral/40 rounded-lg shadow-md transform rotate-12" />
                     {/* Categories */}
-                    <div className="absolute bottom-6 right-6 flex flex-wrap gap-2">
+                    <div className="absolute bottom-28 md:bottom-6 right-6 flex flex-wrap gap-2">
                         <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">Contracts</span>
                         <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">Agreements</span>
                         <span className="px-2 py-1 bg-primary/20 text-primary text-xs rounded-full">Forms</span>

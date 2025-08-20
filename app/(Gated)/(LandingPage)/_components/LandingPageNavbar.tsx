@@ -11,6 +11,8 @@ import Logo from '@/components/Logo';
 import { cn } from '@/lib/utils';
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger, navigationMenuTriggerStyle, } from "@/components/ui/navigation-menu"
 import { ReleaseChannel, UserRole } from '@/lib/enums';
+import { Menu, X, ChevronRight } from 'lucide-react'
+import { useState } from 'react'
 
 const LandingPageNavbar: React.FC = () => {
 
@@ -20,6 +22,7 @@ const LandingPageNavbar: React.FC = () => {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
 
   //////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
+  const [mobileOpen, setMobileOpen] = useState(false);
   const links = [
     { label: 'Home', link: '/', subLinks: [], description: 'Go to the homepage.' },
     {
@@ -48,13 +51,13 @@ const LandingPageNavbar: React.FC = () => {
     <>
       {
         user?.releaseChannel === ReleaseChannel.BETA &&
-        <div className='bg-indigo-500 text-white p-2 text-center'>
+        <div className='bg-indigo-500 text-white p-2 text-center hidden md:block'>
           <p className="text-sm">You are using the beta version of QanoonMate. Please report any issues to <a href="mailto:support@qanoonmate.com" className='underline'>support@qanoonmate.com</a></p>
         </div>
       }
       {
         user?.role === UserRole.ADMIN &&
-        <div className='bg-lime-700 text-white p-2 text-center'>
+        <div className='bg-lime-700 text-white p-2 text-center hidden md:block'>
           <p className="text-sm">
             Welcome, Supreme Admin! You now possess godlike powers. Please use them only for good (and maybe a little mischief).
           </p>
@@ -63,14 +66,34 @@ const LandingPageNavbar: React.FC = () => {
       <nav
         className={cn(
           "fixed top-0 z-[60] w-full transition-all duration-300 ease-in-out",
-          (user?.releaseChannel === ReleaseChannel.BETA || user?.role === UserRole.ADMIN) && !isScrolled && 'pt-16',
+          (user?.releaseChannel === ReleaseChannel.BETA || user?.role === UserRole.ADMIN) && !isScrolled && 'md:pt-16',
           isScrolled
             ? 'h-[80px] shadow-md bg-background text-neutral-foreground'
             : 'h-[100px] bg-transparent text-foreground'
         )}
       >
         <div className="h-full w-full flex items-center justify-between px-4 mx-auto md:px-6">
-          <Logo size="md" />
+          <div className="flex items-center gap-2">
+            <button className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-md border !border-border bg-background" onClick={() => setMobileOpen((o) => !o)} aria-label="Toggle menu">
+              {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+            <Logo size="md" />
+          </div>
+
+          <div className="md:hidden block">
+            {isAuthenticated ? (
+              <ProfileButton />
+            ) : (
+              <div className="flex gap-2">
+                <Button variant="outline" asChild className="flex-1 h-10">
+                  <Link href={`/auth/sign-in`} prefetch={true}>Sign In</Link>
+                </Button>
+                <Button variant="default" asChild className="flex-1 h-10">
+                  <Link href={`/auth/sign-up?role=${UserRole.LAWYER}`} prefetch={true}>Register</Link>
+                </Button>
+              </div>
+            )}
+          </div>
 
           <ul className="hidden md:flex items-center space-x-6">
 
@@ -144,7 +167,39 @@ const LandingPageNavbar: React.FC = () => {
             )}
           </ul>
 
-
+          {/* Mobile dropdown */}
+          {mobileOpen && (
+            <div className="absolute left-0 right-0 top-full bg-background border-t !border-border shadow-md md:hidden">
+              <div className="p-3 flex flex-col">
+                {links.map((item, index) => {
+                  const isActive = item.subLinks?.length > 0 ? pathname.includes(item.link) : pathname === item.link;
+                  if (item.subLinks.length === 0) {
+                    return (
+                      <Link key={index} href={item.link} prefetch={true} className={cn("px-3 py-2 rounded-md text-sm", isActive ? "bg-muted" : "")}
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    );
+                  }
+                  return (
+                    <div key={index} className="mb-2">
+                      <div className={cn("px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1", isActive ? "bg-muted" : "")}>{item.label}</div>
+                      <div className="pl-4 flex flex-col">
+                        {item.subLinks.map((sub, idx) => (
+                          <Link key={idx} href={sub.link} prefetch={true} className="px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-accent flex items-center gap-2"
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            <ChevronRight className="w-3 h-3" />{sub.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </nav >
     </>
