@@ -327,8 +327,8 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", tex
               className={cn(
                 "px-0 py-0 rounded-lg shadow-sm border",
                 isModel
-                  ? "bg-primary/10 text-foreground border-primary/10"
-                  : "bg-muted text-foreground border-border"
+                  ? " text-foreground border-primary/10"
+                  : "bg-primary/10 text-foreground border-border"
               )}
             >
               <div
@@ -401,8 +401,8 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", tex
               className={cn(
                 "px-0 py-0 rounded-lg shadow-sm border",
                 isModel
-                  ? "bg-primary/10 text-foreground border-primary/10"
-                  : "bg-muted text-foreground border-border"
+                  ? " text-foreground border-primary/10"
+                  : "bg-primary/10 text-foreground border-border"
               )}
             >
               <div
