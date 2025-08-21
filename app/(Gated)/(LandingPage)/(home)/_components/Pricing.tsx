@@ -6,7 +6,7 @@ import { pricingPlans } from "@/constants";
 
 function Pricing() {
   return (
-    <section className="bg-neutral py-24">
+    <section className="bg-neutral py-24 !px-4">
       <div className="container mx-auto flex text-center justify-center items-center gap-4 flex-col">
 
         <SectionHeading

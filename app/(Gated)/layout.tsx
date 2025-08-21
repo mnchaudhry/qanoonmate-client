@@ -1,36 +1,32 @@
 "use client";
 
-import React, { ReactNode, useEffect } from 'react'
-import ComingSoonWrapper from '@/wrappers/ComingSoonWrapper';
-import localStorageManager from '@/utils/localStorage';
-import { useStateContext } from '@/context/useStateContext';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
+import { ReactNode } from 'react'
+
 
 const LandingPageLayout = ({ children }: { children: ReactNode }) => {
 
-    const { isBetaUser, setIsBetaUser } = useStateContext();
-    const { isAuthenticated } = useSelector((state: RootState) => state.auth)
+    // const { isBetaUser, setIsBetaUser } = useStateContext();
+    // const { isAuthenticated } = useSelector((state: RootState) => state.auth)
 
-    useEffect(() => {
-        const isIt = localStorageManager.getItem('beta_user') as boolean;
-        if (isIt) {
-            setIsBetaUser(isIt);
-        }
-    }, [setIsBetaUser]);
+    // useEffect(() => {
+    //     const isIt = localStorageManager.getItem('beta_user') as boolean;
+    //     if (isIt) {
+    //         setIsBetaUser(isIt);
+    //     }
+    // }, [setIsBetaUser]);
 
     return (
-        (isBetaUser || isAuthenticated)
-            ?
-            children
-            :
-            <ComingSoonWrapper
-                title="Your AI-Powered Legal Companion is Arriving"
-                description="Law made accessible. Insights made simple."
-                estimatedDate="Launching August 20, 2025"
-            >
-                <></>
-            </ComingSoonWrapper>
+        // (isBetaUser || isAuthenticated)
+        // ?
+        children
+        // :
+        // <ComingSoonWrapper
+        // title="Your AI-Powered Legal Companion is Arriving"
+        // description="Law made accessible. Insights made simple."
+        // estimatedDate="Launching August 20, 2025"
+        // >
+        // <></>
+        // </ComingSoonWrapper>
     )
 }
 

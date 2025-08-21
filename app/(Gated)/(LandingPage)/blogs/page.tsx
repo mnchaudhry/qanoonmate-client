@@ -17,7 +17,9 @@ const BlogsAndNews = () => {
 
             <div className="container mx-auto mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8 px-4">
                 <Blogs />
-                <News />
+                <div className="order-first lg:order-none">
+                  <News />
+                </div>
             </div>
 
         </section>

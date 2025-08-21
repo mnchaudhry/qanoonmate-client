@@ -92,39 +92,39 @@ function CategoryCard({ category }: { category: Category }) {
   const Icon = category.icon
   return (
     <Card className="group overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/20">
-      <div className="relative h-40 w-full overflow-hidden">
+      <div className="relative h-32 sm:h-40 w-full overflow-hidden">
         {category.image ? (
           <Image
             src={category.image}
             alt={category.title}
             fill
-            sizes="(max-width: 768px) 100vw, 33vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
             priority={false}
           />
         ) : null}
         <div className="absolute inset-0 bg-gradient-to-t from-background/85 via-background/30 to-transparent" />
       </div>
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-3 px-4 sm:px-6">
         <div className="flex items-center gap-2">
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
-            <Icon className="h-4 w-4" />
+          <span className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
+            <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
           </span>
-          <CardTitle className="text-lg">{category.title}</CardTitle>
+          <CardTitle className="text-base sm:text-lg leading-tight">{category.title}</CardTitle>
         </div>
-        <CardDescription className="mt-2">{category.description}</CardDescription>
+        <CardDescription className="mt-2 text-sm leading-relaxed">{category.description}</CardDescription>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-0 px-4 sm:px-6 pb-4 sm:pb-6">
         <div className="flex items-center justify-between">
           <Link
             href={category.href}
-            className="inline-flex items-center gap-1 text-primary hover:text-primary/90"
+            className="inline-flex items-center gap-1 text-primary hover:text-primary/90 text-sm"
             aria-label={`Browse ${category.title}`}
           >
             Browse
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
         </Link>
-          <Badge variant="outline">Updated</Badge>
+          <Badge variant="outline" className="text-xs">Updated</Badge>
         </div>
       </CardContent>
     </Card>
@@ -133,13 +133,13 @@ function CategoryCard({ category }: { category: Category }) {
 
 function Stat({ label, value, icon: Icon }: { label: string; value: string; icon: React.ComponentType<React.SVGProps<SVGSVGElement>> }) {
   return (
-    <div className="flex items-center gap-3 rounded-lg border bg-card px-4 py-3 shadow-sm">
-      <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-primary/10 text-primary">
-        <Icon className="h-4 w-4" />
+    <div className="flex items-center gap-3 rounded-lg border bg-card px-3 sm:px-4 py-3 shadow-sm">
+      <span className="inline-flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-md bg-primary/10 text-primary flex-shrink-0">
+        <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
       </span>
-      <div>
-        <div className="text-sm text-muted-foreground">{label}</div>
-        <div className="text-lg font-semibold">{value}</div>
+      <div className="min-w-0 flex-1">
+        <div className="text-xs sm:text-sm text-muted-foreground">{label}</div>
+        <div className="text-base sm:text-lg font-semibold truncate">{value}</div>
       </div>
     </div>
   )
@@ -168,27 +168,39 @@ const LegalKnowledgeBase: React.FC = () => {
         />
 
         {/* Search + Category selector */}
-        <div className="mb-12">
+        <div className="mb-8 sm:mb-12">
           <div className="relative overflow-hidden rounded-xl border bg-gradient-to-br from-secondary to-secondary/70 p-4 md:p-6">
             <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-primary/15 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
 
             <Tabs value={active} onValueChange={setActive}>
               <div className="flex flex-col gap-4">
-                <TabsList className="w-full justify-start rounded-lg bg-background/60 p-1.5 shadow-sm backdrop-blur">
-                  <TabsTrigger value="all" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">All</TabsTrigger>
-                  {CATEGORIES.map((c) => (
-                    <TabsTrigger
-                      key={c.key}
-                      value={c.key}
-                      className="whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                {/* Scrollable tabs on mobile */}
+                <div className="relative">
+                  <TabsList className="flex w-full overflow-x-auto no-scrollbar gap-1 sm:gap-2 rounded-lg bg-background/60 p-1.5 shadow-sm backdrop-blur">
+                    <TabsTrigger 
+                      value="all" 
+                      className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground whitespace-nowrap flex-shrink-0 px-2 sm:px-3 py-1.5 text-sm"
                     >
-                      {c.title}
+                      All
                     </TabsTrigger>
-                  ))}
-                </TabsList>
+                    {CATEGORIES.map((c) => (
+                      <TabsTrigger
+                        key={c.key}
+                        value={c.key}
+                        className="whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-shrink-0 px-2 sm:px-3 py-1.5 text-sm"
+                      >
+                        <span className="hidden sm:inline">{c.title}</span>
+                        <span className="sm:hidden capitalize">{c.key}</span>
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                  {/* Overflow indicators for mobile */}
+                  <div className="pointer-events-none absolute inset-y-0 left-0 w-4 bg-gradient-to-r from-secondary to-transparent rounded-l-lg sm:hidden" />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 w-4 bg-gradient-to-l from-secondary to-transparent rounded-r-lg sm:hidden" />
+                </div>
 
-                <form onSubmit={onSearch} className="flex w-full items-center gap-3">
+                <form onSubmit={onSearch} className="flex w-full flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <div className="relative w-full">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -196,10 +208,13 @@ const LegalKnowledgeBase: React.FC = () => {
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="Search acts, judgments, guides, drafts, terms…"
                       aria-label="Search knowledge base"
-                      className="h-11 md:h-12 rounded-md pl-9"
+                      className="h-11 md:h-12 rounded-md pl-9 pr-3"
                     />
                   </div>
-                  <Button type="submit" className="h-11 md:h-12 px-5">Search</Button>
+                  <Button type="submit" className="h-11 md:h-12 px-4 sm:px-5 flex-shrink-0">
+                    <span className="hidden sm:inline">Search</span>
+                    <span className="sm:hidden">Go</span>
+                  </Button>
                 </form>
               </div>
 
@@ -213,30 +228,30 @@ const LegalKnowledgeBase: React.FC = () => {
         </div>
 
         {/* Stats */}
-        <div className="mb-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="mb-8 sm:mb-12 grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-3">
           <Stat label="Expert‑curated" value="Quality checked" icon={Lightbulb} />
           <Stat label="Categories" value={`${CATEGORIES.length}+ areas`} icon={BookOpenCheck} />
           <Stat label="AI‑ready summaries" value="Fast comprehension" icon={Search} />
         </div>
 
         {/* Category grid */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
           {CATEGORIES.map((cat) => (
             <CategoryCard key={cat.key} category={cat} />
           ))}
         </div>
 
         {/* Callouts */}
-        <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="mt-8 sm:mt-12 grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
           <Card className="lg:col-span-2 border-primary/10">
-            <CardHeader>
-              <CardTitle>Not sure where to start?</CardTitle>
-              <CardDescription>
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="text-lg sm:text-xl">Not sure where to start?</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
                 Explore everything in one place. Filter by category, topic, or query on the main knowledgebase page.
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <Button asChild variant="outline" className="shadow-sm">
+            <CardContent className="pt-0">
+              <Button asChild variant="outline" className="shadow-sm w-full sm:w-auto">
                 <Link href="/knowledgebase" aria-label="Browse all knowledgebase">
                   Browse all
                 </Link>
@@ -245,17 +260,17 @@ const LegalKnowledgeBase: React.FC = () => {
           </Card>
 
           <Card className="border-primary/10">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                 <MessageSquare className="h-4 w-4" /> Need help?
               </CardTitle>
-              <CardDescription>Ask our AI assistant or consult a lawyer.</CardDescription>
+              <CardDescription className="text-sm sm:text-base">Ask our AI assistant or consult a lawyer.</CardDescription>
             </CardHeader>
-            <CardContent className="flex gap-2">
-              <Button asChild size="sm" variant="secondary">
+            <CardContent className="flex flex-col sm:flex-row gap-2 pt-0">
+              <Button asChild size="sm" variant="secondary" className="w-full sm:w-auto">
                 <Link href="/chatbot" aria-label="Open AI legal assistant">AI Assistant</Link>
               </Button>
-              <Button asChild size="sm" variant="outline" className="shadow-sm">
+              <Button asChild size="sm" variant="outline" className="shadow-sm w-full sm:w-auto">
                 <Link href="/lawyers" aria-label="Find a lawyer">Find a Lawyer</Link>
               </Button>
             </CardContent>

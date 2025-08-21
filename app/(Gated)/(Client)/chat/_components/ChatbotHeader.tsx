@@ -1,13 +1,14 @@
 import React from "react";
 import ProfileButton from "@/components/profile-button";
 import { Button } from "@/components/ui/button";
-import { Volume2, VolumeX, Keyboard, ZoomIn, ZoomOut, HelpCircle, Settings, Layout, Crown, Sparkles } from "lucide-react";
+import { Volume2, VolumeX, Keyboard, ZoomIn, ZoomOut, HelpCircle, Settings, Layout, Crown, Sparkles, Menu, PanelRightOpen } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
+import Logo from "@/components/Logo";
 
 interface ChatNavbarProps {
   showAccessibilityPanel: boolean;
@@ -19,9 +20,11 @@ interface ChatNavbarProps {
   chatViewMode: 'compact' | 'card' | 'timeline';
   setChatViewMode: React.Dispatch<React.SetStateAction<'compact' | 'card' | 'timeline'>>;
   aiConfidence?: number | null;
+  onToggleSidebar?: () => void;
+  onToggleRightbar?: () => void;
 }
 
-const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setShowAccessibilityPanel, textSize = 16, setTextSize, isScreenReaderMode, setIsScreenReaderMode, chatViewMode, setChatViewMode, aiConfidence, }) => {
+const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setShowAccessibilityPanel, textSize = 16, setTextSize, isScreenReaderMode, setIsScreenReaderMode, chatViewMode, setChatViewMode, aiConfidence, onToggleSidebar, onToggleRightbar, }) => {
 
   ////////////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////////////
   const reduxConfidence = useSelector((state: RootState) => state.aiSession.aiConfidence);
@@ -49,30 +52,52 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
   ////////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////////////////
   return (
     <TooltipProvider>
-      <div className="h-[80px] bg-neutral px-6 py-4 flex justify-between items-center border-b !border-border">
-        {/* Left Side - AI Confidence */}
+      <div className="h-[64px] md:h-[80px] bg-neutral px-3 md:px-6 py-3 md:py-4 flex justify-between items-center border-b !border-border">
+        {/* Left Side - Menu + Logo */}
 
-        <div className="flex items-center gap-4 ">
-          <div className="flex items-center gap-2 bg-background/50 rounded-lg px-3 py-2 border">
-            <Sparkles className="w-4 h-4 text-primary" />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground">AI Confidence</span>
-              <div className="flex items-center justify-start gap-1">
-                <span className={cn("text-sm font-semibold", getConfidenceColor(Number(displayConfidence)))}>
-                  {Number(displayConfidence)}%
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  ({getConfidenceLabel(Number(displayConfidence))})
-                </span>
-              </div>
-            </div>
-          </div>
+        <div className="flex items-center gap-2 md:gap-4 ">
+          {/* Mobile hamburger */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden h-8 w-8 p-0"
+            onClick={onToggleSidebar}
+            aria-label="Toggle sidebar"
+          >
+            <Menu className="w-5 h-5" />
+          </Button>
+          {/* Full logo */}
+          <Logo size="sm" type="green" containerClassName="md:hidden block" />
         </div>
 
         {/* Right Side - Profile, Premium, and Navigation */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
+          {/* Compact AI confidence chip */}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-1 px-2 py-1 rounded-md border bg-background/50 cursor-default select-none">
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <span className={cn("text-xs font-semibold", getConfidenceColor(Number(displayConfidence)))}>
+                  {Number(displayConfidence)}%
+                </span>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>AI Confidence: {Number(displayConfidence)}% ({getConfidenceLabel(Number(displayConfidence))})</p>
+            </TooltipContent>
+          </Tooltip>
+          {/* Rightbar toggle for mobile */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden h-8 w-8 p-0"
+            onClick={onToggleRightbar}
+            aria-label="Toggle context panel"
+          >
+            <PanelRightOpen className="w-5 h-5" />
+          </Button>
           {/* Navigation Buttons */}
-          <div className="flex items-center gap-1 bg-background/50 rounded-lg p-1 border">
+          <div className="hidden md:flex items-center gap-1 bg-background/50 rounded-lg p-1 border">
             {/* Text Size Controls */}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -165,7 +190,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
             </Tooltip>
 
             {/* Help Button */}
-            <Tooltip>
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
@@ -178,10 +203,10 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
               <TooltipContent>
                 <p>Help & Support</p>
               </TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
 
             {/* Settings Button */}
-            <Tooltip>
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
@@ -194,7 +219,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
               <TooltipContent>
                 <p>Settings</p>
               </TooltipContent>
-            </Tooltip>
+            </Tooltip> */}
           </div>
 
           {/* Premium Button */}
@@ -202,7 +227,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
             variant="default"
             size="sm"
             onClick={() => router.push('/pricing')}
-            className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0 shadow-md"
+            className="hidden md:inline-flex bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0 shadow-md"
           >
             <Crown className="w-4 h-4 mr-2" />
             Upgrade

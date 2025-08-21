@@ -37,7 +37,7 @@ const EmptyState = ({ selectedType }: EmptyStateProps) => {
     }
 
     return (
-        <div className="bg-muted/20 border border-muted rounded-xl p-8 h-96 flex flex-col justify-center items-center text-center">
+        <div className="bg-muted/20 border border-muted rounded-xl p-8 h-auto flex flex-col justify-center items-center text-center">
             <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="text-primary" size={40} />
                 <FileText className="text-muted-foreground" size={40} />

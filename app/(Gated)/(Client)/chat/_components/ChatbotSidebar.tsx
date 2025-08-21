@@ -19,9 +19,11 @@ interface ChatSidebarProps {
     lastModified: string; // Store as ISO string for serializability
     sessionDuration: number;
   };
+  sidebarOpen?: boolean;
+  setSidebarOpen?: (open: boolean) => void;
 }
 
-const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata, }: ChatSidebarProps) => {
+const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata, sidebarOpen: sidebarOpenProp, setSidebarOpen: setSidebarOpenProp, }: ChatSidebarProps) => {
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
@@ -36,7 +38,17 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata, }: ChatSi
   const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(sidebarOpenProp ?? true);
+
+  // keep internal state in sync with controlled prop if provided
+  useEffect(() => {
+    if (typeof sidebarOpenProp === 'boolean') setSidebarOpen(sidebarOpenProp);
+  }, [sidebarOpenProp]);
+
+  const updateSidebarOpen = (open: boolean) => {
+    setSidebarOpen(open);
+    if (setSidebarOpenProp) setSidebarOpenProp(open);
+  };
 
   ///////////////////////////////////////////////////////////// USE EFFECTS //////////////////////////////////////////////////////////////////////
   useEffect(() => {
@@ -101,10 +113,13 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata, }: ChatSi
 
       <aside
         className={cn(
-          "relative border-r flex flex-col justify-between h-screen overflow-y-auto transition-all duration-200 bg-sidebar border-sidebar-border",
+          // Desktop / tablet behavior
+          "hidden md:flex relative border-r flex-col justify-between h-screen overflow-y-auto transition-all duration-200 bg-sidebar border-sidebar-border",
           sidebarOpen
-            ? "flex-[2] min-w-[260px]"
-            : "flex-[0] w-[64px] min-w-[64px]"
+            ? "md:flex-[2] md:min-w-[260px]"
+            : "md:flex-[0] md:w-[64px] md:min-w-[64px]",
+          // Mobile overlay behavior
+          "md:static md:translate-x-0 md:shadow-none",
         )}
         style={{
           width: sidebarOpen ? undefined : 64,
@@ -128,7 +143,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata, }: ChatSi
               "transition-transform z-40",
               sidebarOpen ? "mr-2" : "mb-2"
             )}
-            onClick={() => setSidebarOpen((open) => !open)}
+            onClick={() => updateSidebarOpen(!sidebarOpen)}
             aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
           >
             {sidebarOpen ? (
@@ -340,6 +355,98 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sessionMetadata, }: ChatSi
             <div className="mb-2" />
           </div>
         )}
+      </aside>
+
+      {/* Mobile overlay aside */}
+      <aside
+        className={cn(
+          "md:hidden fixed inset-y-0 left-0 z-40 bg-neutral border-r !border-border w-[85%] max-w-[20rem] transform transition-transform duration-200",
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        {/* Header: Toggle button and logo */}
+        <div className="flex flex-row items-center justify-between pt-4 pb-3 h-[64px] border-b !border-border px-4 bg-neutral sticky top-0 z-20">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="transition-transform z-40"
+            onClick={() => updateSidebarOpen(false)}
+            aria-label="Close sidebar"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <div>
+            <Logo size="sm" type="mini_green" />
+          </div>
+        </div>
+
+        {/* Body (reuse main content) */}
+        <div className="flex flex-col justify-between h-[calc(100vh-64px)]">
+          <div className="flex flex-col gap-4 p-4">
+            {/* Search and New session */}
+            <div className="flex items-center gap-2 px-1 sticky top-0 bg-neutral z-10 pb-2">
+              <input
+                type="text"
+                placeholder="Search sessions..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="flex-1 px-3 py-2 rounded-md border !border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+              />
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={handleCreateSession}
+                title="Create new session"
+              >
+                <Plus className="w-3 h-3" />
+              </Button>
+            </div>
+
+            {/* Sessions list (simplified reuse) */}
+            <div className="flex-1 overflow-y-auto">
+              {sessions
+                .filter((section) =>
+                  section.items.some((session) =>
+                    session.title
+                      .toLowerCase()
+                      .includes(searchTerm.toLowerCase())
+                  )
+                )
+                .map((section, index) => (
+                  <div key={index} className="mt-4">
+                    <h2 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wide">
+                      {section.section}
+                    </h2>
+                    {section.items
+                      .filter((session) =>
+                        session.title
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
+                      )
+                      .map((session, i) => (
+                        <div
+                          key={i}
+                          onClick={() => {
+                            onChatSelect(session);
+                            updateSidebarOpen(false);
+                          }}
+                          className={cn(
+                            "p-2 rounded-lg hover:bg-accent cursor-pointer text-sm flex justify-between items-center mb-1.5 transition-colors",
+                            String(sessionId) == String(session._id)
+                              ? "bg-primary/10 text-primary border border-primary/20"
+                              : "bg-transparent"
+                          )}
+                        >
+                          <span className="truncate font-medium">
+                            {session.title}
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                ))}
+            </div>
+          </div>
+        </div>
       </aside>
     </>
   );

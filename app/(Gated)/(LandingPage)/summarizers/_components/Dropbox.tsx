@@ -12,9 +12,10 @@ interface DropboxProps {
     selectedType: string
     isGenerating: boolean
     setIsGenerating: Dispatch<SetStateAction<boolean>>
+    initialExample?: string
 }
 
-const Dropbox = ({ selectedType, isGenerating, setIsGenerating }: DropboxProps) => {
+const Dropbox = ({ selectedType, isGenerating, setIsGenerating, initialExample }: DropboxProps) => {
 
     /////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////
     const dispatch = useDispatch<AppDispatch>()
@@ -33,6 +34,14 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating }: DropboxProps) 
             connectAgain()
         }
     }, [isConnected, connectAgain])
+
+    // Set initial example from URL parameters
+    useEffect(() => {
+        if (initialExample && !input) {
+            setInput(initialExample)
+        }
+    }, [initialExample, input])
+
     // Handle real-time summary updates
     useEffect(() => {
         if (currentSummary) {

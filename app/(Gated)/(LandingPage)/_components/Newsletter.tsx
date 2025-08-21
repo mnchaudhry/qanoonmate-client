@@ -32,7 +32,7 @@ const NewsLetter = () => {
 
   //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
-    <Card className="rounded-3xl section-padding bg-gradient-to-b from-muted/40 to-muted/70 border border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300">
+    <Card className="rounded-3xl section-padding bg-gradient-to-b from-muted/40 to-muted/70 border border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300 m-4 p-4 ">
       <CardContent className="p-0">
         <div className="text-center mx-auto max-w-2xl py-24 ">
           <h3 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight mb-4 md:mb-6">
@@ -49,7 +49,7 @@ const NewsLetter = () => {
             <Input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 h-12 md:h-14 rounded-xl px-4 md:px-6 text-base bg-background focus:ring-2 focus:ring-primary/40"
+              className="flex-1 !h-12 md:h-14 rounded-xl px-4 md:px-6 text-base bg-background focus:ring-2 focus:ring-primary/40"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}

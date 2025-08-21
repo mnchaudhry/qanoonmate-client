@@ -67,7 +67,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children, }: { children: React.ReactNode; }) {
   return (
     <html lang="en">
-      <body className={`${roboto.className} bg-neutral text-foreground`}>
+      <body 
+        className={`${roboto.className} bg-neutral text-foreground`}
+        suppressHydrationWarning={true}
+      >
         <StateProvider>
           <AnalyticsProvider>
             <Toaster />
