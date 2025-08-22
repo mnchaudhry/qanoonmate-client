@@ -337,12 +337,18 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", tex
       let timer: number;
       function tick() {
         if (bufferRef.current.length > 0) {
-          setDisplayedContent((prev: string) => {
-            const nextChar = bufferRef.current[0];
+          let charsToDisplay = '';
+          let displayCount = 0;
+          while (bufferRef.current.length > 0 && displayCount < 20) { // chars 
+            charsToDisplay += bufferRef.current[0];
             bufferRef.current = bufferRef.current.slice(1);
-            return prev + nextChar;
-          });
-          timer = window.setTimeout(tick, 1);
+            displayCount++;
+            // break if next char is a space to avoid breaking words
+            if (bufferRef.current[0] === ' ' && charsToDisplay.length > 1) break;
+          }
+
+          setDisplayedContent((prev: string) => prev + charsToDisplay);
+          timer = window.setTimeout(tick, 50); // delay between chunks
         }
       }
       tick();
@@ -379,8 +385,8 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", tex
               className={cn(
                 "px-0 py-0 rounded-lg shadow-sm border",
                 isModel
-                  ? "bg-primary/10 text-foreground border-primary/10"
-                  : "bg-muted text-foreground border-border"
+                  ? " text-foreground border-primary/10"
+                  : "bg-primary/10 text-foreground border-border"
               )}
             >
               <div
@@ -453,8 +459,8 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", tex
               className={cn(
                 "px-0 py-0 rounded-lg shadow-sm border",
                 isModel
-                  ? "bg-primary/10 text-foreground border-primary/10"
-                  : "bg-muted text-foreground border-border"
+                  ? " text-foreground border-primary/10"
+                  : "bg-primary/10 text-foreground border-border"
               )}
             >
               <div
@@ -513,8 +519,8 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", tex
           className={cn(
             "px-0 py-0 rounded-lg w-fit max-w-[80%] shadow-sm border",
             isModel
-              ? "bg-primary/10 text-foreground border-primary/10"
-              : "bg-muted text-foreground border-border"
+              ? " text-foreground border-primary/10"
+              : " bg-primary/10 text-foreground border-border"
           )}
         >
           <div

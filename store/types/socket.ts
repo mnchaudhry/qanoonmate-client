@@ -7,7 +7,7 @@ import { ChatParticipant } from "./api";
 
 // Client emits
 export interface ModelStartChatEmit {
-  userId: string;
+  userId: string | undefined;
 }
 export interface ModelUpdateTitleEmit {
   sessionId: string;
