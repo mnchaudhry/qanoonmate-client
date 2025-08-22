@@ -10,7 +10,7 @@ import { RootState } from "@/store/store";
 import { parseAIResponse } from "@/utils/parseAIResponse";
 import { MDXEditor, headingsPlugin, linkPlugin, listsPlugin, markdownShortcutPlugin, quotePlugin, thematicBreakPlugin } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
-import { Bookmark, Bot, ChevronLeft, ChevronRight, Clock, Copy, Flag, MessageSquare, RotateCcw, Save, ThumbsDown, ThumbsUp, User, } from "lucide-react";
+import { Bookmark, Bot, ChevronLeft, ChevronRight, Clock, Copy, Flag, MessageSquare, RotateCcw, Save, ThumbsDown, ThumbsUp, User, ChevronDown } from "lucide-react";
 import React, { memo, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -34,23 +34,81 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", tex
 
   // Track current response index for each bot message
   const [responseIndexes, setResponseIndexes] = useState<Record<string, number>>({});
+  
+  // Smart scroll-to-bottom state
+  const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const [lastStreamingMessageId, setLastStreamingMessageId] = useState<string | null>(null);
 
-  const handleNavigate = (messageId: string, direction: "left" | "right", responsesLength: number) => {
+  const handleNavigate = (message: AIChatMessage, direction: "left" | "right", responsesLength: number) => {
     setResponseIndexes((prev) => {
-      const current = prev[messageId] || 0;
+      const current = prev[message._id] || 0;
       let next = direction === "left" ? current - 1 : current + 1;
       if (next < 0) next = 0;
       if (next >= responsesLength) next = responsesLength - 1;
-      return { ...prev, [messageId]: next };
+      return { ...prev, [message._id]: next };
     });
   };
+
   ///////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////
+  
+  // Smart scroll-to-bottom with user scroll detection
+  useEffect(() => {
+    const scrollContainer = scrollContainerRef.current;
+    if (!scrollContainer) return;
+
+    const handleScroll = () => {
+      if (!isStreaming) return;
+      
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
+      const isAtBottom = scrollHeight - scrollTop - clientHeight < 50; // 50px threshold
+      
+      // If user scrolls up while streaming, disable auto-scroll
+      if (!isAtBottom) {
+        setShouldAutoScroll(false);
+      }
+    };
+
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+  }, [isStreaming]);
+
+  // Handle streaming message changes
+  useEffect(() => {
+    if (streamingMessage && streamingMessage._id !== lastStreamingMessageId) {
+      // New streaming message started, re-enable auto-scroll
+      setShouldAutoScroll(true);
+      setLastStreamingMessageId(streamingMessage._id);
+    }
+  }, [streamingMessage, lastStreamingMessageId]);
+
+  // Auto-scroll to bottom when needed
   useEffect(() => {
     const anchor = endAnchorRef.current;
     if (!anchor) return;
-    anchor.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [messages, streamingMessage]);
 
+    // Only auto-scroll if:
+    // 1. User hasn't disabled it by scrolling up, OR
+    // 2. It's a new message (not streaming update)
+    if (shouldAutoScroll || !isStreaming) {
+      anchor.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [messages, shouldAutoScroll, isStreaming]);
+
+  // Re-enable auto-scroll when streaming stops
+  useEffect(() => {
+    if (!isStreaming) {
+      setShouldAutoScroll(true);
+    }
+  }, [isStreaming]);
+
+  // Function to manually scroll to bottom and re-enable auto-scroll
+  const handleScrollToBottom = () => {
+    const anchor = endAnchorRef.current;
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: "smooth", block: "end" });
+      setShouldAutoScroll(true);
+    }
+  };
   ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////
   const getMessageTime = (timestamp: string) => {
     try {
@@ -134,7 +192,7 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", tex
                 variant="ghost"
                 size="sm"
                 onClick={() =>
-                  handleNavigate(message._id, "left", responses.length)
+                  handleNavigate(message, "left", responses.length)
                 }
                 className="p-1.5 rounded-full"
                 disabled={currentIdx === 0}
@@ -150,7 +208,7 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", tex
                 variant="ghost"
                 size="sm"
                 onClick={() =>
-                  handleNavigate(message._id, "right", responses.length)
+                  handleNavigate(message, "right", responses.length)
                 }
                 className="p-1.5 rounded-full"
                 disabled={currentIdx === responses.length - 1}
@@ -499,7 +557,21 @@ const MessageBox: React.FC<MessageBoxProps> = memo(({ chatViewMode = "card", tex
 
   return (
     <TooltipProvider>
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto py-6 space-y-4 px-6">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto py-6 space-y-4 px-6 relative">
+        {/* Scroll to Bottom Button - appears when auto-scroll is disabled */}
+        {!shouldAutoScroll && (
+          <div className="fixed bottom-24 right-8 z-50">
+            <Button
+              onClick={handleScrollToBottom}
+              size="sm"
+              className="rounded-full shadow-lg bg-primary hover:bg-primary/90 text-white"
+              title="Scroll to bottom"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+        
         <div className="max-w-4xl mx-auto">
           {messages &&
             messages.length > 0 &&
