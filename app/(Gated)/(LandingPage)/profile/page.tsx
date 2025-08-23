@@ -7,16 +7,30 @@ import { User } from "@/store/types/user.types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { User as UserIcon, Shield, Bell, Palette, Activity, Settings, Edit3, Camera, Calendar, MessageSquare, FileText, Star, Clock, MapPin, Globe, Phone, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  User as UserIcon, 
+  Shield, 
+  Bell, 
+  Settings, 
+  Edit3, 
+  Camera, 
+  Calendar, 
+  MessageSquare, 
+  FileText, 
+  Star, 
+  MapPin, 
+  Globe, 
+  Phone, 
+  Mail, 
+  ChevronRight,
+  ExternalLink
+} from "lucide-react";
 
 import PersonalInfo from "./_components/PersonalInfo";
 import ProfilePhoto from "./_components/ProfilePhoto";
-import SecuritySettings from "./_components/SecuritySettings";
-import NotificationPreferences from "./_components/NotificationPreferences";
-import ActivityHistory from "./_components/ActivityHistory";
 import Image from "next/image";
 
 interface ProfileStats {
@@ -33,7 +47,6 @@ export default function ProfilePage() {
   //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
   const [userData, setUser] = useState<User | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const [activeTab, setActiveTab] = useState("overview");
   const [isEditing, setIsEditing] = useState(false);
   const [stats, setStats] = useState<ProfileStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
@@ -64,7 +77,6 @@ export default function ProfilePage() {
         const data = await response.json();
         setStats(data.data.stats);
       } else {
-        // Fallback to default stats if API fails
         setStats({
           consultations: 0,
           feedback: 0,
@@ -74,7 +86,6 @@ export default function ProfilePage() {
       }
     } catch (error) {
       console.error('Failed to fetch profile stats:', error);
-      // Fallback to default stats
       setStats({
         consultations: 0,
         feedback: 0,
@@ -89,17 +100,17 @@ export default function ProfilePage() {
   const handleUpdateUser = async (updatedData: Partial<User>) => {
     try {
       const res = await fetch('/api/user/me', {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(updatedData),
-          credentials: "include",
-        });
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+        credentials: "include",
+      });
 
-        if (!res.ok) throw new Error("Failed to update profile");
+      if (!res.ok) throw new Error("Failed to update profile");
 
-        const json = await res.json();
-        const updated = (json?.data as User) || updatedData;
-        setUser(prev => (prev ? { ...prev, ...updated } as User : (updated as User)));
+      const json = await res.json();
+      const updated = (json?.data as User) || updatedData;
+      setUser(prev => (prev ? { ...prev, ...updated } as User : (updated as User)));
 
       toast.success("Profile updated successfully!");
       setIsEditing(false);
@@ -169,15 +180,15 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
         <div className="container mx-auto py-6 pt-24">
-        <div className="animate-pulse">
+          <div className="animate-pulse">
             <div className="h-12 bg-slate-200 rounded w-48 mb-6"></div>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-1">
                 <div className="h-96 bg-slate-200 rounded-xl"></div>
               </div>
-              <div className="lg:col-span-3">
+              <div className="lg:col-span-2">
                 <div className="h-96 bg-slate-200 rounded-xl"></div>
-            </div>
+              </div>
             </div>
           </div>
         </div>
@@ -188,7 +199,7 @@ export default function ProfilePage() {
   if (!authUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center">
-      <div className="container py-12 text-center">
+        <div className="container py-12 text-center">
           <div className="max-w-md mx-auto">
             <div className="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <UserIcon className="w-10 h-10 text-slate-400" />
@@ -197,7 +208,7 @@ export default function ProfilePage() {
             <p className="text-slate-600 mb-6">Access your personalized dashboard and manage your account settings.</p>
             <Button asChild size="lg" className="w-full">
               <Link href="/auth/sign-in">Sign In to Continue</Link>
-        </Button>
+            </Button>
           </div>
         </div>
       </div>
@@ -214,7 +225,7 @@ export default function ProfilePage() {
               <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-slate-900 via-slate-800 to-slate-700 bg-clip-text text-transparent">
                 My Profile
               </h1>
-              <p className="text-slate-600 mt-2">Manage your account settings and preferences</p>
+              <p className="text-slate-600 mt-2">Your personal information and account details</p>
             </div>
             <div className="flex items-center gap-3">
               <Button
@@ -288,7 +299,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Sidebar - Profile Card */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 sticky top-24">
@@ -371,130 +382,167 @@ export default function ProfilePage() {
                   <span className="text-slate-600">{userData?.preferredLanguage || 'English'}</span>
                 </div>
               </div>
+
+              {/* Quick Actions */}
+              <Separator className="my-4" />
+              <div className="space-y-2">
+                <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                  <Link href="/settings">
+                    <Settings className="w-4 h-4" />
+                    Account Settings
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                  <Link href="/settings?tab=notifications">
+                    <Bell className="w-4 h-4" />
+                    Notifications
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
+                </Button>
+                <Button variant="outline" size="sm" className="w-full justify-between" asChild>
+                  <Link href="/settings?tab=security">
+                    <Shield className="w-4 h-4" />
+                    Security
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
 
-          {/* Right Content - Tabs */}
-          <div className="lg:col-span-3">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-5 bg-white border border-slate-200 shadow-sm">
-                <TabsTrigger value="overview" className="flex items-center gap-2">
-                  <UserIcon className="w-4 h-4" />
-                  <span className="hidden sm:inline">Overview</span>
-                  <span className="sm:hidden">Overview</span>
-                </TabsTrigger>
-                <TabsTrigger value="personal" className="flex items-center gap-2">
-                  <Edit3 className="w-4 h-4" />
-                  <span className="hidden sm:inline">Personal</span>
-                  <span className="sm:hidden">Personal</span>
-                </TabsTrigger>
-                <TabsTrigger value="security" className="flex items-center gap-2">
-                  <Shield className="w-4 h-4" />
-                  <span className="hidden sm:inline">Security</span>
-                  <span className="sm:hidden">Security</span>
-                </TabsTrigger>
-                <TabsTrigger value="notifications" className="flex items-center gap-2">
-                  <Bell className="w-4 h-4" />
-                  <span className="hidden sm:inline">Notifications</span>
-                  <span className="sm:hidden">Notif</span>
-                </TabsTrigger>
-                <TabsTrigger value="activity" className="flex items-center gap-2">
-                  <Activity className="w-4 h-4" />
-                  <span className="hidden sm:inline">Activity</span>
-                  <span className="sm:hidden">Activity</span>
-                </TabsTrigger>
-              </TabsList>
+          {/* Right Content - Profile Information */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Personal Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <UserIcon className="w-5 h-5 text-slate-600" />
+                  Personal Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {userData && (
+                  <PersonalInfo
+                    user={userData}
+                    onUpdate={handleUpdateUser}
+                    isEditing={isEditing}
+                  />
+                )}
+              </CardContent>
+            </Card>
 
-              <TabsContent value="overview" className="mt-6">
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                  <h3 className="text-xl font-semibold text-slate-900 mb-6">Profile Overview</h3>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <h4 className="font-medium text-slate-700">Basic Information</h4>
-                      <div className="space-y-3">
-                        <div className="flex justify-between py-2 border-b border-slate-100">
-                          <span className="text-slate-600">Full Name</span>
-                          <span className="font-medium">{userData?.firstname} {userData?.lastname}</span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-slate-100">
-                          <span className="text-slate-600">Email</span>
-                          <span className="font-medium">{userData?.email}</span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-slate-100">
-                          <span className="text-slate-600">Phone</span>
-                          <span className="font-medium">{userData?.phone || 'Not provided'}</span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-slate-100">
-                          <span className="text-slate-600">Language</span>
-                          <span className="font-medium">{userData?.preferredLanguage || 'English'}</span>
-                        </div>
+            {/* Account Overview */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3">
+                  <Shield className="w-5 h-5 text-slate-600" />
+                  Account Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-slate-700">Account Details</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Account Status</span>
+                        <Badge variant="secondary" className={getStatusColor(userData?.accountStatus || 'active')}>
+                          {userData?.accountStatus || 'Active'}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">User Role</span>
+                        <span className="font-medium">{userData?.role || 'Client'}</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Member Since</span>
+                        <span className="font-medium">{getMemberSince()}</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Last Updated</span>
+                        <span className="font-medium">
+                          {userData?.updatedAt ? new Date(userData.updatedAt).toLocaleDateString() : 'Never'}
+                        </span>
                       </div>
                     </div>
+                  </div>
 
-                    <div className="space-y-4">
-                      <h4 className="font-medium text-slate-700">Account Details</h4>
-                      <div className="space-y-3">
-                        <div className="flex justify-between py-2 border-b border-slate-100">
-                          <span className="text-slate-600">Status</span>
-                          <Badge variant="secondary" className={getStatusColor(userData?.accountStatus || 'active')}>
-                            {userData?.accountStatus || 'Active'}
-                          </Badge>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-slate-100">
-                          <span className="text-slate-600">Role</span>
-                          <span className="font-medium">{userData?.role || 'Client'}</span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-slate-100">
-                          <span className="text-slate-600">Member Since</span>
-                          <span className="font-medium">{getMemberSince()}</span>
-                        </div>
-                        <div className="flex justify-between py-2 border-b border-slate-100">
-                          <span className="text-slate-600">Last Updated</span>
-                          <span className="font-medium">
-                            {userData?.updatedAt ? new Date(userData.updatedAt).toLocaleDateString() : 'Never'}
-                          </span>
-                        </div>
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-slate-700">Verification Status</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Email</span>
+                        <Badge variant={userData?.emailVerified ? "default" : "secondary"}>
+                          {userData?.emailVerified ? "Verified" : "Not Verified"}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Phone</span>
+                        <Badge variant={userData?.phoneVerified ? "default" : "secondary"}>
+                          {userData?.phoneVerified ? "Verified" : "Not Verified"}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-slate-100">
+                        <span className="text-slate-600">Identity</span>
+                        <Badge variant={userData?.identityVerified ? "default" : "secondary"}>
+                          {userData?.identityVerified ? "Verified" : "Not Verified"}
+                        </Badge>
                       </div>
                     </div>
                   </div>
                 </div>
-              </TabsContent>
+              </CardContent>
+            </Card>
 
-              <TabsContent value="personal" className="mt-6">
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                  <h3 className="text-xl font-semibold text-slate-900 mb-6">Personal Information</h3>
-                  {userData && (
-            <PersonalInfo
-              user={userData}
-              onUpdate={handleUpdateUser}
-                      isEditing={isEditing}
-            />
-          )}
-        </div>
-              </TabsContent>
-
-              <TabsContent value="security" className="mt-6">
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                  <h3 className="text-xl font-semibold text-slate-900 mb-6">Security Settings</h3>
-                  <SecuritySettings user={userData} />
+            {/* Recent Activity Preview */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5 text-slate-600" />
+                    Recent Activity
+                  </div>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/settings?tab=activity">
+                      View All
+                      <ExternalLink className="w-4 h-4 ml-2" />
+                    </Link>
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <Calendar className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Consultation scheduled</p>
+                      <p className="text-xs text-slate-500">2 hours ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50">
+                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                      <MessageSquare className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Message received</p>
+                      <p className="text-xs text-slate-500">1 day ago</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50">
+                    <div className="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center">
+                      <FileText className="w-4 h-4 text-violet-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">Document uploaded</p>
+                      <p className="text-xs text-slate-500">3 days ago</p>
+                    </div>
+                  </div>
                 </div>
-              </TabsContent>
-
-              <TabsContent value="notifications" className="mt-6">
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                  <h3 className="text-xl font-semibold text-slate-900 mb-6">Notification Preferences</h3>
-                  <NotificationPreferences user={userData} />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="activity" className="mt-6">
-                <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-                  <h3 className="text-xl font-semibold text-slate-900 mb-6">Activity History</h3>
-                  <ActivityHistory user={userData} />
-                </div>
-              </TabsContent>
-            </Tabs>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

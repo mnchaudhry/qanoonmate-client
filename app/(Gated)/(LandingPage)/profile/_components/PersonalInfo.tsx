@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -140,247 +139,222 @@ export default function PersonalInfo({ user, onUpdate, isEditing }: PersonalInfo
   // Show loading state until client-side hydration is complete
   if (!isClient || !user) {
     return (
-      <Card className="border-0 shadow-none">
-        <CardContent className="p-0">
-          <div className="animate-pulse space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="space-y-2">
-                  <div className="h-5 bg-slate-200 rounded w-24"></div>
-                  <div className="h-10 bg-slate-200 rounded"></div>
-                </div>
-              ))}
+      <div className="animate-pulse space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="space-y-2">
+              <div className="h-5 bg-slate-200 rounded w-24"></div>
+              <div className="h-10 bg-slate-200 rounded"></div>
             </div>
-            <div className="space-y-2">
-              <div className="h-5 bg-slate-200 rounded w-32"></div>
-              <div className="h-20 bg-slate-200 rounded"></div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          ))}
+        </div>
+        <div className="space-y-2">
+          <div className="h-5 bg-slate-200 rounded w-32"></div>
+          <div className="h-20 bg-slate-200 rounded"></div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card className="border-0 shadow-none">
-      <CardContent className="p-0">
-        <div className="flex items-center justify-between mb-6">
-          <h4 className="text-lg font-semibold text-slate-900">Personal Information</h4>
-          {!localEditing && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLocalEditing(true)}
-              className="flex items-center gap-2"
-            >
-              <Edit3 className="w-4 h-4" />
-              Edit
-            </Button>
-          )}
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="space-y-6">
-            {/* Basic Information Section */}
-            <div className="bg-slate-50 rounded-lg p-6">
-              <h5 className="font-medium text-slate-700 mb-4 flex items-center gap-2">
-                <UserCircle className="w-4 h-4" />
-                Basic Information
-              </h5>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstname">First Name *</Label>
-                  <Input
-                    id="firstname"
-                    name="firstname"
-                    value={formData.firstname}
-                    onChange={handleChange}
-                    placeholder="Enter your first name"
-                    required
-                    disabled={!localEditing}
-                    className="bg-white"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="lastname">Last Name *</Label>
-                  <Input
-                    id="lastname"
-                    name="lastname"
-                    value={formData.lastname}
-                    onChange={handleChange}
-                    placeholder="Enter your last name"
-                    required
-                    disabled={!localEditing}
-                    className="bg-white"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address *</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="Enter your email"
-                      required
-                      disabled
-                      className="bg-white pl-10"
-                    />
-                  </div>
-                  <p className="text-xs text-slate-500">Email cannot be changed</p>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number</Label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <Input
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      placeholder="+92-XXX-XXXXXXX"
-                      disabled={!localEditing}
-                      className="bg-white pl-10"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="dob">Date of Birth</Label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                    <Input
-                      id="dob"
-                      name="dob"
-                      type="date"
-                      value={formData.dob}
-                      onChange={handleChange}
-                      disabled={!localEditing}
-                      className="bg-white pl-10"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Location Section */}
-            <div className="bg-slate-50 rounded-lg p-6">
-              <h5 className="font-medium text-slate-700 mb-4 flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                Location
-              </h5>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="city">City</Label>
-                  <Input
-                    id="city"
-                    name="city"
-                    value={formData.location.city}
-                    onChange={handleChange}
-                    placeholder="Enter your city"
-                    disabled={!localEditing}
-                    className="bg-white"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="province">Province</Label>
-                  <Input
-                    id="province"
-                    name="province"
-                    value={formData.location.province}
-                    onChange={handleChange}
-                    placeholder="Enter your province"
-                    disabled={!localEditing}
-                    className="bg-white"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Preferences Section */}
-            <div className="bg-slate-50 rounded-lg p-6">
-              <h5 className="font-medium text-slate-700 mb-4 flex items-center gap-2">
-                <Globe className="w-4 h-4" />
-                Preferences
-              </h5>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Preferred Language</Label>
-                  <RadioGroup
-                    value={formData.preferredLanguage}
-                    onValueChange={handleLanguageChange}
-                    disabled={!localEditing}
-                    className="flex space-x-4"
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="English" id="english" />
-                      <Label htmlFor="english">English</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Urdu" id="urdu" />
-                      <Label htmlFor="urdu">Urdu</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="Both" id="both" />
-                      <Label htmlFor="both">Both</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="bio">Bio/About Me</Label>
-                  <Textarea
-                    id="bio"
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleChange}
-                    placeholder="Tell us a bit about yourself..."
-                    rows={4}
-                    disabled={!localEditing}
-                    className="bg-white resize-none"
-                  />
-                  <p className="text-xs text-slate-500">Maximum 500 characters</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            {localEditing && (
-              <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-200">
-                <Button type="submit" disabled={isLoading} className="flex items-center gap-2">
-                  <Save className="w-4 h-4" />
-                  {isLoading ? "Saving..." : "Save Changes"}
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={handleCancel}
-                  className="flex items-center gap-2"
-                >
-                  <X className="w-4 h-4" />
-                  Cancel
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={handleChangePassword}
-                  className="flex items-center gap-2"
-                >
-                  <Lock className="w-4 h-4" />
-                  Change Password
-                </Button>
-              </div>
-            )}
+    <div className="space-y-6">
+      {/* Basic Information */}
+      <div className="space-y-4">
+        <h4 className="font-medium text-slate-700 flex items-center gap-2">
+          <UserCircle className="w-4 h-4" />
+          Basic Information
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="firstname">First Name *</Label>
+            <Input
+              id="firstname"
+              name="firstname"
+              value={formData.firstname}
+              onChange={handleChange}
+              placeholder="Enter your first name"
+              required
+              disabled={!localEditing}
+              className="bg-white"
+            />
           </div>
-        </form>
-      </CardContent>
-    </Card>
+
+          <div className="space-y-2">
+            <Label htmlFor="lastname">Last Name *</Label>
+            <Input
+              id="lastname"
+              name="lastname"
+              value={formData.lastname}
+              onChange={handleChange}
+              placeholder="Enter your last name"
+              required
+              disabled={!localEditing}
+              className="bg-white"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email Address *</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                required
+                disabled
+                className="bg-white pl-10"
+              />
+            </div>
+            <p className="text-xs text-slate-500">Email cannot be changed</p>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone Number</Label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="+92-XXX-XXXXXXX"
+                disabled={!localEditing}
+                className="bg-white pl-10"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="dob">Date of Birth</Label>
+            <div className="relative">
+              <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                id="dob"
+                name="dob"
+                type="date"
+                value={formData.dob}
+                onChange={handleChange}
+                disabled={!localEditing}
+                className="bg-white pl-10"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Location */}
+      <div className="space-y-4">
+        <h4 className="font-medium text-slate-700 flex items-center gap-2">
+          <MapPin className="w-4 h-4" />
+          Location
+        </h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="city">City</Label>
+            <Input
+              id="city"
+              name="city"
+              value={formData.location.city}
+              onChange={handleChange}
+              placeholder="Enter your city"
+              disabled={!localEditing}
+              className="bg-white"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="province">Province</Label>
+            <Input
+              id="province"
+              name="province"
+              value={formData.location.province}
+              onChange={handleChange}
+              placeholder="Enter your province"
+              disabled={!localEditing}
+              className="bg-white"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Preferences */}
+      <div className="space-y-4">
+        <h4 className="font-medium text-slate-700 flex items-center gap-2">
+          <Globe className="w-4 h-4" />
+          Preferences
+        </h4>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Preferred Language</Label>
+            <RadioGroup
+              value={formData.preferredLanguage}
+              onValueChange={handleLanguageChange}
+              disabled={!localEditing}
+              className="flex space-x-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="English" id="english" />
+                <Label htmlFor="english">English</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="Urdu" id="urdu" />
+                <Label htmlFor="urdu">Urdu</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="Both" id="both" />
+                <Label htmlFor="both">Both</Label>
+              </div>
+            </RadioGroup>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio/About Me</Label>
+            <Textarea
+              id="bio"
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              placeholder="Tell us a bit about yourself..."
+              rows={4}
+              disabled={!localEditing}
+              className="bg-white resize-none"
+            />
+            <p className="text-xs text-slate-500">Maximum 500 characters</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      {localEditing && (
+        <div className="flex flex-wrap gap-3 pt-4 border-t border-slate-200">
+          <Button type="submit" disabled={isLoading} className="flex items-center gap-2">
+            <Save className="w-4 h-4" />
+            {isLoading ? "Saving..." : "Save Changes"}
+          </Button>
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={handleCancel}
+            className="flex items-center gap-2"
+          >
+            <X className="w-4 h-4" />
+            Cancel
+          </Button>
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={handleChangePassword}
+            className="flex items-center gap-2"
+          >
+            <Lock className="w-4 h-4" />
+            Change Password
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }
