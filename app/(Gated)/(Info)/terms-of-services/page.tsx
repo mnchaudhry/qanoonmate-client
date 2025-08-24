@@ -36,7 +36,7 @@ const TermsOfServices = () => {
           <div className="prose prose-lg max-w-none">
             
             {/* Introduction */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">1</span>
                 Introduction
@@ -49,7 +49,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Services */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">2</span>
                 Services
@@ -61,7 +61,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Eligibility */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">3</span>
                 Eligibility
@@ -73,7 +73,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* User Accounts */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">4</span>
                 User Accounts
@@ -87,7 +87,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* User Content */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">5</span>
                 User Content
@@ -103,7 +103,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Paid Services and Subscriptions */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">6</span>
                 Paid Services and Subscriptions
@@ -117,7 +117,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Data Collection and Privacy */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">7</span>
                 Data Collection and Privacy
@@ -130,7 +130,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Intellectual Property */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">8</span>
                 Intellectual Property
@@ -142,7 +142,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Prohibited Conduct */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">9</span>
                 Prohibited Conduct
@@ -158,7 +158,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Disclaimer of Legal Advice */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">10</span>
                 Disclaimer of Legal Advice
@@ -174,7 +174,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Limitation of Liability */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">11</span>
                 Limitation of Liability
@@ -186,7 +186,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Third-Party Services */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">12</span>
                 Third-Party Services
@@ -198,7 +198,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Termination */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">13</span>
                 Termination
@@ -210,7 +210,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Governing Law */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">14</span>
                 Governing Law
@@ -222,7 +222,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Changes to Terms */}
-            <section className="mb-12">
+            <section className="!py-0 mb-12">
               <h2 className="text-2xl font-semibold text-foreground mb-4 flex items-center">
                 <span className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center text-primary font-bold text-sm mr-3">15</span>
                 Changes to Terms
@@ -234,7 +234,7 @@ const TermsOfServices = () => {
             </section>
 
             {/* Contact Information */}
-            <section className="mt-16 p-6 bg-muted/30 rounded-lg border border-border">
+            <section className="!py-6 mt-16 !px-6 bg-muted/30 rounded-lg border border-border">
               <h3 className="text-xl font-semibold text-foreground mb-4">Contact Us</h3>
               <p className="text-muted-foreground mb-4">
                 If you have any questions about these Terms and Conditions, please contact us at:
