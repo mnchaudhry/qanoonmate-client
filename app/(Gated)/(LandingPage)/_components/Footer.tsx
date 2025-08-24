@@ -18,8 +18,8 @@ const data = {
   },
   about: {
     about: '/about',
-    privacy: '/privacy',
-    terms: '/terms',
+    privacy: '/info/privacy-policy',
+    terms: '/info/terms-of-services',
     contact: '/contacts',
   },
   help: {
