@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
-import { Badge } from '@/components/ui/badge'
-import { ShieldCheck, Lock, Smartphone, Clock, AlertTriangle } from 'lucide-react'
+import { ShieldCheck, Lock, Smartphone, Clock } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@/store/store'
 import { updateClientSecurity } from '@/store/reducers/clientSettingsSlice'
@@ -13,6 +12,7 @@ const Security = () => {
   //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>()
   const { selectedSettings } = useSelector((state: RootState) => state.clientSettings)
+  const { user } = useSelector((state: RootState) => state.auth)
 
   //////////////////////////////////////////////// STATE /////////////////////////////////////////////////
   const [loading, setLoading] = useState(false)
@@ -24,17 +24,6 @@ const Security = () => {
       twoFactorEnabled: !selectedSettings?.security?.twoFactorEnabled 
     }))
       .finally(() => setLoading(false))
-  }
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'enabled':
-        return <Badge className="bg-emerald-100 text-emerald-800 border-emerald-200">Enabled</Badge>
-      case 'disabled':
-        return <Badge variant="secondary">Disabled</Badge>
-      default:
-        return <Badge variant="outline">Unknown</Badge>
-    }
   }
 
   const formatDate = (dateString?: string) => {
@@ -115,7 +104,7 @@ const Security = () => {
                 <span className="text-sm font-medium">Last Login</span>
               </div>
               <p className="text-sm text-slate-600">
-                {formatDate(selectedSettings?.security?.lastLoginAt)}
+                {formatDate(user?.lastLogin)}
               </p>
             </div>
           </div>
