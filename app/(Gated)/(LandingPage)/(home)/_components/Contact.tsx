@@ -155,11 +155,11 @@ const Contact: React.FC = () => {
                   <FaExternalLinkAlt className="text-primary" />
                   <span>Customer Support</span>
                 </Link>
-                <Link href="/info/privacy-policy" className="flex items-center gap-2 text-muted-foreground hover:underline">
+                <Link href="/privacy-policy" className="flex items-center gap-2 text-muted-foreground hover:underline">
                   <FaExternalLinkAlt className="text-primary" />
                   <span>Privacy Policy</span>
                 </Link>
-                <Link href="/info/terms-of-services" className="flex items-center gap-2 text-muted-foreground hover:underline">
+                <Link href="/terms-of-services" className="flex items-center gap-2 text-muted-foreground hover:underline">
                   <FaExternalLinkAlt className="text-primary" />
                   <span>Terms & Conditions</span>
                 </Link>

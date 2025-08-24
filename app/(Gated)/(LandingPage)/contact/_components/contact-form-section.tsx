@@ -177,11 +177,11 @@ export default function ContactFormSection() {
                     />
                     <Label htmlFor="terms" className="text-sm text-muted-foreground">
                       I agree to the{' '}
-                      <a href="/info/terms-of-services" className="text-primary hover:underline">
+                      <a href="/terms-of-services" className="text-primary hover:underline">
                         Terms of Service
                       </a>{' '}
                       and{' '}
-                      <a href="/info/privacy-policy" className="text-primary hover:underline">
+                      <a href="/privacy-policy" className="text-primary hover:underline">
                         Privacy Policy
                       </a>
                     </Label>
