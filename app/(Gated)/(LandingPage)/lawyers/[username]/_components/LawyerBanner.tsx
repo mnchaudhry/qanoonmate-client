@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { Lawyer } from "@/store/types/lawyer.types";
 import { enumToLabel } from "@/lib/utils";
+import Link from "next/link";
 
 
 export default function LawyerBanner({ lawyer }: { lawyer: Lawyer }) {
@@ -88,7 +89,9 @@ export default function LawyerBanner({ lawyer }: { lawyer: Lawyer }) {
           {/* Book Consultation Button */}
           <div className="mt-6">
             <Button size="lg" className="font-semibold">
-              Book Consultation
+              <Link href={`/lawyers/${lawyer.username}/book`}>
+                Book Consultation
+              </Link>
             </Button>
           </div>
         </div>
