@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { User, Check, Lock, Upload } from 'lucide-react'
+import { User, Check, Lock, Upload, MapPin, Phone, Mail } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { updateClientProfile } from '@/store/reducers/clientSlice'
 import { updateProfile } from '@/store/reducers/authSlice'
@@ -39,7 +39,7 @@ const ProfileInformation = () => {
   //////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////
   useEffect(() => {
     if (client) {
-    setFormData({
+      setFormData({
         firstname: client.firstname || '',
         lastname: client.lastname || '',
         email: client.email || '',
@@ -48,7 +48,7 @@ const ProfileInformation = () => {
         city: client.location?.city || '',
         province: client.location?.province || '',
         profilePicture: client.profilePicture || ''
-    })
+      })
     }
   }, [client])
 
@@ -104,20 +104,20 @@ const ProfileInformation = () => {
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-xl ">
-          <User className="h-5 w-5 text-primary" />
-          Profile Information
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Profile Picture Upload */}
-        <div className="flex flex-col items-start gap-2 mb-2">
-          <div className="flex flex-col items-center gap-2 mb-2">
-            <Avatar className="w-20 h-20">
+    <div className="space-y-6">
+      {/* Profile Picture */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3">
+            <User className="h-5 w-5 text-primary" />
+            Profile Picture
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center gap-4">
+            <Avatar className="w-24 h-24">
               <AvatarImage src={preview || formData.profilePicture || client?.profilePicture || undefined} alt="Profile" />
-              <AvatarFallback className="text-lg">{formData.firstname[0]}{formData.lastname[0]}</AvatarFallback>
+              <AvatarFallback className="text-2xl">{formData.firstname[0]}{formData.lastname[0]}</AvatarFallback>
             </Avatar>
             <label htmlFor="profile-pic-upload">
               <input
@@ -127,104 +127,139 @@ const ProfileInformation = () => {
                 className="hidden"
                 onChange={handlePicChange}
               />
-              <Button asChild variant="outline" size="sm" className="mt-2">
-                <span><Upload className="w-4 h-4 mr-1" />Upload Photo (jpeg, jpg, png)</span>
+              <Button asChild variant="outline" size="sm">
+                <span><Upload className="w-4 h-4 mr-2" />Upload New Photo</span>
               </Button>
             </label>
+            <p className="text-xs text-slate-500 text-center">
+              Supports JPEG, JPG, PNG formats
+            </p>
           </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        </CardContent>
+      </Card>
+
+      {/* Basic Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3">
+            <User className="h-5 w-5 text-primary" />
+            Basic Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="firstname">First Name</Label>
+              <Input
+                id="firstname"
+                value={formData.firstname}
+                onChange={(e) => handleInputChange('firstname', e.target.value)}
+                placeholder="Enter your first name"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastname">Last Name</Label>
+              <Input
+                id="lastname"
+                value={formData.lastname}
+                onChange={(e) => handleInputChange('lastname', e.target.value)}
+                placeholder="Enter your last name"
+              />
+            </div>
+          </div>
+
           <div className="space-y-2">
-            <Label htmlFor="firstname">First Name</Label>
-            <Input
-              id="firstname"
-              value={formData.firstname}
-              onChange={(e) => handleInputChange('firstname', e.target.value)}
-              placeholder="Enter your first name"
-            />
+            <Label htmlFor="email">Email Address</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                id="email"
+                value={formData.email}
+                disabled
+                className="pl-10 bg-slate-50"
+              />
+            </div>
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <Lock className="w-4 h-4" />
+              Email cannot be changed
+            </div>
           </div>
+
           <div className="space-y-2">
-            <Label htmlFor="lastname">Last Name</Label>
-            <Input
-              id="lastname"
-              value={formData.lastname}
-              onChange={(e) => handleInputChange('lastname', e.target.value)}
-              placeholder="Enter your last name"
-            />
+            <Label htmlFor="phone">Phone Number</Label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                id="phone"
+                value={formData.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="Enter your phone number"
+                className="pl-10"
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <div className="relative">
-            <Input
-              id="email"
-              value={formData.email}
-              disabled
-              className="pr-10 bg-muted"
-            />
-            <Lock className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          </div>
-          <p className="text-sm text-muted-foreground">🔒 Email cannot be changed</p>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="phone">Phone Number</Label>
-          <Input
-            id="phone"
-            value={formData.phone}
-            onChange={(e) => handleInputChange('phone', e.target.value)}
-            placeholder="Enter your phone number"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="bio">Bio</Label>
-          <Input
-            id="bio"
-            value={formData.bio}
-            onChange={(e) => handleInputChange('bio', e.target.value)}
-            placeholder="Tell us about yourself"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="city">City</Label>
+            <Label htmlFor="bio">Bio</Label>
             <Input
-              id="city"
-              value={formData.city}
-              onChange={(e) => handleInputChange('city', e.target.value)}
-              placeholder="Enter your city"
+              id="bio"
+              value={formData.bio}
+              onChange={(e) => handleInputChange('bio', e.target.value)}
+              placeholder="Tell us about yourself"
             />
+            <p className="text-xs text-slate-500">A brief description about yourself</p>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="province">Province</Label>
-            <Select value={formData.province} onValueChange={(value) => handleInputChange('province', value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select province" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sindh">Sindh</SelectItem>
-                <SelectItem value="punjab">Punjab</SelectItem>
-                <SelectItem value="kpk">Khyber Pakhtunkhwa</SelectItem>
-                <SelectItem value="balochistan">Balochistan</SelectItem>
-                <SelectItem value="gilgit">Gilgit-Baltistan</SelectItem>
-                <SelectItem value="azad-kashmir">Azad Kashmir</SelectItem>
-                <SelectItem value="islamabad">Islamabad</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        <div className="flex justify-end">
-          <Button onClick={handleSubmit} className="bg-primary hover:bg-primary/90" disabled={loading} >
-            <Check className="h-4 w-4 mr-2" />
-            Update Profile
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      {/* Location Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3">
+            <MapPin className="h-5 w-5 text-primary" />
+            Location
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="city">City</Label>
+              <Input
+                id="city"
+                value={formData.city}
+                onChange={(e) => handleInputChange('city', e.target.value)}
+                placeholder="Enter your city"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="province">Province</Label>
+              <Select value={formData.province} onValueChange={(value) => handleInputChange('province', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select province" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="sindh">Sindh</SelectItem>
+                  <SelectItem value="punjab">Punjab</SelectItem>
+                  <SelectItem value="kpk">Khyber Pakhtunkhwa</SelectItem>
+                  <SelectItem value="balochistan">Balochistan</SelectItem>
+                  <SelectItem value="gilgit">Gilgit-Baltistan</SelectItem>
+                  <SelectItem value="azad-kashmir">Azad Kashmir</SelectItem>
+                  <SelectItem value="islamabad">Islamabad</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Save Button */}
+      <div className="flex justify-end">
+        <Button onClick={handleSubmit} className="bg-primary hover:bg-primary/90" disabled={loading}>
+          <Check className="h-4 w-4 mr-2" />
+          {loading ? 'Updating...' : 'Update Profile'}
+        </Button>
+      </div>
+    </div>
   )
 }
 

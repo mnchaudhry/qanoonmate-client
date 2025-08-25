@@ -11,7 +11,7 @@ import SectionHeading from './SectionHeading';
 
 const Contact: React.FC = () => {
   return (
-    <section id="Contact" className="Xbg-surface relative overflow-hidden py-24">
+    <section id="Contact" className="bg-surface relative overflow-hidden py-24">
 
       <div aria-hidden className="pointer-events-none absolute -top-40 -left-20 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
       <div aria-hidden className="pointer-events-none absolute -bottom-40 -right-20 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
@@ -155,9 +155,13 @@ const Contact: React.FC = () => {
                   <FaExternalLinkAlt className="text-primary" />
                   <span>Customer Support</span>
                 </Link>
-                <Link href="/privacy" className="flex items-center gap-2 text-muted-foreground hover:underline">
+                <Link href="/privacy-policy" className="flex items-center gap-2 text-muted-foreground hover:underline">
                   <FaExternalLinkAlt className="text-primary" />
                   <span>Privacy Policy</span>
+                </Link>
+                <Link href="/terms-of-services" className="flex items-center gap-2 text-muted-foreground hover:underline">
+                  <FaExternalLinkAlt className="text-primary" />
+                  <span>Terms & Conditions</span>
                 </Link>
               </div>
             </div>

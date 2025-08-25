@@ -83,34 +83,42 @@ const Blogs = () => {
 
     return (
         <div className="md:col-span-2 space-y-6">
-            {/* Header with Search and Write Button */}
-            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                <div className="relative flex-1 max-w-md">
+            {/* Header with Search and mobile category select */}
+            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between">
+                <div className="relative w-full">
                     <input
                         type="text"
                         placeholder="Search Blogs..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full px-4 py-3 pr-10 text-sm rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none transition"
+                        className="w-full px-4 py-2.5 pr-10 text-sm rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-ring focus:outline-none transition"
                     />
                     <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground">
                         <Search size={20} />
                     </span>
                 </div>
-                {/* <Button
-                    onClick={handleWriteBlog}
-                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
-                >
-                    <PenTool size={18} />
-                    Write Blog
-                </Button> */}
+                {/* Mobile category select */}
+                <div className="w-full sm:w-auto">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full sm:w-[200px] px-3 py-2.5 rounded-lg border border-input bg-background text-sm"
+                  >
+                    <option value="all">All Categories</option>
+                    {Array.from(new Set(blogs.flatMap((b: Blog) => b.tags || []))).map((tag: string) => (
+                      <option key={tag} value={tag}>{tag}</option>
+                    ))}
+                  </select>
+                </div>
             </div>
 
-            {/* Category Filters */}
-            <BlogFilters
-                selectedCategory={selectedCategory}
-                onCategoryChange={handleCategoryChange}
-            />
+            {/* Category Filters (desktop only) */}
+            <div className="hidden md:block">
+              <BlogFilters
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={handleCategoryChange}
+              />
+            </div>
 
             {/* Results Count */}
             <div className="text-sm text-muted-foreground">

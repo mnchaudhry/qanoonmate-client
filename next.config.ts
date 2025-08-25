@@ -22,7 +22,11 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'courtingthelaw.com'
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: '**'
+      },
     ],
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
@@ -94,22 +98,22 @@ const nextConfig: NextConfig = {
     ]
   },
 
-  // Proxy API to backend to make cookies first-party
-  async rewrites() {
-    const backend = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://qanoonmate-server.fly.dev'
-    return {
-      // Let Next's own routes (including /api/*) resolve first
-      beforeFiles: [],
-      // After filesystem routes, proxy any remaining /api/* to backend
-      afterFiles: [
-        {
-          source: '/api/:path*',
-          destination: `${backend}/api/:path*`,
-        },
-      ],
-      fallback: [],
-    }
-  },
+  // // Proxy API to backend to make cookies first-party
+  // async rewrites() {
+  //   const backend = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://qanoonmate-server.fly.dev'
+  //   return {
+  //     // Let Next's own routes (including /api/*) resolve first
+  //     beforeFiles: [],
+  //     // After filesystem routes, proxy any remaining /api/* to backend
+  //     afterFiles: [
+  //       {
+  //         source: '/api/:path*',
+  //         destination: `${backend}/api/:path*`,
+  //       },
+  //     ],
+  //     fallback: [],
+  //   }
+  // },
 };
 
 export default nextConfig;

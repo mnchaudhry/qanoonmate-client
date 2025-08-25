@@ -1,12 +1,13 @@
 import Logo from '@/components/Logo';
-import { Facebook, Github, Instagram, Mail, MapPin, Phone, Twitter, } from 'lucide-react';
+import { Facebook, Instagram, Mail, MapPin, Phone, Twitter, Linkedin } from 'lucide-react';
 import Link from 'next/link';
 
 const data = {
-  facebookLink: '#',
-  instaLink: '#',
-  twitterLink: '#',
-  githubLink: '#',
+  facebookLink: 'https://www.facebook.com/qanoonmateofficial/',
+  instaLink: 'https://www.instagram.com/qanoonmateofficial/',
+  twitterLink: 'https://x.com/qanoonmate',
+  // githubLink: 'https://github.com/qanoonmate',
+  linkedin: "https://www.linkedin.com/company/qanoonmate/",
   services: {
     chatbot: '/chatbot',
     knowledgebase: '/knowledgebase',
@@ -17,8 +18,8 @@ const data = {
   },
   about: {
     about: '/about',
-    privacy: '/privacy',
-    terms: '/terms',
+    privacy: '/privacy-policy',
+    terms: '/terms-of-services',
     contact: '/contacts',
   },
   help: {
@@ -43,7 +44,8 @@ const socialLinks = [
   { icon: Facebook, label: 'Facebook', href: data.facebookLink },
   { icon: Instagram, label: 'Instagram', href: data.instaLink },
   { icon: Twitter, label: 'Twitter', href: data.twitterLink },
-  { icon: Github, label: 'GitHub', href: data.githubLink },
+  // { icon: Github, label: 'GitHub', href: data.githubLink },
+  { icon: Linkedin, label: 'LinkedIn', href: data.linkedin },
 ];
 
 const aboutLinks = [

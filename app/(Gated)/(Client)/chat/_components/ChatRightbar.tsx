@@ -16,8 +16,9 @@ interface ChatRightbarProps {
 const ChatRightbar: React.FC<ChatRightbarProps> = ({ showContextPanel, setShowContextPanel, showDictionary, keyReferences = [], relatedCases = [], legalContext = null, referencedLinks = [] }) => {
   return (
     <>
+      {/* Desktop / Tablet docked rightbar */}
       <div
-        className={`relative h-screen transition-all duration-300 ease-in-out overflow-y-auto 
+        className={`hidden md:block relative h-screen transition-all duration-300 ease-in-out overflow-y-auto 
           ${showContextPanel
             ? "w-[22rem] min-w-[22rem] max-w-[22rem] opacity-100 pointer-events-auto bg-surface border-l !border-border p-4 pt-8"
             : "w-8 min-w-8 max-w-8 opacity-100 bg-surface border-l !border-border p-0"
@@ -173,6 +174,107 @@ const ChatRightbar: React.FC<ChatRightbarProps> = ({ showContextPanel, setShowCo
             <Plus className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
           </button>
         )}
+      </div>
+
+      {/* Mobile overlay rightbar */}
+      <div
+        className={`md:hidden fixed inset-y-0 right-0 z-40 bg-surface border-l !border-border w-[90%] max-w-[22rem] transform transition-transform duration-200 ${showContextPanel ? "translate-x-0" : "translate-x-full"}`}
+      >
+        <div className="p-4 pt-6 h-full overflow-y-auto">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">Context & References</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowContextPanel(false)}
+              className="h-8 w-8 p-0"
+            >
+              <Minimize2 className="w-4 h-4" />
+            </Button>
+          </div>
+
+          {/* Legal Context */}
+          <Card className="py-0 mb-3">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Gavel className="w-4 h-4" />
+                Legal Context
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-xs text-muted-foreground">
+                {legalContext || "No legal context yet."}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Key References */}
+          <Card className="py-0 overflow-y-scroll mb-3">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Key References
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {keyReferences.length === 0 && (
+                <div className="text-xs text-muted-foreground">
+                  No references yet.
+                </div>
+              )}
+              {keyReferences.map((ref, idx) => (
+                <div
+                  key={idx}
+                  className="p-2 bg-primary/5 rounded border border-primary/10"
+                >
+                  <p className="text-xs font-medium text-primary">
+                    {typeof ref === 'string' && ref ? ref : String(ref)}
+                  </p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Related Cases */}
+          <Card className="py-0 mb-3">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Related Cases
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {relatedCases.length === 0 && (
+                <div className="text-xs text-muted-foreground">No cases yet.</div>
+              )}
+              {relatedCases.map((c, idx) => (
+                <div key={idx} className="p-2 bg-muted rounded text-xs">
+                  <p className="font-medium">{c}</p>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Referenced links */}
+          <Card className="py-0 overflow-y-scroll">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Link className="w-4 h-4" />
+                Referenced Links
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 overflow-x-scroll">
+              {referencedLinks.length === 0 && (
+                <div className="text-xs text-muted-foreground">No referenced links yet.</div>
+              )}
+              {referencedLinks.map((c, idx) => (
+                <a key={idx} href={c} target="_blank" className="p-2 bg-muted rounded text-xs">
+                  <p className="font-medium">{c}</p>
+                </a>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </>
   );

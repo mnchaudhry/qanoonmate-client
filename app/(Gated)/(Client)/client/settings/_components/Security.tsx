@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
-import { ShieldCheck } from 'lucide-react'
+import { ShieldCheck, Lock, Smartphone, Clock } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@/store/store'
 import { updateClientSecurity } from '@/store/reducers/clientSettingsSlice'
@@ -12,6 +12,7 @@ const Security = () => {
   //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>()
   const { selectedSettings } = useSelector((state: RootState) => state.clientSettings)
+  const { user } = useSelector((state: RootState) => state.auth)
 
   //////////////////////////////////////////////// STATE /////////////////////////////////////////////////
   const [loading, setLoading] = useState(false)
@@ -25,48 +26,118 @@ const Security = () => {
       .finally(() => setLoading(false))
   }
 
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Never'
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    })
+  }
+
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-xl ">
-          <ShieldCheck className="h-5 w-5 text-primary" />
-          Security
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="flex items-center justify-between py-2">
-          <span className="font-medium">Two-Factor Authentication (2FA)</span>
-          <Switch 
-            checked={selectedSettings?.security?.twoFactorEnabled} 
-            onCheckedChange={handleToggle2FA}
-            disabled={loading}
-          />
-        </div>
-        <div className="py-2">
-          <div className="font-medium mb-1">Last Login Devices</div>
-          <ul className="list-disc pl-5 text-sm text-muted-foreground">
-            {selectedSettings?.security?.lastLoginDevices?.length ? 
-              selectedSettings.security.lastLoginDevices.map((d, i) => (
-              <li key={i}>{d}</li>
-              )) : 
-              <li>No recent devices found.</li>
-            }
-          </ul>
-        </div>
-        <div className="py-2">
-          <div className="font-medium mb-1">Password Last Updated</div>
-          <div className="text-sm text-muted-foreground">
-            {selectedSettings?.security?.passwordUpdatedAt ? 
-              new Date(selectedSettings.security.passwordUpdatedAt).toLocaleString() : 
-              'Never'
-            }
+    <div className="space-y-6">
+      {/* Two-Factor Authentication */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3">
+            <ShieldCheck className="h-5 w-5 text-primary" />
+            Two-Factor Authentication
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between p-4 rounded-lg border border-slate-200">
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Enable 2FA</p>
+              <p className="text-xs text-slate-500">
+                {selectedSettings?.security?.twoFactorEnabled
+                  ? "Two-factor authentication is currently enabled"
+                  : "Add an extra layer of security to your account"
+                }
+              </p>
+            </div>
+            <Switch 
+              checked={selectedSettings?.security?.twoFactorEnabled} 
+              onCheckedChange={handleToggle2FA}
+              disabled={loading}
+            />
           </div>
-        </div>
-        
-        <PasswordManagement />
-      </CardContent>
-    </Card>
+
+          {selectedSettings?.security?.twoFactorEnabled && (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                <div>
+                  <p className="text-sm font-medium text-emerald-800">2FA is active</p>
+                  <p className="text-xs text-emerald-700">Your account is protected with two-factor authentication</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Security Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3">
+            <Lock className="h-5 w-5 text-primary" />
+            Security Information
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-lg border border-slate-200">
+              <div className="flex items-center gap-3 mb-2">
+                <Clock className="w-4 h-4 text-slate-500" />
+                <span className="text-sm font-medium">Password Last Updated</span>
+              </div>
+              <p className="text-sm text-slate-600">
+                {formatDate(selectedSettings?.security?.passwordUpdatedAt)}
+              </p>
+            </div>
+
+            <div className="p-4 rounded-lg border border-slate-200">
+              <div className="flex items-center gap-3 mb-2">
+                <Smartphone className="w-4 h-4 text-slate-500" />
+                <span className="text-sm font-medium">Last Login</span>
+              </div>
+              <p className="text-sm text-slate-600">
+                {formatDate(user?.lastLogin)}
+              </p>
+            </div>
+          </div>
+
+          {selectedSettings?.security?.lastLoginDevices && selectedSettings.security.lastLoginDevices.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium text-slate-700">Recent Login Devices</h4>
+              <div className="space-y-2">
+                {selectedSettings.security.lastLoginDevices.slice(0, 3).map((device, index) => (
+                  <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-slate-50">
+                    <Smartphone className="w-4 h-4 text-slate-500" />
+                    <span className="text-sm text-slate-600">{device}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Password Management */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-3">
+            <Lock className="h-5 w-5 text-primary" />
+            Password Management
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <PasswordManagement />
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 

@@ -10,6 +10,9 @@ export const breadcrumbLabels: Record<string, string> = {
   "sections": "Sections",
   "clauses": "Clauses",
   "subclauses": "Subclauses",
+  "info": "Information",
+  "terms-of-services": "Terms of Services",
+  "privacy-policy": "Privacy Policy",
 }
 
 export const pricingPlans = [

@@ -60,14 +60,14 @@ const ProfileButton = () => {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
+      <DropdownMenuContent className="w-56 relative z-[60] " align="end" forceMount>
         <DropdownMenuItem asChild>
           <Link href={getProfileLink()} className="flex items-center gap-x-2" >
             <User className="h-4 w-4" />
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
-        {
+        {/* {
           showDashboardButton && (
             <DropdownMenuItem asChild>
               <Link href={getDashboardLink()} className="flex items-center gap-x-2" >
@@ -76,13 +76,13 @@ const ProfileButton = () => {
               </Link>
             </DropdownMenuItem>
           )
-        }
-        <DropdownMenuItem asChild>
+        } */}
+        {/* <DropdownMenuItem asChild>
           <Link href={getSettingsLink()} className="flex items-center gap-x-2" >
             <Settings className="h-4 w-4" />
             <span>Settings</span>
           </Link>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-x-2">
           <LogOut className="h-4 w-4" />
           <span>Log out</span>

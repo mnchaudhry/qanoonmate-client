@@ -91,7 +91,7 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
       {/* Content */}
       <div className="p-5 flex flex-col justify-between flex-grow">
         {/* Title */}
-        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition line-clamp-2 mb-2">
+        <h3 className="text-base md:text-lg font-semibold text-foreground group-hover:text-primary transition line-clamp-2 mb-2">
           {blog.title}
         </h3>
 
@@ -100,7 +100,7 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
 
         {/* Author and Date */}
         <div className="flex items-center justify-between mb-3">
-          <div className="text-sm text-muted-foreground flex items-center gap-2">
+          <div className="text-xs md:text-sm text-muted-foreground flex items-center gap-2">
             <span>{blog.author?.name || `${blog.author?.firstname || ''} ${blog.author?.lastname || ''}`.trim() || 'QanoonMate Team'}</span>
             <span>•</span>
             <span>{blog.createdAt}</span>

@@ -21,7 +21,7 @@ const ActGrid: React.FC<ActGridProps> = ({ acts, onCategoryClick, onTagClick }) 
           <CardContent className="flex-1 p-6">
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-semibold mb-2 line-clamp-2">{act.name}</h3>
+                <h3 className="text-base md:text-lg font-semibold mb-2 line-clamp-2">{act.name}</h3>
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-sm text-muted-foreground">{act.year}</span>
                   {act.category && (

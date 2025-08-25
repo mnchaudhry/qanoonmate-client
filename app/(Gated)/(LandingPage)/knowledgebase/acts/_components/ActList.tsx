@@ -19,7 +19,7 @@ const ActList: React.FC<ActListProps> = ({ acts, onCategoryClick, onTagClick }) 
         <div key={act._id} className="rounded-xl border p-6 shadow-sm">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
-              <h2 className="text-xl font-semibold mb-1">{act.name}</h2>
+              <h2 className="text-lg md:text-xl font-semibold mb-1">{act.name}</h2>
               <p className="text-sm mb-2 text-muted-foreground">
                 {act.year}
                 {act.category && (

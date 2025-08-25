@@ -54,7 +54,7 @@ const Logo: React.FC<LogoProps> = ({ size = 'md', type = 'green', containerClass
                     alt='logo'
                     width={100}
                     height={140}
-                    className='w-[13rem] h-8 object-contain shrink-0'
+                    className={cn('h-8 object-contain shrink-0', size == 'sm' ? 'w-[11rem]' : 'w-[13rem]')}
                 />
             )}
         </Link>

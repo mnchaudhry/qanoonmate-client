@@ -1,14 +1,13 @@
 "use client"
 
 import React, { useEffect, useMemo, useState } from 'react'
-import { MapPin, Star } from 'lucide-react'
+import { ArrowRight, MapPin, Star } from 'lucide-react'
 import Link from 'next/link'
 
 import SectionHeading from './SectionHeading'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Pagination } from '@/components/ui/pagination'
 import { cn, enumToLabel } from '@/lib/utils'
 import { Lawyer1 } from '@/constants/images'
 import * as api from '@/store/api'
@@ -109,7 +108,6 @@ const Consultations: React.FC = () => {
     return list
   }, [allLawyers, searchQuery, selectedPractice, selectedCity, sortBy])
 
-  const totalPages = Math.ceil(filteredLawyers.length / pageSize) || 1
   const paginated = useMemo(() => {
     const start = (page - 1) * pageSize
     return filteredLawyers.slice(start, start + pageSize)
@@ -133,7 +131,7 @@ const Consultations: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search lawyers, specialties, or locations"
-            containerClassName='mx-0 mb-0 w-1/2'
+            containerClassName='mx-0 mb-0 w-full md:w-1/2'
           />
 
           <div className="flex items-center gap-2">
@@ -160,7 +158,7 @@ const Consultations: React.FC = () => {
             </Select>
 
             <Select value={selectedCity} onValueChange={setSelectedCity}>
-              <SelectTrigger className="min-w-[140px] bg-white">
+              <SelectTrigger className="min-w-[140px] bg-white hidden md:block ">
                 <SelectValue placeholder="City" />
               </SelectTrigger>
               <SelectContent>
@@ -194,7 +192,12 @@ const Consultations: React.FC = () => {
           )}
 
           {!isLoading && (
-            <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+            <Link href="/lawyers" className="flex items-center gap-2">
+              <Button variant="outline" size="sm" className="w-full">
+                View All Lawyers
+              </Button>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
           )}
         </div>
       </div>
@@ -298,7 +301,7 @@ function LawyerCard({ lawyer }: { lawyer: UILawyer }) {
 
       {/* Actions */}
       <div className="px-4 py-3 border-t flex gap-2">
-        <Link href="#" className="flex-1">
+        <Link href={`/lawyers/${lawyer?.id}`} className="flex-1">
           <Button variant="outline" size="sm" className="w-full">View Profile</Button>
         </Link>
         <Button size="sm" className="flex-1">

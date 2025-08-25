@@ -18,7 +18,7 @@ const LegalBlogs: React.FC = () => {
                 {/* Grid Layout for Blog Posts and News Updates */}
                 <div className="flex flex-col md:flex-row gap-10">
                     {/* Blog Posts */}
-                    <div className="flex-1">
+                    <div className="flex-1 order-2 md:order-1">
                         <h3 className="text-2xl font-semibold text-foreground mb-6">Latest Blog Posts</h3>
                         <div className="space-y-6">
                             <BlogCard
@@ -46,7 +46,7 @@ const LegalBlogs: React.FC = () => {
                     </div>
 
                     {/* News Updates */}
-                    <div className="w-full md:w-1/3 bg-neutral shadow-lg rounded-lg p-6">
+                    <div className="w-full md:w-1/3 bg-neutral shadow-lg rounded-lg p-6 order-1 md:order-2">
                         <h3 className="text-2xl font-semibold text-foreground mb-6">Latest Legal Updates</h3>
                         <div className="border-t-2 border-primary pt-6 space-y-4">
                             <NewsUpdate
