@@ -22,7 +22,7 @@ export const bookConsultation = createAsyncThunk<BookConsultationResponse, BookC
         const { data } = await api.bookConsultation(formData)
         if (data?.success) {
             toast.success(data?.message);
-            return data;
+            return data.data;
         }
         else {
             toast.error(data?.message);

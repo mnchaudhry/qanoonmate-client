@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "next/navigation";
 import { AppDispatch, RootState } from "@/store/store";
-import { getLawyerById } from "@/store/reducers/lawyerSlice";
+import { getLawyerByUsername } from "@/store/reducers/lawyerSlice";
 import BookingHeader from "./_components/BookingHeader";
 import BookingForm from "./_components/BookingForm";
 import BookingSummary from "./_components/BookingSummary";
@@ -13,11 +13,11 @@ import { ConsultationMode } from "@/lib/enums";
 export default function BookConsultationPage() {
 
   //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////
-  const { id } = useParams();
+  const { username } = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const { selectedLawyer: lawyer } = useSelector((state: RootState) => state.lawyer);
   const modes = lawyer?.settings?.consultation?.modes || [ConsultationMode.VIDEO_CALL];
-  console.log('modes', modes);
+  console.log('lawyer', lawyer);
 
   //////////////////////////////////////////////// STATES ///////////////////////////////////////////
   const [loading, setLoading] = useState(false);
@@ -25,14 +25,14 @@ export default function BookConsultationPage() {
 
   //////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////
   useEffect(() => {
-    if (!lawyer?._id && id) {
+    if (!lawyer?._id && username) {
       setLoading(true);
-      dispatch(getLawyerById(id as string))
+      dispatch(getLawyerByUsername(username as string))
         .finally(() => {
           setLoading(false);
         });
     }
-  }, [dispatch, id, lawyer?._id]);
+  }, [dispatch, username, lawyer?._id]);
 
   //////////////////////////////////////////////// RENDER ///////////////////////////////////////
   if (loading) {

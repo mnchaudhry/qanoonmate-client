@@ -13,6 +13,7 @@ import { Lawyer } from "@/store/types/lawyer.types";
 import { ConsultationStatus } from "@/lib/enums";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Hint from "@/components/Hint";
+import Link from "next/link";
 
 interface ConsultationCardProps {
   consultation: Consultation;
@@ -134,7 +135,7 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
       </CardContent>
       <CardFooter className="flex gap-2 pt-2">
         {consultation.status === ConsultationStatus.PENDING && (
-          <Button size="sm" variant="outline">Chat with Lawyer</Button>
+          <Button size="sm" variant="outline"><Link href={"/client/messages"}>Chat with Lawyer</Link></Button>
         )}
         {consultation.status === ConsultationStatus.SCHEDULED && (
           <>
