@@ -9,12 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { AppDispatch, RootState } from '@/store/store';
-import { ChatParticipant } from '@/store/types/api';
+import { ChatParticipant, Message } from '@/store/types/api';
 import { AlertCircle, Calendar, CheckCircle, FileText, Link2, NotebookIcon, NotebookPen, Plus, Search, Users } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNote, cancelConsultation, getConsultationById, rescheduleConsultation } from '@/store/reducers/consultationSlice';
+import { addNote, cancelConsultation, getConsultationById, rescheduleConsultation, uploadDocument } from '@/store/reducers/consultationSlice';
 import { JSX } from '@fullcalendar/core/preact.js';
+import { ConsultationMode } from '@/lib/enums';
 
 // const mockTimeline = [
 //     { icon: <Calendar className="w-4 h-4" />, title: 'Consultation Requested', time: '2024-06-01 10:00', action: null },
@@ -30,11 +31,20 @@ const mockLinks = [
     { id: 'l1', url: 'https://example.com', title: 'Reference Link', sender: 'Sara Ahmed', time: '1d ago' },
 ];
 
+// Dictionary for human-readable labels
+export const ConsultationModeLabels: Record<ConsultationMode, string> = {
+    [ConsultationMode.IN_PERSON]: "In Person",
+    [ConsultationMode.VIDEO_CALL]: "Video Call",
+    [ConsultationMode.PHONE_CALL]: "Phone Call",
+    [ConsultationMode.CHAT]: "Chat"
+};
+
+
 
 const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (show: boolean) => void }) => {
 
     const dispatch = useDispatch<AppDispatch>()
-    const { currentRoom } = useSelector((state: RootState) => state.chat);
+    const { messages, currentRoom } = useSelector((state: RootState) => state.chat);
     const { user } = useSelector((state: RootState) => state.auth);
     const [open, setOpen] = useState<string | null>('timeline');
     const [showConsultationModal, setShowConsultationModal] = useState(false);
@@ -45,6 +55,8 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
     const [rescheduleReason, setRescheduleReason] = useState<string>('');
     const [cancelReason, setCancelReason] = useState<string>('');
     const [cancelNote, setCancelNote] = useState<string>('');
+    const [findMessage, setFindMessage] = useState("")
+    const [filteredMessages, setFilteredMessages] = useState<Message[]>([])
 
     // Cancellation reasons enum
     const cancellationReasons = [
@@ -69,6 +81,23 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
         ].filter(Boolean) as Array<{ icon: JSX.Element; title: string; time: string }>;
         return items;
     })();
+
+
+    // Handle Search 
+    const handleSearchMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault()
+        const searchValue = e.target.value;
+        setFindMessage(searchValue);
+
+        const words = searchValue.split(" ").filter(Boolean);
+        console.log("words", words)
+        setFilteredMessages(messages[currentRoom!._id].filter((mess) => {
+            return words.some((word) =>
+                mess.content.toLowerCase().includes(word.toLowerCase())
+            );
+        }) || []);
+        console.log("filtered messages", filteredMessages)
+    };
 
     // Accordion open logic
     const handleAccordionChange = (key: string) => setOpen(open === key ? null : key);
@@ -137,11 +166,19 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                     </AccordionTrigger>
                     <AccordionContent className={'px-4 transition-all duration-300'}>
                         <div className="py-2">
-                            <Input placeholder="Search messages..." className="mb-2" />
+                            <Input value={findMessage} onChange={(e) => handleSearchMessage(e)} placeholder="Search messages..." className="mb-2" />
                             <div className="flex flex-col gap-2 max-h-48 overflow-y-auto">
                                 {/* Mock search results */}
-                                <div className="p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted">How do I file a case? <span className="text-xs text-muted-foreground ml-2">10:01 AM</span></div>
-                                <div className="p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted">Please see attached contract. <span className="text-xs text-muted-foreground ml-2">Yesterday</span></div>
+                                {filteredMessages.map((mess,index) => {
+                                    return <div key={index} className="p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted">{mess.content}<div className="text-xs text-muted-foreground">{mess.sender.firstname} • {new Date(mess.timestamp).toLocaleDateString("en-US", {
+                                        weekday: "long",
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric"
+                                    })}</div></div>
+                                })}
+                                {/* <div className="p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted">How do I file a case? <span className="text-xs text-muted-foreground ml-2">10:01 AM</span></div>
+                                <div className="p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted">Please see attached contract. <span className="text-xs text-muted-foreground ml-2">Yesterday</span></div> */}
                             </div>
                         </div>
                     </AccordionContent>
@@ -172,7 +209,7 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                                     {e.icon}
                                     <div>
                                         <div className="text-sm font-medium">{e.title}</div>
-                                        <div className="text-xs text-muted-foreground">{new Date(e.time).toLocaleString()}</div>
+                                        {/* <div className="text-xs text-muted-foreground">{new Date(e.time).toLocaleString()}</div> */}
                                     </div>
                                 </div>
                             ))}
@@ -215,7 +252,8 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                                         size="sm"
                                         className="w-full"
                                         disabled={isLoading || !currentRoom?.consultation?._id || !rescheduleDate || !rescheduleTimeSlot || !rescheduleReason}
-                                        onClick={async () => {
+                                        onClick={async (e: FormEvent) => {
+                                            e.preventDefault();
                                             if (!currentRoom?.consultation?._id) return;
                                             const id = currentRoom.consultation._id;
                                             await dispatch(rescheduleConsultation({ id, formData: { id, newDate: rescheduleDate, newTimeSlot: rescheduleTimeSlot, reason: rescheduleReason } }))
@@ -246,7 +284,7 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                                         </SelectContent>
                                     </Select>
                                     <Textarea
-                                        placeholder="Additional note (optional)"
+                                        placeholder="Cancel Reason Explanation"
                                         value={cancelNote}
                                         onChange={(e) => setCancelNote(e.target.value)}
                                         className="resize-none"
@@ -255,8 +293,9 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                                         size="sm"
                                         variant="destructive"
                                         className="w-full"
-                                        disabled={isLoading || !currentRoom?.consultation?._id || !cancelReason}
-                                        onClick={async () => {
+                                        disabled={isLoading || !currentRoom?.consultation?._id || !cancelReason || !cancelNote}
+                                        onClick={async (e: FormEvent) => {
+                                            e.preventDefault()
                                             if (!currentRoom?.consultation?._id) return;
                                             const id = currentRoom.consultation._id;
                                             await dispatch(cancelConsultation({ id, reason: cancelReason, note: cancelNote || undefined }))
@@ -341,6 +380,7 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                                                 )}
                                             </div>
                                         ))}
+                                        <Button onClick={() => { }}>Upload file</Button>
                                     </div>
                                 </div>
                             </TabsContent>
@@ -356,6 +396,7 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                                             </div>
                                         </div>
                                     ))}
+                                    <Button>Add Link</Button>
                                 </div>
                             </TabsContent>
                         </Tabs>
@@ -409,7 +450,7 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                         {!!selectedConsultation && (
                             <div className="space-y-2 text-sm">
                                 <div><span className="font-medium">Status:</span> {selectedConsultation.status}</div>
-                                <div><span className="font-medium">Type:</span> {selectedConsultation.type} • <span className="font-medium">Mode:</span> {selectedConsultation.mode}</div>
+                                <div><span className="font-medium">Type:</span> {selectedConsultation.type} • <span className="font-medium">Mode:</span> {ConsultationModeLabels[selectedConsultation.mode]}</div>
                                 <div><span className="font-medium">Scheduled:</span> {new Date(selectedConsultation.scheduledDate).toLocaleString()}</div>
                                 <div><span className="font-medium">Duration:</span> {selectedConsultation.duration} min</div>
                                 <div><span className="font-medium">Fee:</span> {selectedConsultation.fee}</div>
