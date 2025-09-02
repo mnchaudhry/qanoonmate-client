@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { AppDispatch, RootState } from '@/store/store';
 import { ChatParticipant } from '@/store/types/api';
-import { AlertCircle, Calendar, CheckCircle, FileText, Link2, NotebookPen, Plus, Search, Users } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle, FileText, Link2, NotebookIcon, NotebookPen, Plus, Search, Users } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addNote, getConsultationById } from '@/store/reducers/consultationSlice';
@@ -260,8 +260,17 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                     <AccordionContent className={'px-4 transition-all duration-300'}>
                         <div className="py-2">
                             {(selectedConsultation?.notes || []).map((n: any, index: number) => (
-                                <div key={n._id || index} className="text-sm">
-                                    {n.content}
+                                <div key={n.id} className="flex items-center gap-2 p-2 rounded bg-muted/50">
+                                    <NotebookIcon className="w-4 h-4 text-primary" />
+                                    <div className="flex-1">
+                                        <div className="text-sm font-medium">{n.content}</div>
+                                        <div className="text-xs text-muted-foreground">{n.createdBy} • {new Date(n.createdAt).toLocaleDateString("en-US", {
+                                            weekday: "long",   
+                                            year: "numeric",   
+                                            month: "long",     
+                                            day: "numeric"     
+                                        })}</div>
+                                    </div>
                                 </div>
                             ))}
                             <Textarea
