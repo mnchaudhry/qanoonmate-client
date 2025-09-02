@@ -13,7 +13,7 @@ export default function ConsultationsPage() {
     //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////
     const dispatch = useDispatch<AppDispatch>();
     const itemsPerPage = 5;
-    const { currentPage, totalPages } = useSelector((state: RootState) => state.consultation);
+    const {currentPage, totalPages } = useSelector((state: RootState) => state.consultation);
 
     //////////////////////////////////////////////// STATES /////////////////////////////////////////
     const [searchQuery, setSearchQuery] = useState("");
