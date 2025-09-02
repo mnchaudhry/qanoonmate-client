@@ -14,7 +14,6 @@ interface ConsultationState {
     currentPage: number;
     totalPages: number;
     consultationStats: ConsultationStats;
-    notes: string[]
 }
 
 
@@ -173,6 +172,7 @@ export const cancelConsultation = createAsyncThunk<CancelConsultationResponse, C
         }
     }
     catch (error) {
+        console.log("request", request, "\nerror", error)
         const message = getErrorMessage(error, "");
         toast.error(message)
         return rejectWithValue(message)
@@ -407,7 +407,6 @@ const initialState: ConsultationState = {
     totalCount: 0,
     currentPage: 1,
     totalPages: 1,
-    notes: [],
     consultationStats: {
         total: 0,
         pending: 0,
@@ -427,9 +426,6 @@ const consultationSlice = createSlice({
         setSelectedConsultation: (state, action) => {
             state.selectedConsultation = action.payload
         },
-        updateNote: (state, action) => {
-            state.notes[-1] = action.payload
-        }
     },
     extraReducers: (builder) => {
         builder
@@ -764,5 +760,5 @@ const consultationSlice = createSlice({
 });
 
 export default consultationSlice.reducer;
-export const { resetState, updateNote, setSelectedConsultation } = consultationSlice.actions;
+export const { resetState, setSelectedConsultation } = consultationSlice.actions;
 export const { actions: consultationActions } = consultationSlice;
