@@ -168,7 +168,7 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                         <div className="py-2">
                             <Input value={findMessage} onChange={(e) => handleSearchMessage(e)} placeholder="Search messages..." className="mb-2" />
                             <div className="flex flex-col gap-2 max-h-48 overflow-y-auto">
-                                {/* Mock search results */}
+                                {/* search results */}
                                 {filteredMessages.map((mess,index) => {
                                     return <div key={index} className="p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted">{mess.content}<div className="text-xs text-muted-foreground">{mess.sender.firstname} • {new Date(mess.timestamp).toLocaleDateString("en-US", {
                                         weekday: "long",
