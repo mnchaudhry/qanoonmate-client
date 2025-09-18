@@ -334,9 +334,9 @@ const Rightbar = ({ showRightbar }: { showRightbar: boolean, setShowSidebar: (sh
                                 </div>
                             ))}
                         </div>
-                        <Button size="sm" variant="outline" className="mt-3 w-full" onClick={() => setShowAddParticipant(true)}>
+                        {/* <Button size="sm" variant="outline" className="mt-3 w-full" onClick={() => setShowAddParticipant(true)}>
                             <Plus className="w-4 h-4 mr-1" /> Add Participant
-                        </Button>
+                        </Button> */}
                     </AccordionContent>
                 </AccordionItem>
 
