@@ -23,6 +23,8 @@ import betaRequest from './betaRequestSlice';
 import email from './emailSlice';
 import communication from './communicationSlice';
 import newsletter from './newsletterSlice';
+import credits from './credits';
+import payments from './payments';
 
 const rootReducer = combineReducers({
     auth,
@@ -49,6 +51,8 @@ const rootReducer = combineReducers({
     email,
     communication,
     newsletter,
+    credits,
+    payments,
 });
 
 export default rootReducer;

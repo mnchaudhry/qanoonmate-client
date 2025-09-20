@@ -3,48 +3,118 @@ import { RotateCcw } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { PaymentMethodConfig, type PaymentFilters } from '@/store/types/payments.types';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface PaymentFiltersProps {
-  filters: {
-    dateRange: string;
-    status: string;
-    lawyer: string;
-    search: string;
-  };
-  onFiltersChange: (filters: any) => void;
-  lawyers: string[];
+  filters: PaymentFilters;
+  onFiltersChange: (filters: PaymentFilters) => void;
+  paymentMethods: PaymentMethodConfig[];
+  loading: boolean;
 }
 
-const PaymentFilters: React.FC<PaymentFiltersProps> = ({ filters, onFiltersChange, lawyers }) => {
+const PaymentFilters: React.FC<PaymentFiltersProps> = ({ 
+  filters, 
+  onFiltersChange, 
+  paymentMethods, 
+  loading 
+}) => {
 
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
-  const handleFilterChange = (key: string, value: string) => {
-    onFiltersChange({
-      ...filters,
-      [key]: value
-    });
+  const handleDateRangeChange = (value: string) => {
+    const now = new Date();
+    let dateFrom: string | undefined;
+    let dateTo: string | undefined;
+
+    switch (value) {
+      case 'today':
+        dateFrom = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+        dateTo = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).toISOString();
+        break;
+      case 'week':
+        dateFrom = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+        dateTo = now.toISOString();
+        break;
+      case 'month':
+        dateFrom = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+        dateTo = now.toISOString();
+        break;
+      case 'year':
+        dateFrom = new Date(now.getFullYear(), 0, 1).toISOString();
+        dateTo = now.toISOString();
+        break;
+      default:
+        dateFrom = undefined;
+        dateTo = undefined;
+    }
+
+    onFiltersChange({ ...filters, dateFrom, dateTo });
+  };
+
+  const handleStatusChange = (value: string) => {
+    const status = value === 'all' ? undefined : [value as any];
+    onFiltersChange({ ...filters, status });
+  };
+
+  const handlePaymentMethodChange = (value: string) => {
+    const paymentMethod = value === 'all' ? undefined : [value as any];
+    onFiltersChange({ ...filters, paymentMethod });
+  };
+
+  const handleSearchChange = (value: string) => {
+    onFiltersChange({ ...filters, search: value });
   };
 
   const handleReset = () => {
     onFiltersChange({
-      dateRange: 'all',
-      status: 'all',
-      lawyer: 'any',
-      search: ''
+      dateFrom: undefined,
+      dateTo: undefined,
+      status: undefined,
+      paymentMethod: undefined,
+      search: '',
+      page: 1,
+      limit: 10
     });
+  };
+
+  // Helper function to get current date range value for display
+  const getCurrentDateRangeValue = () => {
+    if (!filters.dateFrom || !filters.dateTo) return 'all';
+    
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const yearStart = new Date(now.getFullYear(), 0, 1);
+
+    const dateFrom = new Date(filters.dateFrom);
+
+    if (dateFrom.getTime() === today.getTime()) return 'today';
+    if (dateFrom.getTime() >= weekAgo.getTime()) return 'week';
+    if (dateFrom.getTime() >= monthStart.getTime()) return 'month';
+    if (dateFrom.getTime() >= yearStart.getTime()) return 'year';
+    return 'all';
+  };
+
+  const getCurrentStatusValue = () => {
+    return filters.status && filters.status.length > 0 ? filters.status[0] : 'all';
+  };
+
+  const getCurrentPaymentMethodValue = () => {
+    return filters.paymentMethod && filters.paymentMethod.length > 0 ? filters.paymentMethod[0] : 'all';
   };
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
     <div className="flex flex-col md:flex-row justify-between gap-4 w-full">
       <SearchBar
-        value={filters.search}
-        onChange={v => handleFilterChange('search', typeof v === 'string' ? v : '')}
+        value={filters.search || ''}
+        onChange={v => handleSearchChange(typeof v === 'string' ? v : '')}
         containerClassName="max-w-md w-full mb-0 mx-0"
       />
       <div className="w-full md:w-1/2 flex gap-3">
         <div className="flex-1 min-w-0">
-          <Select value={filters.dateRange} onValueChange={v => handleFilterChange('dateRange', v)}>
+          <Select value={getCurrentDateRangeValue()} onValueChange={handleDateRangeChange}>
             <SelectTrigger className="w-full h-[42px]">
               <SelectValue placeholder="All Time" />
             </SelectTrigger>
@@ -53,35 +123,42 @@ const PaymentFilters: React.FC<PaymentFiltersProps> = ({ filters, onFiltersChang
               <SelectItem value="today">Today</SelectItem>
               <SelectItem value="week">This Week</SelectItem>
               <SelectItem value="month">This Month</SelectItem>
-              <SelectItem value="quarter">This Quarter</SelectItem>
+              <SelectItem value="year">This Year</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="flex-1 min-w-0">
-          <Select value={filters.status} onValueChange={v => handleFilterChange('status', v)}>
+          <Select value={getCurrentStatusValue()} onValueChange={handleStatusChange}>
             <SelectTrigger className="w-full h-[42px]">
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
-              <SelectItem value="paid">Paid</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="failed">Failed</SelectItem>
+              <SelectItem value="COMPLETED">Completed</SelectItem>
+              <SelectItem value="PENDING">Pending</SelectItem>
+              <SelectItem value="PROCESSING">Processing</SelectItem>
+              <SelectItem value="FAILED">Failed</SelectItem>
+              <SelectItem value="CANCELLED">Cancelled</SelectItem>
+              <SelectItem value="REFUNDED">Refunded</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="flex-1 min-w-0">
-          <Select value={filters.lawyer} onValueChange={v => handleFilterChange('lawyer', v)}>
-            <SelectTrigger className="w-full h-[42px]">
-              <SelectValue placeholder="Any" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="any">Any</SelectItem>
-              {lawyers.map(lawyer => (
-                <SelectItem key={lawyer} value={lawyer}>{lawyer}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {loading ? (
+            <Skeleton className="w-full h-[42px]" />
+          ) : (
+            <Select value={getCurrentPaymentMethodValue()} onValueChange={handlePaymentMethodChange}>
+              <SelectTrigger className="w-full h-[42px]">
+                <SelectValue placeholder="All Methods" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Methods</SelectItem>
+                {paymentMethods.map(method => (
+                  <SelectItem key={method.id} value={method.id}>{method.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
         </div>
         <div className="flex items-end">
           <Button variant="secondary" className="w-full flex items-center gap-2" onClick={handleReset}>

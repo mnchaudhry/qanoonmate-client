@@ -8,6 +8,8 @@ import type * as LawyerSettingsAPI from "../types/lawyerSettings.types";
 import type * as BetaRequestAPI from "../types/beta-request.types";
 import type * as EmailAPI from "../types/email.types";
 import type * as CommAPI from "../types/communication.types";
+import type * as CreditsAPI from "../types/credits.types";
+import type * as PaymentsAPI from "../types/payments.types";
 
 import { APIClient, FormDataAPI } from "./axios";
 import { UserRole } from "@/lib/enums";
@@ -296,3 +298,54 @@ export const getNewsletterSubscribers = (params?: API.GetNewsletterSubscribersRe
 export const getNewsletterSubscriber = (id: string) => APIClient.get<API.GetNewsletterSubscriberResponse>(`/newsletter/${id}`);
 export const updateNewsletterSubscriber = (id: string, data: API.UpdateNewsletterSubscriberRequest) => APIClient.put<API.UpdateNewsletterSubscriberResponse>(`/newsletter/${id}`, data);
 export const deleteNewsletterSubscriber = (id: string) => APIClient.delete<API.DeleteNewsletterSubscriberResponse>(`/newsletter/${id}`);
+
+////////////////////////////////////////////////////////// CREDITS ////////////////////////////////////////////////////////////
+export const getQCBalance = () => APIClient.get<CreditsAPI.GetQCBalanceResponse>('/credits/balance');
+export const getQCPackages = () => APIClient.get<CreditsAPI.GetQCPackagesResponse>('/credits/packages');
+export const getQCServiceRates = () => APIClient.get<CreditsAPI.GetQCServiceRatesResponse>('/credits/rates');
+export const purchaseQC = (data: CreditsAPI.QCPurchaseRequest) => APIClient.post<CreditsAPI.PurchaseQCResponse>('/credits/purchase', data);
+export const deductQC = (data: CreditsAPI.QCDeductionRequest) => APIClient.post<CreditsAPI.DeductQCResponse>('/credits/deduct', data);
+export const refundQC = (data: CreditsAPI.QCRefundRequest) => APIClient.post<CreditsAPI.RefundQCResponse>('/credits/refund', data);
+export const getQCTransactionHistory = (params?: {
+  limit?: number;
+  offset?: number;
+  type?: string[];
+  service?: string[];
+  dateFrom?: string;
+  dateTo?: string;
+}) => APIClient.get<CreditsAPI.GetQCTransactionHistoryResponse>('/credits/transactions', { params });
+export const getQCUsageAnalytics = (params?: {
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
+}) => APIClient.get<CreditsAPI.GetQCUsageAnalyticsResponse>('/credits/analytics', { params });
+export const updateQCServiceRate = (data: CreditsAPI.UpdateQCServiceRateRequest) => APIClient.put<CreditsAPI.UpdateQCServiceRateResponse>('/credits/rates', data);
+export const addBonusQC = (data: CreditsAPI.AddBonusQCRequest) => APIClient.post<CreditsAPI.AddBonusQCResponse>('/credits/bonus', data);
+
+// Service-specific deduction endpoints
+export const deductChatbotQC = (data: { service: string; quantity?: number; metadata?: any }) => APIClient.post('/credits/deduct/chatbot', data);
+export const deductSummarizerQC = (data: { service: string; quantity?: number; metadata: { documentId: string; wordCount?: number; pageCount?: number } }) => APIClient.post('/credits/deduct/summarizer', data);
+export const deductKnowledgebaseQC = (data: { service: string; quantity?: number; metadata?: { documentIds?: string[]; isBulkDownload?: boolean; bulkSize?: number } }) => APIClient.post('/credits/deduct/knowledgebase', data);
+export const deductConsultationQC = (data: { service: string; quantity?: number; metadata: { consultationId: string; duration?: number; lawyerId?: string } }) => APIClient.post('/credits/deduct/consultation', data);
+export const deductBlogPublishingQC = (data: { service: string; quantity?: number; metadata: { blogId: string; wordCount?: number; isLawyer?: boolean } }) => APIClient.post('/credits/deduct/blog-publishing', data);
+
+////////////////////////////////////////////////////////// PAYMENTS ////////////////////////////////////////////////////////////
+export const createPayment = (data: PaymentsAPI.CreatePaymentRequest) => APIClient.post<PaymentsAPI.CreatePaymentResponse>('/payments/create', data);
+export const processPayment = (data: PaymentsAPI.ProcessPaymentRequest) => APIClient.post<PaymentsAPI.ProcessPaymentResponse>('/payments/process', data);
+export const getPaymentById = (paymentId: string) => APIClient.get<PaymentsAPI.GetPaymentByIdResponse>(`/payments/payments/${paymentId}`);
+export const getPayments = (filters?: PaymentsAPI.PaymentFilters) => APIClient.get<PaymentsAPI.GetPaymentsResponse>('/payments/payments', { params: filters });
+export const getPaymentStats = (params?: { dateFrom?: string; dateTo?: string }) => APIClient.get<PaymentsAPI.GetPaymentStatsResponse>('/payments/stats/overview', { params });
+export const refundPayment = (paymentId: string, data: Omit<PaymentsAPI.RefundPaymentRequest, 'paymentId'>) => APIClient.post<PaymentsAPI.RefundPaymentResponse>(`/payments/payments/${paymentId}/refund`, data);
+export const cancelPayment = (paymentId: string, data: Omit<PaymentsAPI.CancelPaymentRequest, 'paymentId'>) => APIClient.post<PaymentsAPI.CancelPaymentResponse>(`/payments/payments/${paymentId}/cancel`, data);
+export const retryPayment = (paymentId: string) => APIClient.post<PaymentsAPI.RetryPaymentResponse>(`/payments/payments/${paymentId}/retry`);
+export const getAvailableGateways = () => APIClient.get<PaymentsAPI.GetAvailableGatewaysResponse>('/payments/gateways');
+export const getGatewayConfig = (gatewayName: string) => APIClient.get<PaymentsAPI.GetGatewayConfigResponse>(`/payments/gateways/${gatewayName}`);
+export const getPaymentMethods = () => APIClient.get<PaymentsAPI.GetPaymentMethodsResponse>('/payments/methods');
+export const getPaymentInstructions = (paymentId: string) => APIClient.get<PaymentsAPI.GetPaymentInstructionsResponse>(`/payments/payments/${paymentId}/instructions`);
+export const handleWebhook = (gateway: string, event: any) => APIClient.post<PaymentsAPI.HandleWebhookResponse>(`/payments/webhook/${gateway}`, event);
+
+// Admin endpoints
+export const getPaymentAuditLogs = (paymentId: string) => APIClient.get<PaymentsAPI.GetPaymentAuditLogsResponse>(`/payments/payments/${paymentId}/audit-logs`);
+export const getAuditStats = () => APIClient.get<PaymentsAPI.GetAuditStatsResponse>('/payments/payments/audit/stats');
+export const exportAuditLogs = (params?: { dateFrom?: string; dateTo?: string; format?: 'csv' | 'json' | 'xlsx' }) => APIClient.get<PaymentsAPI.ExportAuditLogsResponse>('/payments/payments/audit/export', { params });
+export const cleanupExpiredPayments = () => APIClient.post<PaymentsAPI.CleanupExpiredPaymentsResponse>('/payments/payments/cleanup/expired');

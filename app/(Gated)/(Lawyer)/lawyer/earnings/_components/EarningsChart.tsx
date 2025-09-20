@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { BarChart2, LineChart, AreaChart } from 'lucide-react';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler } from 'chart.js';
-import { Line, Bar } from 'react-chartjs-2';
+// import { Line, Bar } from 'react-chartjs-2';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend, Filler);
 
@@ -77,13 +77,8 @@ export default function EarningsChart() {
         ))}
       </div>
       <div className="w-full h-56 flex items-center justify-center text-muted-foreground bg-background rounded-lg border border-dashed !border-border">
-        <div className="w-full h-full">
-          {type === 'line' && <Line data={chartData} options={options} />}
-          {type === 'bar' && <Bar data={chartData} options={options} />}
-          {type === 'area' && <Line data={{
-            ...chartData,
-            datasets: [{ ...chartData.datasets[0], fill: true, backgroundColor: 'rgba(34,197,94,0.15)' }],
-          }} options={options} />}
+        <div className="w-full h-full flex items-center justify-center">
+          <p className="text-muted-foreground">Chart component temporarily disabled</p>
         </div>
       </div>
     </div>

@@ -15,75 +15,105 @@ export const breadcrumbLabels: Record<string, string> = {
   "privacy-policy": "Privacy Policy",
 }
 
-export const pricingPlans = [
+import { Currency } from '@/lib/enums';
+
+// Credit-based pricing packages
+export const creditPackages = [
   {
-    name: "Free Plan",
-    price: 0,
-    description:
-      "Get a taste of our AI, guides, and core legal resources.",
+    id: 'starter',
+    name: 'Starter Package',
+    qcAmount: 50,
+    price: 5,
+    currency: Currency.USD,
+    description: 'Perfect for trying out premium features',
+    popular: false,
     features: [
-      "Basic AI chatbot support (up to 5 queries/day)",
-      "Unlimited Legal Guides & Dictionary",
-      "Download-only access to all Pakistani Acts",
-      "Read-only access to legal blogs & news",
-      "Download-only legal drafts",
-      "Up to 5 AI‑generated summaries/day",
-      "Bilingual interface (Urdu & English)"
+      '200 AI chatbot queries (0.25 QC each)',
+      '25 document summaries (2 QC each)',
+      '50 knowledge base downloads (1 QC each)',
+      '10 minutes of consultation (5 QC per 10 min)',
+      'Access to all legal guides & dictionary',
+      'Bilingual interface (Urdu & English)'
     ],
-    popular: false
+    savings: null
   },
   {
-    name: "Basic Plan",
-    price: 1000,
-    description:
-      "Everything a law student needs: deeper AI access, editing drafts, and saving work.",
+    id: 'standard',
+    name: 'Standard Package',
+    qcAmount: 120,
+    price: 10,
+    currency: Currency.USD,
+    description: 'Great value for regular users',
+    popular: true,
     features: [
-      "Unlimited AI chatbot queries",
-      "Source citations in every response",
-      "Download & edit legal drafts (3/month)",
-      "Up to 20 AI‑generated summaries/day",
-      "Save & export summaries as PDF",
-      "Custom legal alerts on topics you follow",
-      "Unlimited Legal Guides & Dictionary",
-      "Bilingual interface (Urdu & English)"
+      '480 AI chatbot queries (0.25 QC each)',
+      '60 document summaries (2 QC each)',
+      '120 knowledge base downloads (1 QC each)',
+      '24 minutes of consultation (5 QC per 10 min)',
+      '40 blog posts (3 QC each)',
+      'Priority customer support',
+      'Advanced AI features'
     ],
-    popular: false
+    savings: 'Best Value'
   },
   {
-    name: "Pro Plan",
-    price: 5000,
-    description:
-      "For professionals: full AI power, draft building, case law access, and document uploads.",
+    id: 'premium',
+    name: 'Premium Package',
+    qcAmount: 300,
+    price: 20,
+    currency: Currency.USD,
+    description: 'Best value for power users',
+    popular: false,
     features: [
-      "Unlimited chatbot + tone control modes",
-      "Read‑only access to Case Laws & Judgements",
-      "AI‑assisted draft builder (limited)",
-      "Download & edit all legal drafts",
-      "Unlimited AI‑generated summaries",
-      "Upload your own documents for summarization",
-      "Save & export summaries as PDF",
-      "Custom legal alerts & updates"
+      '1200 AI chatbot queries (0.25 QC each)',
+      '150 document summaries (2 QC each)',
+      '300 knowledge base downloads (1 QC each)',
+      '60 minutes of consultation (5 QC per 10 min)',
+      '100 blog posts (3 QC each)',
+      'Premium AI features & tone control',
+      'Priority support & consultation booking',
+      'Advanced analytics & insights'
     ],
-    popular: true
-  },
-  // {
-  //   name: "Organization Plan",
-  //   price: 20000,
-  //   description:
-  //     "Everything in Individual, plus team seats, collaboration, and smart enterprise search.",
-  //   features: [
-  //     "All Individual Plan features",
-  //     "5 user seats (expandable)",
-  //     "Team dashboard with roles & permissions",
-  //     "AI draft builder (team‑wide access)",
-  //     "Smart, semantic search across all content",
-  //     "Shared saved summaries & tags",
-  //     "Monthly usage insights & alerts",
-  //     "Priority support"
-  //   ],
-  //   popular: false
-  // }
+    savings: 'Save 25%'
+  }
 ];
+
+// Service pricing information
+export const servicePricing = [
+  {
+    service: 'AI Chatbot Queries',
+    price: '0.25 QC',
+    description: 'Get instant legal answers with AI-powered chatbot',
+    icon: '🤖'
+  },
+  {
+    service: 'Document Summarization',
+    price: '2 QC',
+    description: 'Summarize legal documents and contracts',
+    icon: '📄'
+  },
+  {
+    service: 'Knowledge Base Access',
+    price: '1 QC',
+    description: 'Download case laws, acts, and legal documents',
+    icon: '📚'
+  },
+  {
+    service: 'Lawyer Consultation',
+    price: '5 QC per 10 min',
+    description: 'Get expert legal advice from qualified lawyers',
+    icon: '⚖️'
+  },
+  {
+    service: 'Blog Publishing',
+    price: '3 QC',
+    description: 'Publish legal articles and insights',
+    icon: '✍️'
+  }
+];
+
+// Legacy pricing plans (deprecated)
+export const pricingPlans = creditPackages;
 
 
 export const blogs = [

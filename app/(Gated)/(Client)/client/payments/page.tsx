@@ -1,97 +1,44 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
+import { fetchPayments, fetchPaymentStats, fetchPaymentMethods, fetchAvailableGateways } from '@/store/reducers/payments';
 import PaymentStats from './_components/PaymentStats';
 import PaymentFilters from './_components/PaymentFilters';
 import PaymentTable from './_components/PaymentTable';
 import InvoiceDrawer from './_components/InvoiceDrawer';
 import PaymentSecurity from './_components/PaymentSecurity';
 import PageHeader from '../_components/PageHeader';
-
-export interface PaymentTransaction {
-  id: string;
-  invoiceNumber: string;
-  lawyerName: string;
-  service: string;
-  date: string;
-  amount: number;
-  status: 'paid' | 'pending' | 'failed';
-  paymentMethod?: string;
-  duration?: string;
-  time?: string;
-  serviceFee?: number;
-  platformCharges?: number;
-}
+import { Payment } from '@/store/types/payments.types';
 
 const PaymentPage = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { payments, paymentStats, paymentMethods, loading, pagination } = useSelector((state: RootState) => state.payments);
 
   //////////////////////////////////////////////// STATE /////////////////////////////////////////////////
-  const [selectedTransaction, setSelectedTransaction] = useState<PaymentTransaction | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<Payment | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [filters, setFilters] = useState({ dateRange: 'all', status: 'all', lawyer: 'any', search: '' });
+  const [filters, setFilters] = useState<PaymentFilters>({ 
+    dateFrom: undefined,
+    dateTo: undefined,
+    status: undefined,
+    paymentMethod: undefined,
+    search: '',
+    page: 1,
+    limit: 10
+  });
 
-  //////////////////////////////////////////////// DATA /////////////////////////////////////////////////
-  const transactions: PaymentTransaction[] = [
-    {
-      id: '1',
-      invoiceNumber: '001',
-      lawyerName: 'Barrister Salman',
-      service: 'Consultation (30 mins)',
-      date: '2025-07-02',
-      amount: 2000,
-      status: 'paid',
-      paymentMethod: 'Card (Visa)',
-      duration: '30 minutes',
-      time: '2:00 PM',
-      serviceFee: 1800,
-      platformCharges: 200
-    },
-    {
-      id: '2',
-      invoiceNumber: '002',
-      lawyerName: 'Advocate Naureen',
-      service: 'Document Review',
-      date: '2025-07-05',
-      amount: 3000,
-      status: 'pending',
-      paymentMethod: 'Card (Visa)',
-      duration: '45 minutes',
-      time: '4:00 PM',
-      serviceFee: 2800,
-      platformCharges: 200
-    },
-    {
-      id: '3',
-      invoiceNumber: '003',
-      lawyerName: 'Barrister Salman',
-      service: 'Consultation (60 mins)',
-      date: '2025-06-28',
-      amount: 4000,
-      status: 'paid',
-      paymentMethod: 'Card (Mastercard)',
-      duration: '60 minutes',
-      time: '10:00 AM',
-      serviceFee: 3700,
-      platformCharges: 300
-    },
-    {
-      id: '4',
-      invoiceNumber: '004',
-      lawyerName: 'Advocate Zubair',
-      service: 'Legal Drafting',
-      date: '2025-06-20',
-      amount: 6000,
-      status: 'failed',
-      paymentMethod: 'Card (Visa)',
-      duration: '90 minutes',
-      time: '11:00 AM',
-      serviceFee: 5500,
-      platformCharges: 500
-    }
-  ];
+  //////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////
+  useEffect(() => {
+    dispatch(fetchPayments(filters));
+    dispatch(fetchPaymentStats({}));
+    dispatch(fetchPaymentMethods());
+    dispatch(fetchAvailableGateways());
+  }, [dispatch, filters]);
 
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
-  const handleTransactionClick = (transaction: PaymentTransaction) => {
+  const handleTransactionClick = (transaction: Payment) => {
     setSelectedTransaction(transaction);
     setIsDrawerOpen(true);
   };
@@ -101,21 +48,13 @@ const PaymentPage = () => {
     setSelectedTransaction(null);
   };
 
-  const filteredTransactions = transactions.filter(transaction => {
-    const matchesSearch = transaction.lawyerName.toLowerCase().includes(filters.search.toLowerCase()) ||
-      transaction.service.toLowerCase().includes(filters.search.toLowerCase()) ||
-      transaction.invoiceNumber.toLowerCase().includes(filters.search.toLowerCase());
+  const handleFiltersChange = (newFilters: any) => {
+    setFilters(prev => ({ ...prev, ...newFilters, page: 1 }));
+  };
 
-    const matchesStatus = filters.status === 'all' || transaction.status === filters.status;
-    const matchesLawyer = filters.lawyer === 'any' || transaction.lawyerName === filters.lawyer;
-
-    return matchesSearch && matchesStatus && matchesLawyer;
-  });
-
-  //////////////////////////////////////////////// CALCULATIONS /////////////////////////////////////////////////
-  const totalSpent = transactions.filter(t => t.status === 'paid').reduce((sum, t) => sum + t.amount, 0);
-  const pendingAmount = transactions.filter(t => t.status === 'pending').reduce((sum, t) => sum + t.amount, 0);
-  const lastPayment = transactions.filter(t => t.status === 'paid').sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+  const handlePageChange = (page: number) => {
+    setFilters(prev => ({ ...prev, page }));
+  };
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
@@ -133,20 +72,23 @@ const PaymentPage = () => {
       />
 
       <PaymentStats
-        totalSpent={totalSpent}
-        lastPaymentDate={lastPayment?.date}
-        pendingAmount={pendingAmount}
+        paymentStats={paymentStats}
+        loading={loading.stats}
       />
 
       <PaymentFilters
         filters={filters}
-        onFiltersChange={setFilters}
-        lawyers={[...new Set(transactions.map(t => t.lawyerName))]}
+        onFiltersChange={handleFiltersChange}
+        paymentMethods={paymentMethods}
+        loading={loading.paymentMethods}
       />
 
       <PaymentTable
-        transactions={filteredTransactions}
+        payments={payments}
         onTransactionClick={handleTransactionClick}
+        loading={loading.payments}
+        pagination={pagination}
+        onPageChange={handlePageChange}
       />
 
       <PaymentSecurity />

@@ -61,10 +61,14 @@ export enum ConsultationStatus {
   RESCHEDULED = "rescheduled"
 }
 export enum PaymentStatus {
-  Pending = "Pending",
-  Completed = "Completed",
-  Failed = "Failed",
-  Refunded = "Refunded",
+  PENDING = "pending",
+  PROCESSING = "processing",
+  COMPLETED = "completed",
+  FAILED = "failed",
+  CANCELLED = "cancelled",
+  REFUNDED = "refunded",
+  PARTIAL_REFUND = "partial_refund",
+  EXPIRED = "expired",
 }
 
 export enum ContactMode {
@@ -212,7 +216,13 @@ export enum LawyerExperienceRange {
 }
 
 export enum PaymentMethod {
+  CREDIT_CARD = "credit_card",
+  DEBIT_CARD = "debit_card",
+  BANK_TRANSFER = "bank_transfer",
+  MOBILE_WALLET = "mobile_wallet",
+  CASH = "cash",
   STRIPE = "stripe",
+  PAYPAL = "paypal",
   EASYPAISA = "easypaisa",
   JAZZCASH = "jazzcash",
 }
@@ -338,4 +348,32 @@ export enum ReleaseChannel {
   BETA = "beta",
   PUBLIC = "public",
   INTERNAL = "internal",
+}
+
+// QC Transaction Types
+export enum QCTransactionType {
+  PURCHASE = 'purchase',
+  DEDUCTION = 'deduction',
+  REFUND = 'refund',
+  BONUS = 'bonus',
+  ADJUSTMENT = 'adjustment'
+}
+
+// QC Service Types
+export enum QCServiceType {
+  CHATBOT = 'chatbot',
+  SUMMARIZER = 'summary',
+  KNOWLEDGEBASE = 'knowledgebase',
+  CONSULTATION = 'consultation',
+  BLOG_PUBLISHING = 'blog_publishing',
+  OTHER = 'other'
+}
+
+// Payment Type Enum
+export enum PaymentTypeEnum {
+  CONSULTATION = 'consultation',
+  SUBSCRIPTION = 'subscription',
+  DOCUMENT_GENERATION = 'document_generation',
+  PREMIUM_FEATURES = 'premium_features',
+  REFUND = 'refund'
 }

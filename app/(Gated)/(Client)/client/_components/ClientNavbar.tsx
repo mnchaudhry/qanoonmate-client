@@ -9,6 +9,7 @@ import Logo from '@/components/Logo';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import ProfileButton from '@/components/profile-button';
+import QCBalance from '@/components/QCBalance';
 
 interface ClientNavbarProps {
   children?: React.ReactNode;
@@ -19,6 +20,7 @@ const links = [
   { label: "Consultations", link: "/client/consultations" },
   { label: "Messages", link: "/client/messages" },
   { label: "Uploads", link: "/client/uploads" },
+  { label: "Wallet", link: "/client/wallet" },
   { label: "Payments", link: "/client/payments" },
   { label: "Settings", link: "/client/settings" },
 ];
@@ -57,8 +59,11 @@ const ClientNavbar: React.FC<ClientNavbarProps> = ({ }) => {
             </NavigationMenuList>
           </NavigationMenu>
 
-          {/* Right - Search, Notifications, Profile */}
+          {/* Right - Credits, Search, Notifications, Profile */}
           <div className="flex items-center gap-2 ml-4">
+            {/* Credits Balance */}
+            <QCBalance variant="compact" className="hidden md:flex" />
+
             <Button variant="ghost" size="icon" className="md:hidden hover:bg-muted">
               <Search className="h-5 w-5" />
             </Button>

@@ -1,25 +1,47 @@
 import React from 'react';
+import { PaymentStats as PaymentStatsType } from '@/store/types/payments.types';
+import { Skeleton } from '@/components/ui/skeleton';
 
-interface PaymentHeaderProps {
-  totalSpent: number;
-  lastPaymentDate?: string;
-  pendingAmount: number;
+interface PaymentStatsProps {
+  paymentStats: PaymentStatsType | null;
+  loading: boolean;
 }
 
-const PaymentStats: React.FC<PaymentHeaderProps> = ({ totalSpent, lastPaymentDate, pendingAmount }) => {
+const PaymentStats: React.FC<PaymentStatsProps> = ({ paymentStats, loading }) => {
 
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'No payments yet';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  };
-
   const formatCurrency = (amount: number) => {
     return `PKR ${amount.toLocaleString()}`;
   };
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <Skeleton className="h-4 w-20 mb-2" />
+            <Skeleton className="h-8 w-24" />
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (!paymentStats) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+            <span className="text-sm font-medium text-gray-600">No Data Available</span>
+          </div>
+          <p className="text-2xl font-bold text-gray-500">--</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {/* Total Spent */}
@@ -28,16 +50,16 @@ const PaymentStats: React.FC<PaymentHeaderProps> = ({ totalSpent, lastPaymentDat
           <div className="w-3 h-3 bg-primary-600 rounded-full"></div>
           <span className="text-sm font-medium text-primary-800">Total Spent</span>
         </div>
-        <p className="text-2xl font-bold text-primary-900">{formatCurrency(totalSpent)}</p>
+        <p className="text-2xl font-bold text-primary-900">{formatCurrency(paymentStats.completedAmount)}</p>
       </div>
 
-      {/* Last Payment */}
+      {/* Completed Payments */}
       <div className="bg-green-50 border border-green-200 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-2">
           <div className="w-3 h-3 bg-green-600 rounded-full"></div>
-          <span className="text-sm font-medium text-green-800">Last Payment</span>
+          <span className="text-sm font-medium text-green-800">Completed</span>
         </div>
-        <p className="text-2xl font-bold text-green-900">{formatDate(lastPaymentDate)}</p>
+        <p className="text-2xl font-bold text-green-900">{paymentStats.completed}</p>
       </div>
 
       {/* Pending Amount */}
@@ -46,7 +68,7 @@ const PaymentStats: React.FC<PaymentHeaderProps> = ({ totalSpent, lastPaymentDat
           <div className="w-3 h-3 bg-orange-600 rounded-full"></div>
           <span className="text-sm font-medium text-orange-800">Pending</span>
         </div>
-        <p className="text-2xl font-bold text-orange-900">{formatCurrency(pendingAmount)}</p>
+        <p className="text-2xl font-bold text-orange-900">{paymentStats.pending}</p>
       </div>
     </div>
   );

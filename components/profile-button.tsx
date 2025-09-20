@@ -17,7 +17,6 @@ const ProfileButton = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { setIsBetaUser } = useStateContext();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
-  const showDashboardButton = true;
 
   //////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
   const handleLogout = () => {
@@ -37,17 +36,6 @@ const ProfileButton = () => {
     else return "/profile";
   }
 
-  const getDashboardLink = () => {
-    if (user.role === UserRole.LAWYER) return "/lawyer/dashboard";
-    else if (user.role === UserRole.ADMIN) return "/admin/dashboard";
-    else return "/client/dashboard";
-  }
-
-  const getSettingsLink = () => {
-    if (user.role === UserRole.LAWYER) return "/lawyer/settings";
-    else if (user.role === UserRole.ADMIN) return "/admin/settings";
-    else return "/client/settings";
-  }
 
   //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (

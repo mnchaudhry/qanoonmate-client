@@ -2,12 +2,12 @@ import { Metadata } from 'next'
 import { ReactNode } from 'react'
 
 export const metadata: Metadata = {
-  title: 'Pricing Plans - Affordable Legal Services',
-  description: 'Choose from our flexible pricing plans for legal consultations, document drafting, and premium legal services. Transparent pricing, no hidden fees. Start with our free plan.',
-  keywords: 'legal services pricing, lawyer consultation fees, legal advice cost, affordable legal help Pakistan, legal services plans, legal consultation rates',
+  title: 'Credit-Based Pricing - Pay Only for What You Use',
+  description: 'Revolutionary credit-based pricing for legal services. Pay only for what you use with Qanoon Credits (QC). No monthly subscriptions, no hidden fees. Transparent pricing for AI chatbot, document summarization, and legal consultations.',
+  keywords: 'credit-based pricing, Qanoon Credits, legal services pricing, pay per use, legal AI pricing, document summarization cost, lawyer consultation credits, transparent legal pricing',
   openGraph: {
-    title: 'Pricing Plans - Affordable Legal Services | QanoonMate',
-    description: 'Choose from our flexible pricing plans for legal consultations, document drafting, and premium legal services.',
+    title: 'Credit-Based Pricing - Pay Only for What You Use | QanoonMate',
+    description: 'Revolutionary credit-based pricing for legal services. Pay only for what you use with Qanoon Credits (QC). No monthly subscriptions, no hidden fees.',
     type: 'website',
     url: 'https://qanoonmate.com/pricing',
     images: [
@@ -15,14 +15,14 @@ export const metadata: Metadata = {
         url: '/Pictures/pricing-og.jpg',
         width: 1200,
         height: 630,
-        alt: 'QanoonMate Pricing Plans'
+        alt: 'QanoonMate Credit-Based Pricing'
       }
     ]
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Pricing Plans - Affordable Legal Services | QanoonMate',
-    description: 'Choose from our flexible pricing plans for legal consultations and premium legal services.',
+    title: 'Credit-Based Pricing - Pay Only for What You Use | QanoonMate',
+    description: 'Revolutionary credit-based pricing for legal services. Pay only for what you use with Qanoon Credits (QC).',
     images: ['/Pictures/pricing-twitter.jpg']
   }
 }

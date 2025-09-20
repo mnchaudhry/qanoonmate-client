@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import dayGridPlugin from '@fullcalendar/daygrid/index.js';
+import timeGridPlugin from '@fullcalendar/timegrid/index.js';
+import interactionPlugin from '@fullcalendar/interaction/index.js';
 import EventDetailsModal from './_components/EventDetailsModal';
 import PageHeader from '../_components/PageHeader';
 

@@ -1,26 +1,30 @@
-import React, { useState } from 'react';
-import { CheckCircle, Clock, XCircle } from 'lucide-react';
-import { PaymentTransaction } from '../page';
+import React from 'react';
+import { CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
+import { Payment } from '@/store/types/payments.types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
 import { Pagination } from '@/components/ui/pagination';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface PaymentTableProps {
-  transactions: PaymentTransaction[];
-  onTransactionClick: (transaction: PaymentTransaction) => void;
+  payments: Payment[];
+  onTransactionClick: (payment: Payment) => void;
+  loading: boolean;
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalCount: number;
+    limit: number;
+  };
+  onPageChange: (page: number) => void;
 }
 
-const PaymentTable: React.FC<PaymentTableProps> = ({ transactions, onTransactionClick }) => {
-
-  //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
-  const itemsPerPage = 10;
-  const totalPages = Math.ceil(transactions.length / itemsPerPage);
-
-  //////////////////////////////////////////////// STATE /////////////////////////////////////////////////
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const currentTransactions = transactions.slice(startIndex, endIndex);
+const PaymentTable: React.FC<PaymentTableProps> = ({ 
+  payments, 
+  onTransactionClick, 
+  loading, 
+  pagination, 
+  onPageChange 
+}) => {
 
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
   const formatDate = (dateString: string) => {
@@ -32,80 +36,137 @@ const PaymentTable: React.FC<PaymentTableProps> = ({ transactions, onTransaction
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'paid':
+      case 'completed':
         return <CheckCircle className="w-4 h-4 text-green-600" />;
       case 'pending':
         return <Clock className="w-4 h-4 text-orange-600" />;
+      case 'processing':
+        return <Clock className="w-4 h-4 text-blue-600" />;
       case 'failed':
         return <XCircle className="w-4 h-4 text-red-600" />;
+      case 'cancelled':
+        return <AlertCircle className="w-4 h-4 text-gray-600" />;
+      case 'refunded':
+        return <CheckCircle className="w-4 h-4 text-purple-600" />;
       default:
-        return null;
+        return <Clock className="w-4 h-4 text-gray-600" />;
     }
   };
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'paid':
-        return <span className="text-green-700 font-medium">Paid</span>;
+      case 'completed':
+        return <span className="text-green-700 font-medium">Completed</span>;
       case 'pending':
         return <span className="text-orange-700 font-medium">Pending</span>;
+      case 'processing':
+        return <span className="text-blue-700 font-medium">Processing</span>;
       case 'failed':
         return <span className="text-red-700 font-medium">Failed</span>;
+      case 'cancelled':
+        return <span className="text-gray-700 font-medium">Cancelled</span>;
+      case 'refunded':
+        return <span className="text-purple-700 font-medium">Refunded</span>;
       default:
-        return status;
+        return <span className="text-gray-700 font-medium">{status}</span>;
     }
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
-  return (
-    <>
-
+  if (loading) {
+    return (
       <div className="overflow-x-auto">
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">#</TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Lawyer</TableHead>
-              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Service</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Payment ID</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Description</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Method</TableHead>
               <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Date</TableHead>
               <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount</TableHead>
               <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentTransactions.map((transaction) => (
-              <TableRow
-                key={transaction.id}
-                onClick={() => onTransactionClick(transaction)}
-                className="hover:bg-accent cursor-pointer transition-colors"
-              >
-                <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{transaction.invoiceNumber}</TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{transaction.lawyerName}</TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{transaction.service}</TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">{formatDate(transaction.date)}</TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">{formatCurrency(transaction.amount)}</TableCell>
-                <TableCell className="px-6 py-4 whitespace-nowrap text-sm">
-                  <div className="flex items-center gap-2">
-                    {getStatusIcon(transaction.status)}
-                    {getStatusText(transaction.status)}
-                  </div>
-                </TableCell>
+            {[...Array(5)].map((_, i) => (
+              <TableRow key={i}>
+                <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                <TableCell><Skeleton className="h-4 w-16" /></TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
+    );
+  }
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+  return (
+    <>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader className="bg-muted">
+            <TableRow>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Payment ID</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Description</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Method</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Date</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount</TableHead>
+              <TableHead className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">Status</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {payments.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  No payments found
+                </TableCell>
+              </TableRow>
+            ) : (
+              payments.map((payment) => (
+                <TableRow
+                  key={payment.paymentId}
+                  onClick={() => onTransactionClick(payment)}
+                  className="hover:bg-accent cursor-pointer transition-colors"
+                >
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                    {payment.paymentId.slice(-8)}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    {payment.description}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-foreground">
+                    {payment.paymentMethod}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
+                    {formatDate(payment.createdAt)}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
+                    {formatCurrency(payment.amount)}
+                  </TableCell>
+                  <TableCell className="px-6 py-4 whitespace-nowrap text-sm">
+                    <div className="flex items-center gap-2">
+                      {getStatusIcon(payment.status)}
+                      {getStatusText(payment.status)}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
+      {pagination.totalPages > 1 && (
+        <Pagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          onPageChange={onPageChange}
+        />
+      )}
     </>
   );
 };
