@@ -65,13 +65,13 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
 
     const socketInstance = io(fullUrl, {
+      autoConnect: true,
+      reconnection:true,
+      reconnectionAttempts: 5,
       withCredentials: true,
-      transports: ["websocket"],
-      reconnection: true,
-      reconnectionAttempts: 50,
+      transports: ["websocket","polling"],
       reconnectionDelay: 2000,
       timeout: 60000,
-      autoConnect: true
     });
 
     const connection: SocketConnection = {

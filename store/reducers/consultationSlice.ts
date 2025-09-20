@@ -22,7 +22,7 @@ export const bookConsultation = createAsyncThunk<BookConsultationResponse, BookC
         const { data } = await api.bookConsultation(formData)
         if (data?.success) {
             toast.success(data?.message);
-            return data;
+            return data.data;
         }
         else {
             toast.error(data?.message);
@@ -172,6 +172,7 @@ export const cancelConsultation = createAsyncThunk<CancelConsultationResponse, C
         }
     }
     catch (error) {
+        console.log("request", request, "\nerror", error)
         const message = getErrorMessage(error, "");
         toast.error(message)
         return rejectWithValue(message)
@@ -422,6 +423,9 @@ const consultationSlice = createSlice({
     initialState,
     reducers: {
         resetState: () => initialState,
+        setSelectedConsultation: (state, action) => {
+            state.selectedConsultation = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -756,5 +760,5 @@ const consultationSlice = createSlice({
 });
 
 export default consultationSlice.reducer;
-export const { resetState } = consultationSlice.actions;
+export const { resetState, setSelectedConsultation } = consultationSlice.actions;
 export const { actions: consultationActions } = consultationSlice;

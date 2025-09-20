@@ -45,7 +45,7 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
             label: 'Chat'
         }
     ].filter(mode => lawyer?.settings?.consultation?.modes?.includes(mode.value));
-
+    console.log("Lawyer Settings", lawyer?.settings)
     // Weekdays as enum array
     const weekDays: AvailabilityDay[] = useMemo(() => [
         AvailabilityDay.MONDAY,
@@ -71,7 +71,6 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
             acc[day] = [];
             return acc;
         }, {} as Record<AvailabilityDay, string[]>);
-
         if (lawyer?.settings?.availability) {
             lawyer?.settings.availability.forEach(slot => {
                 if (slot.day) {
@@ -81,6 +80,8 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
         }
         return days;
     }, [lawyer?.settings?.availability, weekDays]);
+
+    console.log("available days", availableDays)
 
     ///////////////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////////////////
     const getDayName = (date: Date): AvailabilityDay => {
@@ -168,6 +169,7 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
         };
         try {
             const result = await dispatch(bookConsultation({ ...formData, scheduledDate: scheduledDate.toISOString() }));
+            console.log("result here", result)
             const { payload, error } = result as any;
             if (payload && (payload._id || payload.id)) {
                 router.push(`/client/consultations`);
@@ -219,7 +221,7 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
                                 <Calendar
                                     mode="single"
                                     selected={selectedDate || undefined}
-                                    onSelect={(date) => date && handleDateChange(date)}
+                                    onSelect={date => date && handleDateChange(date)}
                                     disabled={isDateDisabled}
                                     initialFocus
                                     className="rounded-md border"

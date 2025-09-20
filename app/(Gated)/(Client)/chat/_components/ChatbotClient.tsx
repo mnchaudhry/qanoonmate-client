@@ -161,6 +161,8 @@ const ChatbotClient = () => {
     return () => {
       socket.off("model:message-stream", handleMessageStream);
       socket.off("model:bot-message-updated", handleBotMessageUpdated);
+      socket.off("model:metadata-generated", handleMetadataDisplay)
+      socket.off("model:metadata-loaded", handleMetadataLoaded)
     };
   }, [socket, dispatch]);
 

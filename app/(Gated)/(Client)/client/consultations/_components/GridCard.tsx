@@ -10,6 +10,7 @@ import { Consultation } from "@/store/types/api";
 import { Lawyer } from "@/store/types/lawyer.types";
 import { ConsultationStatus } from "@/lib/enums";
 import Hint from "@/components/Hint";
+import Link from "next/link";
 
 interface ConsultationCardGridProps {
   consultation: Consultation;
@@ -84,7 +85,9 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
         <div className="flex gap-2 mb-2 w-full justify-center">
           {consultation.status === ConsultationStatus.PENDING && (
             <Button size='sm' variant="outline" title="Chat">
-              Chat with Lawyer
+              <Link href={"/client/messages"}>
+                Chat with Lawyer
+              </Link>
               <MessageSquare className="h-4 w-4" />
             </Button>
           )}

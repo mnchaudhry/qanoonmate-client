@@ -164,10 +164,8 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     dispatch(setCurrentSessionId(data.sessionId));
   });
 
-  // Add streaming buffer and animation frame batching variables at the top of the file
   let streamingBuffer = "";
   let streamingId: string | null = null;
-  let rafId: number | null = null;
   socket.on("model:message-stream", (data: ModelMessageStream) => {
     // initialize
     if (streamingId !== data.id) {
@@ -206,10 +204,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
       dispatch(setIsStreaming(false));
       streamingBuffer = "";
       streamingId = null;
-      if (rafId) {
-        cancelAnimationFrame(rafId);
-        rafId = null;
-      }
     }
   });
 

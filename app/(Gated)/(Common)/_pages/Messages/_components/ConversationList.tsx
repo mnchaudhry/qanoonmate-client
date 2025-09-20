@@ -7,6 +7,7 @@ import { setCurrentRoom } from "@/store/reducers/chatSlice";
 import { useSocketContext } from "@/context/useSocketContext";
 import toast from "react-hot-toast";
 import Image from "next/image";
+import { setSelectedConsultation } from "@/store/reducers/consultationSlice";
 
 interface ConversationListProps {
   searchQuery: string;
@@ -40,6 +41,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
     }
 
     dispatch(setCurrentRoom(room));
+    dispatch(setSelectedConsultation(room.consultation))
   };
 
   // Filter conversations based on search query

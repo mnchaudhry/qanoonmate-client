@@ -267,7 +267,7 @@ export type RateConsultationResponse = APIResponse<Consultation>;
 
 // POST /:id/notes
 export interface AddNoteRequest {
-  id: string;
+  // id: string;
   content: string;
   isPrivate: boolean;
 }

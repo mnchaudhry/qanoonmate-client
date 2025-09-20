@@ -29,8 +29,8 @@ export default function ConsultationList({ view }: ConsultationListProps) {
   if (view === 'grid') {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {consultations.map((consultation) => (
-          <ConsultationCardGrid key={consultation._id} consultation={consultation} />
+        {consultations.map((consultation, index) => (
+          <ConsultationCardGrid key={index} consultation={consultation} />
         ))}
       </div>
     );
@@ -39,8 +39,8 @@ export default function ConsultationList({ view }: ConsultationListProps) {
   // List view (default)
   return (
     <div className="space-y-6">
-      {consultations.map((consultation) => (
-        <ConsultationCardList key={consultation._id} consultation={consultation} />
+      {consultations.map((consultation, index) => (
+        <ConsultationCardList key={index} consultation={consultation} />
       ))}
     </div>
   );

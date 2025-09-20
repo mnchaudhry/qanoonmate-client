@@ -376,19 +376,22 @@ const aiSessionSlice = createSlice({
       //     msg._id === action.payload._id &&
       //     (!msg.content || msg.content.trim() === "")
       // );
-      let idx = -1
-      for (let i = state.messages.length - 1; i >= 0; i--) {
-        const msg = state.messages[i]
-        if (msg._id === action.payload._id &&
-          (!msg.content || msg.content.trim() === "")) {
-          idx = i
-          break
-        }
-      }
+      // let idx = -1
+      // for (let i = state.messages.length - 1; i >= 0; i--) {
+      //   const msg = state.messages[i]
+      //   if (msg._id === action.payload._id &&
+      //     (!msg.content || msg.content.trim() === "")) {
+      //     idx = i
+      //     break
+      //   }
+      // }
 
 
-      if (idx !== -1) {
-        state.messages.splice(idx, 1);
+      // if (idx !== -1) {
+      //   state.messages.splice(idx, 1);
+      // }
+      if (state.messages[state.messages.length - 1].content.trim() === "") {
+        state.messages.splice(state.messages.length - 1, 1);
       }
       state.streamingMessage = action.payload;
     },

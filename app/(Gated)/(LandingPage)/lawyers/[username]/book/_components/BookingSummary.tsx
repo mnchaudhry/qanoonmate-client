@@ -23,7 +23,7 @@ export default function BookingSummary({ selectedMode }: BookingSummaryProps) {
   ///////////////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////////////////////////////
   useEffect(() => {
     if (lawyer) {
-      setConsultationFee(lawyer?.settings?.consultation?.fees?.find(f => f.mode === selectedMode)?.amount);
+      setConsultationFee(lawyer?.settings?.consultation?.fees?.find(f => f.mode === selectedMode)?.amount || 500);
     }
   }, [lawyer, selectedMode]);
 
@@ -32,7 +32,7 @@ export default function BookingSummary({ selectedMode }: BookingSummaryProps) {
     style: "currency",
     currency: "PKR",
     minimumFractionDigits: 0,
-  }).format(consultationFee || 0);
+  }).format(consultationFee || 500);
 
   ///////////////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////////////////
   return (

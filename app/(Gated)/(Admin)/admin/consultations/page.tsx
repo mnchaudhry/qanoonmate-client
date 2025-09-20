@@ -39,6 +39,7 @@ const ConsultationsPage = () => {
       limit: PAGE_SIZE,
       // search: search || undefined,
       // status: filterStatus !== 'all' ? filterStatus : undefined,
+
     }))
   }, [dispatch, page, search, filterStatus])
 
