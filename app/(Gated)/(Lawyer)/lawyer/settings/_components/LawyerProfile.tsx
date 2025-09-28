@@ -254,12 +254,12 @@ const LawyerProfile = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="gender">Gender</Label>
-                                <Select value={form.gender} onValueChange={v => setField('gender', v)}>
+                                {/* <Select value={form.gender} onValueChange={v => setField('gender', v)}>
                                     <SelectTrigger><SelectValue placeholder="Select gender" /></SelectTrigger>
                                     <SelectContent>
                                         {GENDERS.map(g => <SelectItem key={g} value={g}>{g}</SelectItem>)}
                                     </SelectContent>
-                                </Select>
+                                </Select> */}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="dob">Date of Birth</Label>
@@ -271,21 +271,21 @@ const LawyerProfile = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="city">City</Label>
-                                <Select value={form.city} onValueChange={v => setField('city', v)}>
+                                {/* <Select value={form.city} onValueChange={v => setField('city', v)}>
                                     <SelectTrigger><SelectValue placeholder="Select city" /></SelectTrigger>
                                     <SelectContent>
                                         {CITIES.map(c => <SelectItem key={c} value={c}>{enumToLabel(c)}</SelectItem>)}
                                     </SelectContent>
-                                </Select>
+                                </Select> */}
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="province">Province</Label>
-                                <Select value={form.province} onValueChange={v => setField('province', v)}>
+                                {/* <Select value={form.province} onValueChange={v => setField('province', v)}>
                                     <SelectTrigger><SelectValue placeholder="Select province" /></SelectTrigger>
                                     <SelectContent>
                                         {PROVINCES.map(p => <SelectItem key={p} value={p}>{enumToLabel(p)}</SelectItem>)}
                                     </SelectContent>
-                                </Select>
+                                </Select> */}
                             </div>
                         </div>
                     </div>
@@ -344,12 +344,12 @@ const LawyerProfile = () => {
                     {/* Primary Practice Area */}
                     <div className="mb-4">
                         <div className="font-semibold mb-2">Primary Practice Area <span className="text-red-500">*</span></div>
-                        <Select value={form.primarySpecialization} onValueChange={v => setField('primarySpecialization', v)}>
+                        {/* <Select value={form.primarySpecialization} onValueChange={v => setField('primarySpecialization', v)}>
                             <SelectTrigger><SelectValue placeholder="Select primary area" /></SelectTrigger>
                             <SelectContent>
                                 {PRACTICE_AREAS.map(a => <SelectItem key={a.key} value={a.key}>{a.label}</SelectItem>)}
                             </SelectContent>
-                        </Select>
+                        </Select> */}
                     </div>
                     {/* Secondary Practice Areas */}
                     <div className="mb-4">
