@@ -8,6 +8,7 @@ import PendingActions from './_components/PendingActions'
 import ActivityLog from './_components/ActivityLog'
 import ClientFeedback from './_components/ClientFeedback'
 import QuickActions from './_components/QuickActions'
+import ProfileProgress from './_components/ProfileProgress'
 
 export default function LawyerDashboard() {
   return (
@@ -20,17 +21,29 @@ export default function LawyerDashboard() {
 
       {/* Main Content Grid */}
       <div className="flex flex-col gap-6">
-        {/* Left Column */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 items-start gap-6 w-full">
-          <ConsultationRequests />
-          <PendingActions />
+        {/* Top Row - Profile Progress */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 items-start gap-6 w-full">
+          <div className="lg:col-span-3">
+            <ConsultationRequests />
+          </div>
+          <div className="lg:col-span-1">
+            <ProfileProgress />
+          </div>
         </div>
 
-        {/* Right Column */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 items-start gap-6 w-full">
+        {/* Middle Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 items-start gap-6 w-full">
+          <PendingActions />
           <ClientFeedback />
+        </div>
+
+        {/* Bottom Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 items-start gap-6 w-full">
           <CalendarSchedule />
           <ActivityLog />
+          <div className="lg:col-span-1">
+            {/* Empty space for future components */}
+          </div>
         </div>
       </div>
 

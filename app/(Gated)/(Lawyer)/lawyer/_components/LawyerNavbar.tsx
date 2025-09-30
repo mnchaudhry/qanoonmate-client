@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useRouter, usePathname } from 'next/navigation';
-import { Bell, Search, User, Settings, LogOut, MessageSquare, Calendar } from "lucide-react";
+import { Bell, Search, User, Settings, LogOut } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { logout } from '@/store/reducers/authSlice';
@@ -11,10 +11,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import Logo from '@/components/Logo';
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList, navigationMenuTriggerStyle, } from "@/components/ui/navigation-menu"
-import { cn } from '@/lib/utils';
+import { cn, enumToLabel } from '@/lib/utils';
 import { fetchNotifications } from '@/store/reducers/notificationSlice';
 import { useEffect } from 'react';
 import { useStateContext } from '@/context/useStateContext';
+import { Lawyer } from '@/store/types/lawyer.types';
 
 export default function LawyerNavbar() {
     //////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
@@ -23,6 +24,7 @@ export default function LawyerNavbar() {
     const dispatch = useDispatch<AppDispatch>();
     const { unreadCount, notifications } = useSelector((state: RootState) => state.notification);
     const { setIsBetaUser } = useStateContext();
+    const { user } = useSelector((state: RootState) => state.auth) as { user: Lawyer };
 
     //////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////
     useEffect(() => {
@@ -116,17 +118,11 @@ export default function LawyerNavbar() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
                                 <div className="p-3 border-b !border-border bg-muted">
-                                    <p className="font-medium">Advocate Sarah Khan</p>
-                                    <p className="text-sm text-muted-foreground">Corporate Law Specialist</p>
+                                    <p className="font-medium">Advocate {user?.fullName || user?.username}</p>
+                                    <p className="text-sm text-muted-foreground">{enumToLabel(user?.primarySpecialization || "") || "Legal Professional"}</p>
                                 </div>
-                                <DropdownMenuItem onClick={() => router.push('/lawyer/profile')}>
+                                <DropdownMenuItem onClick={() => router.push(`/lawyers/${user?.username}`)}>
                                     <User className="mr-2 h-4 w-4" /> Profile & Verification
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => router.push('/lawyer/availability')}>
-                                    <Calendar className="mr-2 h-4 w-4" /> Availability
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => router.push('/lawyer/reviews')}>
-                                    <MessageSquare className="mr-2 h-4 w-4" /> Reviews & Feedback
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => router.push('/lawyer/settings')}>
                                     <Settings className="mr-2 h-4 w-4" /> Settings
