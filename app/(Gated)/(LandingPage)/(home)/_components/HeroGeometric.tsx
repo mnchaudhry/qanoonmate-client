@@ -98,7 +98,7 @@ function HeroGeometric() {
             </div>
 
             <div className="relative z-10 container mx-auto px-4 md:px-6">
-                <div className="max-w-3xl mx-auto text-center">
+                <div className="max-w-4xl mx-auto text-center">
                     <motion.div
                         variants={fadeUpVariants}
                         initial="hidden"
@@ -116,7 +116,7 @@ function HeroGeometric() {
                         initial="hidden"
                         animate="visible"
                     >
-                        <h1 className="text-5xl sm:text-6xl md:text-8xl font-bold mb-6 md:mb-8 tracking-tight">
+                        <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-6 md:mb-8 tracking-tight">
                             <span className="bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/80">
                                 Your Smart
                             </span>

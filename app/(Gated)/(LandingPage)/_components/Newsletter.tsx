@@ -34,11 +34,11 @@ const NewsLetter = () => {
   return (
     <Card className="rounded-3xl section-padding bg-gradient-to-b from-muted/40 to-muted/70 border border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300 m-4 p-4 ">
       <CardContent className="p-0">
-        <div className="text-center mx-auto max-w-2xl py-24 ">
-          <h3 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight mb-4 md:mb-6">
+        <div className="text-center mx-auto max-w-2xl py-20 ">
+          <h3 className="text-3xl md:text-3xl font-semibold text-foreground tracking-tight mb-4 md:mb-6">
             Stay Informed with <span className="text-primary">QanoonMate</span>
           </h3>
-          <p className="text-base md:text-lg text-muted-foreground leading-relaxed mb-6 md:mb-8">
+          <p className="text-base text-muted-foreground leading-relaxed mb-6 md:mb-8">
             Get the latest legal updates, case law summaries, and platform news delivered straight to your inbox.
             Join our newsletter and gain valuable insights into Pakistan&apos;s legal landscape.
           </p>

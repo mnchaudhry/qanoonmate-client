@@ -9,7 +9,7 @@ import CoreFeatures from "./_components/CoreFeatures"
 import { CTA } from "./_components/CTA"
 import LegalKnowledgeBase from "./_components/LegalKnowledgeBase"
 import LegalSummaries from "./_components/LegalSummaries"
-import { HeroGeometric } from "./_components/shape-landing-hero"
+import { HeroGeometric } from "./_components/HeroGeometric"
 import { Pricing } from "./_components/Pricing"
 import StructuredData, { organizationStructuredData, websiteStructuredData, legalServiceStructuredData } from "@/components/StructuredData"
 
