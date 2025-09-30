@@ -58,13 +58,13 @@ export const flush = async () => {
   flushing = true;
   const batch = queue.splice(0, MAX_BATCH);
   try {
-    await fetch(getBackendUrl(), {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify(batch),
-      keepalive: true,
-    });
+    // await fetch(getBackendUrl(), {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   credentials: 'include',
+    //   body: JSON.stringify(batch),
+    //   keepalive: true,
+    // });
   } catch {
     // best effort; requeue a few items
     queue = batch.concat(queue).slice(0, 500);

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, X } from "lucide-react";
-import { LawyerProfile } from "@/lib/types/profile.types";
+import { Loader2 } from "lucide-react";
 
 interface EditModalProps {
   isOpen: boolean;
@@ -17,16 +16,7 @@ interface EditModalProps {
   maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl";
 }
 
-export function EditModal({
-  isOpen,
-  onClose,
-  title,
-  children,
-  onSave,
-  isLoading = false,
-  saveButtonText = "Save Changes",
-  maxWidth = "2xl"
-}: EditModalProps) {
+export function EditModal({ isOpen, onClose, title, children, onSave, isLoading = false, saveButtonText = "Save Changes", maxWidth = "2xl" }: EditModalProps) {
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSave = async () => {
@@ -49,7 +39,7 @@ export function EditModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
+      <DialogContent
         className={`max-w-${maxWidth} max-h-[90vh] overflow-y-auto`}
         onKeyDown={handleKeyDown}
       >
@@ -57,14 +47,6 @@ export function EditModal({
           <DialogTitle className="text-lg font-semibold text-foreground">
             {title}
           </DialogTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            className="h-6 w-6 p-0 hover:bg-muted"
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
 
         <div className="space-y-6">

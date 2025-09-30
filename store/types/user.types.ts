@@ -1,4 +1,5 @@
-import { AccountStatus, Gender, ReleaseChannel, UserRole } from "@/lib/enums";
+import { AccountStatus, Gender, ReleaseChannel, UserRole, LawyerCity } from "@/lib/enums";
+import { Province } from "@/lib/enums";
 import { APIResponse, PaginationMeta } from "./api";
 import { Review } from "./review.types";
 
@@ -18,8 +19,8 @@ export interface User {
     languages?: string[];
     preferredLanguage?: string;
     location?: {
-        city?: string;
-        province?: string;
+        city?: LawyerCity;
+        province?: Province;
     };
     emailVerified?: boolean;
     phoneVerified?: boolean;

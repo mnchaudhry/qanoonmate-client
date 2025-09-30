@@ -1,6 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import StateProvider from "@/wrappers/StateProvider";
 import { Toaster } from "react-hot-toast";
@@ -8,7 +8,20 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import AnalyticsProvider from "@/wrappers/AnalyticsProvider";
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500", "700"] });
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-poppins",
+  display: "swap",
+});
 
 
 export const metadata: Metadata = {
@@ -72,7 +85,8 @@ export default function RootLayout({ children, }: { children: React.ReactNode; }
   return (
     <html lang="en">
       <body
-        className={`${roboto.className} bg-neutral text-foreground`}
+        className={`${inter.variable} ${poppins.variable} bg-neutral text-foreground`}
+        style={{ fontFamily: 'var(--font-inter), ui-sans-serif, system-ui, sans-serif' }}
         suppressHydrationWarning={true}
       >
         <StateProvider>

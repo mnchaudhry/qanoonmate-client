@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Lawyer } from "@/store/types/lawyer.types";
 import { useEditModal } from "./EditModalContext";
 
 interface EditOverviewModalProps {
@@ -15,13 +14,12 @@ interface EditOverviewModalProps {
 }
 
 export function EditOverviewModal({ isOpen, onClose }: EditOverviewModalProps) {
-  const { lawyer, setLawyer } = useEditModal();
-  const [formData, setFormData] = useState({
-    title: "",
-    tagline: "",
-    bio: "",
-  });
 
+  /////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////
+  const { lawyer } = useEditModal();
+  const [formData, setFormData] = useState({ title: "", tagline: "", bio: "", });
+
+  /////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////////////
   useEffect(() => {
     if (lawyer) {
       setFormData({
@@ -32,6 +30,7 @@ export function EditOverviewModal({ isOpen, onClose }: EditOverviewModalProps) {
     }
   }, [lawyer]);
 
+  /////////////////////////////////////////////// HANDLERS ///////////////////////////////////////////////
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
@@ -50,7 +49,7 @@ export function EditOverviewModal({ isOpen, onClose }: EditOverviewModalProps) {
         summary: formData.bio, // Map bio to summary field
         // Note: tagline might need to be stored in a different field or added to the Lawyer type
       });
-      
+
       console.log("Successfully saved overview data:", formData);
     } catch (error) {
       console.error("Failed to save overview data:", error);
@@ -58,6 +57,7 @@ export function EditOverviewModal({ isOpen, onClose }: EditOverviewModalProps) {
     }
   };
 
+  /////////////////////////////////////////////// RENDER ///////////////////////////////////////////////
   return (
     <EditModal
       isOpen={isOpen}
@@ -121,7 +121,7 @@ export function EditOverviewModal({ isOpen, onClose }: EditOverviewModalProps) {
             )}
             {formData.tagline && (
               <p className="text-muted-foreground italic text-sm">
-                "{formData.tagline}"
+                {`"${formData.tagline}"`}
               </p>
             )}
             {formData.bio && (

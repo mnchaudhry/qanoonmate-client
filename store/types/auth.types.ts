@@ -20,34 +20,12 @@ export interface LawyerSignupStep1Request {
     phone: string;
     password: string;
     cnic: string;
-}
-
-export interface LawyerSignupStep2Request {
-    email: string;
     licenseNumber: string;
     barCouncil: string;
     barAssociation: string;
     barCouncilEnrollmentDate: string;
 }
 
-export interface LawyerSignupStep3Request {
-    email: string;
-    primarySpecialization: string;
-    specializations: string[];
-    jurisdictions: any[];
-}
-
-export interface LawyerSignupStep4Request {
-    email: string;
-    preLicensedYearsOfExperience?: number;
-    education?: string[];
-    certifications?: string[];
-}
-
-export interface LawyerSignupStep5Request {
-    email: string;
-    documents?: any;
-}
 
 // Lawyer signup request (comprehensive - legacy)
 export interface LawyerSignupRequest {

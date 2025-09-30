@@ -1,7 +1,8 @@
 import { User } from './user.types';
 import { APIResponse } from './api';
-import { BarCouncils, Courts } from '@/lib/enums';
+import { BarCouncils, Courts, Province } from '@/lib/enums';
 import { LawyerSettings } from './lawyerSettings.types';
+import { LawCategory } from '@/lib/enums';
 import { Client } from './client.types';
 
 export interface LawyerQuery {
@@ -33,11 +34,11 @@ export interface Lawyer extends User {
   preLicensedYearsOfExperience?: number;
   education?: string[];
   certifications?: string[];
-  specializations?: string[];
-  primarySpecialization?: string;
+  specializations?: LawCategory[];
+  primarySpecialization?: LawCategory;
   jurisdictions?: {
     geography: {
-      province: string;
+      province: Province;
       district?: string | null;  // null = whole province
       tehsil?: string | null;
     };

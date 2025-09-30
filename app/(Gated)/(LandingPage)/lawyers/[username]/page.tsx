@@ -25,6 +25,7 @@ export default function LawyerProfilePage() {
   const params = useParams();
   const username = params.username as string;
   const dispatch = useDispatch<AppDispatch>();
+  const { user } = useSelector((state: RootState) => state.auth) as { user: Lawyer };
   const { selectedLawyer } = useSelector((state: RootState) => state.lawyer);
 
   //////////////////////////////////////////////// STATES ///////////////////////////////////////////
@@ -38,7 +39,13 @@ export default function LawyerProfilePage() {
       try {
         setLoading(true);
 
-        if (!selectedLawyer && username) {
+        if (username == 'me') {
+          const profile = convertLawyerToProfile(user);
+          setLawyerProfile(profile);
+          return;
+        }
+
+        if (!selectedLawyer && username && username != 'me') {
           dispatch(getLawyerByUsername(username))
             .then(({ payload, meta }: any) => {
               if (meta.requestStatus === 'fulfilled' && payload?.data) {
@@ -55,7 +62,7 @@ export default function LawyerProfilePage() {
             .finally(() => {
               setLoading(false);
             });
-        } else if (selectedLawyer) {
+        } else if (selectedLawyer && username != 'me') {
           const profile = convertLawyerToProfile(selectedLawyer);
           setLawyerProfile(profile);
         }
@@ -70,7 +77,7 @@ export default function LawyerProfilePage() {
     if (username) {
       fetchLawyerProfile();
     }
-  }, [username, selectedLawyer, dispatch]);
+  }, [username, selectedLawyer, dispatch, user]);
 
   //////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////
   // Convert Lawyer to LawyerProfile
@@ -202,7 +209,7 @@ export default function LawyerProfilePage() {
 
   //////////////////////////////////////////////// RENDER ///////////////////////////////////////////
   if (loading) {
-  return (
+    return (
       <div className="min-h-screen bg-gray-50 pt-20">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="animate-pulse">

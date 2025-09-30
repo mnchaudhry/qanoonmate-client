@@ -25,6 +25,7 @@ import communication from './communicationSlice';
 import newsletter from './newsletterSlice';
 import credits from './credits';
 import payments from './payments';
+import profile from './profileSlice';
 
 const rootReducer = combineReducers({
     auth,
@@ -53,6 +54,7 @@ const rootReducer = combineReducers({
     newsletter,
     credits,
     payments,
+    profile,
 });
 
 export default rootReducer;

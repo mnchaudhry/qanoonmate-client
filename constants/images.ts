@@ -11,3 +11,5 @@ export const ComingSoon = '/general/coming-soon.svg'
 export const Lawyer1 = '/test/lawyer1.jpeg'
 
 export const About = '/Pictures/about.jpg'
+
+export const PlaceholderLawyer = '/general/placeholder-lawyer.jpeg'
