@@ -79,6 +79,7 @@
     "firebase": "^12.1.0",
     "framer-motion": "^12.23.12",
     "i": "^0.3.7",
+    "imagekitio-react": "^4.3.0",
     "jspdf": "^3.0.1",
     "lucide-react": "^0.536.0",
     "motion": "^12.23.12",

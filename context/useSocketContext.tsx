@@ -63,13 +63,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   ): SocketConnection => {
     const fullUrl = namespace === "/" ? socketUrl : `${socketUrl}${namespace}`;
 
-
     const socketInstance = io(fullUrl, {
       autoConnect: true,
-      reconnection:true,
+      reconnection: true,
       reconnectionAttempts: 5,
       withCredentials: true,
-      transports: ["websocket","polling"],
+      transports: ["websocket", "polling"],
       reconnectionDelay: 2000,
       timeout: 60000,
     });
@@ -84,6 +83,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Set up event listeners
     socketInstance.on("connect", () => {
+      console.log(`Socket connected to ${namespace}`);
 
       setConnections((prev) => ({
         ...prev,
@@ -93,10 +93,15 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
           connectError: null,
         },
       }));
+
+      // Auto-authenticate if user is logged in
+      if (user?._id && !connection.isAuthenticated) {
+        console.log(`Auto-authenticating socket for user: ${user._id}`);
+        socketInstance.emit("auth:authenticate", { userId: user._id });
+      }
     });
 
     socketInstance.on("connect_error", (err) => {
-
       setConnections((prev) => ({
         ...prev,
         [namespace]: { ...prev[namespace], connectError: err.message },
@@ -120,7 +125,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 
     // Authentication events
     socketInstance.on("auth:success", (data: any) => {
-
       setConnections((prev) => ({
         ...prev,
         [namespace]: {
@@ -132,7 +136,6 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     });
 
     socketInstance.on("auth:error", (data: any) => {
-
       setConnections((prev) => ({
         ...prev,
         [namespace]: {
@@ -231,8 +234,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error) {
       return false;
     }
-  }
-
+  };
 
   // Reconnect to default socket
   const reconnect = async (): Promise<boolean> => {
