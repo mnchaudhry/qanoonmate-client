@@ -3,13 +3,13 @@ import { initializeApp, getApps } from "firebase/app";
 import { getAnalytics, logEvent, isSupported, Analytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBPryOZPOW6rIpXHX9AyVbCFUbcVfLQRX8",
-  authDomain: "qanoonmate-599f1.firebaseapp.com",
-  projectId: "qanoonmate-599f1",
-  storageBucket: "qanoonmate-599f1.firebasestorage.app",
-  messagingSenderId: "718398621092",
-  appId: "1:718398621092:web:6e599097dd1765a5e8ed31",
-  measurementId: "G-J9PW4HD7GC",
+  apiKey: "AIzaSyBJVgc6T62-SCPzb4MhI-vLF9b4Nuhgy6o",
+  authDomain: "qanoonmate-project.firebaseapp.com",
+  projectId: "qanoonmate-project",
+  storageBucket: "qanoonmate-project.firebasestorage.app",
+  messagingSenderId: "380906697875",
+  appId: "1:380906697875:web:834d02f5cdc7dd5b570966",
+  measurementId: "G-FFX5P5E4Z7"
 };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
