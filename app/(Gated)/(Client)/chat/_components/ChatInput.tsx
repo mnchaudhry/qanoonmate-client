@@ -2,7 +2,15 @@ import { useSocketContext } from "@/context/useSocketContext";
 import { cn } from "@/lib/utils";
 import { newChat, setIsStreaming } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
-import React, { Dispatch, FormEvent, RefObject, SetStateAction, memo, useState, useEffect, } from "react";
+import React, {
+  Dispatch,
+  FormEvent,
+  RefObject,
+  SetStateAction,
+  memo,
+  useState,
+  useEffect,
+} from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 // import { AIMessage } from "@/store/types/api";
@@ -24,10 +32,25 @@ interface Props {
 }
 
 const ChatInput: React.FC<Props> = memo(
-  ({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles, setShowContextPanel, initialMessage }) => {
+  ({
+    isConnected,
+    textSize,
+    textareaRef,
+    fileInputRef,
+    setUploadedFiles,
+    setShowContextPanel,
+    initialMessage,
+  }) => {
     ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
-    const { isStreaming, isLoading, messages, currentSessionId: sessionId } = useSelector((state: RootState) => state.aiSession);
-    const { defaultSocket: { socket } } = useSocketContext();
+    const {
+      isStreaming,
+      isLoading,
+      messages,
+      currentSessionId: sessionId,
+    } = useSelector((state: RootState) => state.aiSession);
+    const {
+      defaultSocket: { socket },
+    } = useSocketContext();
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
     const router = useRouter();
@@ -87,26 +110,22 @@ const ChatInput: React.FC<Props> = memo(
       );
       history.push(userRes(inputValue.trim()));
 
-
-
       if (!sessionId) {
         // Using a test user ID (replace with actual authentication)
         const userId = user._id; // Replace with actual user ID
         if (!userId) return; // safety
 
-
         // emit start_chat event
         socketEvents.model.startChat(socket, { userId });
 
         const onSessionStarted = (data: { sessionId: string }) => {
-
           // Update the route with the session ID as a query parameter without reloading the page
           const url = new URL(window.location.href);
           url.searchParams.set("id", data.sessionId);
           window.history.pushState({}, "", url.toString());
 
           // Now we have sessionId, send the message
-          dispatch(setIsStreaming(true))
+          dispatch(setIsStreaming(true));
           socketEvents.model.chatMessage(socket, {
             sessionId: data.sessionId,
             history: history,
@@ -121,9 +140,8 @@ const ChatInput: React.FC<Props> = memo(
         socket.off("model:session-started", onSessionStarted);
         socket.once("model:session-started", onSessionStarted);
       } else {
-
         // we already have a session, send message directly
-        dispatch(setIsStreaming(true))
+        dispatch(setIsStreaming(true));
         socketEvents.model.chatMessage(socket, {
           sessionId: sessionId,
           history: history,
@@ -159,7 +177,8 @@ const ChatInput: React.FC<Props> = memo(
     const handleLanguageToggle = () => {
       setSelectedLanguage((prev) => (prev === "english" ? "urdu" : "english"));
       toast.success(
-        `Language switched to ${selectedLanguage === "english" ? "Urdu" : "English"
+        `Language switched to ${
+          selectedLanguage === "english" ? "Urdu" : "English"
         }`
       );
     };
@@ -173,11 +192,11 @@ const ChatInput: React.FC<Props> = memo(
 
     ///////////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////////////
     return (
-      <div className="w-full flex flex-col justify-center items-center mb-1">
+      <div className="w-full flex flex-col justify-center items-center">
         {/* Input Container */}
         <form
           onSubmit={onSendMessage}
-          className="flex flex-col items-center w-full p-2 bg-neutral border border-border rounded-xl shadow-sm"
+          className="flex flex-col items-center w-full p-3 bg-neutral border-2 border-border rounded-2xl shadow-lg hover:shadow-xl focus-within:border-primary/50 transition-all duration-200"
         >
           {/* Textarea */}
           <div className="flex-1 relative w-full">
@@ -194,10 +213,11 @@ const ChatInput: React.FC<Props> = memo(
               onChange={(e) => setInputValue(e.target.value)}
               disabled={!isConnected}
               className={cn(
-                "w-full h-[32px] resize-none border-0 shadow-none bg-transparent placeholder:text-muted-foreground",
-                "focus:outline-none focus:ring-0 focus:border-0 outline-none ring-0"
+                "w-full min-h-[40px] max-h-[200px] resize-none border-0 shadow-none bg-transparent placeholder:text-muted-foreground",
+                "focus:outline-none focus:ring-0 focus:border-0 outline-none ring-0 transition-all duration-200",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
-              style={{ fontSize: `${textSize}px` }}
+              style={{ fontSize: `${textSize}px`, lineHeight: "1.5" }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -224,8 +244,11 @@ const ChatInput: React.FC<Props> = memo(
             fileInputRef={fileInputRef}
           />
         </form>
-        <div className="text-xs text-muted-foreground text-right w-full mt-2">
-          QanoonMate can make mistakes. Check important info.
+        <div className="text-xs text-muted-foreground text-center w-full mt-3 flex items-center justify-center gap-1">
+          <span className="opacity-70">⚠️</span>
+          <span>
+            QanoonMate can make mistakes. Please verify important information.
+          </span>
         </div>
       </div>
     );
