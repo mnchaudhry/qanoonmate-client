@@ -49,7 +49,7 @@ const ChatRightbar: React.FC<ChatRightbarProps> = ({
           isLoading ? (
             <RightbarSkeleton />
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-y-auto pb-16">
               <div className="flex items-center justify-between mb-2 sticky top-0 bg-surface z-10 pb-3 border-b border-border">
                 <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
                   <Gavel className="w-5 h-5 text-primary" />
