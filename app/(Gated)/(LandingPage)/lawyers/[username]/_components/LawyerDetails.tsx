@@ -61,7 +61,7 @@ export default function LawyerDetails({ lawyer }: { lawyer: Lawyer }) {
         <ul className="space-y-2 text-sm text-gray-700">
           <li className="flex items-center gap-2">
             <span className="text-gray-500">•</span>
-            <span>Experience: {lawyer.experience || 0} years</span>
+            <span>Experience: {lawyer.preLicensedYearsOfExperience || 0} years</span>
           </li>
           <li className="flex items-center gap-2">
             <span className="text-gray-500">•</span>
@@ -71,7 +71,7 @@ export default function LawyerDetails({ lawyer }: { lawyer: Lawyer }) {
           </li>
           <li className="flex items-center gap-2">
             <span className="text-gray-500">•</span>
-            <span>Jurisdictions: {lawyer.jurisdictions?.map(j => enumToLabel(j)).join(", ") || enumToLabel(lawyer.location?.province || "") || "Not specified"}</span>
+            <span>Jurisdictions: {lawyer.jurisdictions?.map(j => typeof j === 'string' ? enumToLabel(j) : j.geography?.province).join(", ") || enumToLabel(lawyer.location?.province || "") || "Not specified"}</span>
           </li>
           {lawyer.primarySpecialization && (
             <li className="flex items-center gap-2">

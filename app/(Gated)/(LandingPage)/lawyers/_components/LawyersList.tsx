@@ -145,7 +145,7 @@ export const LawyersList = ({ lawyers, onSpecializationClick }: Props) => {
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-muted-foreground">
                                         <div className="flex items-center space-x-1">
                                             <Clock className="h-3 w-3" />
-                                            <span>{lawyer.experience || 0} years exp</span>
+                                            <span>{lawyer.preLicensedYearsOfExperience || 0} years exp</span>
                                         </div>
                                         <div className="flex items-center space-x-1">
                                             <Globe className="h-3 w-3" />

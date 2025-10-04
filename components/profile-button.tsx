@@ -17,6 +17,7 @@ const ProfileButton = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { setIsBetaUser } = useStateContext();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
+  const showDashboardButton = user?.role === UserRole.LAWYER || user?.role === UserRole.ADMIN;
 
   //////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
   const handleLogout = () => {
@@ -36,6 +37,11 @@ const ProfileButton = () => {
     else return "/profile";
   }
 
+  const getDashboardLink = () => {
+    if (user.role === UserRole.LAWYER) return "/lawyer/dashboard";
+    else if (user.role === UserRole.ADMIN) return "/admin/dashboard";
+    else return "/client/dashboard";
+  }
 
   //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
@@ -55,7 +61,7 @@ const ProfileButton = () => {
             <span>Profile</span>
           </Link>
         </DropdownMenuItem>
-        {/* {
+        {
           showDashboardButton && (
             <DropdownMenuItem asChild>
               <Link href={getDashboardLink()} className="flex items-center gap-x-2" >
@@ -64,7 +70,7 @@ const ProfileButton = () => {
               </Link>
             </DropdownMenuItem>
           )
-        } */}
+        }
         {/* <DropdownMenuItem asChild>
           <Link href={getSettingsLink()} className="flex items-center gap-x-2" >
             <Settings className="h-4 w-4" />

@@ -150,7 +150,7 @@ export const LawyerGrid: React.FC<LawyerGridProps> = ({ lawyers, onSpecializatio
             <div className="grid grid-cols-2 gap-2 text-xs text-muted-foreground">
               <div className="flex items-center space-x-1">
                 <Clock className="h-3 w-3" />
-                <span>{lawyer.experience || 0} years exp</span>
+                <span>{lawyer.preLicensedYearsOfExperience || 0} years exp</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Globe className="h-3 w-3" />

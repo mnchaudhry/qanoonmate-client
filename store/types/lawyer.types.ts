@@ -1,6 +1,6 @@
 import { User } from './user.types';
 import { APIResponse } from './api';
-import { Courts } from '@/lib/enums';
+import { BarCouncils, Courts } from '@/lib/enums';
 import { LawyerSettings } from './lawyerSettings.types';
 import { Client } from './client.types';
 
@@ -21,21 +21,28 @@ export interface LawyerQuery {
 }
 
 export interface Lawyer extends User {
+  fullName: string;  // must match CNIC + bar card
   title?: string;
   summary?: string;
   cnic?: string;
-  licenseNumber?: string;
+  licenseNumber: string;   // enrollment/license no.
   licenseValidity?: Date | null;
-  licenseAuthority?: string;
+  barCouncil: BarCouncils;
   barAssociation?: string;
-  experience?: number;
-  subdomains?: Record<string, string[]>;
-  certifications?: string[];
-  tags?: string[];
+  barCouncilEnrollmentDate?: Date;
+  preLicensedYearsOfExperience?: number;
   education?: string[];
+  certifications?: string[];
   specializations?: string[];
   primarySpecialization?: string;
-  jurisdictions?: Courts[];
+  jurisdictions?: {
+    geography: {
+      province: string;
+      district?: string | null;  // null = whole province
+      tehsil?: string | null;
+    };
+    courts: string[];
+  }[];
   profileVisibility?: {
     public: boolean;
     testimonialsEnabled: boolean;
@@ -46,11 +53,11 @@ export interface Lawyer extends User {
 
 }
 
-export interface PaginatedLawyerResponse extends APIResponse<Lawyer[]> { }
+export type PaginatedLawyerResponse = APIResponse<Lawyer[]>
 
-export interface SingleLawyerResponse extends APIResponse<Lawyer> { }
+export type SingleLawyerResponse = APIResponse<Lawyer>
 
-export interface MyClientsResponse extends APIResponse<Client[]> { }
+export type MyClientsResponse = APIResponse<Client[]>
 
 export interface Review {
   _id: string;
@@ -68,14 +75,14 @@ export interface Review {
   updatedAt: string;
 }
 
-export interface LawyerReviewsResponse extends APIResponse<Review[]> { }
+export type LawyerReviewsResponse = APIResponse<Review[]>
 
 export interface Availability { [key: string]: any; }
 
-export interface LawyerAvailabilityResponse extends APIResponse<Availability> { }
+export type LawyerAvailabilityResponse = APIResponse<Availability>
 
 export interface LawyerStatusUpdateRequest { isActive: boolean; }
 
-export interface LawyerDeleteResponse extends APIResponse<{ message: string }> { }
+export type LawyerDeleteResponse = APIResponse<{ message: string }>
 
-export interface SubmitReviewResponse extends APIResponse<Review> { }
+export type SubmitReviewResponse = APIResponse<Review>

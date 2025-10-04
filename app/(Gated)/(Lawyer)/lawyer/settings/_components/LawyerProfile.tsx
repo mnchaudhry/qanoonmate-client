@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { Lawyer } from '@/store/types/lawyer.types';
-import { LawCategory, Province, LawyerLanguage, Courts, LawyerCity, Gender } from '@/lib/enums';
+import { LawCategory, Province, LawyerLanguage, Courts, LawyerCity, Gender, BarCouncils } from '@/lib/enums';
 import { Upload, User, Loader2 } from 'lucide-react';
 import { enumToLabel } from '@/lib/utils';
 import TagInput from '@/components/ui/tag-input';
@@ -74,23 +74,23 @@ const LawyerProfile = () => {
         city: user?.location?.city || '',
         province: user?.location?.province || '',
         // Professional
+        fullName: user?.fullName || '',
         title: user?.title || '',
         bio: user?.bio || '',
-        experience: user?.experience || 0,
+        preLicensedYearsOfExperience: user?.preLicensedYearsOfExperience || 0,
         education: user?.education || '',
         licenseNumber: user?.licenseNumber || '',
         licenseValidity: user?.licenseValidity || '',
-        licenseAuthority: user?.licenseAuthority || '',
+        barCouncil: user?.barCouncil || BarCouncils.PunjabBarCouncil,
         barAssociation: user?.barAssociation || '',
+        barCouncilEnrollmentDate: user?.barCouncilEnrollmentDate || '',
         // Legal Expertise
         primarySpecialization: user?.primarySpecialization || '',
         specializations: user?.specializations || [],
-        subdomains: user?.subdomains || {},
         jurisdictions: user?.jurisdictions || [],
         certifications: user?.certifications || [],
         languages: user?.languages || [],
         summary: user?.summary || '',
-        tags: user?.tags || [],
     });
     const [preview, setPreview] = useState<string | null>(null);
     const [file, setFile] = useState<File | null>(null);
@@ -133,20 +133,18 @@ const LawyerProfile = () => {
             province: user?.location?.province || '',
             title: user?.title || '',
             bio: user?.bio || '',
-            experience: user?.experience || 0,
+            preLicensedYearsOfExperience: user?.preLicensedYearsOfExperience || 0,
             education: user?.education || '',
             licenseNumber: user?.licenseNumber || '',
             licenseValidity: user?.licenseValidity || '',
-            licenseAuthority: user?.licenseAuthority || '',
+            barCouncil: user?.barCouncil || BarCouncils.PunjabBarCouncil,
             barAssociation: user?.barAssociation || '',
             primarySpecialization: user?.primarySpecialization || '',
             specializations: user?.specializations || [],
-            subdomains: user?.subdomains || {},
             jurisdictions: user?.jurisdictions || [],
             certifications: user?.certifications || [],
             languages: user?.languages || [],
             summary: user?.summary || '',
-            tags: user?.tags || [],
         });
     }, [user]);
 
@@ -154,10 +152,10 @@ const LawyerProfile = () => {
     const setField = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
     const addSecondary = (area: string) => setForm(f => ({ ...f, specializations: f.specializations.includes(area) ? f.specializations : [...f.specializations, area] }));
     const removeSecondary = (area: string) => setForm(f => ({ ...f, specializations: f.specializations.filter(a => a !== area) }));
-    const toggleJurisdiction = (j: Courts) => setForm(f => ({ ...f, jurisdictions: f.jurisdictions.includes(j) ? f.jurisdictions.filter(x => x !== j) : [...f.jurisdictions, j] }));
+    const toggleJurisdiction = (j: any) => setForm(f => ({ ...f, jurisdictions: f.jurisdictions.includes(j) ? f.jurisdictions.filter(x => x !== j) : [...f.jurisdictions, j] }));
     const toggleLanguage = (l: string) => setForm(f => ({ ...f, languages: f.languages.includes(l) ? f.languages.filter(x => x !== l) : [...f.languages, l] }));
-    const addTag = (tags: string[]) => { if (tags.length > 0) setForm(f => ({ ...f, tags: [...f.tags, ...tags] })); };
-    const toggleSubdomain = (area: string, sub: string) => setForm(f => ({ ...f, subdomains: { ...f.subdomains, [area]: f.subdomains[area]?.includes(sub) ? f.subdomains[area].filter((s: string) => s !== sub) : [...(f.subdomains[area] || []), sub] } }));
+    // const addTag = (tags: string[]) => { if (tags.length > 0) setForm(f => ({ ...f, tags: [...f.tags, ...tags] })); };
+    // const toggleSubdomain = (area: string, sub: string) => setForm(f => ({ ...f, subdomains: { ...f.subdomains, [area]: f.subdomains[area]?.includes(sub) ? f.subdomains[area].filter((s: string) => s !== sub) : [...(f.subdomains[area] || []), sub] } }));
     const handlePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
@@ -305,11 +303,11 @@ const LawyerProfile = () => {
                             <Textarea rows={5} id="bio" value={form.bio} onChange={e => setField('bio', e.target.value)} placeholder="Write a short bio..." />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="experience">Years of Experience</Label>
-                            <Input id="experience" type="number" min={0} value={form.experience} onChange={e => setField('experience', Number(e.target.value))} placeholder="e.g. 10" />
+                            <Label htmlFor="preLicensedYearsOfExperience">Years of Experience (Pre-License)</Label>
+                            <Input id="preLicensedYearsOfExperience" type="number" min={0} value={form.preLicensedYearsOfExperience} onChange={e => setField('preLicensedYearsOfExperience', Number(e.target.value))} placeholder="e.g. 10" />
                             <div className="flex gap-2 mt-2">
                                 {EXPERIENCE_CATEGORIES.map(c => (
-                                    <Button key={c.label} size="sm" variant={form.experience >= c.value ? 'default' : 'outline'} onClick={() => setField('experience', c.value)}>{c.label}</Button>
+                                    <Button key={c.label} size="sm" variant={form.preLicensedYearsOfExperience >= c.value ? 'default' : 'outline'} onClick={() => setField('preLicensedYearsOfExperience', c.value)}>{c.label}</Button>
                                 ))}
                             </div>
                         </div>
@@ -331,8 +329,8 @@ const LawyerProfile = () => {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="licenseAuthority">License Issuing Authority</Label>
-                            <Input id="licenseAuthority" value={form.licenseAuthority} onChange={e => setField('licenseAuthority', e.target.value)} placeholder="e.g. Punjab Bar Council" />
+                            <Label htmlFor="barCouncil">License Issuing Authority</Label>
+                            <Input id="barCouncil" value={form.barCouncil} onChange={e => setField('barCouncil', e.target.value)} placeholder="e.g. Punjab Bar Council" />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="barAssociation">Bar Association</Label>
@@ -371,11 +369,7 @@ const LawyerProfile = () => {
                             return (
                                 <div key={area} className="mb-2">
                                     <div className="font-medium text-sm mb-1">{pa.label}</div>
-                                    <div className="flex flex-wrap gap-2">
-                                        {pa.sub.map(sub => (
-                                            <Button key={sub} size="sm" variant={form.subdomains[area]?.includes(sub) ? 'default' : 'outline'} onClick={() => toggleSubdomain(area, sub)}>{sub}</Button>
-                                        ))}
-                                    </div>
+                                    {/* Subdomains removed from new schema */}
                                 </div>
                             );
                         })}
@@ -428,12 +422,7 @@ const LawyerProfile = () => {
                     </div>
                     {/* Tags */}
                     <div className="mb-4">
-                        <div className="font-semibold mb-2">Expertise Tags (for search optimization)</div>
-                        <TagInput
-                            value={form.tags}
-                            onChange={(tags) => addTag(tags)}
-                            placeholder="Add tag..."
-                        />
+                        {/* Tags removed from new schema */}
                     </div>
                 </section>
                 {/* Admin Verification Status */}

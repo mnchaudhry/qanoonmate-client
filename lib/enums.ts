@@ -193,6 +193,17 @@ export enum Province {
   AZAD_JAMMU_AND_KASHMIR = "azad_jammu_and_kashmir"
 }
 
+export enum BarCouncils {
+  PunjabBarCouncil = "Punjab Bar Council",
+  SindhBarCouncil = "Sindh Bar Council",
+  KhyberPakhtunkhwaBarCouncil = "Khyber Pakhtunkhwa Bar Council",
+  BalochistanBarCouncil = "Balochistan Bar Council",
+  IslamabadBarCouncil = "Islamabad Bar Council",
+  AzadJammuAndKashmirBarCouncil = "Azad Jammu and Kashmir Bar Council",
+  GilgitBaltistanBarCouncil = "Gilgit Baltistan Bar Council"
+}
+
+
 export enum LawyerRating {
   FIVE = "5",
   FOUR = "4",

@@ -2,13 +2,94 @@ import { OtpVerificationType } from "@/lib/enums";
 import { APIResponse } from "./api";
 import { User } from "./user.types";
 
-// POST /user/signup, /lawyer/signup
+// Client signup request (simple)
+export interface ClientSignupRequest {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    phone?: string;
+}
+
+// Progressive Lawyer Signup Requests
+export interface LawyerSignupStep1Request {
+    firstname: string;
+    lastname: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    password: string;
+    cnic: string;
+}
+
+export interface LawyerSignupStep2Request {
+    email: string;
+    licenseNumber: string;
+    barCouncil: string;
+    barAssociation: string;
+    barCouncilEnrollmentDate: string;
+}
+
+export interface LawyerSignupStep3Request {
+    email: string;
+    primarySpecialization: string;
+    specializations: string[];
+    jurisdictions: any[];
+}
+
+export interface LawyerSignupStep4Request {
+    email: string;
+    preLicensedYearsOfExperience?: number;
+    education?: string[];
+    certifications?: string[];
+}
+
+export interface LawyerSignupStep5Request {
+    email: string;
+    documents?: any;
+}
+
+// Lawyer signup request (comprehensive - legacy)
+export interface LawyerSignupRequest {
+    firstname: string;
+    lastname: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    password: string;
+    cnic: string;
+    licenseNumber: string;
+    barCouncil: string;
+    barAssociation: string;
+    barCouncilEnrollmentDate: string;
+    primarySpecialization?: string;
+    specializations?: string[];
+    jurisdictions?: any[];
+    preLicensedYearsOfExperience?: number;
+    education?: string[];
+    certifications?: string[];
+}
+
+// Legacy signup request (for backward compatibility)
 export interface SignupRequest {
     firstname: string;
     lastname: string;
     email: string;
     password: string;
     phone: string;
+    // Lawyer specific fields
+    fullName?: string;
+    cnic?: string;
+    licenseNumber?: string;
+    barCouncil?: string;
+    barAssociation?: string;
+    barCouncilEnrollmentDate?: string;
+    primarySpecialization?: string;
+    specializations?: string[];
+    jurisdictions?: any[];
+    preLicensedYearsOfExperience?: number;
+    education?: string[];
+    certifications?: string[];
 }
 export type SignupResponse = APIResponse<{ id: string; email: string }>;
 
@@ -25,7 +106,7 @@ export interface VerifyOtpRequest {
     otp: string;
     type: OtpVerificationType;
 }
-export type VerifyOtpResponse = APIResponse<{ id: string; email: string; role: string }>;
+export type VerifyOtpResponse = APIResponse<User>;
 
 // POST /user/forget-pw-request, /lawyer/forget-pw-request
 export interface ForgetPasswordRequest {
@@ -53,7 +134,7 @@ export interface UpdateProfileRequest {
     location?: string; // JSON.stringify({ city: formData.city, province: formData.province })
     // lawyer fields
     bio?: string;
-    experience?: number;
+    preLicensedYearsOfExperience?: number;
     specializations?: string[];
     additionalLanguages?: string[];
     consultationFee?: number;

@@ -100,22 +100,16 @@ export interface Availability {
 }
 
 export interface IdentityVerification {
-  idDoc?: string | null;
-  selfie?: string | null;
-  barCert?: string | null;
-  license?: string | null;
-  video?: string | null;
-  enrollmentNumber?: string;
-  enrollmentJurisdiction?: string;
+  cnicFront: string;
+  cnicBack: string;
+  barCardFront: string;
+  barCardBack: string;
+  selfie: string;
+
   status: IdentityVerificationStatus;
   rejectionReason?: string;
-  barStatus: IdentityVerificationStatus;
-  barRejectionReason?: string;
-  videoStatus: IdentityVerificationStatus;
-  videoRejectionReason?: string;
   verifiedAt?: string | null;
   verifiedBy?: string | null;
-  nextReviewDate?: string | null;
 }
 
 export interface LawyerSettings {

@@ -118,7 +118,7 @@ export default function UsersTable({ setIsModalOpen }: UsersTableProps) {
                     <div className="text-muted-foreground">{lawyer.phone}</div>
                   </TableCell>
                   <TableCell className="p-4">
-                    <div className="text-muted-foreground">{(lawyer as any).experience ?? '-'}</div>
+                    <div className="text-muted-foreground">{(lawyer as any).preLicensedYearsOfExperience ?? '-'}</div>
                   </TableCell>
                   <TableCell className="p-4">
                     <div className="text-muted-foreground truncate max-w-[220px]">{Array.isArray((lawyer as any).specializations) ? (lawyer as any).specializations.slice(0, 3).join(', ') : '-'}</div>

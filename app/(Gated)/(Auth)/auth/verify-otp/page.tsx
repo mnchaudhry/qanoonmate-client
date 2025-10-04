@@ -46,7 +46,7 @@ const VerifyOTP: React.FC = () => {
         if (meta.requestStatus === 'fulfilled') {
 
           if (OTPType == OtpVerificationType.SIGNUP) {
-            router.push(`/auth/sign-in?role=${role}`)
+            router.push(`/`)
             localStorageManager.removeItem('OTP_EMAIL')
           }
           else {

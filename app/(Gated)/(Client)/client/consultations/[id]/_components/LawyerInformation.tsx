@@ -55,7 +55,7 @@ export default function LawyerInformation({ consultation }: LawyerInformationPro
           <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-gray-600 font-medium mb-1">Experience:</p>
-              <p>{lawyer.experience ? `${lawyer.experience}+ years` : "Not specified"}</p>
+              <p>{lawyer.preLicensedYearsOfExperience ? `${lawyer.preLicensedYearsOfExperience}+ years` : "Not specified"}</p>
             </div>
             <div>
               <p className="text-gray-600 font-medium mb-1">Location:</p>
