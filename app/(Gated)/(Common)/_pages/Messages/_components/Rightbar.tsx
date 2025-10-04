@@ -174,7 +174,7 @@ const Rightbar = ({
     setFilteredMessages(
       messages[currentRoom!._id].filter((mess) => {
         return words.some((word) =>
-          mess.content.toLowerCase().includes(word.toLowerCase())
+          mess.content.toLowerCase()?.includes(word.toLowerCase())
         );
       }) || []
     );
@@ -212,13 +212,13 @@ const Rightbar = ({
   };
 
   const getFileIcon = (fileType: string) => {
-    if (fileType.includes("pdf"))
+    if (fileType?.includes("pdf"))
       return <FileText className="w-4 h-4 text-red-500" />;
-    if (fileType.includes("image"))
+    if (fileType?.includes("image"))
       return <FileText className="w-4 h-4 text-blue-500" />;
-    if (fileType.includes("word"))
+    if (fileType?.includes("word"))
       return <FileText className="w-4 h-4 text-blue-600" />;
-    if (fileType.includes("excel") || fileType.includes("sheet"))
+    if (fileType?.includes("excel") || fileType?.includes("sheet"))
       return <FileText className="w-4 h-4 text-green-600" />;
     return <FileText className="w-4 h-4 text-gray-500" />;
   };

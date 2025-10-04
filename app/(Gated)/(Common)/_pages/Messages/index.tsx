@@ -105,7 +105,7 @@ const MessagesPage = () => {
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     ];
 
-    if (!allowedTypes.includes(file.type)) {
+    if (!allowedTypes?.includes(file.type)) {
       toast.error("Invalid file type. Allowed: PDF, Images, Word, Excel");
       return;
     }

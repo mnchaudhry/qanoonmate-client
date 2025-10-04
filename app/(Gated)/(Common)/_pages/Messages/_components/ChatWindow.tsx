@@ -68,7 +68,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   const currentRoomState = currentRoom ? roomStates[currentRoom._id] : null;
   const onlineUsers = currentRoomState?.onlineUsers || [];
   const isOtherUserOnline = otherUser
-    ? onlineUsers.includes(otherUser._id)
+    ? onlineUsers?.includes(otherUser._id)
     : false;
   const isTyping = currentRoomState?.isTyping || false;
   const otherTypingUsers = currentRoomState?.typingUsers.filter(
