@@ -10,6 +10,7 @@ import { PaginationMeta } from '../types/api';
 interface LawyerState {
     lawyers: Lawyer[];
     selectedLawyer: Lawyer | null;
+    similarLawyers: Lawyer[];
     isLoading: boolean;
     error: string | null;
     reviews: Review[];
@@ -150,6 +151,15 @@ export const searchLawyers = createAsyncThunk<PaginatedLawyerResponse, { query: 
     }
 });
 
+export const getSimilarLawyers = createAsyncThunk<PaginatedLawyerResponse, { lawyerId: string; params?: { limit?: number } & LawyerQuery }>('lawyer/getSimilarLawyers', async ({ lawyerId, params }, { rejectWithValue }) => {
+    try {
+        const { data } = await api.getSimilarLawyers(lawyerId, params);
+        return data;
+    } catch (err: any) {
+        return rejectWithValue(err.response?.data || 'Error fetching similar lawyers');
+    }
+});
+
 // Admin helpers (replicating users module capabilities)
 export const exportLawyersCsv = createAsyncThunk<Blob, LawyerQuery | undefined>('lawyer/exportLawyersCsv', async (params, { rejectWithValue }) => {
     try {
@@ -190,6 +200,7 @@ export const getLawyerLogs = createAsyncThunk<any, string>('lawyer/getLawyerLogs
 const initialState: LawyerState = {
     lawyers: [],
     selectedLawyer: null,
+    similarLawyers: [],
     isLoading: false,
     error: null,
     reviews: [],
@@ -291,6 +302,18 @@ const lawyerSlice = createSlice({
             .addCase(searchLawyers.fulfilled, (state, action) => {
                 state.lawyers = action.payload.data || [];
                 state.meta = action.payload.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
+            })
+            .addCase(getSimilarLawyers.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getSimilarLawyers.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.similarLawyers = action.payload.data || [];
+                state.error = null;
+            })
+            .addCase(getSimilarLawyers.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
             })
             .addCase(getLawyerLogs.fulfilled, (state, action) => {
                 state.logs = action.payload?.data?.logs || [];

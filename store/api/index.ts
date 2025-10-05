@@ -15,23 +15,11 @@ import { APIClient, FormDataAPI } from "./axios";
 import { UserRole } from "@/lib/enums";
 
 ////////////////////////////////////////////////////////// AUTH ////////////////////////////////////////////////////////////
-// New separated signup endpoints
 export const clientSignup = (data: AuthAPI.ClientSignupRequest) => APIClient.post<AuthAPI.SignupResponse>("/auth/signup/client", data);
-
-// Progressive lawyer signup endpoints
-export const lawyerSignupStep1 = (data: AuthAPI.LawyerSignupStep1Request) => APIClient.post<AuthAPI.SignupResponse>("/auth/signup/lawyer/step1", data);
-export const lawyerSignupStep2 = (data: AuthAPI.LawyerSignupStep2Request) => APIClient.post<AuthAPI.SignupResponse>("/auth/signup/lawyer/step2", data);
-export const lawyerSignupStep3 = (data: AuthAPI.LawyerSignupStep3Request) => APIClient.post<AuthAPI.SignupResponse>("/auth/signup/lawyer/step3", data);
-export const lawyerSignupStep4 = (data: AuthAPI.LawyerSignupStep4Request) => APIClient.post<AuthAPI.SignupResponse>("/auth/signup/lawyer/step4", data);
-export const lawyerSignupStep5 = (data: AuthAPI.LawyerSignupStep5Request) => APIClient.post<AuthAPI.SignupResponse>("/auth/signup/lawyer/step5", data);
-export const getLawyerSignupProgress = (email: string) => APIClient.get<AuthAPI.SignupResponse>(`/auth/signup/lawyer/progress/${email}`);
-
-// Legacy signup (for backward compatibility)
-export const lawyerSignup = (data: AuthAPI.LawyerSignupRequest) => APIClient.post<AuthAPI.SignupResponse>("/auth/signup/lawyer", data);
-export const signup = (role: UserRole, data: AuthAPI.SignupRequest) => APIClient.post<AuthAPI.SignupResponse>("/auth/signup", { ...data, role });
+export const lawyerSignup = (data: AuthAPI.LawyerSignupStep1Request) => APIClient.post<AuthAPI.SignupResponse>("/auth/signup/lawyer", data);
 export const login = (role: UserRole, data: AuthAPI.LoginRequest) => APIClient.post<AuthAPI.LoginResponse>("/auth/login", { ...data, role });
 export const verifyOTP = (role: UserRole, data: AuthAPI.VerifyOtpRequest) => APIClient.post<AuthAPI.VerifyOtpResponse>("/auth/verify-otp", { ...data, role, });
-export const resendOTP = (role: UserRole, data: AuthAPI.VerifyOtpRequest) => APIClient.post<AuthAPI.VerifyOtpResponse>("/auth/verify-otp", { ...data, role, });
+export const resendOTP = (role: UserRole, data: AuthAPI.VerifyOtpRequest) => APIClient.post<AuthAPI.VerifyOtpResponse>("/auth/resend-otp", { ...data, role, });
 export const forgetPasswordRequest = (role: UserRole, data: AuthAPI.ForgetPasswordRequest) => APIClient.post<AuthAPI.ForgetPasswordResponse>("/auth/forget-request", { ...data, role, });
 export const resetPassword = (role: UserRole, data: AuthAPI.ForgetPasswordUpdateRequest) => APIClient.post<AuthAPI.ForgetPasswordUpdateResponse>("/auth/reset-password", { ...data, role, });
 export const logout = () => APIClient.post<AuthAPI.LogoutResponse>(`/auth/logout`);
@@ -95,6 +83,7 @@ export const updateLawyerStatus = (id: string, isActive: boolean) => APIClient.p
 export const deleteLawyer = (id: string) => APIClient.delete<LawyerAPI.LawyerDeleteResponse>(`/lawyer/admin/lawyers/${id}`);
 export const submitReview = (id: string, data: { rating: number; comment?: string; context?: string }) => APIClient.post<LawyerAPI.SubmitReviewResponse>(`/lawyer/id/${id}/review`, data);
 export const searchLawyers = (params: { query: string } & LawyerAPI.LawyerQuery) => APIClient.get<LawyerAPI.PaginatedLawyerResponse>(`/lawyer/search`, { params, });
+export const getSimilarLawyers = (lawyerId: string, params?: { limit?: number } & LawyerAPI.LawyerQuery) => APIClient.get<LawyerAPI.PaginatedLawyerResponse>(`/lawyer/id/${lawyerId}/similar`, { params });
 export const exportLawyersCsv = (params?: LawyerAPI.LawyerQuery) => APIClient.get(`/lawyer/export/csv`, { params, responseType: 'blob' });
 export const bulkUploadLawyers = (file: File) => { const formData = new FormData(); formData.append('file', file); return FormDataAPI.post(`/lawyer/admin/lawyers/bulk-upload`, formData); };
 export const resetLawyerPassword = (id: string, password?: string) => APIClient.post(`/lawyer/admin/lawyers/${id}/reset-password`, password ? { password } : {});
