@@ -8,6 +8,7 @@ import { resetPassword } from '@/store/reducers/authSlice';
 import { AppDispatch } from '@/store/store';
 import { UserRole } from '@/lib/enums';
 import localStorageManager from '@/utils/localStorage';
+import AuthFlowGuard from '@/components/auth/AuthFlowGuard';
 
 
 const NewPassword: React.FC = () => {
@@ -58,61 +59,63 @@ const NewPassword: React.FC = () => {
   };
 
   return (
-    <div className="w-full border-stroke xl:border-l-2 lg:pl-12 py-20 ">
+    <AuthFlowGuard requireAuthFlow={true} allowedRoles={[UserRole.CLIENT, UserRole.LAWYER]}>
+      <div className="w-full border-stroke xl:border-l-2 lg:pl-12 py-20 ">
 
-      <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
+        <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
 
-        <h2 className="mb-3 text-2xl font-bold text-foreground sm:text-title-xl2">
-          New Password
-        </h2>
+          <h2 className="mb-3 text-2xl font-bold text-foreground sm:text-title-xl2">
+            New Password
+          </h2>
 
-        <p className="mb-9">
-          Enter your email address to receive a password reset link.
-        </p>
+          <p className="mb-9">
+            Enter your email address to receive a password reset link.
+          </p>
 
-        <form onSubmit={onSubmit} >
-          <div className="mb-6">
-            <label className="mb-2.5 block font-medium text-foreground">
-              New Password
-            </label>
-            <div className="relative">
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Enter your password"
+          <form onSubmit={onSubmit} >
+            <div className="mb-6">
+              <label className="mb-2.5 block font-medium text-foreground">
+                New Password
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                    className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none"
+                />
+              </div>
+            </div>
+
+            <div className="mb-6">
+              <label className="mb-2.5 block font-medium text-foreground">
+                Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm password"
                   className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none"
-              />
+                />
+              </div>
             </div>
-          </div>
 
-          <div className="mb-6">
-            <label className="mb-2.5 block font-medium text-foreground">
-              Confirm Password
-            </label>
-            <div className="relative">
+            <div>
               <input
-                type="password"
-                value={confirmPassword}
-                onChange={e => setConfirmPassword(e.target.value)}
-                placeholder="Confirm password"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none"
+                type="submit"
+                disabled={loading}
+                value={loading ? "Updating..." : "Update Password"}
+                className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-neutral transition hover:bg-opacity-90"
               />
             </div>
-          </div>
 
-          <div>
-            <input
-              type="submit"
-              disabled={loading}
-              value={loading ? "Updating..." : "Update Password"}
-              className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-neutral transition hover:bg-opacity-90"
-            />
-          </div>
-
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </AuthFlowGuard>
   );
 };
 

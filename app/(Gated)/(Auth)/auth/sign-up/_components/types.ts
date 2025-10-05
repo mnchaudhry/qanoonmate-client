@@ -3,6 +3,50 @@ export const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
 export const licenseRegex = /^[A-Z0-9-]{3,15}$/;
 export const phoneRegex = /^(\+92|0)?[0-9]{10}$/;
 
+// Structured interfaces for better data management
+export interface EducationEntry {
+  id: string;
+  degree: string;
+  institution: string;
+  fieldOfStudy: string;
+  startDate: string;
+  endDate: string;
+  isCurrentlyStudying: boolean;
+  gpa?: string;
+  description?: string;
+}
+
+export interface ExperienceEntry {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  isCurrentlyWorking: boolean;
+  description: string;
+  type: 'legal' | 'non-legal';
+}
+
+export interface CertificationEntry {
+  id: string;
+  name: string;
+  issuingOrganization: string;
+  issueDate: string;
+  expiryDate?: string;
+  credentialId?: string;
+  credentialUrl?: string;
+  isExpired: boolean;
+}
+
+export interface DocumentUpload {
+  id: string;
+  file: File | null;
+  preview: string | null;
+  uploaded: boolean;
+  documentId?: string;
+}
+
 // Types
 export interface ClientFormData {
   firstname: string;
@@ -13,7 +57,7 @@ export interface ClientFormData {
 }
 
 export interface LawyerFormData {
-  // Step 1
+  // Basic Information (simplified signup)
   firstname: string;
   lastname: string;
   fullName: string;
@@ -21,15 +65,14 @@ export interface LawyerFormData {
   phone: string;
   password: string;
   cnic: string;
-  // Step 2
   licenseNumber: string;
   barCouncil: string;
   barAssociation: string;
   barCouncilEnrollmentDate: string;
-  // Step 3
-  primarySpecialization: string;
-  specializations: string[];
-  jurisdictions: Array<{
+  // These will be added later in profile completion
+  primarySpecialization?: string;
+  specializations?: string[];
+  jurisdictions?: Array<{
     geography: {
       province: string;
       district?: string;
@@ -37,17 +80,16 @@ export interface LawyerFormData {
     };
     courts: string[];
   }>;
-  // Step 4
-  preLicensedYearsOfExperience: number;
-  education: string[];
-  certifications: string[];
-  // Step 5
-  documents: {
-    cnicFront: File[];
-    cnicBack: File[];
-    barCardFront: File[];
-    barCardBack: File[];
-    selfie: File[];
+  preLicensedYearsOfExperience?: number;
+  education?: EducationEntry[];
+  experience?: ExperienceEntry[];
+  certifications?: CertificationEntry[];
+  documents?: {
+    cnicFront: DocumentUpload[];
+    cnicBack: DocumentUpload[];
+    barCardFront: DocumentUpload[];
+    barCardBack: DocumentUpload[];
+    selfie: DocumentUpload[];
   };
 }
 

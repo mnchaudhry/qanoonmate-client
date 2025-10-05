@@ -3,7 +3,7 @@ import * as api from '../api';
 import toast from 'react-hot-toast';
 import { fetchAndSetCSRFToken } from '../api/axios';
 import { UserRole } from '@/lib/enums';
-import { ChangePasswordRequest, ForgetPasswordRequest, ForgetPasswordUpdateRequest, LoginRequest, SignupRequest, ClientSignupRequest, LawyerSignupRequest, LawyerSignupStep1Request, LawyerSignupStep2Request, LawyerSignupStep3Request, LawyerSignupStep4Request, LawyerSignupStep5Request, UpdateProfileRequest, VerifyOtpRequest } from '../types/auth.types';
+import { ChangePasswordRequest, ForgetPasswordRequest, ForgetPasswordUpdateRequest, LoginRequest, SignupRequest, ClientSignupRequest, LawyerSignupRequest, LawyerSignupStep1Request, UpdateProfileRequest, VerifyOtpRequest } from '../types/auth.types';
 import { Client } from '../types/client.types';
 import { Lawyer } from '../types/lawyer.types';
 import { User } from '../types/user.types';
@@ -52,114 +52,7 @@ export const clientSignup = createAsyncThunk('auth/clientSignup', async (input: 
 });
 
 // Progressive Lawyer Signup Steps
-export const lawyerSignupStep1 = createAsyncThunk('auth/lawyerSignupStep1', async (input: LawyerSignupStep1Request, { rejectWithValue }) => {
-  try {
-    const { data } = await api.lawyerSignupStep1(input);
-    if (data.success) {
-      toast.success(data.message);
-      return data.data;
-    }
-    else {
-      toast.error(data.message)
-      return rejectWithValue(data.message);
-    }
-  } catch (err: any) {
-    const message = getErrorMessage(err, 'Step 1 failed');
-    toast.error(message);
-    return rejectWithValue(message);
-  }
-});
-
-export const lawyerSignupStep2 = createAsyncThunk('auth/lawyerSignupStep2', async (input: LawyerSignupStep2Request, { rejectWithValue }) => {
-  try {
-    const { data } = await api.lawyerSignupStep2(input);
-    if (data.success) {
-      toast.success(data.message);
-      return data.data;
-    }
-    else {
-      toast.error(data.message)
-      return rejectWithValue(data.message);
-    }
-  } catch (err: any) {
-    const message = getErrorMessage(err, 'Step 2 failed');
-    toast.error(message);
-    return rejectWithValue(message);
-  }
-});
-
-export const lawyerSignupStep3 = createAsyncThunk('auth/lawyerSignupStep3', async (input: LawyerSignupStep3Request, { rejectWithValue }) => {
-  try {
-    const { data } = await api.lawyerSignupStep3(input);
-    if (data.success) {
-      toast.success(data.message);
-      return data.data;
-    }
-    else {
-      toast.error(data.message)
-      return rejectWithValue(data.message);
-    }
-  } catch (err: any) {
-    const message = getErrorMessage(err, 'Step 3 failed');
-    toast.error(message);
-    return rejectWithValue(message);
-  }
-});
-
-export const lawyerSignupStep4 = createAsyncThunk('auth/lawyerSignupStep4', async (input: LawyerSignupStep4Request, { rejectWithValue }) => {
-  try {
-    const { data } = await api.lawyerSignupStep4(input);
-    if (data.success) {
-      toast.success(data.message);
-      return data.data;
-    }
-    else {
-      toast.error(data.message)
-      return rejectWithValue(data.message);
-    }
-  } catch (err: any) {
-    const message = getErrorMessage(err, 'Step 4 failed');
-    toast.error(message);
-    return rejectWithValue(message);
-  }
-});
-
-export const lawyerSignupStep5 = createAsyncThunk('auth/lawyerSignupStep5', async (input: LawyerSignupStep5Request, { rejectWithValue }) => {
-  try {
-    const { data } = await api.lawyerSignupStep5(input);
-    localStorageManager.setItem('OTP_EMAIL', JSON.stringify(input.email))
-    if (data.success) {
-      toast.success(data.message);
-      return data.data;
-    }
-    else {
-      toast.error(data.message)
-      return rejectWithValue(data.message);
-    }
-  } catch (err: any) {
-    const message = getErrorMessage(err, 'Step 5 failed');
-    toast.error(message);
-    return rejectWithValue(message);
-  }
-});
-
-export const getLawyerSignupProgress = createAsyncThunk('auth/getLawyerSignupProgress', async (email: string, { rejectWithValue }) => {
-  try {
-    const { data } = await api.getLawyerSignupProgress(email);
-    if (data.success) {
-      return data.data;
-    }
-    else {
-      return rejectWithValue(data.message);
-    }
-  } catch (err: any) {
-    const message = getErrorMessage(err, 'Failed to get signup progress');
-    return rejectWithValue(message);
-  }
-});
-
-// Legacy lawyer signup (for backward compatibility)
-export const lawyerSignup = createAsyncThunk('auth/lawyerSignup', async (input: LawyerSignupRequest, { rejectWithValue }) => {
+export const lawyerSignupStep = createAsyncThunk('auth/lawyerSignupStep1', async (input: LawyerSignupStep1Request, { rejectWithValue }) => {
   try {
     const { data } = await api.lawyerSignup(input);
     localStorageManager.setItem('OTP_EMAIL', JSON.stringify(input.email))
@@ -172,27 +65,7 @@ export const lawyerSignup = createAsyncThunk('auth/lawyerSignup', async (input: 
       return rejectWithValue(data.message);
     }
   } catch (err: any) {
-    const message = getErrorMessage(err, 'Lawyer signup failed');
-    toast.error(message);
-    return rejectWithValue(message);
-  }
-});
-
-// Legacy signup (for backward compatibility)
-export const signup = createAsyncThunk('auth/signup', async ({ role, data: input }: { role: UserRole, data: SignupRequest }, { rejectWithValue }) => {
-  try {
-    const { data } = await api.signup(role, input);
-    localStorageManager.setItem('OTP_EMAIL', JSON.stringify(input.email))
-    if (data.success) {
-      toast.success(data.message);
-      return data.data;
-    }
-    else {
-      toast.error(data.message)
-      return rejectWithValue(data.message);
-    }
-  } catch (err: any) {
-    const message = getErrorMessage(err, 'Signup failed');
+    const message = getErrorMessage(err, 'Step 1 failed');
     toast.error(message);
     return rejectWithValue(message);
   }
@@ -474,85 +347,13 @@ const authSlice = createSlice({
       })
 
       // Progressive Lawyer Signup Steps
-      .addCase(lawyerSignupStep1.pending, (state) => {
+      .addCase(lawyerSignupStep.pending, (state) => {
         state.error = null;
       })
-      .addCase(lawyerSignupStep1.fulfilled, (state, action) => {
+      .addCase(lawyerSignupStep.fulfilled, (state, action) => {
         // Step 1 completed - lawyer created/updated
       })
-      .addCase(lawyerSignupStep1.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-
-      .addCase(lawyerSignupStep2.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(lawyerSignupStep2.fulfilled, (state, action) => {
-        // Step 2 completed
-      })
-      .addCase(lawyerSignupStep2.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-
-      .addCase(lawyerSignupStep3.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(lawyerSignupStep3.fulfilled, (state, action) => {
-        // Step 3 completed
-      })
-      .addCase(lawyerSignupStep3.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-
-      .addCase(lawyerSignupStep4.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(lawyerSignupStep4.fulfilled, (state, action) => {
-        // Step 4 completed
-      })
-      .addCase(lawyerSignupStep4.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-
-      .addCase(lawyerSignupStep5.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(lawyerSignupStep5.fulfilled, (state, action) => {
-        // Step 5 completed - OTP sent
-      })
-      .addCase(lawyerSignupStep5.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-
-      .addCase(getLawyerSignupProgress.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(getLawyerSignupProgress.fulfilled, (state, action) => {
-        // Progress retrieved
-      })
-      .addCase(getLawyerSignupProgress.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-
-      // Legacy Lawyer Signup
-      .addCase(lawyerSignup.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(lawyerSignup.fulfilled, (state, action) => {
-        // Lawyer signup success - user will be verified via OTP
-      })
-      .addCase(lawyerSignup.rejected, (state, action) => {
-        state.error = action.payload as string;
-      })
-
-      // Legacy Signup
-      .addCase(signup.pending, (state) => {
-        state.error = null;
-      })
-      .addCase(signup.fulfilled, (state, action) => {
-
-      })
-      .addCase(signup.rejected, (state, action) => {
+      .addCase(lawyerSignupStep.rejected, (state, action) => {
         state.error = action.payload as string;
       })
 

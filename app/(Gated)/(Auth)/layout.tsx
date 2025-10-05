@@ -10,12 +10,12 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen relative ">
 
-            <Link href='/' className="absolute top-4 left-4" >
+            <Link href='/' className="fixed top-4 left-4" >
                 <Button variant='ghost'><Home /> Back to home</Button>
             </Link>
 
             {/* Left Side - QanoonMate Info */}
-            <div className="hidden lg:flex flex-col items-center justify-center bg-gradient-to-r text-neutral px-10">
+            <div className="hidden h-screen sticky top-0 lg:flex flex-col items-center justify-center bg-gradient-to-r text-neutral px-6">
 
                 <div className="flex flex-col justify-center items-center gap-4 w-full max-w-md ">
                     <Logo />
@@ -26,12 +26,12 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
                 </div>
 
                 {/* Image Section */}
-                <div className="mt-12">
+                <div className="mt-8">
                     <Image
                         src={AuthImage}
                         alt="QanoonMate Illustration"
-                        width={400}
-                        height={600}
+                        width={300}
+                        height={450}
                         className=""
                     />
                 </div>

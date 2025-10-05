@@ -11,6 +11,7 @@ import { AppDispatch } from '@/store/store';
 import { verifyOTP } from '@/store/reducers/authSlice';
 import { forgetPasswordRequest } from '@/store/reducers/authSlice';
 import localStorageManager from '@/utils/localStorage';
+import AuthFlowGuard from '@/components/auth/AuthFlowGuard';
 
 
 const VerifyOTP: React.FC = () => {
@@ -46,7 +47,7 @@ const VerifyOTP: React.FC = () => {
         if (meta.requestStatus === 'fulfilled') {
 
           if (OTPType == OtpVerificationType.SIGNUP) {
-            router.push(`/`)
+            router.push(`/lawyer/dashboard`)
             localStorageManager.removeItem('OTP_EMAIL')
           }
           else {
@@ -91,13 +92,14 @@ const VerifyOTP: React.FC = () => {
   }
 
   return (
-    <div className="w-full border-stroke xl:border-l-2 lg:pl-12 py-20 ">
+    <AuthFlowGuard requireAuthFlow={true} allowedRoles={[UserRole.CLIENT, UserRole.LAWYER]}>
+      <div className="w-full border-stroke xl:border-l-2 lg:pl-12 py-20 ">
 
-      <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
+        <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
 
-        <h2 className="mb-3 text-2xl font-bold text-foreground sm:text-title-xl2">
-          Verify Your Account to {OTPType === OtpVerificationType.SIGNUP ? "Complete Signup" : "Reset Password"}
-        </h2>
+          <h2 className="mb-3 text-2xl font-bold text-foreground sm:text-title-xl2">
+            Verify Your Account to {OTPType === OtpVerificationType.SIGNUP ? "Complete Signup" : "Reset Password"}
+          </h2>
 
         <p className="mb-9">
           Enter the 6 digit code sent to the registered email id.
@@ -147,9 +149,10 @@ const VerifyOTP: React.FC = () => {
           </div>
 
         </form>
-      </div>
+        </div>
 
-    </div>
+      </div>
+    </AuthFlowGuard>
   );
 };
 
