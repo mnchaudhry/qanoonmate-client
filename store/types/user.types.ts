@@ -3,6 +3,7 @@ import { APIResponse, PaginationMeta } from "./api";
 import { Review } from "./review.types";
 
 export interface User {
+    _id: string;
     firstname: string;
     lastname: string;
     username: string;

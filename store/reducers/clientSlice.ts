@@ -1,13 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import {
-  ClientResponse,
-  ClientProfileUpdateRequest,
-  ClientListResponse,
-  ClientFilter,
-  ClientQuery
-} from '../types/client.types';
+import { ClientResponse, ClientProfileUpdateRequest, ClientListResponse, ClientFilter, ClientQuery } from '../types/client.types';
 
 interface ClientState {
   clients: ClientResponse[];

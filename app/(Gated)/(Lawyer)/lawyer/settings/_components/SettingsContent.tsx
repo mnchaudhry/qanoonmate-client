@@ -49,7 +49,7 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
           phone: lawyer.phone || '',
           profilePicture: lawyer.profilePicture || '',
           gender: lawyer.gender,
-          dob: lawyer.dob || '',
+          dob: String(lawyer.dob) || '',
           cnic: lawyer.cnic || '',
           location: {
             city: lawyer.location?.city || PakistanCities.LAHORE,

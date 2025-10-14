@@ -97,14 +97,14 @@ const UserDetailsModal: React.FC<UserDetailsModalProps> = ({ isOpen, onClose }) 
             <Calendar className="w-5 h-5 text-muted-foreground" />
             <div>
               <p className="text-sm text-muted-foreground">Joined</p>
-              <p className="text-foreground">{displayJoined}</p>
+              <p className="text-foreground">{String(displayJoined || '')}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <Eye className="w-5 h-5 text-muted-foreground" />
             <div>
               <p className="text-sm text-muted-foreground">Last Login</p>
-              <p className="text-foreground">{displayLastLogin}</p>
+              <p className="text-foreground">{String(displayLastLogin || '')}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">

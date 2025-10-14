@@ -102,7 +102,7 @@ export const fetchTransactionHistory = createAsyncThunk(
     dateFrom?: string;
     dateTo?: string;
   },
-   { rejectWithValue }) => {
+    { rejectWithValue }) => {
     try {
       const history = await creditsAPI.getTransactionHistory(params);
       return history;
@@ -128,7 +128,7 @@ export const deductQC = createAsyncThunk(
   'credits/deductQC',
   async (data: QCDeductionRequest, { rejectWithValue }) => {
     try {
-      const result = await creditsAPI.deductQC(data); 
+      const result = await creditsAPI.deductQC(data);
       return result;
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Failed to deduct QC');
@@ -356,7 +356,7 @@ const creditsSlice = createSlice({
         state.loading.purchase = true;
         state.error = null;
       })
-      .addCase(purchaseQC.fulfilled, (state, action) => {
+      .addCase(purchaseQC.fulfilled, (state) => {
         state.loading.purchase = false;
         // Balance will be updated when payment is completed
       })
@@ -388,7 +388,7 @@ const creditsSlice = createSlice({
         state.loading.refund = true;
         state.error = null;
       })
-      .addCase(refundQC.fulfilled, (state, action) => {
+      .addCase(refundQC.fulfilled, (state) => {
         state.loading.refund = false;
         // Balance will be updated by fetching balance again
       })

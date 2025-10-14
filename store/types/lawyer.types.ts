@@ -1,6 +1,6 @@
 import { User } from './user.types';
 import { APIResponse } from './api';
-import { BarCouncils, Courts, PakistanProvinces } from '@/lib/enums';
+import { BarCouncils, PakistanProvinces } from '@/lib/enums';
 import { LawyerSettings } from './lawyerSettings.types';
 import { LawCategory } from '@/lib/enums';
 import { Client } from './client.types';
@@ -22,6 +22,7 @@ export interface LawyerQuery {
 }
 
 export interface Lawyer extends User {
+  _id: string;
   fullName: string;  // must match CNIC + bar card
   title?: string;
   summary?: string;
@@ -49,8 +50,6 @@ export interface Lawyer extends User {
     testimonialsEnabled: boolean;
   };
   settings?: LawyerSettings | null;
-  createdAt: string;
-  updatedAt: string;
 
 }
 

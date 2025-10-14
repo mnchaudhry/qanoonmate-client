@@ -74,6 +74,7 @@ const blogSlice = createSlice({
     addReply(state, action: PayloadAction<{ blogId: string; commentId: string; reply: BlogComment }>) {
       const blog = state.blogs.find(b => b._id === action.payload.blogId)
       const findAndReply = (comments: BlogComment[]) => {
+        console.log('comments', comments)
         return false
       }
       if (blog) findAndReply(blog.comments)

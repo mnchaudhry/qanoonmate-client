@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import { AddNoteRequest, AddNoteResponse, APIResponse, BookConsultationResponse, CancelConsultationRequest, CancelConsultationResponse, Consultation, ConsultationLifecycleRequest, ConsultationLifecycleResponse, ConsultationStats, GetConsultationByIdResponse, GetConsultationStatsResponse, GetMyConsultationsResponse, RateConsultationRequest, RateConsultationResponse, RescheduleConsultationRequest, RescheduleConsultationResponse, RescheduleRequestActionRequest, RescheduleRequestActionResponse, SubmitFeedbackRequest, SubmitFeedbackResponse, UpdateConsultationRequest, UpdateConsultationResponse, UploadConsultationDocumentRequest, UploadConsultationDocumentResponse } from '@/store/types/api';
+import { AddNoteRequest, AddNoteResponse, APIResponse, CancelConsultationRequest, CancelConsultationResponse, Consultation, ConsultationLifecycleRequest, ConsultationLifecycleResponse, ConsultationStats, GetConsultationByIdResponse, GetConsultationStatsResponse, GetMyConsultationsResponse, RateConsultationRequest, RateConsultationResponse, RescheduleConsultationRequest, RescheduleConsultationResponse, RescheduleRequestActionRequest, RescheduleRequestActionResponse, SubmitFeedbackRequest, SubmitFeedbackResponse, UpdateConsultationRequest, UpdateConsultationResponse, UploadConsultationDocumentRequest, UploadConsultationDocumentResponse } from '@/store/types/api';
 import { getErrorMessage } from '@/lib/utils';
 import { BookConsultationRequest, GetConsultationStatsRequest, GetConsultationsRequest, GetConsultationsResponse } from '../types/api';
 interface ConsultationState {
@@ -17,7 +17,8 @@ interface ConsultationState {
 }
 
 
-export const bookConsultation = createAsyncThunk<BookConsultationResponse, BookConsultationRequest, { rejectValue: string }>('consultation/createConsultation', async (formData, { rejectWithValue }) => {
+
+export const bookConsultation = createAsyncThunk<any, BookConsultationRequest>('consultation/createConsultation', async (formData, { rejectWithValue }) => {
     try {
         const { data } = await api.bookConsultation(formData)
         if (data?.success) {
@@ -451,9 +452,11 @@ const consultationSlice = createSlice({
             .addCase(getAllConsultations.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.consultations = action.payload.data || [];
-                state.totalCount = action.payload.meta?.totalCount || 0;
-                state.currentPage = action.payload.meta?.currentPage || 1;
-                state.totalPages = action.payload.meta?.totalCount! / action.payload.meta?.limit!;
+                if (action.payload.meta) {
+                    state.totalCount = action.payload.meta?.totalCount || 0;
+                    state.currentPage = action.payload.meta?.currentPage || 1;
+                    state.totalPages = action.payload.meta?.totalCount / action.payload.meta?.limit;
+                }
             })
             .addCase(getAllConsultations.rejected, (state, action) => {
                 state.isLoading = false;
@@ -468,9 +471,11 @@ const consultationSlice = createSlice({
             .addCase(getMyConsultations.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.consultations = action.payload.data || [];
-                state.totalCount = action.payload.meta?.totalCount || 0;
-                state.currentPage = action.payload.meta?.currentPage || 1;
-                state.totalPages = action.payload.meta?.totalCount! / action.payload.meta?.limit!;
+                if (action.payload.meta) {
+                    state.totalCount = action.payload.meta?.totalCount || 0;
+                    state.currentPage = action.payload.meta?.currentPage || 1;
+                    state.totalPages = action.payload.meta?.totalCount / action.payload.meta?.limit;
+                }
             })
             .addCase(getMyConsultations.rejected, (state, action) => {
                 state.isLoading = false;
@@ -596,9 +601,11 @@ const consultationSlice = createSlice({
             .addCase(getConsultations.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.consultations = action.payload.data || [];
-                state.totalCount = action.payload.meta?.totalCount || 0;
-                state.currentPage = action.payload.meta?.currentPage || 1;
-                state.totalPages = action.payload.meta?.totalCount! / action.payload.meta?.limit!;
+                if (action.payload.meta) {
+                    state.totalCount = action.payload.meta?.totalCount || 0;
+                    state.currentPage = action.payload.meta?.currentPage || 1;
+                    state.totalPages = action.payload.meta?.totalCount / action.payload.meta?.limit;
+                }
                 state.error = null;
             })
             .addCase(getConsultations.rejected, (state, action) => {

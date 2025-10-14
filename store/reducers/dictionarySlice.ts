@@ -132,7 +132,7 @@ const dictionarySlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            // @ts-ignore
+            // @ts-expect-error 123
             .addCase(fetchDictionaryTermByName.fulfilled, (state, action: PayloadAction<DictionaryTerm>) => {
                 state.loading = false;
                 state.term = action.payload;
@@ -161,7 +161,7 @@ const dictionarySlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            // @ts-ignore
+            // @ts-expect-error 123
             .addCase(fetchAdminDictionaryTermById.fulfilled, (state, action: PayloadAction<DictionaryTerm>) => {
                 state.loading = false;
                 state.term = action.payload;
@@ -175,7 +175,7 @@ const dictionarySlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            // @ts-ignore
+            // @ts-expect-error 123
             .addCase(createAdminDictionaryTerm.fulfilled, (state, action: PayloadAction<DictionaryTerm>) => {
                 state.loading = false;
                 state.terms.unshift(action.payload);
@@ -189,7 +189,7 @@ const dictionarySlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            // @ts-ignore
+            // @ts-expect-error 123
             .addCase(updateAdminDictionaryTerm.fulfilled, (state, action: PayloadAction<DictionaryTerm>) => {
                 state.loading = false;
                 state.terms = state.terms.map((t) => (t._id === action.payload._id ? action.payload : t));
@@ -204,7 +204,7 @@ const dictionarySlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            // @ts-ignore
+            // @ts-expect-error 123
             .addCase(verifyAdminDictionaryTerm.fulfilled, (state, action: PayloadAction<DictionaryTerm>) => {
                 state.loading = false;
                 state.terms = state.terms.map((t) => (t._id === action.payload._id ? action.payload : t));

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import { LawyerSettings, UpdateLawyerSettingsRequest, UpdateConsultationSettingsRequest, UpdateAvailabilityRequest, UpdateNotificationPreferencesRequest, UpdateSecurityPreferencesRequest, UpdateBillingRequest, GetLawyerSettingsResponse, UpdateLawyerSettingsResponse, UpdateConsultationSettingsResponse, UpdateAvailabilityResponse, UpdateNotificationPreferencesResponse, UpdateSecurityPreferencesResponse, UpdateBillingResponse, DeleteLawyerSettingsResponse, } from '../types/lawyerSettings.types';
+import { LawyerSettings, UpdateLawyerSettingsRequest, UpdateConsultationSettingsRequest, UpdateAvailabilityRequest, UpdateNotificationPreferencesRequest, UpdateSecurityPreferencesRequest, UpdateBillingRequest, UpdateLawyerSettingsResponse, UpdateConsultationSettingsResponse, UpdateAvailabilityResponse, UpdateNotificationPreferencesResponse, UpdateSecurityPreferencesResponse, UpdateBillingResponse, DeleteLawyerSettingsResponse, } from '../types/lawyerSettings.types';
 
 interface LawyerSettingsState {
   selectedSettings: LawyerSettings | null;

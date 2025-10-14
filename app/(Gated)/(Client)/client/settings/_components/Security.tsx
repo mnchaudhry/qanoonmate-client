@@ -20,13 +20,13 @@ const Security = () => {
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
   const handleToggle2FA = () => {
     setLoading(true)
-    dispatch(updateClientSecurity({ 
-      twoFactorEnabled: !selectedSettings?.security?.twoFactorEnabled 
+    dispatch(updateClientSecurity({
+      twoFactorEnabled: !selectedSettings?.security?.twoFactorEnabled
     }))
       .finally(() => setLoading(false))
   }
 
-  const formatDate = (dateString?: string) => {
+  const formatDate = (dateString?: Date | string | null) => {
     if (!dateString) return 'Never'
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -57,8 +57,8 @@ const Security = () => {
                 }
               </p>
             </div>
-            <Switch 
-              checked={selectedSettings?.security?.twoFactorEnabled} 
+            <Switch
+              checked={selectedSettings?.security?.twoFactorEnabled}
               onCheckedChange={handleToggle2FA}
               disabled={loading}
             />
@@ -104,7 +104,7 @@ const Security = () => {
                 <span className="text-sm font-medium">Last Login</span>
               </div>
               <p className="text-sm text-slate-600">
-                {formatDate(user?.lastLogin)}
+                {formatDate(user?.lastLogin || null)}
               </p>
             </div>
           </div>

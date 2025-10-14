@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { Lawyer } from '@/store/types/lawyer.types';
-import { LawCategory, LawyerLanguage, Courts, Gender, BarCouncils } from '@/lib/enums';
+import { LawCategory, LawyerLanguage, Courts, Gender, BarCouncils, UserLanguagePreference } from '@/lib/enums';
 import { Upload, User, Loader2 } from 'lucide-react';
 import { enumToLabel } from '@/lib/utils';
 import TagInput from '@/components/ui/tag-input';
@@ -153,7 +153,8 @@ const LawyerProfile = () => {
     const addSecondary = (area: LawCategory) => setForm(f => ({ ...f, specializations: f.specializations.includes(area) ? f.specializations : [...f.specializations, area] }));
     const removeSecondary = (area: LawCategory) => setForm(f => ({ ...f, specializations: f.specializations.filter(a => a !== area) }));
     const toggleJurisdiction = (j: any) => setForm(f => ({ ...f, jurisdictions: f.jurisdictions.includes(j) ? f.jurisdictions.filter(x => x !== j) : [...f.jurisdictions, j] }));
-    const toggleLanguage = (l: string) => setForm(f => ({ ...f, languages: f.languages.includes(l) ? f.languages.filter(x => x !== l) : [...f.languages, l] }));
+    const toggleLanguage = (l: UserLanguagePreference) =>
+        setForm(f => ({ ...f, languages: f.languages.includes(l) ? f.languages.filter(x => x !== l) : [...f.languages, l] }));
     // const addTag = (tags: string[]) => { if (tags.length > 0) setForm(f => ({ ...f, tags: [...f.tags, ...tags] })); };
     // const toggleSubdomain = (area: string, sub: string) => setForm(f => ({ ...f, subdomains: { ...f.subdomains, [area]: f.subdomains[area]?.includes(sub) ? f.subdomains[area].filter((s: string) => s !== sub) : [...(f.subdomains[area] || []), sub] } }));
     const handlePicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -169,8 +170,9 @@ const LawyerProfile = () => {
         const payload: Partial<Lawyer> = {
             ...form,
             primarySpecialization: form.primarySpecialization as LawCategory,
-            location: { city: form.city, province: form.province },
+            location: { city: form.city!, province: form.province! },
             profilePicture: form.profilePicture,
+            dob: form.dob ? new Date(form.dob) : null,
             licenseValidity: form.licenseValidity ? new Date(form.licenseValidity) : null,
             education: form.education ? (Array.isArray(form.education) ? form.education : [form.education]) : undefined,
             barCouncilEnrollmentDate: form.barCouncilEnrollmentDate
@@ -267,7 +269,7 @@ const LawyerProfile = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="dob">Date of Birth</Label>
-                                <Input id="dob" type="date" value={form.dob} max={new Date().toISOString().split('T')[0]} onChange={e => setField('dob', e.target.value)} />
+                                <Input id="dob" type="date" value={String(form.dob)} max={new Date().toISOString().split('T')[0]} onChange={e => setField('dob', e.target.value)} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="cnic">CNIC / National ID</Label>
@@ -411,8 +413,8 @@ const LawyerProfile = () => {
                                 <Button
                                     key={l}
                                     size="sm"
-                                    variant={form.languages.includes(l) ? 'default' : 'outline'}
-                                    onClick={() => toggleLanguage(l)}
+                                    variant={form.languages.includes(l as any) ? 'default' : 'outline'}
+                                    onClick={() => toggleLanguage(l as any)}
                                 >
                                     {enumToLabel(l)}
                                 </Button>

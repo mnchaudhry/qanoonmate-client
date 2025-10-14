@@ -1,33 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import type {
-    Document,
-    CreateDocumentRequest,
-    CreateDocumentResponse,
-    GetDocumentsRequest,
-    GetDocumentsResponse,
-    UpdateDocumentRequest,
-    UpdateDocumentResponse,
-    DeleteDocumentResponse,
-    BatchDeleteRequest,
-    BatchDeleteResponse,
-    ShareDocumentRequest,
-    ShareDocumentResponse,
-    LinkToConsultationRequest,
-    LinkDocumentResponse,
-    ExtractMetadataRequest,
-    ExtractMetadataResponse,
-    ScanVirusRequest,
-    ScanVirusResponse,
-    PaginationMeta,
-    Directory,
-    DirectoryCreateInput,
-    DirectoryResponse,
-    DirectoryListResponse,
-    DirectoryUpdateInput,
-    DirectoryDeleteResponse
-} from '../types/api';
+import type { Document, CreateDocumentRequest, CreateDocumentResponse, GetDocumentsRequest, GetDocumentsResponse, UpdateDocumentResponse, DeleteDocumentResponse, BatchDeleteRequest, BatchDeleteResponse, ShareDocumentRequest, ShareDocumentResponse, LinkToConsultationRequest, LinkDocumentResponse, ExtractMetadataRequest, ExtractMetadataResponse, ScanVirusRequest, ScanVirusResponse, PaginationMeta, Directory, DirectoryCreateInput, DirectoryResponse, DirectoryListResponse, DirectoryUpdateInput, DirectoryDeleteResponse } from '../types/api';
 
 interface DocumentState {
     documents: Document[];

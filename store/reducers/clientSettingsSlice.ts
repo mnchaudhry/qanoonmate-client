@@ -1,17 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import {
-  ClientSettings,
-  UpdateClientSettingsRequest,
-  UpdateClientSecurityRequest,
-  UpdateClientNotificationsRequest,
-  GetClientSettingsResponse,
-  UpdateClientSettingsResponse,
-  UpdateClientSecurityResponse,
-  UpdateClientNotificationsResponse,
-  DeleteClientSettingsResponse,
-} from '../types/clientSettings.types';
+import { ClientSettings, UpdateClientSettingsRequest, UpdateClientSecurityRequest, UpdateClientNotificationsRequest, GetClientSettingsResponse, UpdateClientSettingsResponse, UpdateClientSecurityResponse, UpdateClientNotificationsResponse, DeleteClientSettingsResponse, } from '../types/clientSettings.types';
 
 interface ClientSettingsState {
   selectedSettings: ClientSettings | null;

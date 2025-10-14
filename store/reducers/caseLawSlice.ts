@@ -112,7 +112,7 @@ const caseLawSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(createCaseLawThunk.fulfilled, (state, action) => {
+            .addCase(createCaseLawThunk.fulfilled, (state) => {
                 state.loading = false;
             })
             .addCase(createCaseLawThunk.rejected, (state, action) => {
@@ -124,7 +124,7 @@ const caseLawSlice = createSlice({
                 state.loading = true;
                 state.error = null;
             })
-            .addCase(updateCaseLawThunk.fulfilled, (state, action) => {
+            .addCase(updateCaseLawThunk.fulfilled, (state) => {
                 state.loading = false;
             })
             .addCase(updateCaseLawThunk.rejected, (state, action) => {

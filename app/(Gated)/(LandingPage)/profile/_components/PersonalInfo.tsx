@@ -48,7 +48,7 @@ export default function PersonalInfo({ user, onUpdate, isEditing }: PersonalInfo
         email: user.email || "",
         phone: user.phone || "",
         bio: user.bio || "",
-        dob: user.dob || "",
+        dob: String(user.dob) || "",
         preferredLanguage: user.preferredLanguage || "English",
         location: {
           city: user.location?.city || "",
@@ -122,7 +122,7 @@ export default function PersonalInfo({ user, onUpdate, isEditing }: PersonalInfo
         email: user.email || "",
         phone: user.phone || "",
         bio: user.bio || "",
-        dob: user.dob || "",
+        dob: String(user.dob) || "",
         preferredLanguage: user.preferredLanguage || "English",
         location: {
           city: user.location?.city || "",
