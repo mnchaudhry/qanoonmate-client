@@ -9,25 +9,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn, enumToLabel } from '@/lib/utils'
-import { Lawyer1 } from '@/constants/images'
 import * as api from '@/store/api'
 import type { Lawyer, PaginatedLawyerResponse } from '@/store/types/lawyer.types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import SearchBar from '@/components/SearchBar'
 import { AccountStatus, LawCategory, PakistanCities } from '@/lib/enums'
-
-type ConsultationType = 'Phone' | 'Video' | 'In-person'
-
-type UILawyer = {
-  id: string
-  name: string
-  expertise: string[]
-  city: string
-  rating: number
-  image: string
-  consultationTypes: ConsultationType[]
-}
-
 
 type SortKey = 'relevance' | 'rating'
 
@@ -41,7 +27,7 @@ const Consultations: React.FC = () => {
   const [page, setPage] = useState<number>(1)
   const pageSize = 9
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [allLawyers, setAllLawyers] = useState<UILawyer[]>([])
+  const [allLawyers, setAllLawyers] = useState<Lawyer[]>([])
 
   /////////////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////////////
   useEffect(() => {
@@ -49,16 +35,7 @@ const Consultations: React.FC = () => {
       try {
         const { data } = await api.getLawyers({ page: 1, limit: 100, accountStatus: AccountStatus.ACTIVE })
         const list = (data as PaginatedLawyerResponse).data || []
-        const mapped: UILawyer[] = list.map((l: Lawyer) => ({
-          id: l._id,
-          name: `${l.firstname} ${l.lastname}`.trim(),
-          expertise: l.specializations || [],
-          city: l.location?.city || 'Unknown',
-          rating: l.avgRating || 0,
-          image: l.profilePicture || Lawyer1,
-          consultationTypes: ['Phone', 'Video'],
-        }))
-        setAllLawyers(mapped)
+        setAllLawyers(list)
       } finally {
         setIsLoading(false)
       }
@@ -78,27 +55,30 @@ const Consultations: React.FC = () => {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase()
       list = list.filter(l =>
-        l.name.toLowerCase().includes(q) ||
-        l.city.toLowerCase().includes(q) ||
-        l.expertise.some(e => e.toLowerCase().includes(q))
+        l.fullName.toLowerCase().includes(q) ||
+        l.firstname.toLowerCase().includes(q) ||
+        l.lastname.toLowerCase().includes(q) ||
+        l.location.city?.toLowerCase().includes(q) ||
+        l.primarySpecialization?.toLowerCase().includes(q) ||
+        l.specializations?.some(e => e.toLowerCase().includes(q))
       )
     }
 
     // Practice area
     if (selectedPractice !== 'All') {
-      list = list.filter(l => l.expertise.some(e => e === selectedPractice))
+      list = list.filter(l => l.specializations?.some(e => e === selectedPractice))
     }
 
     // City
     if (selectedCity !== 'All') {
-      list = list.filter(l => l.city === selectedCity)
+      list = list.filter(l => l.location.city === selectedCity)
     }
 
     // Sorting
     list.sort((a, b) => {
       switch (sortBy) {
         case 'rating':
-          return b.rating - a.rating
+          return (b?.avgRating || 0) - (a?.avgRating || 0)
         default:
           // relevance heuristic
           return 0
@@ -185,8 +165,8 @@ const Consultations: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {paginated.map((l) => (
-                <LawyerCard key={l.id} lawyer={l} />
+              {paginated.map((l, index) => (
+                <LawyerCard key={index} lawyer={l} />
               ))}
             </div>
           )}
@@ -207,23 +187,32 @@ const Consultations: React.FC = () => {
 
 /////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
 function Stars({ rating }: { rating: number }) {
-  const full = Math.floor(rating)
-  const empty = Math.max(0, 5 - Math.ceil(rating))
-  const hasHalf = rating % 1 >= 0.5 && full + empty < 5
+
+  // Calculate number of full, half, and empty stars
+  const full = Math.floor(rating);
+  const hasHalf = rating % 1 >= 0.5;
+  const empty = 5 - full - (hasHalf ? 1 : 0);
+
   return (
     <div className="flex items-center gap-1">
+      {/* Full stars */}
       {Array.from({ length: full }).map((_, i) => (
-        <Star key={`f-${i}`} className="h-4 w-4 text-accent" fill="currentColor" />
+        <Star key={`f-${i}`} className="h-4 w-4 text-accent" fill="#2F9E53" />
       ))}
+
+      {/* Half star (if applicable) */}
       {hasHalf && (
-        <Star className="h-4 w-4 text-accent/60" fill="currentColor" />
+        <Star className="h-4 w-4 text-accent/60" fill="#2F9E53" />
       )}
+
+      {/* Empty stars */}
       {Array.from({ length: empty }).map((_, i) => (
         <Star key={`e-${i}`} className="h-4 w-4 text-muted-foreground" />
       ))}
     </div>
-  )
+  );
 }
+
 
 /////////////////////////////////////////////////////// COMPONENTS /////////////////////////////////////////////////////////
 function CardSkeleton() {
@@ -237,8 +226,7 @@ function CardSkeleton() {
   )
 }
 
-function LawyerCard({ lawyer }: { lawyer: UILawyer }) {
-  const { name, expertise, city, rating, image, consultationTypes } = lawyer
+function LawyerCard({ lawyer }: { lawyer: Lawyer }) {
 
   return (
     <div className={cn(
@@ -250,29 +238,29 @@ function LawyerCard({ lawyer }: { lawyer: UILawyer }) {
           {/* Avatar + Availability */}
           <div className="flex flex-col items-center gap-2">
             <Avatar className='h-24 w-24 ring-2 ring-background shadow-sm'>
-              <AvatarImage src={image} alt={name} />
+              <AvatarImage src={lawyer.profilePicture} alt={lawyer.fullName} />
               <AvatarFallback className='uppercase text-base font-medium'>
-                {name.split(" ").map(n => n[0]).join("")}
+                {lawyer?.firstname?.split(" ").map(n => n[0]).join("")}
               </AvatarFallback>
             </Avatar>
           </div>
 
           {/* Info */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-semibold text-foreground truncate">{name}</h3>
+            <h3 className="text-base font-semibold text-foreground truncate">{lawyer.firstname} {lawyer.lastname}</h3>
             <p className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
-              <MapPin className="h-3.5 w-3.5" /> {enumToLabel(city)}
+              <MapPin className="h-3.5 w-3.5" /> {enumToLabel(lawyer.location.city || 'N/A')}
             </p>
 
             {/* Rating */}
             <div className="mt-1 flex flex-col items-start">
-              <Stars rating={rating} />
-              <p className="text-[11px] text-muted-foreground">{rating.toFixed(1)} / 5</p>
+              <Stars rating={lawyer.avgRating!} />
+              <p className="text-[11px] text-muted-foreground">{lawyer.avgRating?.toFixed(1)} / 5</p>
             </div>
 
-            {consultationTypes.length > 0 && (
+            {lawyer.settings?.consultation?.modes && lawyer.settings?.consultation?.modes?.length > 0 && (
               <div className="mt-3 flex flex-wrap justify-start gap-1">
-                {consultationTypes.map(t => (
+                {lawyer.settings?.consultation.modes.map(t => (
                   <Badge
                     key={t}
                     variant="secondary"
@@ -291,7 +279,7 @@ function LawyerCard({ lawyer }: { lawyer: UILawyer }) {
       {/* Expertise */}
       <div className="px-4 py-3 border-t">
         <div className="flex flex-wrap gap-1">
-          {expertise.map(e => (
+          {lawyer.specializations?.map(e => (
             <Badge key={e} variant="outline" className="text-[11px] px-2 py-0.5">
               {enumToLabel(e)}
             </Badge>
@@ -301,7 +289,7 @@ function LawyerCard({ lawyer }: { lawyer: UILawyer }) {
 
       {/* Actions */}
       <div className="px-4 py-3 border-t flex gap-2">
-        <Link href={`/lawyers/${lawyer?.id}`} className="flex-1">
+        <Link href={`/lawyers/${lawyer?.username}`} className="flex-1">
           <Button variant="outline" size="sm" className="w-full">View Profile</Button>
         </Link>
         <Button size="sm" className="flex-1">

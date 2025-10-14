@@ -1,5 +1,7 @@
 import { About } from "./images";
 
+export const NEWS_API_URL = 'https://gnews.io/api/v4/search?q=Pakistan%20law&country=pk&lang=en&max=20&nullable=image&apikey=f469f54797e777cd2433cda4827aa52c'
+
 export const breadcrumbLabels: Record<string, string> = {
   "dashboard": "Dashboard",
   "settings": "Settings",

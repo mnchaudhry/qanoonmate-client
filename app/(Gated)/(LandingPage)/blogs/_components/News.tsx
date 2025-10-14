@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Newspaper } from "lucide-react";
 import NewsCard from "./NewsCard";
+import { NEWS_API_URL } from "@/constants";
 
 interface NewsItem {
   title: string;
@@ -17,9 +18,7 @@ const News = () => {
 
   const fetchNews = useCallback(async () => {
     try {
-      const res = await fetch(
-        `https://gnews.io/api/v4/search?q=Pakistan%20law&country=pk&lang=en&max=20&nullable=image&apikey=f469f54797e777cd2433cda4827aa52c`
-      );
+      const res = await fetch(NEWS_API_URL);
       const data = await res.json();
       const items = (data.articles || []).map((a: any) => ({
         title: a.title,
@@ -71,35 +70,19 @@ const News = () => {
 
   return (
     <section
-      style={{
-        backgroundColor: "#f9fafb",
-        padding: "24px",
-        borderRadius: "12px",
-        border: "1px solid #e5e7eb",
-        maxHeight: "600px",
-        overflowY: "auto",
-      }}
+      className="bg-popover py-2! px-4! rounded-lg border border-border max-h-screen overflow-y-auto "
       onScroll={handleScroll}
     >
       <div style={{ display: "flex", alignItems: "center", marginBottom: "16px" }}>
         <Newspaper className="text-green-600 w-5 h-5" />
         <h2
-          style={{
-            fontSize: "24px",
-            fontWeight: 600,
-            margin: "0 0 0 8px",
-            color: "#111827",
-          }}
-        >
+          className="text-2xl font-semibold ml-2 text-foreground/90">
           Legal News
         </h2>
       </div>
       <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-          gap: "24px",
-        }}
+        className="grid gap-6"
+        style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", }}
       >
         {newsItems.slice(0, visibleCount).map((item, idx) => (
           <NewsCard key={idx} {...item} />

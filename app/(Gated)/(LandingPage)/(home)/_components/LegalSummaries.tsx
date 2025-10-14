@@ -123,28 +123,6 @@ const LegalSummaries: React.FC = () => {
           description="Break down acts, case laws, legal documents, and broad legal topics into concise, readable insights. Experience the power of AI-driven legal analysis."
         />
 
-        {/* Main CTA */}
-        <div className="text-center mb-12">
-          <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-8 border border-primary/20 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
-              Ready to Simplify Legal Complexity?
-            </h3>
-            <p className="text-muted-foreground mb-6 text-lg">
-              Our AI-powered summarizer transforms complex legal texts into clear, actionable insights.
-              No more hours of reading - get the key points in minutes.
-            </p>
-            <Button
-              size="lg"
-              onClick={handleNavigateToSummarizer}
-              className="flex items-center gap-2 px-8 py-3 text-lg"
-            >
-              <Wand2 className="h-5 w-5" />
-              Start Using Legal Summarizer
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
         {/* Studio Shell */}
         <div className="bg-neutral rounded-xl border !border-border shadow-sm p-4 md:p-6">
           <Tabs value={active} onValueChange={(v) => setActive(v as SummaryModeKey)}>
