@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { GraduationCap, Award, Calendar, MapPin, Edit } from "lucide-react";
+import { GraduationCap, Award, Calendar, Edit } from "lucide-react";
 import { LawyerProfile } from "@/lib/types/profile.types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -27,8 +27,8 @@ export function Credentials({ lawyer }: CredentialsProps) {
             Credentials & Education
           </div>
           {isOwnProfile && (
-            <Edit 
-              className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary" 
+            <Edit
+              className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary"
               onClick={openCredentialsModal}
             />
           )}
@@ -142,11 +142,11 @@ export function Credentials({ lawyer }: CredentialsProps) {
           </div>
         )}
       </CardContent>
-      
+
       {/* Edit Modal */}
-      <EditCredentialsModal 
-        isOpen={isCredentialsModalOpen} 
-        onClose={closeAllModals} 
+      <EditCredentialsModal
+        isOpen={isCredentialsModalOpen}
+        onClose={closeAllModals}
       />
     </Card>
   );

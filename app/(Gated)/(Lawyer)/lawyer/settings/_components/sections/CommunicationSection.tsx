@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageSquare, Save, Clock, Mail, Phone, Video, Users, Bell } from "lucide-react";
+import { MessageSquare, Save, Clock, Mail, Phone, Video, Users } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
 import { SubsectionHeader } from "./SubsectionHeader";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
@@ -74,7 +74,7 @@ export function CommunicationSection({ }: CommunicationSectionProps) {
     setForm(prev => ({
       ...prev,
       [parent]: {
-        ...prev[parent as keyof typeof prev],
+        ...((prev[parent as keyof typeof prev] as Record<string, any>) || {}),
         [field]: value
       }
     }));
@@ -106,17 +106,12 @@ export function CommunicationSection({ }: CommunicationSectionProps) {
     try {
       // TODO: Implement communication settings update
       console.log('Communication settings updated:', form);
-      
+
     } catch (error) {
       console.error('Error saving communication settings:', error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const getPreferenceIcon = (preference: string) => {
-    const pref = COMMUNICATION_PREFERENCES.find(p => p.value === preference);
-    return pref ? pref.icon : MessageSquare;
   };
 
   const DAYS_OF_WEEK = [
@@ -180,8 +175,8 @@ export function CommunicationSection({ }: CommunicationSectionProps) {
                   <div>
                     <h4 className="font-medium text-foreground">Response Commitment</h4>
                     <p className="text-sm text-muted-foreground">
-                      {form.responseTime === 'custom' ? form.customResponseTime : 
-                       RESPONSE_TIME_OPTIONS.find(opt => opt.value === form.responseTime)?.label}
+                      {form.responseTime === 'custom' ? form.customResponseTime :
+                        RESPONSE_TIME_OPTIONS.find(opt => opt.value === form.responseTime)?.label}
                     </p>
                   </div>
                 </div>
@@ -233,15 +228,13 @@ export function CommunicationSection({ }: CommunicationSectionProps) {
                     return (
                       <div
                         key={preference.value}
-                        className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${
-                          isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
-                        }`}
+                        className={`p-3 border-2 rounded-lg cursor-pointer transition-all ${isSelected ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'
+                          }`}
                         onClick={() => toggleCommunicationPreference(preference.value)}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-4 h-4 rounded border-2 ${
-                            isSelected ? 'border-primary bg-primary' : 'border-muted-foreground'
-                          }`}>
+                          <div className={`w-4 h-4 rounded border-2 ${isSelected ? 'border-primary bg-primary' : 'border-muted-foreground'
+                            }`}>
                             {isSelected && (
                               <div className="w-full h-full rounded-sm bg-white scale-50" />
                             )}
@@ -300,11 +293,10 @@ export function CommunicationSection({ }: CommunicationSectionProps) {
                     {DAYS_OF_WEEK.map((day) => (
                       <div
                         key={day.value}
-                        className={`p-2 border rounded-lg cursor-pointer transition-all text-center ${
-                          form.businessHours.workingDays.includes(day.value)
+                        className={`p-2 border rounded-lg cursor-pointer transition-all text-center ${form.businessHours.workingDays.includes(day.value)
                             ? 'border-primary bg-primary/5 text-primary'
                             : 'border-border hover:border-primary/50'
-                        }`}
+                          }`}
                         onClick={() => toggleWorkingDay(day.value)}
                       >
                         <span className="text-sm font-medium">{day.label}</span>

@@ -46,10 +46,10 @@ export function ProfessionalOverviewSection({ profile, completion, onUpdate }: P
       };
 
       onUpdate(updatedProfile);
-      
+
       // TODO: Call API to save changes
       // await dispatch(updateMeLawyer(updatedProfile));
-      
+
     } catch (error) {
       console.error('Error saving professional overview:', error);
     } finally {
@@ -67,11 +67,10 @@ export function ProfessionalOverviewSection({ profile, completion, onUpdate }: P
         <div className="flex items-center gap-3 mb-2">
           <Briefcase className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold text-gray-900">Professional Overview</h1>
-          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-            sectionCompletion.completed 
-              ? 'bg-green-100 text-green-800' 
+          <div className={`px-2 py-1 rounded-full text-xs font-medium ${sectionCompletion.completed
+              ? 'bg-green-100 text-green-800'
               : 'bg-amber-100 text-amber-800'
-          }`}>
+            }`}>
             {sectionCompletion.percentage}% Complete
           </div>
         </div>
@@ -221,7 +220,7 @@ export function ProfessionalOverviewSection({ profile, completion, onUpdate }: P
               </h3>
               {form.tagline && (
                 <p className="text-primary font-medium mb-3">
-                  "{form.tagline}"
+                  &quot;{form.tagline}&quot;
                 </p>
               )}
               <p className="text-gray-700 text-sm leading-relaxed">
@@ -238,8 +237,8 @@ export function ProfessionalOverviewSection({ profile, completion, onUpdate }: P
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button 
-            onClick={handleSave} 
+          <Button
+            onClick={handleSave}
             disabled={loading || !form.title || !isBioValid}
             className="bg-primary hover:bg-primary/90"
           >

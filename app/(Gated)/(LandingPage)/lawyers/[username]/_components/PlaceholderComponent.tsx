@@ -12,7 +12,6 @@ interface PlaceholderComponentProps {
 }
 
 export function PlaceholderComponent({ 
-  lawyer, 
   title, 
   description, 
   icon: Icon 

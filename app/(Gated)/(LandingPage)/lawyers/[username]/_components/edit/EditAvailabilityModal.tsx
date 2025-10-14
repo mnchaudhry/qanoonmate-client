@@ -6,9 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Lawyer } from "@/store/types/lawyer.types";
 import { useEditModal } from "./EditModalContext";
 import { Clock, Calendar, CheckCircle, XCircle } from "lucide-react";
 
@@ -27,7 +25,7 @@ interface WorkingDay {
 }
 
 export function EditAvailabilityModal({ isOpen, onClose }: EditAvailabilityModalProps) {
-  const { lawyer, setLawyer } = useEditModal();
+  const { lawyer } = useEditModal();
   const [formData, setFormData] = useState({
     timezone: "",
     workingDays: {} as WorkingDay,
@@ -118,7 +116,7 @@ export function EditAvailabilityModal({ isOpen, onClose }: EditAvailabilityModal
         timezone: formData.timezone,
         workingDays: formData.workingDays,
       });
-      
+
       console.log("Successfully saved availability data:", formData);
     } catch (error) {
       console.error("Failed to save availability data:", error);
@@ -279,9 +277,9 @@ export function EditAvailabilityModal({ isOpen, onClose }: EditAvailabilityModal
                 <div className="space-y-3">
                   {Object.entries(formData.workingDays).map(([day, slots]) => {
                     if (slots.length === 0) return null;
-                    
+
                     const dayLabel = days.find(d => d.key === day)?.label || day;
-                    
+
                     return (
                       <div key={day} className="p-3 border border-border rounded-lg">
                         <div className="font-medium text-sm mb-2">{dayLabel}</div>

@@ -29,7 +29,7 @@ const BILLING_HISTORY = [
   { id: '3', date: '2023-11-15', description: 'Premium Plan - November 2023', amount: 29.99, status: 'paid' },
 ];
 
-export function BillingSection({ profile, completion, onUpdate }: BillingSectionProps) {
+export function BillingSection({ }: BillingSectionProps) {
   const [form, setForm] = useState({
     billingAddress: {
       company: '',
@@ -67,7 +67,7 @@ export function BillingSection({ profile, completion, onUpdate }: BillingSection
     try {
       // TODO: Implement billing settings update
       console.log('Billing settings updated:', form);
-      
+
     } catch (error) {
       console.error('Error saving billing settings:', error);
     } finally {

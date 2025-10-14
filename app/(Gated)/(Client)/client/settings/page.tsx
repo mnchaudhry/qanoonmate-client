@@ -2,11 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import ProfileInformation from './_components/ProfileInformation';
-import PasswordManagement from './_components/PasswordManagement';
 import Preferences from './_components/Preferences';
 import Verifications from './_components/Verifications';
 import DangerZone from './_components/DangerZone';
-import { User, Lock, FileText, AlertTriangle, Settings, Shield, CreditCard, Bell, Palette } from 'lucide-react';
+import { User, FileText, AlertTriangle, Settings, Shield, CreditCard, Bell } from 'lucide-react';
 import PageHeader from '../_components/PageHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -84,7 +83,7 @@ const SettingsPage = () => {
                 title="Account Settings"
                 description="Manage your account preferences, security, and personal information."
             />
-            
+
             <div className="flex gap-8 items-start">
                 {/* Sidebar */}
                 <Card className="w-80 p-0 overflow-hidden sticky top-24 self-start">
@@ -97,11 +96,10 @@ const SettingsPage = () => {
                             <Button
                                 key={key}
                                 variant={selected === key ? 'default' : 'ghost'}
-                                className={`justify-start px-4 py-3 text-sm font-medium gap-3 h-auto min-h-[60px] ${
-                                    selected === key 
-                                        ? 'bg-primary text-primary-foreground shadow-sm' 
+                                className={`justify-start px-4 py-3 text-sm font-medium gap-3 h-auto min-h-[60px] ${selected === key
+                                        ? 'bg-primary text-primary-foreground shadow-sm'
                                         : 'hover:bg-slate-100 text-slate-700'
-                                }`}
+                                    }`}
                                 onClick={() => {
                                     setSelected(key);
                                     router.push(`/client/settings?section=${key}`);
@@ -135,8 +133,8 @@ const SettingsPage = () => {
                             {/* Section Header */}
                             <div className="flex items-center gap-3 pb-4 border-b border-slate-200">
                                 <div className="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center">
-                                    {React.createElement(getSectionIcon(selected), { 
-                                        className: "w-5 h-5 text-slate-600" 
+                                    {React.createElement(getSectionIcon(selected), {
+                                        className: "w-5 h-5 text-slate-600"
                                     })}
                                 </div>
                                 <div>

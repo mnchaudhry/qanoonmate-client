@@ -1,18 +1,11 @@
 'use client';
 
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Coins, AlertTriangle, CheckCircle } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 
 interface QCConfirmationModalProps {
@@ -25,16 +18,8 @@ interface QCConfirmationModalProps {
   loading?: boolean;
 }
 
-export const QCConfirmationModal: React.FC<QCConfirmationModalProps> = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  service,
-  cost,
-  description,
-  loading = false
-}) => {
-  const dispatch = useDispatch();
+export const QCConfirmationModal: React.FC<QCConfirmationModalProps> = ({ isOpen, onClose, onConfirm, service, cost, description, loading = false }) => {
+
   const { balance } = useSelector((state: RootState) => state.credits);
 
   const hasInsufficientBalance = balance && balance.balance < cost;
@@ -121,7 +106,7 @@ export const QCConfirmationModal: React.FC<QCConfirmationModalProps> = ({
           >
             Cancel
           </Button>
-          
+
           {hasInsufficientBalance ? (
             <Button
               onClick={() => {

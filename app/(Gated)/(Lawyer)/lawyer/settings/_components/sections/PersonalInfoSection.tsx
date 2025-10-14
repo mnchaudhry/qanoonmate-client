@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,7 +23,7 @@ interface PersonalInfoSectionProps {
   onUpdate: (updatedProfile: Partial<LawyerProfile>) => void;
 }
 
-export function PersonalInfoSection({ profile, completion, onUpdate }: PersonalInfoSectionProps) {
+export function PersonalInfoSection({ profile, onUpdate }: PersonalInfoSectionProps) {
 
   ////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////// 
   const dispatch = useDispatch<AppDispatch>();
@@ -42,7 +42,7 @@ export function PersonalInfoSection({ profile, completion, onUpdate }: PersonalI
   });
 
   const [preview, setPreview] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
+  // const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
   const setField = (field: string, value: any) => {
@@ -54,7 +54,7 @@ export function PersonalInfoSection({ profile, completion, onUpdate }: PersonalI
     if (file) {
       const url = URL.createObjectURL(file);
       setPreview(url);
-      setFile(file);
+      // setFile(file);
     }
   };
 
@@ -102,8 +102,6 @@ export function PersonalInfoSection({ profile, completion, onUpdate }: PersonalI
       setLoading(false);
     }
   };
-
-  const sectionCompletion = completion.sectionCompletion.personalInfo;
 
   return (
     <div className="space-y-6">
@@ -159,68 +157,68 @@ export function PersonalInfoSection({ profile, completion, onUpdate }: PersonalI
             <SubsectionHeader title="Basic Information" />
             <div className="border-2 border-dashed border-border rounded-lg p-4 bg-muted/20">
               <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstname">First Name *</Label>
-                  <Input
-                    id="firstname"
-                    value={form.firstname}
-                    onChange={(e) => setField('firstname', e.target.value)}
-                    placeholder="Enter your first name"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="firstname">First Name *</Label>
+                    <Input
+                      id="firstname"
+                      value={form.firstname}
+                      onChange={(e) => setField('firstname', e.target.value)}
+                      placeholder="Enter your first name"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lastname">Last Name *</Label>
+                    <Input
+                      id="lastname"
+                      value={form.lastname}
+                      onChange={(e) => setField('lastname', e.target.value)}
+                      placeholder="Enter your last name"
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastname">Last Name *</Label>
-                  <Input
-                    id="lastname"
-                    value={form.lastname}
-                    onChange={(e) => setField('lastname', e.target.value)}
-                    placeholder="Enter your last name"
-                  />
-                </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name (as on CNIC) *</Label>
-                <Input
-                  id="fullName"
-                  value={form.fullName}
-                  onChange={(e) => setField('fullName', e.target.value)}
-                  placeholder="Enter your full name as it appears on your CNIC"
-                />
-                <p className="text-sm text-gray-600">
-                  This should match exactly with your CNIC and bar card
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
+                  <Label htmlFor="fullName">Full Name (as on CNIC) *</Label>
                   <Input
-                    id="email"
-                    value={form.email}
-                    disabled
-                    className="bg-gray-50"
+                    id="fullName"
+                    value={form.fullName}
+                    onChange={(e) => setField('fullName', e.target.value)}
+                    placeholder="Enter your full name as it appears on your CNIC"
                   />
                   <p className="text-sm text-gray-600">
-                    Email cannot be changed. Contact support if needed.
+                    This should match exactly with your CNIC and bar card
                   </p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="phone">Phone Number *</Label>
-                  <Input
-                    id="phone"
-                    value={form.phone}
-                    type="tel"
-                    maxLength={11}
-                    onChange={(e) => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 11);
-                      setField('phone', value);
-                    }}
-                    placeholder="Enter your phone number"
-                  />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      value={form.email}
+                      disabled
+                      className="bg-gray-50"
+                    />
+                    <p className="text-sm text-gray-600">
+                      Email cannot be changed. Contact support if needed.
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Input
+                      id="phone"
+                      value={form.phone}
+                      type="tel"
+                      maxLength={11}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 11);
+                        setField('phone', value);
+                      }}
+                      placeholder="Enter your phone number"
+                    />
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
           </div>
@@ -230,76 +228,76 @@ export function PersonalInfoSection({ profile, completion, onUpdate }: PersonalI
             <SubsectionHeader title="Additional Information" />
             <div className="border-2 border-dashed border-border rounded-lg p-4 bg-muted/20">
               <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="gender">Gender</Label>
-                  <Select value={form.gender} onValueChange={(value) => setField('gender', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select gender" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(Gender).map(gender => (
-                        <SelectItem key={gender} value={gender}>
-                          {enumToLabel(gender)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="gender">Gender</Label>
+                    <Select value={form.gender} onValueChange={(value) => setField('gender', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(Gender).map(gender => (
+                          <SelectItem key={gender} value={gender}>
+                            {enumToLabel(gender)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dob">Date of Birth</Label>
+                    <Input
+                      id="dob"
+                      type="date"
+                      value={form.dob}
+                      max={new Date().toISOString().split('T')[0]}
+                      onChange={(e) => setField('dob', e.target.value)}
+                    />
+                  </div>
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="dob">Date of Birth</Label>
+                  <Label htmlFor="cnic">CNIC / National ID</Label>
                   <Input
-                    id="dob"
-                    type="date"
-                    value={form.dob}
-                    max={new Date().toISOString().split('T')[0]}
-                    onChange={(e) => setField('dob', e.target.value)}
+                    id="cnic"
+                    value={form.cnic}
+                    onChange={(e) => setField('cnic', e.target.value)}
+                    placeholder="Enter your CNIC/National ID"
                   />
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="cnic">CNIC / National ID</Label>
-                <Input
-                  id="cnic"
-                  value={form.cnic}
-                  onChange={(e) => setField('cnic', e.target.value)}
-                  placeholder="Enter your CNIC/National ID"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="province">Province *</Label>
-                  <Select value={form.province} onValueChange={(value) => setField('province', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select province" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(Province).map(province => (
-                        <SelectItem key={province} value={province}>
-                          {enumToLabel(province)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="province">Province *</Label>
+                    <Select value={form.province} onValueChange={(value) => setField('province', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select province" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(Province).map(province => (
+                          <SelectItem key={province} value={province}>
+                            {enumToLabel(province)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City *</Label>
+                    <Select value={form.city} onValueChange={(value) => setField('city', value)}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select city" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.values(LawyerCity).map(city => (
+                          <SelectItem key={city} value={city}>
+                            {enumToLabel(city)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="city">City *</Label>
-                  <Select value={form.city} onValueChange={(value) => setField('city', value)}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select city" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.values(LawyerCity).map(city => (
-                        <SelectItem key={city} value={city}>
-                          {enumToLabel(city)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
               </div>
             </div>
           </div>

@@ -20,14 +20,14 @@ function LegalChatbotDemo() {
         },
     };
 
-    const exampleQuestions = [
-        "What are my rights if I get fired without notice?",
-        "How do I file a property dispute case?",
-        "What is the process for getting a divorce in Pakistan?",
-        "Can I sue for medical negligence?",
-        "How do I protect my intellectual property?",
-        "What are the requirements for starting a business?"
-    ];
+    // const exampleQuestions = [
+    //     "What are my rights if I get fired without notice?",
+    //     "How do I file a property dispute case?",
+    //     "What is the process for getting a divorce in Pakistan?",
+    //     "Can I sue for medical negligence?",
+    //     "How do I protect my intellectual property?",
+    //     "What are the requirements for starting a business?"
+    // ];
 
     const handleSendMessage = () => {
         if (inputValue.trim()) {
@@ -35,12 +35,6 @@ function LegalChatbotDemo() {
             searchParams.set('message', encodeURIComponent(inputValue.trim()));
             router.push(`/chat?${searchParams.toString()}`);
         }
-    };
-
-    const handleExampleClick = (example: string) => {
-        const searchParams = new URLSearchParams();
-        searchParams.set('message', encodeURIComponent(example));
-        router.push(`/chat?${searchParams.toString()}`);
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {

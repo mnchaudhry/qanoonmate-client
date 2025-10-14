@@ -12,50 +12,6 @@ const chartTypes = [
   { value: 'area', icon: <AreaChart className="w-5 h-5" /> },
 ];
 
-const labels = [
-  '2025-07-01', '2025-07-05', '2025-07-10', '2025-07-15', '2025-07-20', '2025-07-25', '2025-07-30'
-];
-const data = [5000, 12000, 8000, 15000, 7000, 11000, 14000];
-
-const chartData = {
-  labels,
-  datasets: [
-    {
-      label: 'Earnings (Rs.)',
-      data,
-      borderColor: 'rgb(34,197,94)', // theme primary
-      backgroundColor: 'rgba(34,197,94,0.15)',
-      fill: true,
-      tension: 0.4,
-      pointRadius: 4,
-      pointBackgroundColor: 'rgb(34,197,94)',
-      pointBorderColor: '#fff',
-      barPercentage: 0.6,
-      categoryPercentage: 0.5,
-    },
-  ],
-};
-
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    title: { display: false },
-    tooltip: { mode: 'index' as const, intersect: false },
-  },
-  scales: {
-    x: {
-      grid: { color: 'rgba(0,0,0,0.04)' },
-      ticks: { color: '#64748b', font: { size: 12 } },
-    },
-    y: {
-      grid: { color: 'rgba(0,0,0,0.04)' },
-      ticks: { color: '#64748b', font: { size: 12 } },
-    },
-  },
-};
-
 export default function EarningsChart() {
   const [type, setType] = useState('line');
 

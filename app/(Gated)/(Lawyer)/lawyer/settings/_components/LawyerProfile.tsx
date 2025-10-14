@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { Lawyer } from '@/store/types/lawyer.types';
-import { LawCategory, Province, LawyerLanguage, Courts, LawyerCity, Gender, BarCouncils } from '@/lib/enums';
+import { LawCategory, LawyerLanguage, Courts, Gender, BarCouncils } from '@/lib/enums';
 import { Upload, User, Loader2 } from 'lucide-react';
 import { enumToLabel } from '@/lib/utils';
 import TagInput from '@/components/ui/tag-input';
@@ -50,9 +49,6 @@ const EXPERIENCE_CATEGORIES = [
     { label: '10-15', value: 12 },
     { label: '15+', value: 20 },
 ];
-const GENDERS = Object.values(Gender);
-const CITIES = Object.values(LawyerCity);
-const PROVINCES = Object.values(Province);
 
 const LawyerProfile = () => {
     //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
@@ -71,8 +67,8 @@ const LawyerProfile = () => {
         gender: user?.gender || Gender.OTHER,
         dob: user?.dob || '',
         cnic: user?.cnic || '',
-        city: user?.location?.city || '',
-        province: user?.location?.province || '',
+        city: user?.location?.city || undefined,
+        province: user?.location?.province || undefined,
         // Professional
         fullName: user?.fullName || '',
         title: user?.title || '',
@@ -129,8 +125,10 @@ const LawyerProfile = () => {
             gender: user?.gender || Gender.OTHER,
             dob: user?.dob || '',
             cnic: user?.cnic || '',
-            city: user?.location?.city || '',
-            province: user?.location?.province || '',
+            city: user?.location?.city || undefined,
+            province: user?.location?.province || undefined,
+            // Professional
+            fullName: user?.fullName || '',
             title: user?.title || '',
             bio: user?.bio || '',
             preLicensedYearsOfExperience: user?.preLicensedYearsOfExperience || 0,
@@ -139,6 +137,8 @@ const LawyerProfile = () => {
             licenseValidity: user?.licenseValidity || '',
             barCouncil: user?.barCouncil || BarCouncils.PunjabBarCouncil,
             barAssociation: user?.barAssociation || '',
+            barCouncilEnrollmentDate: user?.barCouncilEnrollmentDate || '',
+            // Legal Expertise
             primarySpecialization: user?.primarySpecialization || '',
             specializations: user?.specializations || [],
             jurisdictions: user?.jurisdictions || [],
@@ -150,8 +150,8 @@ const LawyerProfile = () => {
 
     //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
     const setField = (k: string, v: any) => setForm(f => ({ ...f, [k]: v }));
-    const addSecondary = (area: string) => setForm(f => ({ ...f, specializations: f.specializations.includes(area) ? f.specializations : [...f.specializations, area] }));
-    const removeSecondary = (area: string) => setForm(f => ({ ...f, specializations: f.specializations.filter(a => a !== area) }));
+    const addSecondary = (area: LawCategory) => setForm(f => ({ ...f, specializations: f.specializations.includes(area) ? f.specializations : [...f.specializations, area] }));
+    const removeSecondary = (area: LawCategory) => setForm(f => ({ ...f, specializations: f.specializations.filter(a => a !== area) }));
     const toggleJurisdiction = (j: any) => setForm(f => ({ ...f, jurisdictions: f.jurisdictions.includes(j) ? f.jurisdictions.filter(x => x !== j) : [...f.jurisdictions, j] }));
     const toggleLanguage = (l: string) => setForm(f => ({ ...f, languages: f.languages.includes(l) ? f.languages.filter(x => x !== l) : [...f.languages, l] }));
     // const addTag = (tags: string[]) => { if (tags.length > 0) setForm(f => ({ ...f, tags: [...f.tags, ...tags] })); };
@@ -168,10 +168,14 @@ const LawyerProfile = () => {
         // setLoading(true);
         const payload: Partial<Lawyer> = {
             ...form,
+            primarySpecialization: form.primarySpecialization as LawCategory,
             location: { city: form.city, province: form.province },
             profilePicture: form.profilePicture,
             licenseValidity: form.licenseValidity ? new Date(form.licenseValidity) : null,
             education: form.education ? (Array.isArray(form.education) ? form.education : [form.education]) : undefined,
+            barCouncilEnrollmentDate: form.barCouncilEnrollmentDate
+                ? new Date(form.barCouncilEnrollmentDate)
+                : undefined,
         };
 
         console.log(payload);
@@ -378,11 +382,11 @@ const LawyerProfile = () => {
                     <div className="mb-4">
                         <div className="font-semibold mb-2">Jurisdictions</div>
                         <div className="flex flex-wrap gap-2">
-                            {COURTS.map(j => (
+                            {COURTS.map((j) => (
                                 <Button
                                     key={j}
                                     size="sm"
-                                    variant={form.jurisdictions.includes(j) ? 'default' : 'outline'}
+                                    variant={form.jurisdictions.includes(j as any) ? 'default' : 'outline'}
                                     onClick={() => toggleJurisdiction(j)}
                                 >
                                     {enumToLabel(j)}

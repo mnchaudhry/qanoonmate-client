@@ -20,7 +20,7 @@ import { BillingSection } from "./sections/BillingSection";
 import { VerificationSection } from "./sections/VerificationSection";
 import { ProfileSettings } from "./sections/ProfileSettings";
 import { PlaceholderSection } from "./sections/PlaceholderSection";
-import { Award, DollarSign, Shield, Bell, CreditCard, CheckCircle, Eye, MessageSquare, Database } from "lucide-react";
+import { Award, DollarSign, Eye, MessageSquare, Database } from "lucide-react";
 import { Province } from "@/lib/enums";
 import { LawCategory } from "@/lib/enums";
 import { LawyerCity } from "@/lib/enums";

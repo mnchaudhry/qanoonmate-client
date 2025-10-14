@@ -1,20 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import {
-  User,
-  Briefcase,
-  CheckCircle,
-  Clock,
-  ExternalLink,
-  Eye,
-  Shield,
-  Bell,
-  CreditCard,
-  MessageSquare,
-  Database
-} from "lucide-react";
+import { User, Briefcase, CheckCircle, Clock, ExternalLink, Eye, Shield, Bell, CreditCard, MessageSquare, Database } from "lucide-react";
 import { ProfileCompletionData } from "@/lib/types/profile.types";
 
 interface SettingsSidebarProps {
@@ -126,7 +113,6 @@ const settingsSections = [
 ];
 
 export function SettingsSidebar({ activeSection, onSectionChange, completion }: SettingsSidebarProps) {
-  const router = useRouter();
 
   const getStatusIcon = (itemId: string) => {
     if (!completion) return null;

@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Lawyer } from "@/store/types/lawyer.types";
 import { useEditModal } from "./EditModalContext";
 import { LawCategory } from "@/lib/enums";
 import { X, Plus } from "lucide-react";
@@ -19,7 +18,7 @@ interface EditExpertiseModalProps {
 }
 
 export function EditExpertiseModal({ isOpen, onClose }: EditExpertiseModalProps) {
-  const { lawyer, setLawyer } = useEditModal();
+  const { lawyer } = useEditModal();
   const [formData, setFormData] = useState({
     primarySpecialization: "",
     secondarySpecializations: [] as string[],
@@ -110,7 +109,7 @@ export function EditExpertiseModal({ isOpen, onClose }: EditExpertiseModalProps)
         // Note: languages and jurisdictions might need to be handled differently
         // as they have different structures in the Lawyer type
       });
-      
+
       console.log("Successfully saved expertise data:", formData);
     } catch (error) {
       console.error("Failed to save expertise data:", error);

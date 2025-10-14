@@ -14,6 +14,7 @@ function Pricing() {
   const router = useRouter();
   const [packages, setPackages] = useState<QCPackage[]>(creditPackages);
   const [loading, setLoading] = useState(true);
+  console.log('loading', loading)
 
   useEffect(() => {
     const fetchPackages = async () => {

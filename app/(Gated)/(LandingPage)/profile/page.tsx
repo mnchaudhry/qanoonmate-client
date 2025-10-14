@@ -10,27 +10,9 @@ import { toast } from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  User as UserIcon, 
-  Shield, 
-  Bell, 
-  Settings, 
-  Edit3, 
-  Camera, 
-  Calendar, 
-  MessageSquare, 
-  FileText, 
-  Star, 
-  MapPin, 
-  Globe, 
-  Phone, 
-  Mail, 
-  ChevronRight,
-  ExternalLink
-} from "lucide-react";
+import { User as UserIcon, Shield, Bell, Settings, Edit3, Camera, Calendar, MessageSquare, FileText, Star, MapPin, Globe, Phone, ChevronRight, ExternalLink } from "lucide-react";
 
 import PersonalInfo from "./_components/PersonalInfo";
-import ProfilePhoto from "./_components/ProfilePhoto";
 import Image from "next/image";
 
 interface ProfileStats {

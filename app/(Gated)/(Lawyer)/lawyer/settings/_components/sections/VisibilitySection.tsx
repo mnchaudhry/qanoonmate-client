@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Eye, EyeOff, Save, Users, Globe, Lock, Shield } from "lucide-react";
+import { Eye, Save, Globe, Lock, Shield } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
 import { SubsectionHeader } from "./SubsectionHeader";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
@@ -50,7 +50,7 @@ export function VisibilitySection({ }: VisibilitySectionProps) {
     try {
       // TODO: Implement visibility settings update
       console.log('Visibility settings updated:', form);
-      
+
     } catch (error) {
       console.error('Error saving visibility settings:', error);
     } finally {
@@ -287,8 +287,8 @@ export function VisibilitySection({ }: VisibilitySectionProps) {
               <div className="flex items-center justify-between">
                 <span className="text-sm text-foreground">Client Interactions:</span>
                 <span className="text-sm text-muted-foreground">
-                  {form.allowDirectMessages && form.allowConsultationRequests ? 'Full' : 
-                   form.allowDirectMessages || form.allowConsultationRequests ? 'Limited' : 'None'}
+                  {form.allowDirectMessages && form.allowConsultationRequests ? 'Full' :
+                    form.allowDirectMessages || form.allowConsultationRequests ? 'Limited' : 'None'}
                 </span>
               </div>
             </div>

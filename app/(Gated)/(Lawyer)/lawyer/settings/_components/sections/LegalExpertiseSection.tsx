@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Save, Shield, Plus, X } from "lucide-react";
+import { Save, Shield, X } from "lucide-react";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
-import { LawCategory, Courts, LawyerLanguage } from "@/lib/enums";
+import { LawCategory, LawyerLanguage } from "@/lib/enums";
 import { enumToLabel } from "@/lib/utils";
 import TagInput from "@/components/ui/tag-input";
 
@@ -59,7 +59,7 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
-  const toggleSecondarySpecialization = (specialization: string) => {
+  const toggleSecondarySpecialization = (specialization: LawCategory) => {
     setForm(prev => ({
       ...prev,
       secondarySpecializations: prev.secondarySpecializations.includes(specialization)
@@ -92,10 +92,10 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
       };
 
       onUpdate(updatedProfile);
-      
+
       // TODO: Call API to save changes
       // await dispatch(updateMeLawyer(updatedProfile));
-      
+
     } catch (error) {
       console.error('Error saving legal expertise:', error);
     } finally {
@@ -111,11 +111,10 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
         <div className="flex items-center gap-3 mb-2">
           <Shield className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold text-gray-900">Legal Expertise</h1>
-          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-            sectionCompletion.completed 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-amber-100 text-amber-800'
-          }`}>
+          <div className={`px-2 py-1 rounded-full text-xs font-medium ${sectionCompletion.completed
+            ? 'bg-green-100 text-green-800'
+            : 'bg-amber-100 text-amber-800'
+            }`}>
             {sectionCompletion.percentage}% Complete
           </div>
         </div>
@@ -133,8 +132,8 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="primarySpecialization">Your Main Practice Area</Label>
-              <Select 
-                value={form.primarySpecialization} 
+              <Select
+                value={form.primarySpecialization}
                 onValueChange={(value) => setField('primarySpecialization', value)}
               >
                 <SelectTrigger>
@@ -166,7 +165,7 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
               <p className="text-sm text-gray-600 mb-4">
                 Select 2-3 additional areas where you have experience. This helps expand your client reach.
               </p>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {PRACTICE_AREAS
                   .filter(area => area.key !== form.primarySpecialization)
@@ -192,8 +191,8 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
                       return (
                         <Badge key={specialization} variant="secondary" className="flex items-center gap-1">
                           {area?.label}
-                          <X 
-                            className="w-3 h-3 cursor-pointer" 
+                          <X
+                            className="w-3 h-3 cursor-pointer"
                             onClick={() => toggleSecondarySpecialization(specialization)}
                           />
                         </Badge>
@@ -217,7 +216,7 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
               <p className="text-sm text-gray-600 mb-4">
                 Choose all languages you can communicate in with clients.
               </p>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {Object.values(LawyerLanguage).map(language => (
                   <Button
@@ -239,8 +238,8 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
                     {form.languages.map(language => (
                       <Badge key={language} variant="secondary" className="flex items-center gap-1">
                         {enumToLabel(language)}
-                        <X 
-                          className="w-3 h-3 cursor-pointer" 
+                        <X
+                          className="w-3 h-3 cursor-pointer"
                           onClick={() => toggleLanguage(language)}
                         />
                       </Badge>
@@ -263,7 +262,7 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
               <p className="text-sm text-gray-600 mb-4">
                 Add any relevant certifications, special training, or qualifications.
               </p>
-              
+
               <TagInput
                 value={form.certifications}
                 onChange={(tags) => setField('certifications', tags)}
@@ -275,8 +274,8 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button 
-            onClick={handleSave} 
+          <Button
+            onClick={handleSave}
             disabled={loading || !form.primarySpecialization}
             className="bg-primary hover:bg-primary/90"
           >

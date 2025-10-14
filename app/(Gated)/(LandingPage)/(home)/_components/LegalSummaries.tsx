@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useMemo, useState } from 'react';
-import { FileText, BookOpen, MessageSquareText, ArchiveRestore, Sparkles, Wand2, FileOutput, ShieldAlert, ArrowRight, Play, ExternalLink } from 'lucide-react';
+import React, { useState } from 'react';
+import { FileText, BookOpen, MessageSquareText, ArchiveRestore, Sparkles, Wand2, ShieldAlert, ArrowRight, Play, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import SectionHeading from './SectionHeading';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useRouter } from 'next/navigation';
@@ -100,8 +99,6 @@ const LegalSummaries: React.FC = () => {
   const [active, setActive] = useState<SummaryModeKey>('act');
   const router = useRouter();
 
-  const activeMode = useMemo(() => MODES.find(m => m.key === active)!, [active]);
-
   const handleNavigateToSummarizer = () => {
     // Navigate to the summarizer page with the current mode pre-selected
     const searchParams = new URLSearchParams();
@@ -133,11 +130,11 @@ const LegalSummaries: React.FC = () => {
               Ready to Simplify Legal Complexity?
             </h3>
             <p className="text-muted-foreground mb-6 text-lg">
-              Our AI-powered summarizer transforms complex legal texts into clear, actionable insights. 
+              Our AI-powered summarizer transforms complex legal texts into clear, actionable insights.
               No more hours of reading - get the key points in minutes.
             </p>
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               onClick={handleNavigateToSummarizer}
               className="flex items-center gap-2 px-8 py-3 text-lg"
             >
@@ -236,7 +233,7 @@ const LegalSummaries: React.FC = () => {
                             <p className="text-sm text-muted-foreground mb-4">
                               Click any example above to see this tool in action
                             </p>
-                            <Button 
+                            <Button
                               onClick={handleNavigateToSummarizer}
                               className="w-full"
                               variant="outline"
@@ -266,7 +263,7 @@ const LegalSummaries: React.FC = () => {
               Advanced AI trained on Pakistani legal system for accurate, contextual summaries
             </p>
           </Card>
-          
+
           <Card className="text-center p-6 border-0 bg-background/50">
             <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
               <FileText className="h-6 w-6 text-primary" />
@@ -276,7 +273,7 @@ const LegalSummaries: React.FC = () => {
               Get summaries in bullet points, paragraphs, or structured formats based on your needs
             </p>
           </Card>
-          
+
           <Card className="text-center p-6 border-0 bg-background/50">
             <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-4">
               <ShieldAlert className="h-6 w-6 text-primary" />
@@ -309,8 +306,8 @@ const LegalSummaries: React.FC = () => {
               Join thousands of legal professionals who trust our AI summarizer for quick, accurate, and reliable legal insights.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 onClick={handleNavigateToSummarizer}
                 className="flex items-center gap-2 px-8 py-3"
               >
@@ -332,4 +329,3 @@ const LegalSummaries: React.FC = () => {
 };
 
 export default LegalSummaries;
- 

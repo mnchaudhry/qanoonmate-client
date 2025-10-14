@@ -10,10 +10,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { AppDispatch, RootState } from '@/store/store';
 import { ChatParticipant, Message } from '@/store/types/api';
-import { AlertCircle, Calendar, CheckCircle, FileText, Link2, NotebookIcon, NotebookPen, Plus, Search, Users } from 'lucide-react';
+import { AlertCircle, Calendar, CheckCircle, FileText, Link2, NotebookIcon, NotebookPen, Search, Users } from 'lucide-react';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNote, cancelConsultation, getConsultationById, rescheduleConsultation, uploadDocument } from '@/store/reducers/consultationSlice';
+import { addNote, cancelConsultation, getConsultationById, rescheduleConsultation } from '@/store/reducers/consultationSlice';
 import { JSX } from '@fullcalendar/core/preact.js';
 import { ConsultationMode } from '@/lib/enums';
 

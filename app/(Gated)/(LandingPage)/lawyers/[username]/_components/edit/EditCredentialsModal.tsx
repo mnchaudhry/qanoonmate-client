@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Lawyer } from "@/store/types/lawyer.types";
 import { useEditModal } from "./EditModalContext";
 import { X, Plus, Calendar, Award, GraduationCap } from "lucide-react";
 
@@ -34,7 +33,7 @@ interface WorkHistory {
 }
 
 export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalProps) {
-  const { lawyer, setLawyer } = useEditModal();
+  const { lawyer } = useEditModal();
   const [formData, setFormData] = useState({
     barCouncil: "",
     licenseNumber: "",

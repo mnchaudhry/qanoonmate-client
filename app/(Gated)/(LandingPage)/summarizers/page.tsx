@@ -10,7 +10,6 @@ import SummarizerSidebar from './_components/SummarizerSidebar'
 import Summary from './_components/Summary'
 import Dropbox from './_components/Dropbox'
 import EmptyState from './_components/EmptyState'
-import ProfileButton from '@/components/profile-button'
 import { ScrollText, Gavel, FileText, BookOpenText } from 'lucide-react'
 
 const Summarizers = () => {

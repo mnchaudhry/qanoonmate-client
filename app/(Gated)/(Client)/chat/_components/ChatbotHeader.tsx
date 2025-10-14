@@ -1,7 +1,7 @@
 import React from "react";
 import ProfileButton from "@/components/profile-button";
 import { Button } from "@/components/ui/button";
-import { Volume2, VolumeX, Keyboard, ZoomIn, ZoomOut, HelpCircle, Settings, Layout, Crown, Sparkles, Menu, PanelRightOpen } from "lucide-react";
+import { Volume2, VolumeX, Keyboard, ZoomIn, ZoomOut, Layout, Crown, Sparkles, Menu, PanelRightOpen } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";

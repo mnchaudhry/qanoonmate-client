@@ -1,7 +1,5 @@
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { UserCircle, Calendar, MessageSquare, Settings, Shield, Bell, Activity } from "lucide-react";
 
 export default function LoadingProfile() {
   return (
@@ -19,7 +17,7 @@ export default function LoadingProfile() {
               <Skeleton className="h-10 w-36" />
             </div>
           </div>
-          
+
           {/* Quick Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {[1, 2, 3, 4].map((i) => (
@@ -45,18 +43,18 @@ export default function LoadingProfile() {
                   <Skeleton className="h-full w-full rounded-full" />
                   <Skeleton className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full" />
                 </div>
-                
+
                 <Skeleton className="h-6 w-32 mx-auto mb-2" />
                 <Skeleton className="h-4 w-40 mx-auto mb-4" />
-                
+
                 <div className="flex items-center justify-center gap-2 mb-4">
                   <Skeleton className="h-6 w-16 rounded-full" />
                   <Skeleton className="h-6 w-20 rounded-full" />
                 </div>
-                
+
                 <Skeleton className="h-3 w-24 mx-auto" />
               </div>
-              
+
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="flex items-center gap-3 text-sm">
@@ -85,7 +83,7 @@ export default function LoadingProfile() {
             {/* Tab Content */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
               <Skeleton className="h-7 w-48 mb-6" />
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <Skeleton className="h-5 w-32" />
@@ -98,7 +96,7 @@ export default function LoadingProfile() {
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <Skeleton className="h-5 w-32" />
                   <div className="space-y-3">

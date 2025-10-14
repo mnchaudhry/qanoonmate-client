@@ -21,13 +21,13 @@ const testimonials = [
         name: 'Ayesha K.',
         title: 'Marketing Manager',
         message:
-            'Super helpful for clarifying confusing legal terms in our vendor agreements. It’s like having a mini lawyer in your pocket.',
+            "Super helpful for clarifying confusing legal terms in our vendor agreements. It's like having a mini lawyer in your pocket.",
     },
     {
         name: 'Usman K.',
         title: 'HR Specialist',
         message:
-            'It’s like having a legal assistant that works 24/7. No waiting, just straight answers.',
+            "It's like having a legal assistant that works 24/7. No waiting, just straight answers.",
     },
 ]
 
@@ -75,15 +75,7 @@ const TestimonialsCarousel = () => {
     )
 }
 
-const TestimonialCard = ({
-    name,
-    title,
-    message,
-}: {
-    name: string
-    title: string
-    message: string
-}) => (
+const TestimonialCard = ({ name, title, message, }: { name: string; title: string; message: string }) => (
     <div className="min-w-[300px] max-w-xs bg-white p-6 rounded-xl shadow-md border border-muted/30">
         <Quote className="w-5 h-5 text-primary-300 mb-2" />
         <p className="text-sm text-muted-foreground mb-4">“{message}”</p>

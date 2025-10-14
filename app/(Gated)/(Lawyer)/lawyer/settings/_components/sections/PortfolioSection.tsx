@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Award, Plus, Trash2, Save, FileText, Star, Users, Calendar } from "lucide-react";
+import { Award, Plus, Trash2, Save, FileText, Star } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
 import { SubsectionHeader } from "./SubsectionHeader";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
@@ -85,7 +85,7 @@ export function PortfolioSection({ }: PortfolioSectionProps) {
     try {
       // TODO: Implement portfolio update
       console.log('Portfolio updated:', { notableCases, publications, awards });
-      
+
     } catch (error) {
       console.error('Error saving portfolio:', error);
     } finally {
@@ -289,9 +289,9 @@ export function PortfolioSection({ }: PortfolioSectionProps) {
                       </Button>
                     </div>
                     {publication.url && (
-                      <a 
-                        href={publication.url} 
-                        target="_blank" 
+                      <a
+                        href={publication.url}
+                        target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-primary hover:underline"
                       >

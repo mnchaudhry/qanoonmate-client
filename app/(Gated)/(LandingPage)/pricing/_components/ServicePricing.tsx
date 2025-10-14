@@ -8,6 +8,7 @@ import { creditsAPI } from '@/store/api/credits';
 const ServicePricing: React.FC = () => {
   const [pricing, setPricing] = useState(servicePricing);
   const [loading, setLoading] = useState(true);
+  console.log('loading', loading);
 
   useEffect(() => {
     const fetchServicePricing = async () => {
@@ -32,7 +33,7 @@ const ServicePricing: React.FC = () => {
           <div className="text-primary font-medium mb-2">SERVICE PRICING</div>
           <h2 className="text-3xl font-bold mb-4">Pay only for what you use</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Our credit-based system ensures you only pay for the services you actually use. 
+            Our credit-based system ensures you only pay for the services you actually use.
             No monthly subscriptions, no hidden fees.
           </p>
         </div>
@@ -60,8 +61,8 @@ const ServicePricing: React.FC = () => {
           <div className="bg-primary/10 rounded-lg p-6 max-w-2xl mx-auto">
             <h3 className="text-xl font-semibold mb-2">How it works</h3>
             <p className="text-muted-foreground">
-              Purchase Qanoon Credits (QC) and use them as needed. Credits never expire, 
-              and you can buy more anytime. Start with our Starter Package or buy credits 
+              Purchase Qanoon Credits (QC) and use them as needed. Credits never expire,
+              and you can buy more anytime. Start with our Starter Package or buy credits
               individually as you need them.
             </p>
           </div>

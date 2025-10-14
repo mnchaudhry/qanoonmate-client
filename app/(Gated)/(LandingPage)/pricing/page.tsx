@@ -14,6 +14,7 @@ import { QCPackage } from "@/store/types/credits.types";
 export default function PricingPage() {
   const [packages, setPackages] = useState<QCPackage[]>(creditPackages);
   const [loading, setLoading] = useState(true);
+  console.log('loading', loading);
 
   useEffect(() => {
     const fetchPackages = async () => {
@@ -49,7 +50,7 @@ export default function PricingPage() {
               <h2 className="text-3xl font-bold">Qanoon Credits (QC)</h2>
             </div>
             <p className="text-muted-foreground max-w-3xl mx-auto text-lg">
-              Our revolutionary credit-based system lets you pay only for the legal services you actually use. 
+              Our revolutionary credit-based system lets you pay only for the legal services you actually use.
               No monthly subscriptions, no hidden fees, no waste.
             </p>
           </div>

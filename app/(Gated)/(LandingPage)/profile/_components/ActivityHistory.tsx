@@ -1,23 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  Calendar, 
-  MessageSquare, 
-  FileText, 
-  Star, 
-  Clock, 
-  User,
-  MoreHorizontal,
-  Filter,
-  Search,
-  AlertCircle,
-  Loader2
-} from "lucide-react";
+import { Calendar, MessageSquare, FileText, Star, Clock, User, MoreHorizontal, Filter, Search, AlertCircle, Loader2 } from "lucide-react";
 import { User as UserType } from "@/store/types/user.types";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -45,25 +32,19 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (user) {
-      fetchActivities();
-    }
-  }, [user]);
-
-  const fetchActivities = async () => {
+  const fetchActivities = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await fetch('/api/profile/me/activity', {
         credentials: 'include'
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         const fetchedActivities = data.data.activities || [];
-        
+
         // Transform the activities to match our interface
         const transformedActivities = fetchedActivities.map((activity: any) => ({
           id: activity.id,
@@ -75,7 +56,7 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
           icon: getActivityIcon(activity.type),
           color: getActivityColor(activity.type)
         }));
-        
+
         setActivities(transformedActivities);
       } else {
         throw new Error('Failed to fetch activities');
@@ -88,7 +69,13 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchActivities();
+    }
+  }, [fetchActivities, user]);
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -158,7 +145,7 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
     const date = new Date(timestamp);
     const now = new Date();
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
+
     if (diffInHours < 1) {
       return 'Just now';
     } else if (diffInHours < 24) {
@@ -176,10 +163,10 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
 
   const filteredActivities = activities.filter(activity => {
     const matchesSearch = activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         activity.description.toLowerCase().includes(searchTerm.toLowerCase());
+      activity.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === "all" || activity.type === filterType;
     const matchesStatus = filterStatus === "all" || activity.status === filterStatus;
-    
+
     return matchesSearch && matchesType && matchesStatus;
   });
 
@@ -192,7 +179,7 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
             <p className="text-sm text-slate-600">Track your recent activities and interactions</p>
           </div>
         </div>
-        
+
         <div className="flex items-center justify-center py-12">
           <div className="flex items-center gap-3 text-slate-600">
             <Loader2 className="w-5 h-5 animate-spin" />
@@ -212,7 +199,7 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
             <p className="text-sm text-slate-600">Track your recent activities and interactions</p>
           </div>
         </div>
-        
+
         <Card>
           <CardContent className="p-8 text-center">
             <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -259,7 +246,7 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
                 />
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700">Activity Type</label>
               <Select value={filterType} onValueChange={setFilterType}>
@@ -277,7 +264,7 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium text-slate-700">Status</label>
               <Select value={filterStatus} onValueChange={setFilterStatus}>
@@ -313,7 +300,7 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
                 {activities.length === 0 ? 'No activities yet' : 'No activities found'}
               </h3>
               <p className="text-slate-600">
-                {activities.length === 0 
+                {activities.length === 0
                   ? 'Your activity history will appear here as you use the platform.'
                   : 'Try adjusting your search or filter criteria'
                 }
@@ -329,28 +316,28 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${activity.color}`}>
                     {activity.icon}
                   </div>
-                  
+
                   {/* Activity Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-slate-900 mb-1">{activity.title}</h4>
                         <p className="text-sm text-slate-600 mb-2">{activity.description}</p>
-                        
+
                         <div className="flex items-center gap-4 text-xs text-slate-500">
                           <div className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {formatTimestamp(activity.timestamp)}
                           </div>
-                          
+
                           <div className="flex items-center gap-1">
                             <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
                             {getTypeLabel(activity.type)}
                           </div>
-                          
+
                           {activity.status && (
-                            <Badge 
-                              variant="secondary" 
+                            <Badge
+                              variant="secondary"
                               className={`text-xs ${getStatusColor(activity.status)}`}
                             >
                               {getStatusLabel(activity.status)}
@@ -358,7 +345,7 @@ export default function ActivityHistory({ user }: ActivityHistoryProps) {
                           )}
                         </div>
                       </div>
-                      
+
                       {/* Action Menu */}
                       <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
                         <MoreHorizontal className="w-4 h-4" />

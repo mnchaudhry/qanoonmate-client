@@ -5,7 +5,7 @@ import { Lawyer } from "@/store/types/lawyer.types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { updateMeLawyer } from "@/store/reducers/lawyerSlice";
-import { updateLawyerSettings, updateConsultationSettings, updateAvailability } from "@/store/reducers/lawyerSettingsSlice";
+import { updateConsultationSettings, updateAvailability } from "@/store/reducers/lawyerSettingsSlice";
 import { useEffect } from "react";
 
 interface EditModalContextType {
@@ -16,7 +16,7 @@ interface EditModalContextType {
   isTestimonialsModalOpen: boolean;
   isContactModalOpen: boolean;
   isAvailabilityModalOpen: boolean;
-  
+
   openOverviewModal: () => void;
   openExpertiseModal: () => void;
   openCredentialsModal: () => void;
@@ -24,12 +24,12 @@ interface EditModalContextType {
   openTestimonialsModal: () => void;
   openContactModal: () => void;
   openAvailabilityModal: () => void;
-  
+
   closeAllModals: () => void;
-  
+
   lawyer: Lawyer | null;
   setLawyer: (lawyer: Lawyer | null) => void;
-  
+
   // API functions
   updateProfile: (updates: any) => Promise<void>;
   updateSection: (section: string, data: any) => Promise<void>;
@@ -56,7 +56,7 @@ export function EditModalProvider({ children, lawyer }: { children: ReactNode; l
   const openTestimonialsModal = () => setIsTestimonialsModalOpen(true);
   const openContactModal = () => setIsContactModalOpen(true);
   const openAvailabilityModal = () => setIsAvailabilityModalOpen(true);
-  
+
   const closeAllModals = () => {
     setIsOverviewModalOpen(false);
     setIsExpertiseModalOpen(false);
@@ -79,11 +79,11 @@ export function EditModalProvider({ children, lawyer }: { children: ReactNode; l
   // API functions using existing Redux actions
   const updateProfile = async (updates: any) => {
     if (!currentLawyer || !user) throw new Error("No lawyer profile or user available");
-    
+
     try {
       // Use the existing updateMeLawyer action
       await dispatch(updateMeLawyer(updates)).unwrap();
-      
+
       // Update local state with the changes
       setCurrentLawyer(prev => prev ? { ...prev, ...updates } : null);
     } catch (error) {
@@ -94,7 +94,7 @@ export function EditModalProvider({ children, lawyer }: { children: ReactNode; l
 
   const updateSection = async (section: string, data: any) => {
     if (!currentLawyer || !user) throw new Error("No lawyer profile or user available");
-    
+
     try {
       // Route to appropriate Redux action based on section
       switch (section) {
@@ -108,7 +108,7 @@ export function EditModalProvider({ children, lawyer }: { children: ReactNode; l
           // For other sections, use the general updateMeLawyer
           await dispatch(updateMeLawyer({ [section]: data })).unwrap();
       }
-      
+
       // Update local state with the changes
       setCurrentLawyer(prev => prev ? { ...prev, [section]: data } : null);
     } catch (error) {
@@ -127,7 +127,7 @@ export function EditModalProvider({ children, lawyer }: { children: ReactNode; l
         isTestimonialsModalOpen,
         isContactModalOpen,
         isAvailabilityModalOpen,
-        
+
         openOverviewModal,
         openExpertiseModal,
         openCredentialsModal,
@@ -135,12 +135,12 @@ export function EditModalProvider({ children, lawyer }: { children: ReactNode; l
         openTestimonialsModal,
         openContactModal,
         openAvailabilityModal,
-        
+
         closeAllModals,
-        
+
         lawyer: currentLawyer,
         setLawyer,
-        
+
         // API functions
         updateProfile,
         updateSection,

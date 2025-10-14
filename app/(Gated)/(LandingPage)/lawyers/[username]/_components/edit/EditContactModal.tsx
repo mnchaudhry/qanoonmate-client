@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Lawyer } from "@/store/types/lawyer.types";
 import { useEditModal } from "./EditModalContext";
 import { X, Plus } from "lucide-react";
 
@@ -24,7 +23,7 @@ interface ConsultationFee {
 }
 
 export function EditContactModal({ isOpen, onClose }: EditContactModalProps) {
-  const { lawyer, setLawyer } = useEditModal();
+  const { lawyer } = useEditModal();
   const [formData, setFormData] = useState({
     responseTime: "",
     consultationFees: [] as ConsultationFee[],
@@ -39,7 +38,7 @@ export function EditContactModal({ isOpen, onClose }: EditContactModalProps) {
 
   const consultationTypes = [
     "Initial Consultation",
-    "Follow-up Consultation", 
+    "Follow-up Consultation",
     "Document Review",
     "Legal Opinion",
     "Court Appearance",
@@ -103,12 +102,12 @@ export function EditContactModal({ isOpen, onClose }: EditContactModalProps) {
         price: parseInt(newFee.price),
         duration: newFee.duration,
       };
-      
+
       setFormData(prev => ({
         ...prev,
         consultationFees: [...prev.consultationFees, fee]
       }));
-      
+
       setNewFee({ type: "", price: "", duration: "" });
     }
   };
@@ -135,7 +134,7 @@ export function EditContactModal({ isOpen, onClose }: EditContactModalProps) {
         })),
         // Note: responseTime might need to be stored in a different field
       });
-      
+
       console.log("Successfully saved contact data:", formData);
     } catch (error) {
       console.error("Failed to save contact data:", error);
