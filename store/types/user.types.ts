@@ -1,38 +1,41 @@
-import { AccountStatus, Gender, ReleaseChannel, UserRole, LawyerCity } from "@/lib/enums";
-import { Province } from "@/lib/enums";
+import { AccountStatus, Gender, ReleaseChannel, UserRole, UserLanguagePreference, PakistanCities, PakistanProvinces } from "@/lib/enums";
 import { APIResponse, PaginationMeta } from "./api";
 import { Review } from "./review.types";
 
 export interface User {
-    _id: string;
     firstname: string;
     lastname: string;
     username: string;
     email: string;
     phone: string;
-    password?: string;
+    password: string;
     role: UserRole;
-    bio?: string;
-    gender?: Gender;
-    dob?: string | null;
-    profilePicture?: string;
-    languages?: string[];
-    preferredLanguage?: string;
-    location?: {
-        city?: LawyerCity;
-        province?: Province;
+    bio: string;
+    profilePicture: string;
+    gender: Gender;
+    dob: Date | null;
+    languages: UserLanguagePreference[];
+    preferredLanguage: UserLanguagePreference;
+    location: {
+        city: PakistanCities | null;
+        province: PakistanProvinces | null;
     };
-    emailVerified?: boolean;
-    phoneVerified?: boolean;
-    identityVerified?: boolean;
+    emailVerified: boolean;
+    phoneVerified: boolean;
+    identityVerified: boolean;
     accountStatus: AccountStatus;
     releaseChannel: ReleaseChannel;
-    reviews?: Review[];
-    avgRating?: number | null;
-    createdAt: string;
-    lastLogin: string;
-    updatedAt: string;
+    forgetPasswordRequest: boolean;
+    otp: string;
+    reviews: Review[];
+    avgRating: number | null;
+    lastLogin: Date | null;
+    qcBalance: number;
+    kind: "User";
+    createdAt?: Date;
+    updatedAt?: Date;
 }
+
 
 export interface UserPreferences {
     [key: string]: any;

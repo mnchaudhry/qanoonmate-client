@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { X } from "lucide-react"
 import SearchBar from "@/components/SearchBar"
-import { AccountStatus, LawCategory, Province } from "@/lib/enums"
+import { AccountStatus, LawCategory, PakistanProvinces } from "@/lib/enums"
 import { enumToLabel } from "@/lib/utils"
 
 interface FiltersActionBarProps {
@@ -107,7 +107,7 @@ export default function FiltersActionBar({ onSearch, onStatusFilter, onSpecializ
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             {
-              Object.values(Province).map((province) => (
+              Object.values(PakistanProvinces).map((province) => (
                 <SelectItem key={province} value={province}>{enumToLabel(province)}</SelectItem>
               ))
             }

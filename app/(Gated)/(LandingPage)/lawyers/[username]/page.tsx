@@ -17,7 +17,7 @@ import { EditModalProvider } from "./_components/edit/EditModalContext";
 import { getLawyerByUsername } from "@/store/reducers/lawyerSlice";
 import { RootState, AppDispatch } from "@/store/store";
 import { Lawyer } from "@/store/types/lawyer.types";
-import { LawyerCity, Province, LawCategory } from "@/lib/enums";
+import { PakistanCities, PakistanProvinces, LawCategory } from "@/lib/enums";
 
 export default function LawyerProfilePage() {
 
@@ -84,8 +84,8 @@ export default function LawyerProfilePage() {
         phone: lawyer.phone,
         profilePicture: lawyer.profilePicture,
         location: {
-          city: (lawyer.location?.city as LawyerCity) || LawyerCity.LAHORE,
-          province: (lawyer.location?.province as Province) || Province.PUNJAB,
+          city: (lawyer.location?.city as PakistanCities) || PakistanCities.LAHORE,
+          province: (lawyer.location?.province as PakistanProvinces) || PakistanProvinces.PUNJAB,
           country: "Pakistan"
         }
       },
@@ -101,14 +101,14 @@ export default function LawyerProfilePage() {
         secondarySpecializations: (lawyer.specializations as LawCategory[]) || [],
         jurisdictions: lawyer.jurisdictions?.map(j => ({
           geography: {
-            province: j?.geography?.province as Province,
+            province: j?.geography?.province as PakistanProvinces,
             district: j?.geography?.district || undefined,
             tehsil: j?.geography?.tehsil || undefined
           },
           courts: j.courts
         })) || [{
           geography: {
-            province: (lawyer.location?.province as Province) || Province.PUNJAB,
+            province: (lawyer.location?.province as PakistanProvinces) || PakistanProvinces.PUNJAB,
             district: "Lahore",
             tehsil: "Lahore"
           },

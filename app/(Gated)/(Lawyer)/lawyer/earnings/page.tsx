@@ -7,8 +7,17 @@ import EarningsChart from './_components/EarningsChart';
 import EarningsBreakdownTable from './_components/EarningsBreakdownTable';
 import WithdrawalRequestsTable from './_components/WithdrawalRequestsTable';
 import PageHeader from '../_components/PageHeader';
+import ComingSoon from '@/components/ComingSoon';
 
 export default function Earnings() {
+
+  const isComingSoon = true;
+
+  if (isComingSoon) return <ComingSoon
+    title='Earnings Overview'
+    description='This page is currently under construction. Stay tuned for updates!'
+  />;
+
   return (
     <div className="space-y-6 pb-8">
 

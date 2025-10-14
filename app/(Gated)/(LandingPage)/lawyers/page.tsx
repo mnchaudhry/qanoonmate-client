@@ -14,7 +14,7 @@ import ViewToggle from "@/components/ViewToggle";
 import EmptyState from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LawCategory, LawyerLanguage, AvailabilityDay, LawyerCity, Province, LawyerRating, LawyerFeeRange, LawyerExperienceRange, AccountStatus } from "@/lib/enums";
+import { LawCategory, LawyerLanguage, AvailabilityDay, PakistanCities, PakistanProvinces, LawyerRating, LawyerFeeRange, LawyerExperienceRange, AccountStatus } from "@/lib/enums";
 
 const PAGE_SIZE = 42;
 
@@ -50,8 +50,8 @@ const LawyersDirectory = () => {
     specialization: Object.values(LawCategory),
     language: Object.values(LawyerLanguage),
     availability: Object.values(AvailabilityDay),
-    city: Object.values(LawyerCity),
-    province: Object.values(Province),
+    city: Object.values(PakistanCities),
+    province: Object.values(PakistanProvinces),
     rating: Object.values(LawyerRating),
     fee_range: Object.values(LawyerFeeRange).map(fee => ({ label: fee, value: fee })),
     experience_range: Object.values(LawyerExperienceRange).map(experience => ({ label: experience, value: experience }))

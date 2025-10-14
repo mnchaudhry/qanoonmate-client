@@ -3,7 +3,7 @@ import * as api from '../api';
 import toast from 'react-hot-toast';
 import { fetchAndSetCSRFToken } from '../api/axios';
 import { UserRole } from '@/lib/enums';
-import { ChangePasswordRequest, ForgetPasswordRequest, ForgetPasswordUpdateRequest, LoginRequest, SignupRequest, ClientSignupRequest, LawyerSignupRequest, LawyerSignupStep1Request, UpdateProfileRequest, VerifyOtpRequest } from '../types/auth.types';
+import { ChangePasswordRequest, ForgetPasswordRequest, ForgetPasswordUpdateRequest, LoginRequest, ClientSignupRequest, LawyerSignupStep1Request, UpdateProfileRequest, VerifyOtpRequest } from '../types/auth.types';
 import { Client } from '../types/client.types';
 import { Lawyer } from '../types/lawyer.types';
 import { User } from '../types/user.types';
@@ -303,7 +303,7 @@ export const hydrateAuth = createAsyncThunk('auth/hydrateAuth', async (options: 
     await dispatch(logout());
     if (!silent) toast.error('Hydration failed');
     const message = getErrorMessage(err, 'Hydration failed');
-    return rejectWithValue('');
+    return rejectWithValue(message);
   }
 });
 
@@ -339,7 +339,7 @@ const authSlice = createSlice({
       .addCase(clientSignup.pending, (state) => {
         state.error = null;
       })
-      .addCase(clientSignup.fulfilled, (state, action) => {
+      .addCase(clientSignup.fulfilled, () => {
         // Client signup success - user will be verified via OTP
       })
       .addCase(clientSignup.rejected, (state, action) => {
@@ -350,7 +350,7 @@ const authSlice = createSlice({
       .addCase(lawyerSignupStep.pending, (state) => {
         state.error = null;
       })
-      .addCase(lawyerSignupStep.fulfilled, (state, action) => {
+      .addCase(lawyerSignupStep.fulfilled, () => {
         // Step 1 completed - lawyer created/updated
       })
       .addCase(lawyerSignupStep.rejected, (state, action) => {
@@ -428,7 +428,7 @@ const authSlice = createSlice({
       .addCase(resendOTP.pending, (state) => {
         state.error = null;
       })
-      .addCase(resendOTP.fulfilled, (state) => {
+      .addCase(resendOTP.fulfilled, () => {
 
       })
       .addCase(resendOTP.rejected, (state, action) => {
@@ -439,7 +439,7 @@ const authSlice = createSlice({
       .addCase(forgetPasswordRequest.pending, (state) => {
         state.error = null;
       })
-      .addCase(forgetPasswordRequest.fulfilled, (state) => {
+      .addCase(forgetPasswordRequest.fulfilled, () => {
 
       })
       .addCase(forgetPasswordRequest.rejected, (state, action) => {
@@ -450,7 +450,7 @@ const authSlice = createSlice({
       .addCase(resetPassword.pending, (state) => {
         state.error = null;
       })
-      .addCase(resetPassword.fulfilled, (state) => {
+      .addCase(resetPassword.fulfilled, () => {
 
       })
       .addCase(resetPassword.rejected, (state, action) => {
@@ -472,7 +472,7 @@ const authSlice = createSlice({
       .addCase(revokeSession.pending, (state) => {
         state.error = null;
       })
-      .addCase(revokeSession.fulfilled, (state) => {
+      .addCase(revokeSession.fulfilled, () => {
 
       })
       .addCase(revokeSession.rejected, (state, action) => {
@@ -502,7 +502,7 @@ const authSlice = createSlice({
       .addCase(deactivate.pending, (state) => {
         state.error = null;
       })
-      .addCase(deactivate.fulfilled, (state) => {
+      .addCase(deactivate.fulfilled, () => {
 
       })
       .addCase(deactivate.rejected, (state, action) => {

@@ -21,9 +21,9 @@ import { VerificationSection } from "./sections/VerificationSection";
 import { ProfileSettings } from "./sections/ProfileSettings";
 import { PlaceholderSection } from "./sections/PlaceholderSection";
 import { Award, DollarSign, Eye, MessageSquare, Database } from "lucide-react";
-import { Province } from "@/lib/enums";
+import { PakistanProvinces } from "@/lib/enums";
 import { LawCategory } from "@/lib/enums";
-import { LawyerCity } from "@/lib/enums";
+import { PakistanCities } from "@/lib/enums";
 
 interface SettingsContentProps {
   activeSection: string;
@@ -52,8 +52,8 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
           dob: lawyer.dob || '',
           cnic: lawyer.cnic || '',
           location: {
-            city: lawyer.location?.city || LawyerCity.LAHORE,
-            province: lawyer.location?.province || Province.PUNJAB,
+            city: lawyer.location?.city || PakistanCities.LAHORE,
+            province: lawyer.location?.province || PakistanProvinces.PUNJAB,
             country: 'Pakistan'
           }
         },

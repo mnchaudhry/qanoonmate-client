@@ -160,39 +160,6 @@ export enum AvailabilityDay {
   SUNDAY = "sunday"
 }
 
-export enum LawyerCity {
-  PESHAWAR = "peshawar",
-  ISLAMABAD = "islamabad",
-  RAWALPINDI = "rawalpindi",
-  LAHORE = "lahore",
-  KARACHI = "karachi",
-  QUETTA = "quetta",
-  MULTAN = "multan",
-  FAISALABAD = "faisalabad",
-  SIALKOT = "sialkot",
-  GUJRANWALA = "gujranwala",
-  SARGODHA = "sargodha",
-  BAHAWALPUR = "bahawalpur",
-  RAHIM_YAR_KHAN = "rahim_yar_khan",
-  DERA_GHAZI_KHAN = "dera_ghazi_khan",
-  SUKKUR = "sukkur",
-  HYDERABAD = "hyderabad",
-  MIRPUR_KHAS = "mirpur_khas",
-  NAWABSHAH = "nawabshah",
-  LARKANA = "larkana",
-  JACOBABAD = "jacobabad",
-  OTHER = "other"
-}
-
-export enum Province {
-  KHYBER_PAKHTUNKHWA = "khyber_pakhtunkhwa",
-  PUNJAB = "punjab",
-  SINDH = "sindh",
-  BALOCHISTAN = "balochistan",
-  GILGIT_BALTISTAN = "gilgit_baltistan",
-  AZAD_JAMMU_AND_KASHMIR = "azad_jammu_and_kashmir"
-}
-
 export enum BarCouncils {
   PunjabBarCouncil = "Punjab Bar Council",
   SindhBarCouncil = "Sindh Bar Council",
@@ -247,6 +214,39 @@ export enum UserTheme {
 export enum UserLanguagePreference {
   ENGLISH = "english",
   URDU = "urdu"
+}
+
+export enum PakistanCities {
+    PESHAWAR = "peshawar",
+    ISLAMABAD = "islamabad",
+    RAWALPINDI = "rawalpindi",
+    LAHORE = "lahore",
+    KARACHI = "karachi",
+    QUETTA = "quetta",
+    MULTAN = "multan",
+    FAISALABAD = "faisalabad",
+    SIALKOT = "sialkot",
+    GUJRANWALA = "gujranwala",
+    SARGODHA = "sargodha",
+    BAHAWALPUR = "bahawalpur",
+    RAHIM_YAR_KHAN = "rahim_yar_khan",
+    DERA_GHAZI_KHAN = "dera_ghazi_khan",
+    SUKKUR = "sukkur",
+    HYDERABAD = "hyderabad",
+    MIRPUR_KHAS = "mirpur_khas",
+    NAWABSHAH = "nawabshah",
+    LARKANA = "larkana",
+    JACOBABAD = "jacobabad",
+    OTHER = "other"
+}
+
+export enum PakistanProvinces {
+    KHYBER_PAKHTUNKHWA = "khyber_pakhtunkhwa",
+    PUNJAB = "punjab",
+    SINDH = "sindh",
+    BALOCHISTAN = "balochistan",
+    GILGIT_BALTISTAN = "gilgit_baltistan",
+    AZAD_JAMMU_AND_KASHMIR = "azad_jammu_and_kashmir"
 }
 
 

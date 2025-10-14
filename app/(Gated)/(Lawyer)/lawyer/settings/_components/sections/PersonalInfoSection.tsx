@@ -12,7 +12,7 @@ import { Upload, Save, User } from "lucide-react";
 import { SectionHeader } from "./SectionHeader";
 import { SubsectionHeader } from "./SubsectionHeader";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
-import { Gender, Province, LawyerCity } from "@/lib/enums";
+import { Gender, PakistanProvinces, PakistanCities } from "@/lib/enums";
 import { enumToLabel } from "@/lib/utils";
 import { AppDispatch } from "@/store/store";
 import { updateProfileSection } from "@/store/reducers/profileSlice";
@@ -274,7 +274,7 @@ export function PersonalInfoSection({ profile, onUpdate }: PersonalInfoSectionPr
                         <SelectValue placeholder="Select province" />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.values(Province).map(province => (
+                        {Object.values(PakistanProvinces).map(province => (
                           <SelectItem key={province} value={province}>
                             {enumToLabel(province)}
                           </SelectItem>
@@ -289,7 +289,7 @@ export function PersonalInfoSection({ profile, onUpdate }: PersonalInfoSectionPr
                         <SelectValue placeholder="Select city" />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.values(LawyerCity).map(city => (
+                        {Object.values(PakistanCities).map(city => (
                           <SelectItem key={city} value={city}>
                             {enumToLabel(city)}
                           </SelectItem>

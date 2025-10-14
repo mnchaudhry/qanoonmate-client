@@ -14,7 +14,7 @@ import * as api from '@/store/api'
 import type { Lawyer, PaginatedLawyerResponse } from '@/store/types/lawyer.types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import SearchBar from '@/components/SearchBar'
-import { AccountStatus, LawCategory, LawyerCity } from '@/lib/enums'
+import { AccountStatus, LawCategory, PakistanCities } from '@/lib/enums'
 
 type ConsultationType = 'Phone' | 'Video' | 'In-person'
 
@@ -163,7 +163,7 @@ const Consultations: React.FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="All">All Cities</SelectItem>
-                {Object.values(LawyerCity).map(c => (
+                {Object.values(PakistanCities).map(c => (
                   <SelectItem key={c} value={c}>{enumToLabel(c)}</SelectItem>
                 ))}
               </SelectContent>

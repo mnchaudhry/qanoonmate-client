@@ -55,6 +55,13 @@ const ProfileButton = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 relative z-[60] " align="end" forceMount>
+        <div>
+          {user.qcBalance !== undefined && (
+            <div className="flex items-center gap-1 px-2 py-2 ">
+              <span className="text-sm font-medium">{user.qcBalance} QCs left</span>
+            </div>
+          )}
+        </div>
         <DropdownMenuItem asChild>
           <Link href={getProfileLink()} className="flex items-center gap-x-2" >
             <User className="h-4 w-4" />

@@ -1,6 +1,6 @@
 import { User } from './user.types';
 import { APIResponse } from './api';
-import { BarCouncils, Courts, Province } from '@/lib/enums';
+import { BarCouncils, Courts, PakistanProvinces } from '@/lib/enums';
 import { LawyerSettings } from './lawyerSettings.types';
 import { LawCategory } from '@/lib/enums';
 import { Client } from './client.types';
@@ -38,7 +38,7 @@ export interface Lawyer extends User {
   primarySpecialization?: LawCategory;
   jurisdictions?: {
     geography: {
-      province: Province;
+      province: PakistanProvinces;
       district?: string | null;  // null = whole province
       tehsil?: string | null;
     };

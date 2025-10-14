@@ -29,7 +29,7 @@ const data = {
   },
   contact: {
     email: 'contact@qanoonmate.com',
-    phone: '+92 300 1234567',
+    phone: '+92 370 6888216',
     address: 'Islamabad, Pakistan',
   },
   company: {

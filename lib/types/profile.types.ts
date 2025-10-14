@@ -1,4 +1,4 @@
-import { LawCategory, BarCouncils, Gender, Province, LawyerCity } from '@/lib/enums';
+import { LawCategory, BarCouncils, Gender, PakistanProvinces, PakistanCities } from '@/lib/enums';
 
 // Enhanced lawyer profile structure
 export interface LawyerProfile {
@@ -14,8 +14,8 @@ export interface LawyerProfile {
     dob?: string;
     cnic?: string;
     location: {
-      city: LawyerCity;
-      province: Province;
+      city: PakistanCities;
+      province: PakistanProvinces;
       country: string;
     };
   };
@@ -35,7 +35,7 @@ export interface LawyerProfile {
     secondarySpecializations: LawCategory[];
     jurisdictions?: {
       geography: {
-        province: Province;
+        province: PakistanProvinces;
         district?: string | null;  // null = whole province
         tehsil?: string | null;
       };
