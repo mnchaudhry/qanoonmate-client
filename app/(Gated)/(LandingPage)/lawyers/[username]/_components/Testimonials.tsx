@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, Star, Calendar, User, Edit } from "lucide-react";
+import { MessageSquare, Star, User, Edit } from "lucide-react";
 import { LawyerProfile } from "@/lib/types/profile.types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -82,11 +82,10 @@ export function Testimonials({ lawyer }: TestimonialsProps) {
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
-                    className={`w-3 h-3 ${
-                      star <= Math.round(averageRating)
+                    className={`w-3 h-3 ${star <= Math.round(averageRating)
                         ? 'fill-yellow-400 text-yellow-400'
                         : 'text-gray-300'
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -124,11 +123,10 @@ export function Testimonials({ lawyer }: TestimonialsProps) {
                     {[1, 2, 3, 4, 5].map((star) => (
                       <Star
                         key={star}
-                        className={`w-3 h-3 ${
-                          star <= testimonial.rating
+                        className={`w-3 h-3 ${star <= testimonial.rating
                             ? 'fill-yellow-400 text-yellow-400'
                             : 'text-gray-300'
-                        }`}
+                          }`}
                       />
                     ))}
                   </div>
@@ -138,7 +136,7 @@ export function Testimonials({ lawyer }: TestimonialsProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-700 leading-relaxed">
-                "{testimonial.comment}"
+                &quot;{testimonial.comment}&quot;
               </p>
             </div>
           ))}
