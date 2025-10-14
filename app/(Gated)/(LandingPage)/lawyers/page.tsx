@@ -248,7 +248,7 @@ const LawyersDirectory = () => {
             {lawyers.length > 0 && (
               <div className="flex justify-between items-center mb-4">
                 <div className="text-sm text-muted-foreground">
-                  {process.env.NODE_ENV == 'development' &&
+                  {/* {process.env.NODE_ENV == 'development' &&
                     <>
                       Showing {lawyers.length} of {totalCount} lawyers
                       {isSearching && (
@@ -257,7 +257,7 @@ const LawyersDirectory = () => {
                         </span>
                       )}
                     </>
-                  }
+                  } */}
                 </div>
                 <ViewToggle view={view} onViewChange={handleViewChange} />
               </div>

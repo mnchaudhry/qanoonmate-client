@@ -27,8 +27,8 @@ export function LegalExpertise({ lawyer }: LegalExpertiseProps) {
             Legal Expertise
           </div>
           {isOwnProfile && (
-            <Edit 
-              className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary" 
+            <Edit
+              className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary"
               onClick={openExpertiseModal}
             />
           )}
@@ -58,14 +58,14 @@ export function LegalExpertise({ lawyer }: LegalExpertiseProps) {
         )}
 
         {/* Jurisdictions */}
-        {lawyer.legalExpertise.jurisdictions.length > 0 && (
+        {lawyer?.legalExpertise?.jurisdictions && lawyer?.legalExpertise?.jurisdictions?.length > 0 && (
           <div>
             <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2 text-sm">
               <MapPin className="w-3.5 h-3.5" />
               Jurisdictions
             </h4>
             <div className="space-y-3">
-              {lawyer.legalExpertise.jurisdictions.map((jurisdiction, index) => (
+              {lawyer?.legalExpertise?.jurisdictions?.map((jurisdiction, index) => (
                 <div key={index} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <div className="flex items-center gap-2 mb-2">
                     <MapPin className="w-3.5 h-3.5 text-gray-500" />
@@ -75,7 +75,7 @@ export function LegalExpertise({ lawyer }: LegalExpertiseProps) {
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1">
-                    {jurisdiction.courts.map((court, courtIndex) => (
+                    {jurisdiction?.courts?.map((court, courtIndex) => (
                       <Badge key={courtIndex} variant="secondary" className="text-xs bg-gray-100 text-gray-700">
                         {court}
                       </Badge>
@@ -119,11 +119,11 @@ export function LegalExpertise({ lawyer }: LegalExpertiseProps) {
           </div>
         )}
       </CardContent>
-      
+
       {/* Edit Modal */}
-      <EditExpertiseModal 
-        isOpen={isExpertiseModalOpen} 
-        onClose={closeAllModals} 
+      <EditExpertiseModal
+        isOpen={isExpertiseModalOpen}
+        onClose={closeAllModals}
       />
     </Card>
   );

@@ -15,17 +15,19 @@ const FILTERS = ['All', 'Active'];
 const MyClients = () => {
   //////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
-  const { clients, isLoading } = useSelector((state: RootState) => state.lawyer);
+  const { clients } = useSelector((state: RootState) => state.lawyer);
 
   //////////////////////////////////////////////// STATES //////////////////////////////////////////////////////
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState(FILTERS[0]);
   const [page, setPage] = useState(1);
   const [view, setView] = useState<'grid' | 'list'>('grid');
+  const [isLoading, setIsLoading] = useState(false);
 
   //////////////////////////////////////////////// USE EFFECTS //////////////////////////////////////////////////////
   useEffect(() => {
-    dispatch(getMyClients());
+    setIsLoading(true)
+    dispatch(getMyClients()).finally(() => setIsLoading(false));
   }, [dispatch]);
 
   //////////////////////////////////////////////// MEMOES //////////////////////////////////////////////////////

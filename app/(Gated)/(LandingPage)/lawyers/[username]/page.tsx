@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { LawyerProfile } from "@/lib/types/profile.types";
@@ -31,56 +31,49 @@ export default function LawyerProfilePage() {
   //////////////////////////////////////////////// STATES ///////////////////////////////////////////
   const [lawyerProfile, setLawyerProfile] = useState<LawyerProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   //////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////////
-  useEffect(() => {
-    const fetchLawyerProfile = async () => {
-      try {
-        setLoading(true);
+  const fetchLawyerProfile = useCallback(async () => {
+    try {
+      setLoading(true);
 
-        if (username == 'me') {
-          const profile = convertLawyerToProfile(user);
-          setLawyerProfile(profile);
-          return;
-        }
-
-        if (!selectedLawyer && username && username != 'me') {
-          dispatch(getLawyerByUsername(username))
-            .then(({ payload, meta }: any) => {
-              if (meta.requestStatus === 'fulfilled' && payload?.data) {
-                const profile = convertLawyerToProfile(payload.data);
-                setLawyerProfile(profile);
-              } else {
-                setError("Failed to load lawyer profile");
-              }
-            })
-            .catch((err) => {
-              setError("Failed to load lawyer profile");
-              console.error("Error fetching lawyer profile:", err);
-            })
-            .finally(() => {
-              setLoading(false);
-            });
-        } else if (selectedLawyer && username != 'me') {
-          const profile = convertLawyerToProfile(selectedLawyer);
-          setLawyerProfile(profile);
-        }
-      } catch (err) {
-        setError("Failed to load lawyer profile");
-        console.error("Error fetching lawyer profile:", err);
-      } finally {
-        setLoading(false);
+      if (username == 'me') {
+        const profile = convertLawyerToProfile(user);
+        setLawyerProfile(profile);
+        return;
       }
-    };
 
+      if (!selectedLawyer && username && username != 'me') {
+        dispatch(getLawyerByUsername(username))
+          .then(({ payload, meta }: any) => {
+            if (meta.requestStatus === 'fulfilled' && payload?.data) {
+              const profile = convertLawyerToProfile(payload.data);
+              setLawyerProfile(profile);
+            }
+          })
+          .catch((err) => {
+            console.error("Error fetching lawyer profile:", err);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
+      } else if (selectedLawyer && username != 'me') {
+        const profile = convertLawyerToProfile(selectedLawyer);
+        setLawyerProfile(profile);
+      }
+    } catch (err) {
+      console.error("Error fetching lawyer profile:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [username, selectedLawyer, dispatch, user]);
+  useEffect(() => {
     if (username) {
       fetchLawyerProfile();
     }
-  }, [username, selectedLawyer, dispatch, user]);
+  }, [fetchLawyerProfile, username]);
 
   //////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////
-  // Convert Lawyer to LawyerProfile
   const convertLawyerToProfile = (lawyer: Lawyer): LawyerProfile => {
     return {
       personalInfo: {
@@ -231,7 +224,7 @@ export default function LawyerProfilePage() {
     );
   }
 
-  if (error || !lawyerProfile) {
+  if (!lawyerProfile) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

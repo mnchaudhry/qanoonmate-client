@@ -23,10 +23,10 @@ export default function LawyerDashboard() {
       <div className="flex flex-col gap-6">
         {/* Top Row - Profile Progress */}
         <div className="grid grid-cols-1 lg:grid-cols-4 items-start gap-6 w-full">
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 h-[535px] overflow-y-auto ">
             <ConsultationRequests />
           </div>
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 h-[35rem] overflow-y-auto">
             <ProfileProgress />
           </div>
         </div>

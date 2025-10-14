@@ -1,13 +1,17 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { useAppSelector } from "@/store/store"
 import { Calendar, Plus } from "lucide-react"
 
 export default function DashboardHeader() {
+
+  const { user } = useAppSelector(state => state.auth);
+
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Welcome back, Advocate Sarah!</h1>
+        <h1 className="text-2xl font-bold text-foreground">Welcome back, Advocate {user?.firstname}!</h1>
         <p className="text-muted-foreground">Here&apos;s what&apos;s happening with your practice today.</p>
       </div>
       <div className="flex gap-3">
