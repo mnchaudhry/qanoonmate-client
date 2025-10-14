@@ -11,7 +11,7 @@ const ClientPage = () => {
   }, [router])
 
   return (
-    <div>ClientPage</div>
+    <div></div>
   )
 }
 

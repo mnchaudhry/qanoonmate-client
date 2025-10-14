@@ -9,7 +9,7 @@ import { useDebounce } from '@/hooks/use-debounce';
 import LandingPageHeader from '../../_components/LandingPageHeader';
 import GuideSidebar from './_components/GuideSidebar';
 import GuidesList from './_components/GuidesList';
-import ViewToggle from './_components/ViewToggle';
+import ViewToggle from '@/components/ViewToggle';
 import { Pagination } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 import EmptyState from '@/components/ui/empty-state';

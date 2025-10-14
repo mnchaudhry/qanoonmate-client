@@ -10,7 +10,7 @@ import { getActs } from '@/store/reducers/actSlice'
 import { Skeleton } from '@/components/ui/skeleton'
 import ActList from './_components/ActList'
 import ActGrid from './_components/ActGrid'
-import ViewToggle from './_components/ViewToggle'
+import ViewToggle from '@/components/ViewToggle'
 import EmptyState from '@/components/ui/empty-state'
 import { Pagination } from '@/components/ui/pagination'
 import { useDebounce } from '@/hooks/use-debounce'
@@ -235,9 +235,6 @@ const Acts = () => {
 
           {/* Main Content */}
           <div className="md:col-span-3 col-span-1">
-            {/** Force grid on mobile */}
-            {/* eslint-disable-next-line react-hooks/rules-of-hooks */}
-            {(() => { const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches; return null; })()}
             {/* View Toggle */}
             <div className="flex justify-between items-center mb-6">
               <div className="text-sm text-muted-foreground">

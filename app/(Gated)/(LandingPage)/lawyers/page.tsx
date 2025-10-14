@@ -10,7 +10,7 @@ import { AppDispatch } from "@/store/store";
 import LawyersSidebar from "./_components/LawyersSidebar";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
-import ViewToggle from "../knowledgebase/acts/_components/ViewToggle";
+import ViewToggle from "@/components/ViewToggle";
 import EmptyState from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";

@@ -84,13 +84,15 @@ const MyClients = () => {
         onViewChange={setView}
       />
 
-      {isLoading ? (
-        <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      ) : (
-        <ClientsTable clients={paginatedClients} onAction={handleAction} view={view} />
-      )}
+      <div className="mt-4">
+        {isLoading ? (
+          <div className="flex justify-center items-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <ClientsTable clients={paginatedClients} onAction={handleAction} view={view} />
+        )}
+      </div>
 
       {/* Pagination Card */}
       {totalPages > 1 && (

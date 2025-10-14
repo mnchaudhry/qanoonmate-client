@@ -4,7 +4,7 @@ const LandingPageHeader = ({ title, description }: { title: string, description:
     return (
         <section className="relative h-[300px] pt-[240px] bg-gradient-to-br from-surface to-background overflow-hidden">
             {/* Green blurred blob */}
-            <div className="absolute -top-20 -left-20 w-[400px] h-[400px] bg-[#17a44a] opacity-20 blur-3xl rounded-full pointer-events-none" />
+            <div className="absolute -top-20 -left-20 w-[400px] h-[400px] bg-primary opacity-20 blur-3xl rounded-full pointer-events-none" />
 
             {/* Subtle grid pattern */}
             <div className="absolute inset-0 z-0 opacity-5 bg-[url('/general/grid.svg')] bg-cover" />

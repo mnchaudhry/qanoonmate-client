@@ -320,24 +320,22 @@ const FileManager = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="border-b !border-border bg-background sticky top-0 z-10">
-        <div className="p-6">
-          <PageHeader
-            title="File Manager"
-            description="Manage your legal documents and case files"
-          />
+      <div className="border-b !border-border bg-background sticky top-0 z-10 space-y-4 pb-2">
+        <PageHeader
+          title="File Manager"
+          description="Manage your legal documents and case files"
+        />
 
-          <FileManagerHeader
-            onNewFolder={handleNewFolder}
-            onUpload={() => { }} // Handled by UploadZone
-            view={viewMode}
-            onViewChange={handleViewChange}
-            search={searchQuery}
-            onSearch={handleSearch}
-            uploadLoading={uploadLoading}
-            uploadProgress={uploadProgress}
-          />
-        </div>
+        <FileManagerHeader
+          onNewFolder={handleNewFolder}
+          onUpload={() => { }} // Handled by UploadZone
+          view={viewMode}
+          onViewChange={handleViewChange}
+          search={searchQuery}
+          onSearch={handleSearch}
+          uploadLoading={uploadLoading}
+          uploadProgress={uploadProgress}
+        />
       </div>
 
       {/* Breadcrumb */}

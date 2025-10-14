@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, X, List, Grid } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import ViewToggle from '@/components/ViewToggle'
 
 interface DraftFilterBarProps {
   search: string
@@ -122,23 +123,7 @@ const DraftFilterBar: React.FC<DraftFilterBarProps> = ({
             </Select>
           </div>
 
-          {/* View Toggle */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant={view === 'grid' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setView('grid')}
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={view === 'list' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setView('list')}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
+          <ViewToggle view={view} onViewChange={setView} />
 
           {/* Reset Filters */}
           {hasActiveFilters && (

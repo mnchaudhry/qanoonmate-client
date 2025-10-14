@@ -1,8 +1,7 @@
 import React from 'react';
 import ClientCard from './ClientCard';
-import { Button } from '@/components/ui/button';
-import { LayoutGrid, List } from 'lucide-react';
 import { Client as APIClient } from '@/store/types/client.types';
+import ViewToggle from '@/components/ViewToggle';
 
 export interface Client {
   id: string;
@@ -48,24 +47,7 @@ const ClientsTable = ({ clients, onAction, view, onViewChange }: ClientsTablePro
       {/* View Toggle */}
       {onViewChange && (
         <div className="flex justify-end mb-3 gap-2">
-          <Button
-            variant={view === 'grid' ? 'default' : 'outline'}
-            size="icon"
-            className="rounded-full"
-            onClick={() => onViewChange('grid')}
-            aria-label="Grid view"
-          >
-            <LayoutGrid className="w-5 h-5" />
-          </Button>
-          <Button
-            variant={view === 'list' ? 'default' : 'outline'}
-            size="icon"
-            className="rounded-full"
-            onClick={() => onViewChange('list')}
-            aria-label="List view"
-          >
-            <List className="w-5 h-5" />
-          </Button>
+          <ViewToggle view={view} onViewChange={onViewChange} />
         </div>
       )}
       <div
