@@ -1,6 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger, } from "@/components/ui/tooltip";
-import { Globe, Send, StopCircle, Upload, } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Globe, Send, StopCircle, Upload } from "lucide-react";
 
 interface Props {
   handleLanguageToggle: () => void;
@@ -23,8 +27,8 @@ export default function ChatControls({
   isLoading,
 }: Props) {
   return (
-    <div className="flex justify-between items-center w-full">
-      <div className="flex items-center gap-3">
+    <div className="flex justify-between items-center w-full pt-2 border-t border-border/50">
+      <div className="flex items-center gap-2">
         {/* Language Toggle */}
         <Tooltip>
           <TooltipTrigger asChild>
@@ -33,12 +37,13 @@ export default function ChatControls({
               variant="ghost"
               size="sm"
               onClick={handleLanguageToggle}
-              className="h-9 w-9 p-0 hover:bg-accent"
+              className="h-9 w-9 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
+              disabled={isStreaming}
             >
               <Globe className="w-4 h-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>
+          <TooltipContent side="top">
             <p>
               Switch to {selectedLanguage === "english" ? "Urdu" : "English"}
             </p>
@@ -53,13 +58,14 @@ export default function ChatControls({
               variant="ghost"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="h-9 w-9 p-0 hover:bg-accent"
+              className="h-9 w-9 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
+              disabled={isStreaming}
             >
               <Upload className="w-4 h-4" />
             </Button>
           </TooltipTrigger>
-          <TooltipContent>
-            <p>Upload file</p>
+          <TooltipContent side="top">
+            <p>Upload PDF file</p>
           </TooltipContent>
         </Tooltip>
         <input
@@ -105,14 +111,21 @@ export default function ChatControls({
             size="sm"
             type="submit"
             disabled={!isConnected || isLoading}
-            className={`h-9 w-9 p-0 ${isStreaming ? "bg-red-500" : "bg-primary"
-              } hover:bg-primary/90 text-primary-foreground`}
+            className={`h-10 w-10 p-0 rounded-full transition-all duration-200 hover:scale-105 ${
+              isStreaming
+                ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg"
+                : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
+            }`}
           >
-            {isStreaming ? <StopCircle /> : <Send className="w-4 h-4" />}
+            {isStreaming ? (
+              <StopCircle className="w-4 h-4" />
+            ) : (
+              <Send className="w-4 h-4" />
+            )}
           </Button>
         </TooltipTrigger>
-        <TooltipContent>
-          <p>{isStreaming ? "Abort" : "Send Message"}</p>
+        <TooltipContent side="top">
+          <p>{isStreaming ? "Stop generating" : "Send message (Enter)"}</p>
         </TooltipContent>
       </Tooltip>
     </div>

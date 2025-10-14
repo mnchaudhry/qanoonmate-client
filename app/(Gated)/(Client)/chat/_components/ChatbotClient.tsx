@@ -4,8 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSocketContext } from "@/context/useSocketContext";
 import {
-  getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, setRegeneratingMessageId,
-  updateBotMessage, updateStreamingMessage
+  getChatMetadataBySession,
+  getChatSession,
+  getMessagesBySession,
+  setChatMetadata,
+  setIsMetadataLoading,
+  setRegeneratingMessageId,
+  updateBotMessage,
+  updateStreamingMessage,
 } from "@/store/reducers/aiSessionSlice";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
 import { socketEvents } from "@/store/socket/events";
@@ -25,46 +31,58 @@ import { Button } from "@/components/ui/button";
 import { AIChatMessage } from "@/lib/interfaces";
 import { assistant, user as userRes } from "@openai/agents";
 
-
 const ChatbotClient = () => {
-  // variables 
+  // variables
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const { defaultSocket: { socket, isConnected }, connectAgain } = useSocketContext();
+  const {
+    defaultSocket: { socket, isConnected },
+    connectAgain,
+  } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
   const searchParams = useSearchParams();
   const {
     messages,
     currentSessionId: sessionId,
     sessionMetadata,
+    isMetadataLoading,
   } = useSelector((state: RootState) => state.aiSession);
   ///////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////////////
   // UI States
   const [showDictionary, setShowDictionary] = useState(false);
-  const [chatViewMode, setChatViewMode] = useState<"compact" | "card" | "timeline">("card");
+  const [chatViewMode, setChatViewMode] = useState<
+    "compact" | "card" | "timeline"
+  >("card");
   const [textSize, setTextSize] = useState(16);
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const { cases, references, aiConfidence: confidence, legalContext, quickAction, referencedLinks } = useSelector((state: RootState) => state.aiSession);
+  const {
+    cases,
+    references,
+    aiConfidence: confidence,
+    legalContext,
+    quickAction,
+    referencedLinks,
+  } = useSelector((state: RootState) => state.aiSession);
 
   // Check if screen is desktop size for default sidebar states
   const [sidebarOpen, setSidebarOpen] = useState(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       return window.innerWidth >= 1024; // lg breakpoint
     }
     return false;
   });
-  
+
   const [showContextPanel, setShowContextPanel] = useState(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       return window.innerWidth >= 1024; // lg breakpoint
     }
     return false;
   });
 
   // Extract message from URL parameters
-  const urlMessage = searchParams.get('message');
+  const urlMessage = searchParams.get("message");
 
   // ---------------------------------------------------------------------------
   //                                        useEffects
@@ -73,12 +91,12 @@ const ChatbotClient = () => {
     dispatch(getLawyers({}));
   }, [dispatch]);
 
-  // connectAgain 
+  // connectAgain
   useEffect(() => {
     if (!isConnected) {
-      connectAgain()
+      connectAgain();
     }
-  }, [isConnected, connectAgain])
+  }, [isConnected, connectAgain]);
 
   // Add session management state and effect
   useEffect(() => {
@@ -93,7 +111,7 @@ const ChatbotClient = () => {
   useEffect(() => {
     const handleResize = () => {
       const isDesktop = window.innerWidth >= 1024; // lg breakpoint
-      
+
       if (isDesktop) {
         // On desktop, open both sidebars by default
         setSidebarOpen(true);
@@ -109,10 +127,10 @@ const ChatbotClient = () => {
     handleResize();
 
     // Add event listener
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Cleanup
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // derived data moved to useParsedMessages hook
@@ -135,6 +153,7 @@ const ChatbotClient = () => {
       quickAction: string;
     }) => {
       dispatch(setChatMetadata(data));
+      dispatch(setIsMetadataLoading(false));
     };
 
     const handleBotMessageUpdated = (
@@ -152,22 +171,24 @@ const ChatbotClient = () => {
       quickAction: string;
     }) => {
       dispatch(setChatMetadata(data));
+      dispatch(setIsMetadataLoading(false));
     };
 
     socket.on("model:message-stream", handleMessageStream);
     socket.on("model:bot-message-updated", handleBotMessageUpdated);
     socket.on("model:metadata-generated", handleMetadataDisplay);
     socket.on("model:metadata-loaded", handleMetadataLoaded);
+
     return () => {
       socket.off("model:message-stream", handleMessageStream);
       socket.off("model:bot-message-updated", handleBotMessageUpdated);
-      socket.off("model:metadata-generated", handleMetadataDisplay)
-      socket.off("model:metadata-loaded", handleMetadataLoaded)
+      socket.off("model:metadata-generated", handleMetadataDisplay);
+      socket.off("model:metadata-loaded", handleMetadataLoaded);
     };
   }, [socket, dispatch]);
 
   // --------------------------------------------------------------
-  //                                    functions 
+  //                                    functions
   const onRegenerate = async (botMessage: AIChatMessage) => {
     dispatch(setRegeneratingMessageId(botMessage._id));
     // find userMessageId if it's missing
@@ -200,38 +221,43 @@ const ChatbotClient = () => {
     });
 
     socketEvents.model.regenerateResponse(socket, {
-      sessionId, userMessageId: userMessageId, history: builtHistory,
+      sessionId,
+      userMessageId: userMessageId,
+      history: builtHistory,
     });
 
     setTimeout(() => dispatch(setRegeneratingMessageId(null), 100));
   };
 
-
   ///////////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////////////////
   return (
     <TooltipProvider>
-      <div className="flex h-screen w-full transition-colors duration-200 bg-background">
+      <div className="flex h-screen w-full transition-colors duration-300 bg-background">
         {/* Mobile backdrop for left sidebar */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 z-30 bg-black/40 md:hidden"
+            className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden transition-opacity duration-200"
             onClick={() => setSidebarOpen(false)}
           />
         )}
         {/* Mobile backdrop for right sidebar */}
         {showContextPanel && (
           <div
-            className="fixed inset-0 z-30 bg-black/40 md:hidden"
+            className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden transition-opacity duration-200"
             onClick={() => setShowContextPanel(false)}
           />
         )}
 
-        <ChatbotSidebar sessionMetadata={sessionMetadata} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <ChatbotSidebar
+          sessionMetadata={sessionMetadata}
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
 
         {/* Main Content Area (Chat + Rightbar) */}
         <div className="flex flex-[8] flex-col h-full w-full bg-background overflow-hidden">
           {/* Navbar covers both chat and rightbar */}
-          <div className="w-full z-30 bg-background">
+          <div className="w-full z-30 bg-background border-b border-border shadow-sm">
             <ChatbotNavbar
               showAccessibilityPanel={showAccessibilityPanel}
               setShowAccessibilityPanel={setShowAccessibilityPanel}
@@ -264,26 +290,27 @@ const ChatbotClient = () => {
                 )}
 
                 {/* Main Input Container */}
-                <div className="w-full max-w-4xl mx-auto px-4">
+                <div className="w-full max-w-4xl mx-auto px-4 py-4 bg-gradient-to-t from-background via-background to-transparent">
                   {/* File Upload Area */}
                   {uploadedFiles.length > 0 && (
-                    <div className="w-full mb-3 p-3 bg-primary/5 rounded-lg border border-primary/10">
-                      <div className="flex items-center gap-2 text-sm text-primary">
+                    <div className="w-full mb-3 p-3 bg-primary/5 rounded-xl border border-primary/20 shadow-sm animate-in slide-in-from-bottom-2 duration-300">
+                      <div className="flex items-center gap-2 text-sm font-medium text-primary mb-2">
                         <File className="w-4 h-4" />
-                        <span>Uploaded Files:</span>
+                        <span>Uploaded Files ({uploadedFiles.length}):</span>
                       </div>
-                      <div className="flex flex-wrap gap-1 mt-2">
+                      <div className="flex flex-wrap gap-2">
                         {uploadedFiles.map((file, index) => (
-                          <div key={index} className="relative">
+                          <div key={index} className="relative group">
                             <Badge
-                              key={index}
                               variant="secondary"
-                              className="text-xs"
+                              className="text-xs pr-8 py-1.5 bg-background/80 hover:bg-background transition-colors"
                             >
                               {file.name}
                             </Badge>
                             <Button
-                              className="absolute top-0 right-0 w-0.5 h-0.5"
+                              size="sm"
+                              variant="ghost"
+                              className="absolute -top-1 -right-1 h-5 w-5 p-0 rounded-full bg-destructive/10 hover:bg-destructive/20 opacity-0 group-hover:opacity-100 transition-opacity"
                               onClick={() =>
                                 setUploadedFiles(
                                   uploadedFiles.filter((fileObj) => {
@@ -295,7 +322,7 @@ const ChatbotClient = () => {
                                 )
                               }
                             >
-                              <X />
+                              <X className="w-3 h-3 text-destructive" />
                             </Button>
                           </div>
                         ))}
@@ -325,6 +352,7 @@ const ChatbotClient = () => {
               relatedCases={cases}
               legalContext={legalContext}
               referencedLinks={referencedLinks}
+              isLoading={isMetadataLoading}
             />
           </div>
         </div>

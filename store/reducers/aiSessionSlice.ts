@@ -20,6 +20,7 @@ interface SessionState {
   currentMessage: AIChatMessage | null;
   isLoading: boolean;
   isStreaming: boolean;
+  isMetadataLoading: boolean;
   error: string | null;
   sessionMetadata: {
     interactionCount: number;
@@ -154,18 +155,20 @@ export const getMessagesBySession = createAsyncThunk(
   }
 );
 
-export const getChatMetadataBySession = createAsyncThunk("aiMessage/getChatMetadataBySession", async (sessionId: string, { rejectWithValue }) => {
-  try {
-    const { data } = await api.getChatMetadataBySession(sessionId);
-    return data?.data;
-  } catch (err: any) {
-    const message = getErrorMessage(
-      err,
-      `Could not load metadata with session ID: ${sessionId}.`
-    );
-    return rejectWithValue(message);
+export const getChatMetadataBySession = createAsyncThunk(
+  "aiMessage/getChatMetadataBySession",
+  async (sessionId: string, { rejectWithValue }) => {
+    try {
+      const { data } = await api.getChatMetadataBySession(sessionId);
+      return data?.data;
+    } catch (err: any) {
+      const message = getErrorMessage(
+        err,
+        `Could not load metadata with session ID: ${sessionId}.`
+      );
+      return rejectWithValue(message);
+    }
   }
-}
 );
 
 export const updateMessage = createAsyncThunk(
@@ -222,6 +225,7 @@ const initialState: SessionState = {
   currentMessage: null,
   isLoading: false,
   isStreaming: false,
+  isMetadataLoading: false,
   error: null,
   sessionMetadata: {
     interactionCount: 0,
@@ -229,7 +233,7 @@ const initialState: SessionState = {
     sessionDuration: 0,
   },
   streamingMessage: null,
-  regeneratingMessageId: null
+  regeneratingMessageId: null,
 };
 
 const aiSessionSlice = createSlice({
@@ -263,7 +267,7 @@ const aiSessionSlice = createSlice({
       state.references = action.payload.references;
       state.legalContext = action.payload.legalContext;
       state.quickAction = action.payload.quickAction;
-      state.referencedLinks = action.payload.referencedLinks
+      state.referencedLinks = action.payload.referencedLinks;
     },
     setCurrentSession: (state, action) => {
       state.currentSession = action.payload;
@@ -312,7 +316,7 @@ const aiSessionSlice = createSlice({
       let messageIndex = -1;
       for (let i = state.messages.length - 1; i >= 0; i--) {
         if (state.messages[i]._id == id) {
-          messageIndex = i
+          messageIndex = i;
         }
       }
 
@@ -324,7 +328,7 @@ const aiSessionSlice = createSlice({
 
         // update the current response content
         if (message.responses && Array.isArray(message.responses)) {
-          const currentResponseIndex = message.responses.length - 1
+          const currentResponseIndex = message.responses.length - 1;
           if (message.responses[currentResponseIndex]) {
             message.responses[currentResponseIndex].content = content;
           }
@@ -346,6 +350,9 @@ const aiSessionSlice = createSlice({
       if (action.payload === false) {
         state.streamingMessage = null;
       }
+    },
+    setIsMetadataLoading: (state, action) => {
+      state.isMetadataLoading = action.payload;
     },
     setError: (state, action) => {
       state.error = action.payload;
@@ -369,7 +376,6 @@ const aiSessionSlice = createSlice({
       state.sessionMetadata.sessionDuration += action.payload;
     },
     setStreamingMessage: (state, action) => {
-
       // Remove placeholder if present (same _id and empty content)
       // const idx = state.messages.findIndex(
       //   (msg) =>
@@ -385,7 +391,6 @@ const aiSessionSlice = createSlice({
       //     break
       //   }
       // }
-
 
       // if (idx !== -1) {
       //   state.messages.splice(idx, 1);
@@ -441,7 +446,7 @@ const aiSessionSlice = createSlice({
         state.references = action.payload.references;
         state.legalContext = action.payload.legalContext;
         state.quickAction = action.payload.quickAction;
-        state.referencedLinks = action.payload.referencedLinks
+        state.referencedLinks = action.payload.referencedLinks;
       })
       .addCase(getChatMetadataBySession.rejected, (state, action) => {
         state.error = action.payload as string;
@@ -561,6 +566,7 @@ export const {
   setError,
   setIsLoading,
   setIsStreaming,
+  setIsMetadataLoading,
   setSessionMetadata,
   updateAIMessageLocal,
   updateStreamingMessage,

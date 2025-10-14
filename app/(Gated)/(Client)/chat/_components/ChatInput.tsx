@@ -2,7 +2,15 @@ import { useSocketContext } from "@/context/useSocketContext";
 import { cn } from "@/lib/utils";
 import { newChat, setIsStreaming } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
-import React, { Dispatch, FormEvent, RefObject, SetStateAction, memo, useState, useEffect, } from "react";
+import React, {
+  Dispatch,
+  FormEvent,
+  RefObject,
+  SetStateAction,
+  memo,
+  useState,
+  useEffect,
+} from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 // import { AIMessage } from "@/store/types/api";
@@ -23,13 +31,29 @@ interface Props {
   initialMessage?: string | null;
 }
 
-const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, fileInputRef, setUploadedFiles, initialMessage }) => {
-  ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
-  const { isStreaming, isLoading, messages, currentSessionId: sessionId } = useSelector((state: RootState) => state.aiSession);
-  const { defaultSocket: { socket } } = useSocketContext();
-  const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth);
-  const router = useRouter();
+const ChatInput: React.FC<Props> = memo(
+  ({
+    isConnected,
+    textSize,
+    textareaRef,
+    fileInputRef,
+    setUploadedFiles,
+    setShowContextPanel,
+    initialMessage,
+  }) => {
+    ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
+    const {
+      isStreaming,
+      isLoading,
+      messages,
+      currentSessionId: sessionId,
+    } = useSelector((state: RootState) => state.aiSession);
+    const {
+      defaultSocket: { socket },
+    } = useSocketContext();
+    const dispatch = useDispatch<AppDispatch>();
+    const { user } = useSelector((state: RootState) => state.auth);
+    const router = useRouter();
 
   // ---------------------------------------------------------------------
   //                                States
@@ -71,64 +95,59 @@ const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, f
     // if everything is ok move on
     dispatch(setIsStreaming(true));
 
-    // building history
-    const history: AgentInputItem[] = messages.map((message) => {
-      return message.sender === "bot"
-        ? assistant(message.content)
-        : userRes(message.content);
-    });
-    history.push(
-      userRes(
-        extractedText
-          ? `\nProvided Context from pdf file is ${extractedText}\n\n Answer only in ${selectedLanguage}`
-          : `Answer only in ${selectedLanguage}`
-      )
-    );
-    history.push(userRes(inputValue.trim()));
+      // building history
+      const history: AgentInputItem[] = messages.map((message) => {
+        return message.sender === "bot"
+          ? assistant(message.content)
+          : userRes(message.content);
+      });
+      history.push(
+        userRes(
+          extractedText
+            ? `\nProvided Context from pdf file is ${extractedText}\n\n Answer only in ${selectedLanguage}`
+            : `Answer only in ${selectedLanguage}`
+        )
+      );
+      history.push(userRes(inputValue.trim()));
 
-
-
-    if (!sessionId) {
-      // Using a test user ID (replace with actual authentication)
-      const userId = user._id; // Replace with actual user ID
-      if (!userId) return; // safety
-
+      if (!sessionId) {
+        // Using a test user ID (replace with actual authentication)
+        const userId = user._id; // Replace with actual user ID
+        if (!userId) return; // safety
 
       // emit start_chat event
       socketEvents.model.startChat(socket, { userId });
 
-      const onSessionStarted = (data: { sessionId: string }) => {
+        const onSessionStarted = (data: { sessionId: string }) => {
+          // Update the route with the session ID as a query parameter without reloading the page
+          const url = new URL(window.location.href);
+          url.searchParams.set("id", data.sessionId);
+          window.history.pushState({}, "", url.toString());
 
-        // Update the route with the session ID as a query parameter without reloading the page
-        const url = new URL(window.location.href);
-        url.searchParams.set("id", data.sessionId);
-        window.history.pushState({}, "", url.toString());
-
-        // Now we have sessionId, send the message
-        dispatch(setIsStreaming(true))
-        socketEvents.model.chatMessage(socket, {
-          sessionId: data.sessionId,
-          history: history,
-          newMessage: inputValue.trim(),
-        });
+          // Now we have sessionId, send the message
+          dispatch(setIsStreaming(true));
+          socketEvents.model.chatMessage(socket, {
+            sessionId: data.sessionId,
+            history: history,
+            newMessage: inputValue.trim(),
+          });
 
         // Remove this one-time listener
         socket.off("model:session-started", onSessionStarted);
       };
 
-      // if any existing listener
-      socket.off("model:session-started", onSessionStarted);
-      socket.once("model:session-started", onSessionStarted);
-    } else {
-
-      // we already have a session, send message directly
-      dispatch(setIsStreaming(true))
-      socketEvents.model.chatMessage(socket, {
-        sessionId: sessionId,
-        history: history,
-        newMessage: inputValue,
-      });
-    }
+        // if any existing listener
+        socket.off("model:session-started", onSessionStarted);
+        socket.once("model:session-started", onSessionStarted);
+      } else {
+        // we already have a session, send message directly
+        dispatch(setIsStreaming(true));
+        socketEvents.model.chatMessage(socket, {
+          sessionId: sessionId,
+          history: history,
+          newMessage: inputValue,
+        });
+      }
 
     // reset everything
     setInputValue("");
@@ -155,13 +174,14 @@ const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, f
     setExtractedText(allText);
   };
 
-  const handleLanguageToggle = () => {
-    setSelectedLanguage((prev) => (prev === "english" ? "urdu" : "english"));
-    toast.success(
-      `Language switched to ${selectedLanguage === "english" ? "Urdu" : "English"
-      }`
-    );
-  };
+    const handleLanguageToggle = () => {
+      setSelectedLanguage((prev) => (prev === "english" ? "urdu" : "english"));
+      toast.success(
+        `Language switched to ${
+          selectedLanguage === "english" ? "Urdu" : "English"
+        }`
+      );
+    };
 
   // const handleVoiceToggle = () => {
   //   setIsVoiceRecording(!isVoiceRecording);
@@ -170,65 +190,69 @@ const ChatInput: React.FC<Props> = memo(({ isConnected, textSize, textareaRef, f
   //   );
   // };
 
-  ///////////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////////////
-  return (
-    <div className="w-full flex flex-col justify-center items-center mb-1">
-      {/* Input Container */}
-      <form
-        onSubmit={onSendMessage}
-        className="flex flex-col items-center w-full p-2 bg-neutral border border-border rounded-xl shadow-sm"
-      >
-        {/* Textarea */}
-        <div className="flex-1 relative w-full">
-          <textarea
-            ref={textareaRef}
-            placeholder={
-              isConnected
-                ? selectedLanguage === "english"
-                  ? "Type your legal question..."
-                  : "اپنا قانونی سوال لکھیں..."
-                : "Connecting..."
-            }
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            disabled={!isConnected}
-            className={cn(
-              "w-full h-[32px] resize-none border-0 shadow-none bg-transparent placeholder:text-muted-foreground",
-              "focus:outline-none focus:ring-0 focus:border-0 outline-none ring-0"
-            )}
-            style={{ fontSize: `${textSize}px` }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                // Find the closest form and submit it
-                const form = (e.target as HTMLElement).closest("form");
-                if (form) {
-                  form.dispatchEvent(
-                    new Event("submit", { cancelable: true, bubbles: true })
-                  );
-                }
+    ///////////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////////////
+    return (
+      <div className="w-full flex flex-col justify-center items-center">
+        {/* Input Container */}
+        <form
+          onSubmit={onSendMessage}
+          className="flex flex-col items-center w-full p-3 bg-neutral border-2 border-border rounded-2xl shadow-lg hover:shadow-xl focus-within:border-primary/50 transition-all duration-200"
+        >
+          {/* Textarea */}
+          <div className="flex-1 relative w-full">
+            <textarea
+              ref={textareaRef}
+              placeholder={
+                isConnected
+                  ? selectedLanguage === "english"
+                    ? "Type your legal question..."
+                    : "اپنا قانونی سوال لکھیں..."
+                  : "Connecting..."
               }
-            }}
-          />
-        </div>
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              disabled={!isConnected}
+              className={cn(
+                "w-full min-h-[40px] max-h-[200px] resize-none border-0 shadow-none bg-transparent placeholder:text-muted-foreground",
+                "focus:outline-none focus:ring-0 focus:border-0 outline-none ring-0 transition-all duration-200",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
+              )}
+              style={{ fontSize: `${textSize}px`, lineHeight: "1.5" }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  // Find the closest form and submit it
+                  const form = (e.target as HTMLElement).closest("form");
+                  if (form) {
+                    form.dispatchEvent(
+                      new Event("submit", { cancelable: true, bubbles: true })
+                    );
+                  }
+                }
+              }}
+            />
+          </div>
 
-        {/* Controls Row */}
-        <ChatControls
-          handleFileUpload={handleFileUpload}
-          handleLanguageToggle={handleLanguageToggle}
-          selectedLanguage={selectedLanguage}
-          isStreaming={isStreaming}
-          isConnected={isConnected}
-          isLoading={isLoading}
-          fileInputRef={fileInputRef}
-        />
-      </form>
-      <div className="text-xs text-muted-foreground text-right w-full mt-2">
-        QanoonMate can make mistakes. Check important info.
+          {/* Controls Row */}
+          <ChatControls
+            handleFileUpload={handleFileUpload}
+            handleLanguageToggle={handleLanguageToggle}
+            selectedLanguage={selectedLanguage}
+            isStreaming={isStreaming}
+            isConnected={isConnected}
+            isLoading={isLoading}
+            fileInputRef={fileInputRef}
+          />
+        </form>
+        <div className="text-xs text-muted-foreground text-center w-full mt-3 flex items-center justify-center gap-1">
+          <span className="opacity-70">⚠️</span>
+          <span>
+            QanoonMate can make mistakes. Please verify important information.
+          </span>
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 );
 
 export default ChatInput;

@@ -1,10 +1,10 @@
-import { useSelector } from "react-redux";
 import {
   addAIMessage,
   finalizeStreamingMessage,
   incrementInteractionCount,
   setCurrentSessionId,
   setIsStreaming,
+  setIsMetadataLoading,
   setStreamingMessage,
   updateBotMessage,
   updateLastModified,
@@ -92,7 +92,10 @@ export const socketEvents = {
         socket.emit("chat_message", data);
       }
     },
-    regenerateResponse: (socket: any, data: { sessionId: string; userMessageId: string; history: any[] }) => {
+    regenerateResponse: (
+      socket: any,
+      data: { sessionId: string; userMessageId: string; history: any[] }
+    ) => {
       if (socket) {
         socket.emit("regenerate_response", data);
       }
@@ -135,23 +138,43 @@ export const socketEvents = {
 ///////////////////////////////////////////////// LISTENING EVENTS (Server to Client) /////////////////////////////////////////////////
 export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   // Test event to verify socket is working
-  socket.on("test", () => { return; });
+  socket.on("test", () => {
+    return;
+  });
 
   // Emit a test event to verify socket is working
   socket.emit("test", { message: "Testing socket connection" });
 
   // Add a simple event listener to test socket functionality
-  socket.on("connect", () => { return; });
+  socket.on("connect", () => {
+    return;
+  });
 
-  socket.on("disconnect", () => { return; });
+  socket.on("disconnect", () => {
+    return;
+  });
 
   // Summary events
-  socket.on("summary:progress", (data: SummaryProgress) => { dispatch(handleSummaryProgress(data)); });
-  socket.on("summary:complete", (data: SummaryComplete) => { dispatch(handleSummaryComplete(data)); });
-  socket.on("summary:error", (data: SummaryError) => {
-    dispatch(handleSummaryError({ summaryId: data.summaryId || "", error: data.error || data.message || "Unknown error", }));
+  socket.on("summary:progress", (data: SummaryProgress) => {
+    dispatch(handleSummaryProgress(data));
   });
-  socket.on("summary:stream", (data: { summaryId: string; content: string }) => { dispatch(handleSummaryStream(data)); });
+  socket.on("summary:complete", (data: SummaryComplete) => {
+    dispatch(handleSummaryComplete(data));
+  });
+  socket.on("summary:error", (data: SummaryError) => {
+    dispatch(
+      handleSummaryError({
+        summaryId: data.summaryId || "",
+        error: data.error || data.message || "Unknown error",
+      })
+    );
+  });
+  socket.on(
+    "summary:stream",
+    (data: { summaryId: string; content: string }) => {
+      dispatch(handleSummaryStream(data));
+    }
+  );
 
   // Model events
   socket.on("model:message-received", (data: ModelMessageReceived) => {
@@ -166,6 +189,11 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
 
   let streamingBuffer = "";
   let streamingId: string | null = null;
+
+  socket.on("model:metadata-error", () => {
+    dispatch(setIsMetadataLoading(false));
+  });
+
   socket.on("model:message-stream", (data: ModelMessageStream) => {
     // initialize
     if (streamingId !== data.id) {
@@ -227,11 +255,15 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   });
 
   // Chat events
-  socket.on("chat:join-room-ack", () => { });
-  socket.on("chat:leave-room-ack", () => { });
+  socket.on("chat:join-room-ack", () => {});
+  socket.on("chat:leave-room-ack", () => {});
   socket.on("chat:user-joined", (data: ChatUserJoined) => {
     dispatch(
-      setOnlineStatus({ roomId: data.roomId, userId: data.userId, isOnline: true, })
+      setOnlineStatus({
+        roomId: data.roomId,
+        userId: data.userId,
+        isOnline: true,
+      })
     );
   });
   socket.on("chat:new-message", (data: ChatNewMessage) => {
@@ -243,7 +275,10 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     if (!messageExists) {
       dispatch(addMessage(data));
       dispatch(
-        updateRoomState({ roomId: data.chatRoomId, updates: { lastActivity: Date.now() }, })
+        updateRoomState({
+          roomId: data.chatRoomId,
+          updates: { lastActivity: Date.now() },
+        })
       );
     }
 
@@ -257,7 +292,9 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
 
     if (!isFromCurrentUser && !isInCurrentRoom) {
       const currentCount = state.chat.unreadCounts[data.chatRoomId] || 0;
-      dispatch(setUnreadCount({ roomId: data.chatRoomId, count: currentCount + 1 }));
+      dispatch(
+        setUnreadCount({ roomId: data.chatRoomId, count: currentCount + 1 })
+      );
     } else {
       return;
     }
@@ -269,12 +306,20 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   });
   socket.on("chat:user-typing", (data: ChatUserTyping) => {
     dispatch(
-      setTypingStatus({ roomId: data.roomId, userId: data.userId, isTyping: true, })
+      setTypingStatus({
+        roomId: data.roomId,
+        userId: data.userId,
+        isTyping: true,
+      })
     );
   });
   socket.on("chat:user-stop-typing", (data: ChatUserStopTyping) => {
     dispatch(
-      setTypingStatus({ roomId: data.roomId, userId: data.userId, isTyping: false, })
+      setTypingStatus({
+        roomId: data.roomId,
+        userId: data.userId,
+        isTyping: false,
+      })
     );
   });
   socket.on("chat:message-read", (data: ChatMessageRead) => {
@@ -285,18 +330,32 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   });
   socket.on("user-online", (data: any) => {
     dispatch(
-      setOnlineStatus({ roomId: data.roomId || "global", userId: data.userId, isOnline: true, })
+      setOnlineStatus({
+        roomId: data.roomId || "global",
+        userId: data.userId,
+        isOnline: true,
+      })
     );
   });
   socket.on("user-offline", (data: any) => {
     dispatch(
-      setOnlineStatus({ roomId: data.roomId || "global", userId: data.userId, isOnline: false, })
+      setOnlineStatus({
+        roomId: data.roomId || "global",
+        userId: data.userId,
+        isOnline: false,
+      })
     );
   });
   socket.on("chat:online-status", (data: any) => {
     if (data.onlineUserIds && Array.isArray(data.onlineUserIds)) {
       dispatch(
-        updateRoomState({ roomId: data.roomId, updates: { onlineUsers: data.onlineUserIds, lastActivity: Date.now(), }, })
+        updateRoomState({
+          roomId: data.roomId,
+          updates: {
+            onlineUsers: data.onlineUserIds,
+            lastActivity: Date.now(),
+          },
+        })
       );
     }
   });
@@ -328,15 +387,6 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     return;
   });
 
-  // Cleanup typing users periodically
-  const cleanupInterval = setInterval(() => {
-    // const now = Date.now();
-    // const timeout = 5000; // 5 seconds timeout for typing indicators
-
-    // This would be handled by the backend, but we can also clean up stale typing indicators
-    // dispatch(cleanupTypingUsers({ roomId: 'all', userId: 'all' }));
-  }, 10000); // Check every 10 seconds
-
   return () => {
     socket.off("summary:progress");
     socket.off("summary:complete");
@@ -363,8 +413,5 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     socket.off("consultation:reschedule-rejected");
     socket.off("connect");
     socket.off("disconnect");
-
-    // Clear cleanup interval
-    clearInterval(cleanupInterval);
   };
 };

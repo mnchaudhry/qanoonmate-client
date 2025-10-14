@@ -27,7 +27,7 @@ export interface NewsletterSubscriber {
   _id: string;
   email: string;
   name?: string;
-  status: 'subscribed' | 'unsubscribed';
+  status: "subscribed" | "unsubscribed";
   source?: string;
   ipAddress?: string;
   unsubscribedAt?: string | null;
@@ -35,15 +35,34 @@ export interface NewsletterSubscriber {
   updatedAt: string;
 }
 
-export type SubscribeNewsletterRequest = { email: string; name?: string; source?: string };
+export type SubscribeNewsletterRequest = {
+  email: string;
+  name?: string;
+  source?: string;
+};
 export type SubscribeNewsletterResponse = APIResponse<NewsletterSubscriber>;
 export type UnsubscribeNewsletterRequest = { email: string };
 export type UnsubscribeNewsletterResponse = APIResponse<NewsletterSubscriber>;
-export type GetNewsletterSubscribersRequest = { page?: number; limit?: number; status?: 'subscribed' | 'unsubscribed'; search?: string; source?: string; dateFrom?: string; dateTo?: string; sortBy?: string; sortOrder?: 'asc' | 'desc' };
-export type GetNewsletterSubscribersResponse = APIResponse<NewsletterSubscriber[]>;
+export type GetNewsletterSubscribersRequest = {
+  page?: number;
+  limit?: number;
+  status?: "subscribed" | "unsubscribed";
+  search?: string;
+  source?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+};
+export type GetNewsletterSubscribersResponse = APIResponse<
+  NewsletterSubscriber[]
+>;
 export type GetNewsletterSubscriberResponse = APIResponse<NewsletterSubscriber>;
-export type UpdateNewsletterSubscriberRequest = Partial<Pick<NewsletterSubscriber, 'name' | 'status'>>;
-export type UpdateNewsletterSubscriberResponse = APIResponse<NewsletterSubscriber>;
+export type UpdateNewsletterSubscriberRequest = Partial<
+  Pick<NewsletterSubscriber, "name" | "status">
+>;
+export type UpdateNewsletterSubscriberResponse =
+  APIResponse<NewsletterSubscriber>;
 export type DeleteNewsletterSubscriberResponse = APIResponse<null>;
 
 // ================= WAITLIST =================
@@ -55,7 +74,7 @@ export interface WaitlistEntry {
   referredBy?: string;
   signupSource?: string;
   ipAddress?: string;
-  status: 'pending' | 'invited' | 'joined';
+  status: "pending" | "invited" | "joined";
   notes?: string;
   createdAt: string;
   updatedAt: string;
@@ -70,7 +89,9 @@ export type CreateWaitlistRequest = {
 };
 export type CreateWaitlistResponse = APIResponse<WaitlistEntry>;
 export type GetWaitlistResponse = APIResponse<WaitlistEntry[]>;
-export type UpdateWaitlistRequest = Partial<Pick<WaitlistEntry, 'name' | 'status' | 'notes'>>;
+export type UpdateWaitlistRequest = Partial<
+  Pick<WaitlistEntry, "name" | "status" | "notes">
+>;
 export type UpdateWaitlistResponse = APIResponse<WaitlistEntry>;
 
 // ================= ACTS =================
@@ -626,8 +647,8 @@ export type CreateUserResponse = APIResponse<Admin>;
 export interface AIChatSession {
   _id: string;
   user:
-  | string
-  | { _id: string; firstname: string; lastname: string; email: string };
+    | string
+    | { _id: string; firstname: string; lastname: string; email: string };
   title: string;
   createdAt?: string;
   updatedAt?: string;
@@ -714,6 +735,20 @@ export interface Message {
   type: MessageType;
   timestamp: string;
   readBy: ChatParticipant[];
+  // File attachment fields
+  fileAttachment?: {
+    url: string;
+    name: string;
+    fileType: string;
+    fileSize: number;
+    fileId?: string;
+  };
+  // Extracted links
+  links?: Array<{
+    url: string;
+    title?: string;
+    extractedAt?: string;
+  }>;
 }
 
 // POST /api/chat/initiate
@@ -755,6 +790,42 @@ export interface DeleteMessageRequest {
   messageId: string;
 }
 export type DeleteMessageResponse = APIResponse<{ success: boolean }>;
+
+// POST /api/chat/:roomId/messages/file
+export interface SendFileMessageRequest {
+  roomId: string;
+  file: File;
+  caption?: string;
+}
+export type SendFileMessageResponse = APIResponse<Message>;
+
+// GET /api/chat/:roomId/files
+export interface RoomFile {
+  _id: string;
+  messageId: string;
+  sender: ChatParticipant;
+  timestamp: string;
+  caption: string;
+  file: {
+    url: string;
+    name: string;
+    fileType: string;
+    fileSize: number;
+    fileId?: string;
+  };
+}
+export type GetRoomFilesResponse = APIResponse<RoomFile[]>;
+
+// GET /api/chat/:roomId/links
+export interface RoomLink {
+  _id: string;
+  messageId: string;
+  url: string;
+  title: string;
+  sender: ChatParticipant;
+  timestamp: string;
+}
+export type GetRoomLinksResponse = APIResponse<RoomLink[]>;
 
 // ================= CASELAW =================
 
@@ -941,11 +1012,11 @@ export interface LegalGuide {
   category: string;
   urduTranslation?: GuideTranslation;
   status?:
-  | "draft"
-  | "pending_review"
-  | "approved"
-  | "needs_revision"
-  | "archived";
+    | "draft"
+    | "pending_review"
+    | "approved"
+    | "needs_revision"
+    | "archived";
   isApproved?: boolean;
   verifiedBy?: string | null;
   version?: string;
@@ -979,7 +1050,10 @@ export interface GetGuideByIdRequest {
 export type GetGuideByIdResponse = APIResponse<LegalGuide>;
 
 // POST /guides
-export type CreateGuideRequest = Omit<LegalGuide, "_id" | "createdAt" | "updatedAt">;
+export type CreateGuideRequest = Omit<
+  LegalGuide,
+  "_id" | "createdAt" | "updatedAt"
+>;
 export type CreateGuideResponse = APIResponse<LegalGuide>;
 
 // PUT /guides/:id

@@ -1,9 +1,30 @@
 import React from "react";
 import ProfileButton from "@/components/profile-button";
 import { Button } from "@/components/ui/button";
-import { Volume2, VolumeX, Keyboard, ZoomIn, ZoomOut, Layout, Crown, Sparkles, Menu, PanelRightOpen } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Volume2,
+  VolumeX,
+  Keyboard,
+  ZoomIn,
+  ZoomOut,
+  Layout,
+  Crown,
+  Sparkles,
+  Menu,
+  PanelRightOpen,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -17,17 +38,32 @@ interface ChatNavbarProps {
   setTextSize: (size: number) => void;
   isScreenReaderMode: boolean;
   setIsScreenReaderMode: React.Dispatch<React.SetStateAction<boolean>>;
-  chatViewMode: 'compact' | 'card' | 'timeline';
-  setChatViewMode: React.Dispatch<React.SetStateAction<'compact' | 'card' | 'timeline'>>;
+  chatViewMode: "compact" | "card" | "timeline";
+  setChatViewMode: React.Dispatch<
+    React.SetStateAction<"compact" | "card" | "timeline">
+  >;
   aiConfidence?: number | null;
   onToggleSidebar?: () => void;
   onToggleRightbar?: () => void;
 }
 
-const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setShowAccessibilityPanel, textSize = 16, setTextSize, isScreenReaderMode, setIsScreenReaderMode, chatViewMode, setChatViewMode, aiConfidence, onToggleSidebar, onToggleRightbar, }) => {
-
+const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
+  showAccessibilityPanel,
+  setShowAccessibilityPanel,
+  textSize = 16,
+  setTextSize,
+  isScreenReaderMode,
+  setIsScreenReaderMode,
+  chatViewMode,
+  setChatViewMode,
+  aiConfidence,
+  onToggleSidebar,
+  onToggleRightbar,
+}) => {
   ////////////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////////////
-  const reduxConfidence = useSelector((state: RootState) => state.aiSession.aiConfidence);
+  const reduxConfidence = useSelector(
+    (state: RootState) => state.aiSession.aiConfidence
+  );
   const displayConfidence = aiConfidence ?? reduxConfidence ?? 0;
   const router = useRouter();
 
@@ -52,7 +88,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
   ////////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////////////////
   return (
     <TooltipProvider>
-      <div className="h-[64px] md:h-[80px] bg-neutral px-3 md:px-6 py-3 md:py-4 flex justify-between items-center border-b !border-border">
+      <div className="h-[64px] md:h-[80px] bg-neutral px-3 md:px-6 py-3 md:py-4 flex justify-between items-center">
         {/* Left Side - Menu + Logo */}
 
         <div className="flex items-center gap-2 md:gap-4 ">
@@ -60,7 +96,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden h-8 w-8 p-0"
+            className="md:hidden h-8 w-8 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
             onClick={onToggleSidebar}
             aria-label="Toggle sidebar"
           >
@@ -75,29 +111,37 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
           {/* Compact AI confidence chip */}
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex items-center gap-1 px-2 py-1 rounded-md border bg-background/50 cursor-default select-none">
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-                <span className={cn("text-xs font-semibold", getConfidenceColor(Number(displayConfidence)))}>
+              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 cursor-default select-none hover:bg-primary/10 transition-all duration-200 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+                <span
+                  className={cn(
+                    "text-xs font-bold",
+                    getConfidenceColor(Number(displayConfidence))
+                  )}
+                >
                   {Number(displayConfidence)}%
                 </span>
               </div>
             </TooltipTrigger>
-            <TooltipContent>
-              <p>AI Confidence: {Number(displayConfidence)}% ({getConfidenceLabel(Number(displayConfidence))})</p>
+            <TooltipContent side="bottom">
+              <p className="font-medium">
+                AI Confidence: {Number(displayConfidence)}% (
+                {getConfidenceLabel(Number(displayConfidence))})
+              </p>
             </TooltipContent>
           </Tooltip>
           {/* Rightbar toggle for mobile */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden h-8 w-8 p-0"
+            className="md:hidden h-8 w-8 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
             onClick={onToggleRightbar}
             aria-label="Toggle context panel"
           >
             <PanelRightOpen className="w-5 h-5" />
           </Button>
           {/* Navigation Buttons */}
-          <div className="hidden md:flex items-center gap-1 bg-background/50 rounded-lg p-1 border">
+          <div className="hidden md:flex items-center gap-1 bg-background/50 rounded-xl p-1.5 border border-border shadow-sm">
             {/* Text Size Controls */}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -105,28 +149,30 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
                   variant="ghost"
                   size="sm"
                   onClick={() => onTextSizeChange(Math.max(12, textSize - 2))}
-                  className="h-8 w-8 p-0 hover:bg-accent"
+                  className="h-8 w-8 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
                 >
                   <ZoomOut className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent side="bottom">
                 <p>Decrease text size</p>
               </TooltipContent>
             </Tooltip>
-            <span className="text-xs text-muted-foreground w-8 text-center font-medium">{textSize}px</span>
+            <span className="text-xs text-muted-foreground w-10 text-center font-semibold bg-accent/30 rounded-md py-1">
+              {textSize}px
+            </span>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onTextSizeChange(Math.min(24, textSize + 2))}
-                  className="h-8 w-8 p-0 hover:bg-accent"
+                  className="h-8 w-8 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
                 >
                   <ZoomIn className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
+              <TooltipContent side="bottom">
                 <p>Increase text size</p>
               </TooltipContent>
             </Tooltip>
@@ -139,35 +185,46 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
                   size="sm"
                   onClick={() => setIsScreenReaderMode(!isScreenReaderMode)}
                   className={cn(
-                    "h-8 w-8 p-0",
-                    isScreenReaderMode && "bg-primary/10 text-primary hover:bg-primary/20"
+                    "h-8 w-8 p-0 rounded-full transition-all duration-200 hover:scale-105",
+                    isScreenReaderMode &&
+                      "bg-primary/10 text-primary hover:bg-primary/20"
                   )}
                 >
-                  {isScreenReaderMode ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                  {isScreenReaderMode ? (
+                    <VolumeX className="w-4 h-4" />
+                  ) : (
+                    <Volume2 className="w-4 h-4" />
+                  )}
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
-                <p>{isScreenReaderMode ? 'Disable' : 'Enable'} screen reader mode</p>
+              <TooltipContent side="bottom">
+                <p>
+                  {isScreenReaderMode ? "Disable" : "Enable"} screen reader mode
+                </p>
               </TooltipContent>
             </Tooltip>
 
             {/* View Mode */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="h-8 px-2 text-xs font-medium">
-                  <Layout className="w-4 h-4 text-muted-foreground" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-3 text-xs font-medium hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
+                >
+                  <Layout className="w-4 h-4 text-muted-foreground mr-1.5" />
                   {chatViewMode}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setChatViewMode('card')}>
-                  Card
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setChatViewMode("card")}>
+                  Card View
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setChatViewMode('compact')}>
-                  Compact
+                <DropdownMenuItem onClick={() => setChatViewMode("compact")}>
+                  Compact View
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setChatViewMode('timeline')}>
-                  Timeline
+                <DropdownMenuItem onClick={() => setChatViewMode("timeline")}>
+                  Timeline View
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -178,14 +235,18 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setShowAccessibilityPanel(!showAccessibilityPanel)}
-                  className="h-8 w-8 p-0 hover:bg-accent"
+                  onClick={() =>
+                    setShowAccessibilityPanel(!showAccessibilityPanel)
+                  }
+                  className="h-8 w-8 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
                 >
                   <Keyboard className="w-4 h-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>
-                <p>{showAccessibilityPanel ? 'Hide' : 'Show'} Accessibility Panel</p>
+              <TooltipContent side="bottom">
+                <p>
+                  {showAccessibilityPanel ? "Hide" : "Show"} Accessibility Panel
+                </p>
               </TooltipContent>
             </Tooltip>
 
@@ -226,8 +287,8 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ showAccessibilityPanel, setS
           <Button
             variant="default"
             size="sm"
-            onClick={() => router.push('/pricing')}
-            className="hidden md:inline-flex bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0 shadow-md"
+            onClick={() => router.push("/pricing")}
+            className="hidden md:inline-flex bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 rounded-full font-semibold"
           >
             <Crown className="w-4 h-4 mr-2" />
             Upgrade
