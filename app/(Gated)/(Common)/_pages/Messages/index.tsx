@@ -3,11 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
-import {
-  getMessages,
-  getUserChatRooms,
-  sendFileMessage,
-} from "@/store/reducers/chatSlice";
+import { getMessages, getUserChatRooms, sendFileMessage, } from "@/store/reducers/chatSlice";
 import { useSocketContext } from "@/context/useSocketContext";
 import MessagesHeader from "./_components/MessagesHeader";
 import ConversationList from "./_components/ConversationList";
@@ -19,9 +15,7 @@ import toast from "react-hot-toast";
 const MessagesPage = () => {
   //////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
-  const { currentRoom, rooms, messages } = useSelector(
-    (state: RootState) => state.chat
-  );
+  const { currentRoom, rooms, messages } = useSelector((state: RootState) => state.chat);
   const { user } = useSelector((state: RootState) => state.auth);
   const { defaultSocket } = useSocketContext();
 
@@ -133,31 +127,29 @@ const MessagesPage = () => {
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
-    <div className="relative flex h-[calc(100vh-90px)] min-h-0 gap-3">
+    <div className="flex h-[calc(100vh-90px)] gap-3 p-4 bg-gradient-to-br from-background via-surface/20 to-background">
       {/* Sidebar */}
-      <aside className="bg-muted/50 relative px-2.5 py-4 space-y-4 z-10 w-72 flex flex-col h-full min-h-0 rounded-lg border !border-border overflow-hidden ">
-        <div className="sticky top-0 z-20 rounded-b-xl">
-          <MessagesHeader
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-          />
-        </div>
-        <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+      <aside className="w-80 flex flex-col bg-background border !border-border rounded-2xl overflow-hidden shadow-lg">
+        <MessagesHeader
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
+        <div className="flex-1 min-h-0 overflow-y-auto">
           <ConversationList searchQuery={searchQuery} />
         </div>
       </aside>
       {/* Main Chat Area */}
-      <main className="relative z-10 flex-1 flex flex-col min-h-0">
-        <div className="flex-1 flex flex-col min-h-0 rounded-lg bg-neutral/95 overflow-hidden">
-          {currentRoom ? (
-            <ChatWindow
-              onSendMessage={handleSendMessage}
-              onSendFile={handleSendFile}
-            />
-          ) : (
+      <main className="flex-1 flex flex-col min-h-0">
+        {currentRoom ? (
+          <ChatWindow
+            onSendMessage={handleSendMessage}
+            onSendFile={handleSendFile}
+          />
+        ) : (
+          <div className="flex-1 rounded-2xl overflow-hidden shadow-lg">
             <EmptyState />
-          )}
-        </div>
+          </div>
+        )}
       </main>
     </div>
   );

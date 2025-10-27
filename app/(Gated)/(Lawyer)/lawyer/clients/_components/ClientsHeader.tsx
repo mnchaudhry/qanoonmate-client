@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Card, CardContent } from '@/components/ui/card';
-import { Search, X, Filter } from 'lucide-react';
-import ViewToggle from '@/components/ViewToggle';
+"use client";
 
-const FILTERS = ["All", "Active"];
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { X, Filter } from 'lucide-react';
+import SearchBar from '@/components/SearchBar';
+import ViewToggle from '@/components/ViewToggle';
+import { useDebounce } from '@/hooks/use-debounce';
+import { useEffect } from 'react';
+
+const FILTERS = ["All", "Active", "Inactive"];
 
 interface ClientsHeaderProps {
   onSearch: (q: string) => void;
@@ -18,71 +22,114 @@ interface ClientsHeaderProps {
 
 const ClientsHeader = ({ onSearch, onFilter, filter, view, onViewChange }: ClientsHeaderProps) => {
   const [query, setQuery] = useState('');
-  const [open, setOpen] = useState(false);
+  const debouncedQuery = useDebounce(query, 400);
 
-  const handleSearch = () => {
-    onSearch(query);
+  useEffect(() => {
+    onSearch(debouncedQuery);
+  }, [debouncedQuery, onSearch]);
+
+  const handleClearSearch = () => {
+    setQuery('');
+    onSearch('');
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') handleSearch();
+  const handleClearFilters = () => {
+    setQuery('');
+    onFilter('All');
+    onSearch('');
   };
+
+  const hasActiveFilters = filter !== 'All' || query.trim() !== '';
 
   return (
-    <Card className="mb-0 border-none shadow-none bg-transparent">
-      <CardContent className="p-0">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 w-full">
-          {/* Left: Search Bar */}
-          <div className="flex-1 flex items-center">
-            <div className="relative w-full max-w-md">
-              <Input
-                placeholder="Search by name, email, or case title"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-                onKeyDown={handleKeyPress}
-                className="pl-10 pr-10 h-11 bg-background !border-border text-foreground placeholder-muted-foreground rounded-lg shadow-sm"
-              />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              {query && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 p-0 text-muted-foreground hover:text-primary"
-                  onClick={() => { setQuery(''); onSearch(''); }}
-                  aria-label="Clear search"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-          {/* Right: Filter + View Toggle */}
-          <div className="flex items-center gap-2">
-            <DropdownMenu open={open} onOpenChange={setOpen}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="h-11 px-4 flex items-center gap-2 !border-border bg-background text-foreground">
-                  <Filter className="h-4 w-4" />
-                  <span className="font-medium">{filter}</span>
-                  <span className="ml-1">⌄</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {FILTERS.map(f => (
-                  <DropdownMenuItem key={f} onClick={() => { onFilter(f); setOpen(false); }} className={filter === f ? 'font-semibold' : ''}>
-                    {f}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {/* View Toggle */}
-            <ViewToggle
-              view={view}
-              onViewChange={onViewChange}
-            />
-          </div>
+    <div className="flex flex-col gap-4">
+      {/* Top Row: Search and Actions */}
+      <div className="flex flex-col md:flex-row md:items-center gap-3">
+        {/* Search Bar */}
+        <div className="flex-1">
+          <SearchBar
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by name, email, or phone..."
+            containerClassName="mb-0 mx-0"
+          />
         </div>
-      </CardContent>
-    </Card>
+
+        {/* Filter Controls */}
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Status Filter */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={filter !== "All" ? "default" : "outline"}
+                className="h-10 gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                <span>{filter}</span>
+                {filter !== "All" && (
+                  <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
+                    1
+                  </Badge>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {FILTERS.map(f => (
+                <DropdownMenuItem
+                  key={f}
+                  onClick={() => onFilter(f)}
+                  className={filter === f ? 'bg-primary/10 font-semibold' : ''}
+                >
+                  <span className="flex-1">{f}</span>
+                  {filter === f && <span className="text-primary">✓</span>}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* View Toggle */}
+          <ViewToggle view={view} onViewChange={onViewChange} />
+
+          {/* Clear All Filters */}
+          {hasActiveFilters && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClearFilters}
+              className="h-10 gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              <X className="h-4 w-4" />
+              Clear All
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Active Filters Display */}
+      {hasActiveFilters && (
+        <div className="flex items-center gap-2 flex-wrap pt-2 border-t border-border">
+          <span className="text-sm text-muted-foreground font-medium">Active Filters:</span>
+          {filter !== "All" && (
+            <Badge variant="secondary" className="gap-2">
+              Status: {filter}
+              <X
+                className="h-3 w-3 cursor-pointer hover:text-destructive"
+                onClick={() => onFilter("All")}
+              />
+            </Badge>
+          )}
+          {query.trim() && (
+            <Badge variant="secondary" className="gap-2">
+              Search: &quot;{query}&quot;
+              <X
+                className="h-3 w-3 cursor-pointer hover:text-destructive"
+                onClick={handleClearSearch}
+              />
+            </Badge>
+          )}
+        </div>
+      )}
+    </div>
   );
 };
 

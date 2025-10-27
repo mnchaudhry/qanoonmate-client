@@ -59,15 +59,15 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   if (filteredRooms.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center h-full min-h-0">
-        <div className="flex flex-col items-center justify-center" >
-          <div className="mx-auto w-12 h-12 text-gray-400 mb-4">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex-1 flex items-center justify-center h-full min-h-0 px-4">
+        <div className="flex flex-col items-center justify-center text-center" >
+          <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-4">
+            <svg className="w-8 h-8 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No conversations found</h3>
-          <p className="text-gray-500">
+          <h3 className="text-lg font-semibold text-foreground mb-2">No conversations found</h3>
+          <p className="text-sm text-muted-foreground max-w-[200px]">
             {searchQuery ? "Try a different search term" : "Start a new conversation to get started"}
           </p>
         </div>
@@ -76,7 +76,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
   }
 
   return (
-    <div className="overflow-y-auto h-full min-h-0 flex-1 space-y-1">
+    <div className="overflow-y-auto h-full min-h-0 flex-1 space-y-1 px-2 py-2">
       {filteredRooms.map((room, index) => {
         const isSelected = currentRoom?._id === room._id;
         const lawyer = room?.participants?.find((p) => p._id !== user?._id);
@@ -88,19 +88,20 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
         return (
           <div
             key={index}
-            className={`relative group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200 shadow-sm
-              ${isSelected ? 'bg-surface ' : 'bg-transparent hover:bg-accent/60 border border-transparent'}
+            className={`relative group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200
+              ${isSelected 
+                ? 'bg-primary/10 border-2 !border-primary shadow-sm' 
+                : 'bg-background hover:bg-accent/50 border border-border hover:border-border/80'
+              }
             `}
             style={{ minHeight: 72 }}
             onClick={() => handleSelectConversation(room)}
             tabIndex={0}
             aria-selected={isSelected}
           >
-            {/* Vertical accent bar for selected */}
-            <div className={`absolute left-0 top-2 bottom-2 w-1 rounded-full transition-all duration-200 ${isSelected ? 'bg-primary' : 'bg-transparent'}`} />
             {/* Avatar and status */}
             <div className="relative flex-shrink-0">
-              <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center overflow-hidden border !border-border shadow">
+              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 !border-border shadow-sm">
                 {lawyer?.profilePicture ? (
                   <Image
                     src={lawyer.profilePicture}
@@ -109,33 +110,39 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <span className="text-base font-bold text-muted-foreground">
+                  <span className="text-sm font-bold text-muted-foreground">
                     {lawyer?.firstname.split(' ').map(name => name[0]).join('').toUpperCase()}
                   </span>
                 )}
               </div>
               {isOtherUserOnline && (
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white shadow" />
+                <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-background shadow-sm" />
               )}
               {unreadCount > 0 && (
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full flex items-center justify-center shadow">
-                  <span className="text-xs font-bold text-primary-foreground">
-                    {unreadCount}
+                <div className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-primary rounded-full flex items-center justify-center shadow-md px-1.5">
+                  <span className="text-[10px] font-bold text-primary-foreground">
+                    {unreadCount > 99 ? '99+' : unreadCount}
                   </span>
                 </div>
               )}
             </div>
             {/* Main info */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-0.5">
-                <h4 className={`capitalize font-semibold text-base truncate ${isSelected ? 'text-primary' : 'text-foreground group-hover:text-primary transition-colors'}`}>
+              <div className="flex items-center justify-between mb-1">
+                <h4 className={`capitalize font-semibold text-sm truncate ${
+                  isSelected ? 'text-primary' : 'text-foreground group-hover:text-primary transition-colors'
+                }`}>
                   {lawyer?.firstname + " " + lawyer?.lastname}
                 </h4>
-                <span className="text-xs text-muted-foreground flex-shrink-0">
+                <span className="text-[10px] text-muted-foreground flex-shrink-0 ml-2">
                   {formatDistanceToNow(new Date(room.lastMessageAt!), { addSuffix: true })}
                 </span>
               </div>
-              <p className={`text-sm truncate text-muted-foreground ${isSelected && 'group-hover:text-foreground transition-colors'}`}>
+              <p className={`text-xs truncate ${
+                unreadCount > 0 
+                  ? 'text-foreground font-medium' 
+                  : 'text-muted-foreground'
+              }`}>
                 {room.lastMessage?.content || 'No messages yet'}
               </p>
             </div>

@@ -43,7 +43,7 @@ export default function LawyerNavbar() {
 
     const links = [
         { label: 'Dashboard', link: '/lawyer/dashboard', subLinks: [], description: 'Dashboard Overview' },
-        { label: 'Requests', link: '/lawyer/consultation-requests', subLinks: [], description: 'Consultation Requests' },
+        { label: 'Consultations', link: '/lawyer/consultations', subLinks: [], description: 'Consultation Requests' },
         { label: 'Clients', link: '/lawyer/clients', subLinks: [], description: 'My Clients' },
         { label: 'Calendar', link: '/lawyer/calendar', subLinks: [], description: 'Calendar & Schedule' },
         { label: 'Messages', link: '/lawyer/messages', subLinks: [], description: 'Messages / Chat' },

@@ -10,13 +10,19 @@ import { RootState } from "@/store/store";
 import { useEditModal } from "./edit/EditModalContext";
 import { EditContactModal } from "./edit/EditContactModal";
 import { enumToLabel } from "@/lib/utils";
+import { useRouter, useParams } from "next/navigation";
+import { Lawyer } from "@/store/types/lawyer.types";
 
 interface ContactCardProps {
   lawyer: LawyerProfile;
 }
 
 export function ContactCard({ lawyer }: ContactCardProps) {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const router = useRouter();
+  const params = useParams();
+  const username = params.username as string;
+  const { user } = useSelector((state: RootState) => state.auth) as { user: Lawyer };
+  const { selectedLawyer } = useSelector((state: RootState) => state.lawyer);
   const isOwnProfile = user?.email === lawyer.personalInfo.email;
   const { isContactModalOpen, openContactModal, closeAllModals } = useEditModal();
 
@@ -24,6 +30,23 @@ export function ContactCard({ lawyer }: ContactCardProps) {
   const getLowestPrice = () => {
     if (lawyer.services.consultationFees.length === 0) return null;
     return Math.min(...lawyer.services.consultationFees.map(fee => fee.price));
+  };
+
+  const handleSendMessage = () => {
+    if (isOwnProfile) return;
+    
+    // Navigate to messages with the lawyer
+    const lawyerId = selectedLawyer?._id;
+    if (lawyerId) {
+      router.push(`/messages?lawyerId=${lawyerId}`);
+    }
+  };
+
+  const handleBookConsultation = () => {
+    if (isOwnProfile) return;
+    
+    // Navigate to booking page
+    router.push(`/lawyers/${username}/book`);
   };
 
   //////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////
@@ -49,12 +72,23 @@ export function ContactCard({ lawyer }: ContactCardProps) {
       <CardContent className="space-y-5">
         {/* Quick Actions */}
         <div className="space-y-3">
-          <Button size="sm" className="w-full bg-primary hover:bg-primary/90 text-white">
+          <Button 
+            size="sm" 
+            className="w-full bg-primary hover:bg-primary/90 text-white"
+            onClick={handleSendMessage}
+            disabled={isOwnProfile}
+          >
             <MessageCircle className="w-3.5 h-3.5 mr-2" />
             Send Message
           </Button>
 
-          <Button size="sm" variant="outline" className="w-full">
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="w-full"
+            onClick={handleBookConsultation}
+            disabled={isOwnProfile}
+          >
             <Calendar className="w-3.5 h-3.5 mr-2" />
             Book Consultation
           </Button>

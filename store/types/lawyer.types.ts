@@ -86,3 +86,30 @@ export interface LawyerStatusUpdateRequest { isActive: boolean; }
 export type LawyerDeleteResponse = APIResponse<{ message: string }>
 
 export type SubmitReviewResponse = APIResponse<Review>
+
+export interface DashboardStats {
+  totalClients: number;
+  activeClients: number;
+  newClientsThisWeek: number;
+  monthlyEarnings: number;
+  earningsChange: string;
+  lastMonthEarnings: number;
+  pendingRequests: number;
+  newRequestsToday: number;
+  averageRating: number;
+  totalReviews: number;
+}
+
+export type DashboardStatsResponse = APIResponse<DashboardStats>
+
+export interface Activity {
+  type: 'consultation' | 'document' | 'client' | 'appointment' | 'payment';
+  title: string;
+  description: string;
+  timestamp: string;
+  icon: string;
+  status: 'completed' | 'info' | 'new' | 'scheduled' | 'payment';
+  consultationId?: string;
+}
+
+export type ActivityLogResponse = APIResponse<Activity[]>

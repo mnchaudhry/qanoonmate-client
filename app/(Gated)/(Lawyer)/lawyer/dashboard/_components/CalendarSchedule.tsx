@@ -1,62 +1,150 @@
 "use client"
 
+import { useEffect, useMemo } from "react"
+import { useAppDispatch, useAppSelector } from "@/store/store"
+import { getMyConsultations } from "@/store/reducers/consultationSlice"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, ChevronRight, Video, MapPin, Users } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Calendar, Clock, ChevronRight, Video, MapPin, Users, AlertCircle } from "lucide-react"
+import { format, isAfter, parseISO, startOfDay } from 'date-fns'
+import Link from "next/link"
+import { Consultation } from "@/store/types/api"
+import { User } from "@/store/types/user.types"
+import { ConsultationStatus, ConsultationMode } from "@/lib/enums"
 
-const upcomingEvents = [
-  {
-    id: 1,
-    title: "Client Meeting - Property Dispute",
-    client: "Ahmad Khan",
-    time: "2:00 PM - 3:00 PM",
-    date: "Today",
-    type: "meeting",
-    location: "Office",
-    status: "confirmed"
-  },
-  {
-    id: 2,
-    title: "Court Hearing - Criminal Case",
-    client: "Hassan Ali",
-    time: "10:00 AM - 12:00 PM",
-    date: "Tomorrow",
-    type: "hearing",
-    location: "District Court",
-    status: "scheduled"
-  },
-  {
-    id: 3,
-    title: "Virtual Consultation",
-    client: "Fatima Shah",
-    time: "4:00 PM - 5:00 PM",
-    date: "Dec 15",
-    type: "consultation",
-    location: "Online",
-    status: "pending"
-  }
-]
-
-const getEventIcon = (type: string) => {
-  switch (type) {
-    case "meeting": return <Users className="h-4 w-4" />
-    case "hearing": return <Calendar className="h-4 w-4" />
-    case "consultation": return <Video className="h-4 w-4" />
-    default: return <Clock className="h-4 w-4" />
+const getEventIcon = (mode: ConsultationMode) => {
+  switch (mode) {
+    case ConsultationMode.IN_PERSON: return <Users className="h-4 w-4" />
+    case ConsultationMode.VIDEO_CALL: return <Video className="h-4 w-4" />
+    case ConsultationMode.PHONE_CALL: return <Clock className="h-4 w-4" />
+    default: return <Calendar className="h-4 w-4" />
   }
 }
 
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: ConsultationStatus) => {
   switch (status) {
-    case "confirmed": return "bg-primary/10 text-primary border-primary/20"
-    case "scheduled": return "bg-emerald-50 text-emerald-700 border-emerald-200"
-    case "pending": return "bg-amber-50 text-amber-700 border-amber-200"
+    case ConsultationStatus.SCHEDULED: return "bg-emerald-50 text-emerald-700 border-emerald-200"
+    case ConsultationStatus.CONFIRMED: return "bg-primary/10 text-primary border-primary/20"
+    case ConsultationStatus.PENDING: return "bg-amber-50 text-amber-700 border-amber-200"
     default: return "bg-muted text-muted-foreground !border-border"
   }
 }
 
+const getClientName = (clientId: User | string): string => {
+  if (typeof clientId === 'string') return 'Client'
+  return `${clientId.firstname || ''} ${clientId.lastname || ''}`.trim() || 'Client'
+}
+
 export default function CalendarSchedule() {
+  const dispatch = useAppDispatch()
+  const { consultations, isLoading, error } = useAppSelector(state => state.consultation)
+
+  useEffect(() => {
+    dispatch(getMyConsultations({ 
+      limit: 10
+    }))
+  }, [dispatch])
+
+  // Filter and sort upcoming events
+  const upcomingEvents = useMemo(() => {
+    if (!consultations) return []
+    const now = startOfDay(new Date())
+    
+    return consultations
+      .filter((c: Consultation) => {
+        const consultationDate = parseISO(c.scheduledDate)
+        return isAfter(consultationDate, now) && 
+               [ConsultationStatus.SCHEDULED, ConsultationStatus.PENDING, ConsultationStatus.CONFIRMED].includes(c.status)
+      })
+      .sort((a: Consultation, b: Consultation) => 
+        new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime()
+      )
+      .slice(0, 5)
+  }, [consultations])
+
+  if (isLoading) {
+    return (
+      <Card className="border-border">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg font-semibold text-foreground">Calendar & Schedule</CardTitle>
+              <CardDescription className="text-muted-foreground">Your upcoming appointments</CardDescription>
+            </div>
+            <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5" disabled>
+              View Calendar
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="max-h-[29rem] overflow-y-auto">
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="flex items-center justify-between p-4 bg-surface rounded-lg">
+                <div className="flex items-center space-x-4">
+                  <Skeleton className="w-10 h-10 rounded-lg" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-48" />
+                    <Skeleton className="h-3 w-32" />
+                    <Skeleton className="h-3 w-40" />
+                  </div>
+                </div>
+                <Skeleton className="h-6 w-20" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (error) {
+    return (
+      <Card className="border-border">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-foreground">Calendar & Schedule</CardTitle>
+          <CardDescription className="text-muted-foreground">Your upcoming appointments</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="p-8 text-center">
+            <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-sm text-muted-foreground">Failed to load schedule</p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="mt-4"
+              onClick={() => dispatch(getMyConsultations({ 
+                limit: 10
+              }))}
+            >
+              Try Again
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  if (upcomingEvents.length === 0) {
+    return (
+      <Card className="border-border">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-foreground">Calendar & Schedule</CardTitle>
+          <CardDescription className="text-muted-foreground">Your upcoming appointments</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="p-8 text-center">
+            <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <p className="text-sm text-muted-foreground">No upcoming appointments</p>
+            <p className="text-xs text-muted-foreground mt-2">Your scheduled consultations will appear here</p>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card className="border-border">
       <CardHeader>
@@ -65,42 +153,69 @@ export default function CalendarSchedule() {
             <CardTitle className="text-lg font-semibold text-foreground">Calendar & Schedule</CardTitle>
             <CardDescription className="text-muted-foreground">Your upcoming appointments</CardDescription>
           </div>
-          <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
-            View Calendar
-            <ChevronRight className="h-4 w-4 ml-1" />
-          </Button>
+          <Link href="/lawyer/calendar">
+            <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
+              View Calendar
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </Link>
         </div>
       </CardHeader>
-      <CardContent className="max-h-[29rem] overflow-y-auto " >
+      <CardContent className="max-h-[29rem] overflow-y-auto">
         <div className="space-y-4">
-          {upcomingEvents.map((event) => (
-            <div key={event.id} className="flex items-center justify-between p-4 bg-surface rounded-lg hover:bg-surface/80 transition-colors">
-              <div className="flex items-center space-x-4">
-                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                  {getEventIcon(event.type)}
-                </div>
-                <div>
-                  <h4 className="font-medium text-foreground">{event.title}</h4>
-                  <p className="text-sm text-muted-foreground">{event.client}</p>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <Clock className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{event.time}</span>
-                    <span className="text-xs text-muted-foreground">•</span>
-                    <span className="text-xs text-muted-foreground">{event.date}</span>
+          {upcomingEvents.map((event: Consultation) => {
+            const clientName = getClientName(event.clientId)
+            const consultationDate = parseISO(event.scheduledDate)
+            
+            return (
+              <Link
+                key={event._id}
+                href={`/lawyer/consultations/${event._id}`}
+                className="block"
+              >
+                <div className="flex items-center justify-between p-4 bg-surface rounded-lg hover:bg-surface/80 transition-colors cursor-pointer">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                      {getEventIcon(event.mode)}
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-foreground capitalize">
+                        {event.type.replace('_', ' ')} - {clientName}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">{clientName}</p>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <Clock className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">
+                          {format(consultationDate, 'h:mm a')} ({event.duration} min)
+                        </span>
+                        <span className="text-xs text-muted-foreground">•</span>
+                        <span className="text-xs text-muted-foreground">
+                          {format(consultationDate, 'MMM dd, yyyy')}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-1 mt-1">
+                        <MapPin className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground capitalize">
+                          {event.mode === ConsultationMode.IN_PERSON 
+                            ? event.location || 'Office'
+                            : event.mode === ConsultationMode.VIDEO_CALL
+                            ? 'Online Video'
+                            : 'Phone Call'
+                          }
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-1 mt-1">
-                    <MapPin className="h-3 w-3 text-muted-foreground" />
-                    <span className="text-xs text-muted-foreground">{event.location}</span>
-                  </div>
+                  <Badge className={getStatusColor(event.status)}>
+                    {event.status.replace('_', ' ')}
+                  </Badge>
                 </div>
-              </div>
-              <Badge className={getStatusColor(event.status)}>
-                {event.status}
-              </Badge>
-            </div>
-          ))}
+              </Link>
+            )
+          })}
         </div>
       </CardContent>
     </Card>
   )
 }
+

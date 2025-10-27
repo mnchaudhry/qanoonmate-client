@@ -1,8 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import { Lawyer, PaginatedLawyerResponse, SingleLawyerResponse, LawyerReviewsResponse, LawyerAvailabilityResponse, LawyerQuery, SubmitReviewResponse, MyClientsResponse } from '@/store/types/lawyer.types';
-import { Review } from '@/store/types/review.types';
+import { Lawyer, PaginatedLawyerResponse, SingleLawyerResponse, LawyerReviewsResponse, LawyerAvailabilityResponse, LawyerQuery, SubmitReviewResponse, MyClientsResponse, DashboardStats, Activity, Review } from '@/store/types/lawyer.types';
 import { Availability } from '@/store/types/lawyerSettings.types';
 import { Client } from '../types/client.types';
 import { PaginationMeta } from '../types/api';
@@ -19,6 +18,12 @@ interface LawyerState {
     meta: PaginationMeta;
     clients: Client[];
     logs?: any[];
+    dashboardStats: DashboardStats | null;
+    statsLoading: boolean;
+    statsError: string | null;
+    activities: Activity[];
+    activitiesLoading: boolean;
+    activitiesError: string | null;
 }
 
 ////////////////////////////////////////////////////////// LAWYER ////////////////////////////////////////////////////////////
@@ -197,6 +202,30 @@ export const getLawyerLogs = createAsyncThunk<any, string>('lawyer/getLawyerLogs
     }
 });
 
+export const getDashboardStats = createAsyncThunk<DashboardStats, void>('lawyer/getDashboardStats', async () => {
+    const { data } = await api.getDashboardStats();
+    if (data.success) {
+        return data.data!;
+    }
+    throw new Error('Failed to fetch dashboard stats');
+});
+
+export const getActivityLog = createAsyncThunk<Activity[], number | undefined>('lawyer/getActivityLog', async (limit) => {
+    const { data } = await api.getActivityLog(limit);
+    if (data.success) {
+        return data.data!;
+    }
+    throw new Error('Failed to fetch activity log');
+});
+
+export const getMyReviews = createAsyncThunk<Review[], number | undefined>('lawyer/getMyReviews', async (limit) => {
+    const { data } = await api.getMyReviews(limit);
+    if (data.success) {
+        return data.data!;
+    }
+    throw new Error('Failed to fetch reviews');
+});
+
 const initialState: LawyerState = {
     lawyers: [],
     selectedLawyer: null,
@@ -208,7 +237,13 @@ const initialState: LawyerState = {
     availability: null,
     meta: { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 },
     clients: [],
-    logs: []
+    logs: [],
+    dashboardStats: null,
+    statsLoading: false,
+    statsError: null,
+    activities: [],
+    activitiesLoading: false,
+    activitiesError: null,
 };
 
 const lawyerSlice = createSlice({
@@ -262,7 +297,7 @@ const lawyerSlice = createSlice({
             })
             .addCase(getLawyerReviews.fulfilled, (state, action) => {
                 state.reviews = Array.isArray(action.payload?.data)
-                    ? action.payload.data.map((r: any) => ({ verifiedInteraction: false, ...r }))
+                    ? action.payload.data
                     : [];
             })
             .addCase(getMeLawyer.fulfilled, (state, action) => {
@@ -289,13 +324,16 @@ const lawyerSlice = createSlice({
             .addCase(submitReview.fulfilled, (state, action) => {
                 const r = action.payload.data;
                 if (r) {
+                    // Ensure reviewer is always an object matching Review.reviewer shape
+                    const reviewerObj = typeof r.reviewer === "string"
+                        ? { _id: r.reviewer, firstname: '', lastname: '' }
+                        : r.reviewer;
                     state.reviews.unshift({
                         ...r,
-                        reviewer: typeof r.reviewer === "string" ? r.reviewer : r.reviewer._id,
+                        reviewer: reviewerObj,
                         context: (r.context === "chat" || r.context === "document" || r.context === "consultation" || r.context === "other")
                             ? r.context
-                            : "other",
-                        verifiedInteraction: false
+                            : "other"
                     });
                 }
             })
@@ -313,7 +351,44 @@ const lawyerSlice = createSlice({
             })
             .addCase(getSimilarLawyers.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.payload as string;
+                state.error = action.payload as string || 'Failed to fetch similar lawyers';
+            })
+            .addCase(getDashboardStats.pending, (state) => {
+                state.statsLoading = true;
+                state.statsError = null;
+            })
+            .addCase(getDashboardStats.fulfilled, (state, action) => {
+                state.statsLoading = false;
+                state.dashboardStats = action.payload;
+                state.statsError = null;
+            })
+            .addCase(getDashboardStats.rejected, (state, action) => {
+                state.statsLoading = false;
+                state.statsError = action.error.message || 'Failed to fetch dashboard stats';
+            })
+            .addCase(getActivityLog.pending, (state) => {
+                state.activitiesLoading = true;
+                state.activitiesError = null;
+            })
+            .addCase(getActivityLog.fulfilled, (state, action) => {
+                state.activitiesLoading = false;
+                state.activities = action.payload;
+                state.activitiesError = null;
+            })
+            .addCase(getActivityLog.rejected, (state, action) => {
+                state.activitiesLoading = false;
+                state.activitiesError = action.error.message || 'Failed to fetch activity log';
+            })
+            .addCase(getMyReviews.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(getMyReviews.fulfilled, (state, action) => {
+                state.isLoading = false;
+                state.reviews = action.payload;
+            })
+            .addCase(getMyReviews.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.error.message || 'Failed to fetch reviews';
             })
             .addCase(getLawyerLogs.fulfilled, (state, action) => {
                 state.logs = action.payload?.data?.logs || [];

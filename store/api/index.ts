@@ -148,6 +148,9 @@ export const getLawyerAvailability = (id: string) => APIClient.get<LawyerAPI.Law
 export const getLawyerReviews = (id: string) => APIClient.get<LawyerAPI.LawyerReviewsResponse>(`/lawyer/id/${id}/reviews`);
 export const getMeLawyer = () => APIClient.get<LawyerAPI.SingleLawyerResponse>(`/lawyer/me`);
 export const getMyClients = () => APIClient.get<LawyerAPI.MyClientsResponse>(`/lawyer/me/clients`);
+export const getMyReviews = (limit?: number) => APIClient.get<LawyerAPI.LawyerReviewsResponse>(`/lawyer/me/reviews`, { params: { limit } });
+export const getDashboardStats = () => APIClient.get<LawyerAPI.DashboardStatsResponse>(`/lawyer/me/dashboard/stats`);
+export const getActivityLog = (limit?: number) => APIClient.get<LawyerAPI.ActivityLogResponse>(`/lawyer/me/dashboard/activities`, { params: { limit } });
 export const updateMeLawyer = (data: Partial<LawyerAPI.Lawyer>) => APIClient.put<LawyerAPI.SingleLawyerResponse>(`/lawyer/me`, data);
 export const updateLawyerPassword = (password: string) => APIClient.put<LawyerAPI.SingleLawyerResponse>(`/lawyer/me/password`, { password, });
 export const updateLawyerStatus = (id: string, isActive: boolean) => APIClient.put<LawyerAPI.SingleLawyerResponse>(`/lawyer/admin/lawyers/${id}/status`, { isActive });

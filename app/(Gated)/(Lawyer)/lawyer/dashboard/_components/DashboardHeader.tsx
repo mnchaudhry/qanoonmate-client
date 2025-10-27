@@ -2,10 +2,12 @@
 
 import { Button } from "@/components/ui/button"
 import { useAppSelector } from "@/store/store"
-import { Calendar, Plus } from "lucide-react"
+import { Calendar } from "lucide-react"
+import { useRouter } from 'next/navigation'
 
 export default function DashboardHeader() {
 
+  const router = useRouter();
   const { user } = useAppSelector(state => state.auth);
 
   return (
@@ -15,13 +17,9 @@ export default function DashboardHeader() {
         <p className="text-muted-foreground">Here&apos;s what&apos;s happening with your practice today.</p>
       </div>
       <div className="flex gap-3">
-        <Button variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/5">
+        <Button onClick={() => router.push('/lawyer/calendar')} variant="outline" size="sm" className="border-primary/20 text-primary hover:bg-primary/5">
           <Calendar className="h-4 w-4 mr-2" />
           View Calendar
-        </Button>
-        <Button size="sm" className="bg-primary hover:bg-primary/90">
-          <Plus className="h-4 w-4 mr-2" />
-          New Case
         </Button>
       </div>
     </div>

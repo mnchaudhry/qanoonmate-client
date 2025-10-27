@@ -65,7 +65,7 @@ export function LegalExpertise({ lawyer }: LegalExpertiseProps) {
               Jurisdictions
             </h4>
             <div className="space-y-3">
-              {lawyer?.legalExpertise?.jurisdictions?.map((jurisdiction, index) => (
+              {lawyer?.legalExpertise?.jurisdictions?.filter(j => j.geography.province)?.map((jurisdiction, index) => (
                 <div key={index} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
                   <div className="flex items-center gap-2 mb-2">
                     <MapPin className="w-3.5 h-3.5 text-gray-500" />

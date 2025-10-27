@@ -259,15 +259,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
     <div className="flex w-full h-full space-x-3">
-      <div className="flex-1 relative flex flex-col h-full">
+      <div className="flex-1 relative flex flex-col h-full border !border-border rounded-xl overflow-hidden bg-background shadow-sm">
         {/* Chat Header */}
-        <div className="px-4 py-3 mb-2 bg-neutral backdrop-blur-md">
+        <div className="px-5 py-4 border-b !border-border bg-surface/50 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <Avatar>
+                <Avatar className="w-11 h-11 border-2 !border-border shadow-sm">
                   <AvatarImage src={otherUser?.profilePicture}></AvatarImage>
-                  <AvatarFallback className="capitalize text-base">
+                  <AvatarFallback className="capitalize text-base bg-primary/10 text-primary font-semibold">
                     {otherUser?.firstname
                       .split(" ")
                       .map((name) => name[0])
@@ -276,20 +276,28 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 </Avatar>
                 {/* Online indicator */}
                 {isOtherUserOnline && (
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-background shadow-sm"></div>
                 )}
               </div>
               <div>
-                <h3 className="capitalize font-semibold text-foreground text-lg">
+                <h3 className="capitalize font-semibold text-foreground text-base">
                   {otherUser?.firstname + " " + otherUser?.lastname}
                 </h3>
                 {getTypingIndicator() ? (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-primary font-medium flex items-center gap-1">
+                    <span className="w-1 h-1 bg-primary rounded-full animate-pulse"></span>
                     {getTypingIndicator()}
                   </p>
                 ) : (
                   <p className="text-xs text-muted-foreground">
-                    {isOtherUserOnline ? "Online" : "Offline"}
+                    {isOtherUserOnline ? (
+                      <span className="flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                        Online
+                      </span>
+                    ) : (
+                      'Offline'
+                    )}
                   </p>
                 )}
               </div>
@@ -299,16 +307,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 onClick={() => setShowRightbar((pre) => !pre)}
                 variant="ghost"
                 size="icon"
+                className="hover:bg-accent"
               >
                 {showRightbar ? (
                   <PanelRightClose
-                    size={24}
-                    className="!h-6 !w-6 text-muted-foreground "
+                    size={20}
+                    className="text-muted-foreground"
                   />
                 ) : (
                   <PanelRightOpen
-                    size={24}
-                    className="!h-6 !w-6 text-muted-foreground "
+                    size={20}
+                    className="text-muted-foreground"
                   />
                 )}
               </Button>
@@ -317,12 +326,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
 
         {/* Messages Area */}
-        <div className="relative flex-1 overflow-y-auto px-4 py-4 space-y-8 min-h-0 z-10">
+        <div className="relative flex-1 overflow-y-auto px-5 py-6 space-y-8 min-h-0 z-10 bg-gradient-to-b from-surface/20 to-transparent">
           {messageGroups.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <div className="mx-auto w-12 h-12 text-muted-foreground mb-4">
-                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -331,21 +340,21 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                     />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium text-foreground mb-2">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
                   No messages yet
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-sm text-muted-foreground max-w-xs mx-auto">
                   Start the conversation by sending a message below
                 </p>
               </div>
             </div>
           ) : (
             messageGroups.map((group, groupIndex) => (
-              <div key={groupIndex} className="space-y-1">
+              <div key={groupIndex} className="space-y-3">
                 {/* Date Divider */}
-                <div className="flex items-center gap-3 my-2">
+                <div className="flex items-center gap-3 my-4">
                   <div className="flex-1 h-px bg-border" />
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground bg-white/80 px-3 py-1 rounded-full border !border-border shadow-sm">
+                  <span className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-surface px-3 py-1.5 rounded-full border !border-border shadow-sm">
                     <Gavel className="w-3 h-3 text-primary" />
                     {formatMessageDate(group.date)}
                   </span>
@@ -357,55 +366,53 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                   return (
                     <div
                       key={messageIndex}
-                      className={`flex gap-3 items-start hover:bg-primary/10 rounded-lg p-2 ${
+                      className={`flex gap-2.5 items-start ${
                         isUser ? "justify-end" : "justify-start"
                       }`}
                     >
-                      {/* Avatar for lawyer */}
+                      {/* Avatar for other user */}
                       {!isUser && (
-                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <div className="relative w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden flex-shrink-0 mt-1">
                           <Avatar className="w-8 h-8">
                             <AvatarImage
                               src={otherUser?.profilePicture}
                             ></AvatarImage>
-                            <AvatarFallback className="capitalize text-base">
+                            <AvatarFallback className="capitalize text-xs bg-primary/10 text-primary font-semibold">
                               {otherUser?.firstname
                                 .split(" ")
                                 .map((name) => name[0])
                                 .join("")}
                             </AvatarFallback>
                           </Avatar>
-                          {isOtherUserOnline && (
-                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                          )}
                         </div>
                       )}
                       {/* Message bubble */}
                       <div
-                        className={`max-w-xs lg:max-w-md transition-all duration-300 ${
+                        className={`max-w-xs lg:max-w-md transition-all duration-200 ${
                           isUser ? "order-first" : ""
                         }`}
                       >
                         <div
-                          className={`p-2 rounded-lg shadow-md transition-all duration-300 animate-fade-in
+                          className={`px-3.5 py-2.5 rounded-2xl shadow-sm transition-all duration-200 hover:shadow-md
                         ${
                           isUser
-                            ? "bg-primary text-primary-foreground ml-auto"
-                            : "bg-surface text-foreground"
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-surface text-foreground border !border-border"
                         }
-                        ${isUser ? "rounded-br-md" : "rounded-bl-md"}
-                        group hover:scale-[1.02] focus-within:scale-[1.02]`}
+                        ${isUser ? "rounded-br-md" : "rounded-bl-md"}`}
                           tabIndex={0}
                         >
                           {message.type === "TEXT" ? (
-                            <p className="text-sm leading-relaxed">
+                            <p className="text-sm leading-relaxed break-words">
                               {message.content}
                             </p>
                           ) : message.type === "FILE" &&
                             message.fileAttachment ? (
-                            <div className="flex flex-col gap-2 min-w-[200px] max-w-[300px]">
-                              <div className="flex items-center gap-3 p-3 rounded-lg bg-background/10 border border-border/20">
-                                {getFileIcon(message.fileAttachment.fileType)}
+                            <div className="flex flex-col gap-2.5 min-w-[220px] max-w-[320px]">
+                              <div className="flex items-center gap-3 p-3 rounded-xl bg-background/10 border !border-border/20 hover:bg-background/20 transition-colors">
+                                <div className="flex-shrink-0">
+                                  {getFileIcon(message.fileAttachment.fileType)}
+                                </div>
                                 <div className="flex-1 min-w-0">
                                   <p
                                     className="text-sm font-medium truncate"
@@ -428,9 +435,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                                       "_blank"
                                     )
                                   }
-                                  className="flex items-center gap-1 px-3 py-1.5 text-xs rounded bg-background/20 hover:bg-background/30 transition-colors"
+                                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg bg-background/20 hover:bg-background/30 transition-colors"
                                 >
-                                  <ExternalLink className="w-3 h-3" />
+                                  <ExternalLink className="w-3.5 h-3.5" />
                                   Open
                                 </button>
                                 <button
@@ -440,9 +447,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                                       message.fileAttachment!.name
                                     )
                                   }
-                                  className="flex items-center gap-1 px-3 py-1.5 text-xs rounded bg-background/20 hover:bg-background/30 transition-colors"
+                                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg bg-background/20 hover:bg-background/30 transition-colors"
                                 >
-                                  <Download className="w-3 h-3" />
+                                  <Download className="w-3.5 h-3.5" />
                                   Download
                                 </button>
                               </div>
@@ -456,12 +463,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                               </div>
                             </div>
                           )}
-                          <div className="flex justify-end items-center gap-1 mt-1">
+                          <div className="flex justify-end items-center gap-1.5 mt-1.5">
                             <span
                               className={cn(
-                                "text-[9px]",
+                                "text-[10px] font-medium",
                                 isUser
-                                  ? "text-primary-foreground"
+                                  ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
                               )}
                             >
@@ -475,9 +482,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                                     p._id !== user?._id &&
                                     p._id === otherUser?._id
                                 ) ? (
-                                  <CheckCircle className="w-2.5 h-2.5 text-primary-foreground" />
+                                  <CheckCircle className="w-3 h-3 text-primary-foreground/80" />
                                 ) : (
-                                  <Check className="w-2.5 h-2.5 text-neutral" />
+                                  <Check className="w-3 h-3 text-primary-foreground/60" />
                                 )}
                               </>
                             )}
@@ -496,20 +503,22 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
 
         {/* Message Input */}
-        <div className="relative z-20 border-t !border-border p-3 backdrop-blur-md">
+        <div className="relative z-20 border-t !border-border px-5 py-4 bg-surface/50 backdrop-blur-sm">
           {/* File preview */}
           {selectedFile && (
-            <div className="flex items-center gap-2 mb-2 p-2 bg-surface border !border-border rounded-lg shadow-sm animate-fade-in">
-              <FileText className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium truncate max-w-[180px]">
-                {selectedFile.name}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {(selectedFile.size / 1024).toFixed(1)} KB
-              </span>
+            <div className="flex items-center gap-3 mb-3 p-3 bg-background border !border-border rounded-xl shadow-sm animate-fade-in">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <FileText className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{selectedFile.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {(selectedFile.size / 1024).toFixed(1)} KB
+                </p>
+              </div>
               <button
                 onClick={removeFile}
-                className="ml-2 p-1 rounded-full hover:bg-destructive/10 text-destructive transition"
+                className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
                 title="Remove file"
               >
                 <X className="w-4 h-4" />
@@ -527,7 +536,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               />
               <button
                 onClick={() => document.getElementById("file-upload")?.click()}
-                className="p-2 text-muted-foreground hover:text-primary rounded-md hover:bg-accent transition"
+                className="p-2.5 text-muted-foreground hover:text-primary rounded-xl hover:bg-accent transition-all active:scale-95"
                 title="Attach file"
               >
                 <Paperclip className="w-5 h-5" />
@@ -537,8 +546,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             <div className="relative">
               <button
                 onClick={() => setShowEmojiPicker((v) => !v)}
-                className={`p-2 text-muted-foreground hover:text-primary rounded-md hover:bg-accent transition ${
-                  showEmojiPicker ? "bg-accent" : ""
+                className={`p-2.5 text-muted-foreground hover:text-primary rounded-xl hover:bg-accent transition-all active:scale-95 ${
+                  showEmojiPicker ? "bg-accent text-primary" : ""
                 }`}
                 title="Add emoji"
                 type="button"
@@ -546,11 +555,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 <Smile className="w-5 h-5" />
               </button>
               {showEmojiPicker && (
-                <div className="absolute bottom-12 left-0 z-30 bg-surface border !border-border rounded-xl shadow-lg p-2 flex flex-wrap gap-1 w-56 animate-fade-in">
+                <div className="absolute bottom-14 left-0 z-30 bg-background border !border-border rounded-2xl shadow-2xl p-3 flex flex-wrap gap-1.5 w-64 animate-fade-in">
                   {EMOJIS.map((emoji) => (
                     <button
                       key={emoji}
-                      className="text-xl p-1 rounded hover:bg-accent/60 focus:bg-accent/80 transition"
+                      className="text-2xl p-2 rounded-lg hover:bg-accent/80 focus:bg-accent transition-all active:scale-95"
                       onClick={() => handleEmojiSelect(emoji)}
                       type="button"
                     >
@@ -568,13 +577,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 value={messageInput}
                 onChange={handleInputChange}
                 onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                className="flex-1 px-4 py-2 border !border-border rounded-full focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-surface/80 transition"
+                className="flex-1 px-4 py-2.5 border !border-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-background transition-all placeholder:text-muted-foreground"
                 aria-label="Type a message"
               />
               <button
                 onClick={handleSendMessage}
                 disabled={!messageInput.trim() && !selectedFile}
-                className="p-2 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition active:scale-95 focus:ring-2 focus:ring-primary"
+                className="p-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 focus:ring-2 focus:ring-primary/50 shadow-sm"
                 title="Send message"
                 type="button"
                 aria-label="Send message"

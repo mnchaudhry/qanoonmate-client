@@ -11,6 +11,9 @@ import QuickActions from './_components/QuickActions'
 import ProfileProgress from './_components/ProfileProgress'
 
 export default function LawyerDashboard() {
+
+
+
   return (
     <div className="space-y-6 pb-4">
       {/* Header */}
@@ -38,12 +41,9 @@ export default function LawyerDashboard() {
         </div>
 
         {/* Bottom Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 items-start gap-6 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 items-start gap-6 w-full">
           <CalendarSchedule />
           <ActivityLog />
-          <div className="lg:col-span-1">
-            {/* Empty space for future components */}
-          </div>
         </div>
       </div>
 
