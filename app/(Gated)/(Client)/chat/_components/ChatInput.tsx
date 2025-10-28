@@ -27,7 +27,7 @@ interface Props {
   setUploadedFiles: Dispatch<SetStateAction<File[]>>;
   textareaRef: RefObject<HTMLTextAreaElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
-  setShowContextPanel: any;
+  // setShowContextPanel: any; // Commented out as it's not used
   initialMessage?: string | null;
 }
 
@@ -38,7 +38,7 @@ const ChatInput: React.FC<Props> = memo(
     textareaRef,
     fileInputRef,
     setUploadedFiles,
-    setShowContextPanel,
+    // setShowContextPanel, // Commented out as it's not used
     initialMessage,
   }) => {
     ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////

@@ -16,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <AdminSidebar />
 
                     {/* Main Content Area */}
-                    <div className="flex-1 flex flex-col min-h-screen">
+                    <div className="flex-1 flex flex-col min-h-screen max-w-screen overflow-hidden">
                         {/* Fixed Navbar */}
                         <div className="sticky top-0 z-40">
                             <AdminNavbar />

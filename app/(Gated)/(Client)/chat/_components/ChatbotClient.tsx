@@ -335,7 +335,6 @@ const ChatbotClient = () => {
                     textSize={textSize}
                     textareaRef={textareaRef}
                     fileInputRef={fileInputRef}
-                    setShowContextPanel={setShowContextPanel}
                     initialMessage={urlMessage}
                   />
                 </div>

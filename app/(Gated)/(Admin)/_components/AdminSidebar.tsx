@@ -1,7 +1,7 @@
 "use client"
 
 import { Settings, Gavel, Users, Shield, BarChart, Bell, Newspaper, LayoutDashboard, MessageSquare, AlertTriangle, HeadphonesIcon, TrendingUp, CheckCircle, Flag, BookOpen, FileStack, DollarSign, Clock, UserCheck, HelpCircle, ChevronRight, ChevronDown, Mail, Send } from "lucide-react"
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem, } from '../../../../components/ui/sidebar';
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarMenuSub, SidebarMenuSubItem, SidebarRail, } from '../../../../components/ui/sidebar';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { usePathname } from "next/navigation";
 import { useCallback, useMemo, useState, useEffect } from "react";
@@ -201,6 +201,8 @@ export function AdminSidebar() {
     //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
     return (
         <Sidebar className="w-64 bg-sidebar-background border-r border-sidebar-border">
+            <SidebarRail />
+
             <SidebarContent>
 
                 <SidebarHeader className="h-[60px] flex items-center justify-center " >
@@ -668,3 +670,4 @@ export function AdminSidebar() {
         </Sidebar>
     )
 }
+ 

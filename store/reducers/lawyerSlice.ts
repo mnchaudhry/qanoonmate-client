@@ -64,15 +64,6 @@ export const getLawyerAvailability = createAsyncThunk<LawyerAvailabilityResponse
     }
 });
 
-export const getLawyerReviews = createAsyncThunk<LawyerReviewsResponse, string>('lawyer/getLawyerReviews', async (id, { rejectWithValue }) => {
-    try {
-        const { data } = await api.getLawyerReviews(id);
-        return data;
-    } catch (err: any) {
-        return rejectWithValue(err.response?.data || 'Error fetching lawyer reviews');
-    }
-});
-
 export const getMeLawyer = createAsyncThunk<SingleLawyerResponse, void>('lawyer/getMeLawyer', async (_, { rejectWithValue }) => {
     try {
         const { data } = await api.getMeLawyer();
@@ -135,17 +126,6 @@ export const adminDeleteLawyer = createAsyncThunk<string, string>('lawyer/adminD
     }
 });
 
-export const submitReview = createAsyncThunk<SubmitReviewResponse, { id: string, review: Review }>('lawyer/submitReview', async ({ id, review }, { rejectWithValue }) => {
-    try {
-        const { data } = await api.submitReview(id, review);
-        toast.success('Review submitted');
-        return data;
-    } catch (err: any) {
-        toast.error(err?.response?.data?.message || 'Failed to submit review!');
-        return rejectWithValue(err.response?.data || 'Error submitting review');
-    }
-}
-);
 
 export const searchLawyers = createAsyncThunk<PaginatedLawyerResponse, { query: string } & LawyerQuery>('lawyer/searchLawyers', async (params, { rejectWithValue }) => {
     try {
@@ -295,11 +275,6 @@ const lawyerSlice = createSlice({
             .addCase(getLawyerAvailability.fulfilled, (state, action) => {
                 state.availability = Array.isArray(action.payload?.data) ? action.payload.data : [];
             })
-            .addCase(getLawyerReviews.fulfilled, (state, action) => {
-                state.reviews = Array.isArray(action.payload?.data)
-                    ? action.payload.data
-                    : [];
-            })
             .addCase(getMeLawyer.fulfilled, (state, action) => {
                 state.selectedLawyer = action.payload?.data || null;
             })
@@ -320,22 +295,6 @@ const lawyerSlice = createSlice({
                 const deletedId = action.payload;
                 state.lawyers = state.lawyers.filter(lawyer => lawyer._id !== deletedId);
                 if (state.selectedLawyer?._id === deletedId) state.selectedLawyer = null;
-            })
-            .addCase(submitReview.fulfilled, (state, action) => {
-                const r = action.payload.data;
-                if (r) {
-                    // Ensure reviewer is always an object matching Review.reviewer shape
-                    const reviewerObj = typeof r.reviewer === "string"
-                        ? { _id: r.reviewer, firstname: '', lastname: '' }
-                        : r.reviewer;
-                    state.reviews.unshift({
-                        ...r,
-                        reviewer: reviewerObj,
-                        context: (r.context === "chat" || r.context === "document" || r.context === "consultation" || r.context === "other")
-                            ? r.context
-                            : "other"
-                    });
-                }
             })
             .addCase(searchLawyers.fulfilled, (state, action) => {
                 state.lawyers = action.payload.data || [];

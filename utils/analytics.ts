@@ -12,13 +12,19 @@ let flushTimer: any = null;
 const FLUSH_MS = 3000;
 const MAX_BATCH = 50;
 
-const getBackendUrl = () => {
-  const base = process.env.NEXT_PUBLIC_BACKEND_URL;
-  return `${base}/api/analytics/track`;
-};
+// Commented out - not currently used
+// const getBackendUrl = () => {
+//   const base = process.env.NEXT_PUBLIC_BACKEND_URL;
+//   return `${base}/api/analytics/track`;
+// };
 
 const getClientSessionId = (): string => {
   try {
+    // Check if we're in browser environment
+    if (typeof window === 'undefined') {
+      return 'ssr-session';
+    }
+    
     const key = 'qm_client_session_id';
     let sid = localStorage.getItem(key);
     if (!sid) {
