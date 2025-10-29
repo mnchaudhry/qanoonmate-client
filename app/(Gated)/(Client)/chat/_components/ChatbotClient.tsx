@@ -1,22 +1,12 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSocketContext } from "@/context/useSocketContext";
-import {
-  getChatMetadataBySession,
-  getChatSession,
-  getMessagesBySession,
-  setChatMetadata,
-  setIsMetadataLoading,
-  setRegeneratingMessageId,
-  updateBotMessage,
-  updateStreamingMessage,
-} from "@/store/reducers/aiSessionSlice";
+import { getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, setIsMetadataLoading, setRegeneratingMessageId, updateBotMessage, updateStreamingMessage, } from "@/store/reducers/aiSessionSlice";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
 import { socketEvents } from "@/store/socket/events";
 import { AppDispatch, RootState } from "@/store/store";
-import { File, X } from "lucide-react";
+import { BriefcaseBusiness, FileText, HomeIcon, ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "next/navigation";
@@ -24,47 +14,56 @@ import ChatbotNavbar from "./ChatbotHeader";
 import ChatbotSidebar from "./ChatbotSidebar";
 import ChatInput from "./ChatInput";
 import ChatRightbar from "./ChatRightbar";
-import DefaultScreen from "./DefaultScreen";
 import MessageBox from "./MessageBox";
 
-import { Button } from "@/components/ui/button";
 import { AIChatMessage } from "@/lib/interfaces";
 import { assistant, user as userRes } from "@openai/agents";
+import { cn } from "@/lib/utils";
 
 const ChatbotClient = () => {
-  // variables
+
+  ///////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////////////
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const {
-    defaultSocket: { socket, isConnected },
-    connectAgain,
-  } = useSocketContext();
+  const { defaultSocket: { socket, isConnected }, connectAgain, } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
   const searchParams = useSearchParams();
-  const {
-    messages,
-    currentSessionId: sessionId,
-    sessionMetadata,
-    isMetadataLoading,
-  } = useSelector((state: RootState) => state.aiSession);
+  const { messages, currentSessionId: sessionId, sessionMetadata, isMetadataLoading, } = useSelector((state: RootState) => state.aiSession);
+  const { user } = useSelector((state: RootState) => state.auth);
+  const isNewSession = messages.length === 0;
+  const samplePrompts = [
+    {
+      icon: <BriefcaseBusiness className="w-5 h-5 text-primary" />,
+      title: "Business Registration",
+      description:
+        "What are the legal requirements for registering a business in Pakistan?",
+    },
+    {
+      icon: <HomeIcon className="w-5 h-5 text-primary" />,
+      title: "Tenant Rights",
+      description: "Explain the tenant rights under rental laws in Pakistan.",
+    },
+    {
+      icon: <ShieldCheck className="w-5 h-5 text-primary" />,
+      title: "Intellectual Property",
+      description:
+        "How can I protect my intellectual property in Pakistan?",
+    },
+    {
+      icon: <FileText className="w-5 h-5 text-primary" />,
+      title: "Employment Law",
+      description:
+        "What are the key labor laws that employers must follow in Pakistan?",
+    },
+  ];
+
   ///////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////////////
-  // UI States
   const [showDictionary, setShowDictionary] = useState(false);
-  const [chatViewMode, setChatViewMode] = useState<
-    "compact" | "card" | "timeline"
-  >("card");
+  const [chatViewMode, setChatViewMode] = useState<"compact" | "card" | "timeline">("card");
   const [textSize, setTextSize] = useState(16);
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
-  const [showAccessibilityPanel, setShowAccessibilityPanel] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const {
-    cases,
-    references,
-    aiConfidence: confidence,
-    legalContext,
-    quickAction,
-    referencedLinks,
-  } = useSelector((state: RootState) => state.aiSession);
+  const { cases, references, aiConfidence: confidence, legalContext, quickAction, referencedLinks, } = useSelector((state: RootState) => state.aiSession);
 
   // Check if screen is desktop size for default sidebar states
   const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -74,18 +73,12 @@ const ChatbotClient = () => {
     return false;
   });
 
-  const [showContextPanel, setShowContextPanel] = useState(() => {
-    if (typeof window !== "undefined") {
-      return window.innerWidth >= 1024; // lg breakpoint
-    }
-    return false;
-  });
+  const [showContextPanel, setShowContextPanel] = useState(false);
 
   // Extract message from URL parameters
   const urlMessage = searchParams.get("message");
 
-  // ---------------------------------------------------------------------------
-  //                                        useEffects
+  ///////////////////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////////////////////////
   // Get Lawyers
   useEffect(() => {
     dispatch(getLawyers({}));
@@ -115,11 +108,9 @@ const ChatbotClient = () => {
       if (isDesktop) {
         // On desktop, open both sidebars by default
         setSidebarOpen(true);
-        setShowContextPanel(true);
       } else {
         // On mobile/tablet, close both sidebars by default
         setSidebarOpen(false);
-        setShowContextPanel(false);
       }
     };
 
@@ -187,8 +178,7 @@ const ChatbotClient = () => {
     };
   }, [socket, dispatch]);
 
-  // --------------------------------------------------------------
-  //                                    functions
+  ///////////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////////////
   const onRegenerate = async (botMessage: AIChatMessage) => {
     dispatch(setRegeneratingMessageId(botMessage._id));
     // find userMessageId if it's missing
@@ -196,9 +186,7 @@ const ChatbotClient = () => {
 
     if (!userMessageId && messages && messages.length > 0) {
       // find the bot message index in the messages array
-      const botMessageIndex = messages.findIndex(
-        (m) => m._id === botMessage._id
-      );
+      const botMessageIndex = messages.findIndex((m) => m._id === botMessage._id);
       if (botMessageIndex > 0) {
         // look for the previous user message
         for (let i = botMessageIndex - 1; i >= 0; i--) {
@@ -248,19 +236,13 @@ const ChatbotClient = () => {
           />
         )}
 
-        <ChatbotSidebar
-          sessionMetadata={sessionMetadata}
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
-        />
+        <ChatbotSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
 
         {/* Main Content Area (Chat + Rightbar) */}
         <div className="flex flex-[8] flex-col h-full w-full bg-background overflow-hidden">
           {/* Navbar covers both chat and rightbar */}
           <div className="w-full z-30 bg-background border-b border-border shadow-sm">
             <ChatbotNavbar
-              showAccessibilityPanel={showAccessibilityPanel}
-              setShowAccessibilityPanel={setShowAccessibilityPanel}
               textSize={textSize}
               setTextSize={setTextSize}
               isScreenReaderMode={isScreenReaderMode}
@@ -270,16 +252,17 @@ const ChatbotClient = () => {
               aiConfidence={confidence}
               onToggleSidebar={() => setSidebarOpen((s) => !s)}
               onToggleRightbar={() => setShowContextPanel((s) => !s)}
+              sessionMetadata={sessionMetadata}
             />
           </div>
           <div className="flex h-full w-full min-h-0">
             {/* Main Chat Area */}
             <div className="flex flex-col h-full w-full bg-background overflow-hidden">
-              <div className="w-full mx-auto flex flex-1 flex-col min-h-0">
+              <div className={cn("w-full mx-auto flex flex-1 flex-col min-h-0",
+                isNewSession ? 'justify-center items-center' : ''
+              )}>
                 {/* Main Chat Content */}
-                {messages?.length < 1 ? (
-                  <DefaultScreen />
-                ) : (
+                {!isNewSession && (
                   <MessageBox
                     chatViewMode={chatViewMode}
                     textSize={textSize}
@@ -290,53 +273,69 @@ const ChatbotClient = () => {
                 )}
 
                 {/* Main Input Container */}
-                <div className="w-full max-w-4xl mx-auto px-4 py-4 bg-gradient-to-t from-background via-background to-transparent">
-                  {/* File Upload Area */}
-                  {uploadedFiles.length > 0 && (
-                    <div className="w-full mb-3 p-3 bg-primary/5 rounded-xl border border-primary/20 shadow-sm animate-in slide-in-from-bottom-2 duration-300">
-                      <div className="flex items-center gap-2 text-sm font-medium text-primary mb-2">
-                        <File className="w-4 h-4" />
-                        <span>Uploaded Files ({uploadedFiles.length}):</span>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {uploadedFiles.map((file, index) => (
-                          <div key={index} className="relative group">
-                            <Badge
-                              variant="secondary"
-                              className="text-xs pr-8 py-1.5 bg-background/80 hover:bg-background transition-colors"
-                            >
-                              {file.name}
-                            </Badge>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="absolute -top-1 -right-1 h-5 w-5 p-0 rounded-full bg-destructive/10 hover:bg-destructive/20 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={() =>
-                                setUploadedFiles(
-                                  uploadedFiles.filter((fileObj) => {
-                                    return (
-                                      fileObj.name !== file.name &&
-                                      fileObj.size !== file.size
-                                    );
-                                  })
-                                )
-                              }
-                            >
-                              <X className="w-3 h-3 text-destructive" />
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
+                <div className={cn(
+                  "w-full max-w-3xl mx-auto px-4 py-4",
+                  isNewSession ? "space-y-8" : "bg-gradient-to-t from-background via-background to-transparent"
+                )}>
+                  {/* Welcome Message - Only show on new session */}
+                  {isNewSession && (
+                    <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                      <h1 className="text-3xl md:text-4xl font-semibold">
+                        Hello,{" "}
+                        <span className="bg-gradient-to-r from-primary via-primary to-foreground bg-clip-text text-transparent animate-gradient">
+                          {user?.firstname || "User"}
+                        </span>
+                        !
+                      </h1>
                     </div>
                   )}
+
+                  {/* Chat Input */}
                   <ChatInput
+                    uploadedFiles={uploadedFiles}
                     setUploadedFiles={setUploadedFiles}
                     isConnected={isConnected}
                     textSize={textSize}
                     textareaRef={textareaRef}
                     fileInputRef={fileInputRef}
                     initialMessage={urlMessage}
+                    isNewSession={isNewSession}
                   />
+
+                  {/* Sample Prompts - Only show on new session */}
+                  {isNewSession && (
+                    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-5 duration-700 delay-150">
+                      <p className="text-sm font-medium text-muted-foreground text-center">
+                        Try asking:
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {
+                          samplePrompts.map((p, index) => (
+                            <button
+                              key={index}
+                              onClick={() => {
+                                if (textareaRef.current) {
+                                  textareaRef.current.value = p.description;
+                                  textareaRef.current.focus();
+                                }
+                              }}
+                              className="group p-4 text-left rounded-xl border border-border bg-surface hover:bg-secondary hover:border-primary/30 hover:cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                                  {p.icon}
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">{p.title}</h3>
+                                  <p className="text-xs text-muted-foreground line-clamp-2">{p.description}</p>
+                                </div>
+                              </div>
+                            </button>
+                          ))
+                        }
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

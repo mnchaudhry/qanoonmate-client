@@ -1,14 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  BookOpen,
-  Gavel,
-  Minimize2,
-  Plus,
-  FileText,
-  Calendar,
-  Link,
-} from "lucide-react";
+import { BookOpen, Gavel, Minimize2, Plus, FileText, Calendar, Link, } from "lucide-react";
 import { RightbarSkeleton } from "@/components/skeletons/RightbarSkeleton";
 
 interface ChatRightbarProps {
@@ -33,15 +25,15 @@ const ChatRightbar: React.FC<ChatRightbarProps> = ({
   referencedLinks = [],
   isLoading = false,
 }) => {
+
   return (
     <>
       {/* Desktop / Tablet docked rightbar */}
       <div
         className={`hidden md:block relative h-screen transition-all duration-300 ease-in-out overflow-y-auto 
-          ${
-            showContextPanel
-              ? "w-[22rem] min-w-[22rem] max-w-[22rem] opacity-100 pointer-events-auto bg-surface border-l border-border p-4 pt-8 shadow-inner"
-              : "w-8 min-w-8 max-w-8 opacity-100 bg-surface border-l border-border p-0"
+          ${showContextPanel
+            ? "w-[22rem] min-w-[22rem] max-w-[22rem] opacity-100 pointer-events-auto bg-surface border-l border-border p-4 pt-8 shadow-inner"
+            : "w-8 min-w-8 max-w-8 opacity-100 bg-surface border-l border-border p-0"
           }`}
         style={{ pointerEvents: showContextPanel ? "auto" : "auto" }}
       >
@@ -216,9 +208,8 @@ const ChatRightbar: React.FC<ChatRightbarProps> = ({
 
       {/* Mobile overlay rightbar */}
       <div
-        className={`md:hidden fixed inset-y-0 right-0 z-40 bg-surface border-l border-border w-[90%] max-w-[22rem] transform transition-transform duration-300 ease-out shadow-2xl ${
-          showContextPanel ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`md:hidden fixed inset-y-0 right-0 z-40 bg-surface border-l border-border w-[90%] max-w-[22rem] transform transition-transform duration-300 ease-out shadow-2xl ${showContextPanel ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="p-4 pt-6 h-full overflow-y-auto">
           <div className="flex items-center justify-between mb-4 pb-3 border-b border-border sticky top-0 bg-surface z-10">
