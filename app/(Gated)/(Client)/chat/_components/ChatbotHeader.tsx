@@ -1,39 +1,17 @@
 import React from "react";
 import ProfileButton from "@/components/profile-button";
 import { Button } from "@/components/ui/button";
-import {
-  Volume2,
-  VolumeX,
-  Keyboard,
-  ZoomIn,
-  ZoomOut,
-  Layout,
-  Crown,
-  Sparkles,
-  Menu,
-  PanelRightOpen,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Volume2, VolumeX, ZoomIn, ZoomOut, Layout, Sparkles, Menu, PanelRightOpen, Clock, MessageSquare, } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger, } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { useRouter } from "next/navigation";
 import Logo from "@/components/Logo";
+import { format } from "date-fns";
+import Link from "next/link";
 
 interface ChatNavbarProps {
-  showAccessibilityPanel: boolean;
-  setShowAccessibilityPanel: React.Dispatch<React.SetStateAction<boolean>>;
   textSize: number;
   setTextSize: (size: number) => void;
   isScreenReaderMode: boolean;
@@ -45,27 +23,19 @@ interface ChatNavbarProps {
   aiConfidence?: number | null;
   onToggleSidebar?: () => void;
   onToggleRightbar?: () => void;
+  sessionMetadata?: {
+    interactionCount: number;
+    lastModified: string;
+    sessionDuration: number;
+  };
 }
 
-const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
-  showAccessibilityPanel,
-  setShowAccessibilityPanel,
-  textSize = 16,
-  setTextSize,
-  isScreenReaderMode,
-  setIsScreenReaderMode,
-  chatViewMode,
-  setChatViewMode,
-  aiConfidence,
-  onToggleSidebar,
-  onToggleRightbar,
-}) => {
+const ChatbotNavbar: React.FC<ChatNavbarProps> = ({ textSize = 16, setTextSize, isScreenReaderMode, setIsScreenReaderMode, chatViewMode, setChatViewMode, aiConfidence, onToggleSidebar, onToggleRightbar, sessionMetadata, }) => {
+
   ////////////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////////////
-  const reduxConfidence = useSelector(
-    (state: RootState) => state.aiSession.aiConfidence
-  );
+  const reduxConfidence = useSelector((state: RootState) => state.aiSession.aiConfidence);
   const displayConfidence = aiConfidence ?? reduxConfidence ?? 0;
-  const router = useRouter();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   ////////////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////////////////
   const getConfidenceColor = (confidence: number) => {
@@ -88,7 +58,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
   ////////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////////////////
   return (
     <TooltipProvider>
-      <div className="h-[64px] md:h-[80px] bg-neutral px-3 md:px-6 py-3 md:py-4 flex justify-between items-center">
+      <div className="h-[56px] md:h-[64px] bg-neutral px-3 md:px-6 py-3 md:py-4 flex justify-between items-center">
         {/* Left Side - Menu + Logo */}
 
         <div className="flex items-center gap-2 md:gap-4 ">
@@ -96,7 +66,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden h-8 w-8 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
+            className="md: h-8 w-8 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
             onClick={onToggleSidebar}
             aria-label="Toggle sidebar"
           >
@@ -104,32 +74,68 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
           </Button>
           {/* Full logo */}
           <Logo size="sm" type="green" containerClassName="md:hidden block" />
+
+          <div className="flex gap-4">
+            {/* Session Metadata */}
+            {sessionMetadata && sessionMetadata.interactionCount > 0 && (
+              <div className="hidden lg:flex items-center gap-3 px-3 py-1.5 rounded-full border border-primary/10 bg-primary/5 hover:bg-primary/10 transition-all duration-200 shadow-sm">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-1.5 cursor-default">
+                      <MessageSquare className="w-3.5 h-3.5 text-primary" />
+                      <span className="text-xs font-semibold text-primary">
+                        {sessionMetadata.interactionCount}
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>{sessionMetadata.interactionCount} interactions in this session</p>
+                  </TooltipContent>
+                </Tooltip>
+                <div className="w-px h-4 bg-border"></div>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-1.5 cursor-default">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {format(sessionMetadata.lastModified, "MMM d")}
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">
+                    <p>Last activity: {format(sessionMetadata.lastModified, "MMM d, yyyy")}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
+            )}
+
+            {/* Compact AI confidence chip */}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 cursor-default select-none hover:bg-primary/10 transition-all duration-200 shadow-sm">
+                  <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+                  <span
+                    className={cn(
+                      "text-xs font-bold",
+                      getConfidenceColor(Number(displayConfidence))
+                    )}
+                  >
+                    {Number(displayConfidence)}%
+                  </span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p className="font-medium">
+                  AI Confidence: {Number(displayConfidence)}% (
+                  {getConfidenceLabel(Number(displayConfidence))})
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
 
         {/* Right Side - Profile, Premium, and Navigation */}
         <div className="flex items-center gap-2 md:gap-3">
-          {/* Compact AI confidence chip */}
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary/20 bg-primary/5 cursor-default select-none hover:bg-primary/10 transition-all duration-200 shadow-sm">
-                <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
-                <span
-                  className={cn(
-                    "text-xs font-bold",
-                    getConfidenceColor(Number(displayConfidence))
-                  )}
-                >
-                  {Number(displayConfidence)}%
-                </span>
-              </div>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              <p className="font-medium">
-                AI Confidence: {Number(displayConfidence)}% (
-                {getConfidenceLabel(Number(displayConfidence))})
-              </p>
-            </TooltipContent>
-          </Tooltip>
           {/* Rightbar toggle for mobile */}
           <Button
             variant="ghost"
@@ -141,7 +147,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
             <PanelRightOpen className="w-5 h-5" />
           </Button>
           {/* Navigation Buttons */}
-          <div className="hidden md:flex items-center gap-1 bg-background/50 rounded-xl p-1.5 border border-border shadow-sm">
+          <div className="hidden md:flex items-center gap-1 bg-background/50 rounded-xl p-1 border border-border shadow-sm">
             {/* Text Size Controls */}
             <Tooltip>
               <TooltipTrigger asChild>
@@ -185,9 +191,9 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
                   size="sm"
                   onClick={() => setIsScreenReaderMode(!isScreenReaderMode)}
                   className={cn(
-                    "h-8 w-8 p-0 rounded-full transition-all duration-200 hover:scale-105",
+                    "h-8 w-8 p-0 transition-all duration-200",
                     isScreenReaderMode &&
-                      "bg-primary/10 text-primary hover:bg-primary/20"
+                    "bg-primary/10 text-primary hover:bg-primary/20"
                   )}
                 >
                   {isScreenReaderMode ? (
@@ -210,7 +216,7 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 px-3 text-xs font-medium hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
+                  className="h-8 px-3 text-xs font-medium hover:bg-accent transition-all duration-200 "
                 >
                   <Layout className="w-4 h-4 text-muted-foreground mr-1.5" />
                   {chatViewMode}
@@ -229,73 +235,26 @@ const ChatbotNavbar: React.FC<ChatNavbarProps> = ({
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Accessibility Panel */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() =>
-                    setShowAccessibilityPanel(!showAccessibilityPanel)
-                  }
-                  className="h-8 w-8 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
-                >
-                  <Keyboard className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>
-                  {showAccessibilityPanel ? "Hide" : "Show"} Accessibility Panel
-                </p>
-              </TooltipContent>
-            </Tooltip>
-
-            {/* Help Button */}
-            {/* <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 hover:bg-accent"
-                >
-                  <HelpCircle className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Help & Support</p>
-              </TooltipContent>
-            </Tooltip> */}
-
-            {/* Settings Button */}
-            {/* <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 hover:bg-accent"
-                >
-                  <Settings className="w-4 h-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Settings</p>
-              </TooltipContent>
-            </Tooltip> */}
           </div>
 
-          {/* Premium Button */}
-          <Button
-            variant="default"
-            size="sm"
-            onClick={() => router.push("/pricing")}
-            className="hidden md:inline-flex bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 rounded-full font-semibold"
-          >
-            <Crown className="w-4 h-4 mr-2" />
-            Upgrade
-          </Button>
+          {isAuthenticated ? (
+            <>
+              <ProfileButton />
+            </>
+          ) : (
+            <div className="flex gap-3 ml-4">
+              <Button
+                variant="outline"
+                asChild
+                size='sm'
+              >
+                <Link href={`/auth/sign-in`} prefetch={true} passHref className='cursor-pointer'>
+                  Sign In
+                </Link>
+              </Button>
+            </div>
+          )}
 
-          {/* Profile Button */}
-          <ProfileButton />
         </div>
       </div>
     </TooltipProvider>
