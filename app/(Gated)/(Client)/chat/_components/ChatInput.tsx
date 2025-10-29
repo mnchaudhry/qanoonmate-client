@@ -1,6 +1,6 @@
 import { useSocketContext } from "@/context/useSocketContext";
 import { cn } from "@/lib/utils";
-import { newChat, setIsStreaming } from "@/store/reducers/aiSessionSlice";
+import { setIsStreaming } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import React, {
   Dispatch,
@@ -18,8 +18,8 @@ import { socketEvents } from "@/store/socket/events";
 import { extractTextFromPDF } from "@/utils/extractFromPdf";
 import { AgentInputItem, assistant, user as userRes } from "@openai/agents";
 // import { jsPDF } from "jspdf";
-import { useRouter } from "next/navigation";
 import ChatControls from "./ChatControls";
+import { getOrCreateAnonymousUserId } from "@/utils/anonymousUser";
 
 interface Props {
   isConnected: boolean;
@@ -27,7 +27,7 @@ interface Props {
   setUploadedFiles: Dispatch<SetStateAction<File[]>>;
   textareaRef: RefObject<HTMLTextAreaElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
-  setShowContextPanel: any;
+  // setShowContextPanel: any; // Commented out as it's not used
   initialMessage?: string | null;
 }
 
@@ -38,7 +38,6 @@ const ChatInput: React.FC<Props> = memo(
     textareaRef,
     fileInputRef,
     setUploadedFiles,
-    setShowContextPanel,
     initialMessage,
   }) => {
     ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
@@ -53,7 +52,6 @@ const ChatInput: React.FC<Props> = memo(
     } = useSocketContext();
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
-    const router = useRouter();
 
   // ---------------------------------------------------------------------
   //                                States
@@ -85,12 +83,8 @@ const ChatInput: React.FC<Props> = memo(
       return;
     }
 
-    // if no sign in
-    if (!user?._id) {
-      router.push("/auth/sign-in");
-      dispatch(newChat());
-      return;
-    }
+      // Get user ID - either from authenticated user or create anonymous ID
+      const userId = user?._id || getOrCreateAnonymousUserId();
 
     // if everything is ok move on
     dispatch(setIsStreaming(true));
@@ -111,12 +105,8 @@ const ChatInput: React.FC<Props> = memo(
       history.push(userRes(inputValue.trim()));
 
       if (!sessionId) {
-        // Using a test user ID (replace with actual authentication)
-        const userId = user._id; // Replace with actual user ID
-        if (!userId) return; // safety
-
-      // emit start_chat event
-      socketEvents.model.startChat(socket, { userId });
+        // emit start_chat event
+        socketEvents.model.startChat(socket, { userId });
 
         const onSessionStarted = (data: { sessionId: string }) => {
           // Update the route with the session ID as a query parameter without reloading the page

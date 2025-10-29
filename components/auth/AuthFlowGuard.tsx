@@ -44,11 +44,13 @@ const AuthFlowGuard: React.FC<AuthFlowGuardProps> = ({ children, allowedRoles = 
         // For pages that require auth flow (OTP, change password, etc.)
         if (requireAuthFlow && !isAuthenticated) {
             // Check if user has OTP email in localStorage (indicating they're in signup flow)
-            const otpEmail = localStorage.getItem('OTP_EMAIL');
-            if (!otpEmail) {
-                // No OTP email means they're trying to access directly, redirect to signin
-                router.push('/auth/sign-in');
-                return;
+            if (typeof window !== 'undefined') {
+                const otpEmail = localStorage.getItem('OTP_EMAIL');
+                if (!otpEmail) {
+                    // No OTP email means they're trying to access directly, redirect to signin
+                    router.push('/auth/sign-in');
+                    return;
+                }
             }
         }
 

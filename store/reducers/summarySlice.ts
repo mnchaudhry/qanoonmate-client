@@ -75,7 +75,7 @@ export const createSummary = createAsyncThunk(
   async (formData: any, { rejectWithValue }) => {
     try {
       const { data } = await createTextSummary(formData);
-      console.log("summary data", data)
+      console.log("summary data", data);
       return data.data;
     } catch (error: any) {
       return rejectWithValue(
@@ -274,12 +274,13 @@ const summarySlice = createSlice({
       state,
       action: PayloadAction<{ summaryId: string; content: string }>
     ) => {
-      if (
-        state.currentSummary &&
-        state.currentSummary._id === action.payload.summaryId
-      ) {
+      console.log("handleSummaryStream", action.payload.content);
+      // if (
+      //   state.currentSummary?._id === action.payload.summaryId
+      // ) {
+        console.log("handleSummaryStream", action.payload);
         state.streamingSummary = action.payload.content;
-      }
+      // }
     },
     handleSummaryComplete: (
       state,

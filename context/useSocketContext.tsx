@@ -5,6 +5,7 @@ import { io, Socket } from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { listenOnSocketEvents, socketEvents } from "@/store/socket/events";
+import { getOrCreateAnonymousUserId } from "@/utils/anonymousUser";
 
 interface SocketConnection {
   socket: Socket | null;
@@ -94,10 +95,11 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         },
       }));
 
-      // Auto-authenticate if user is logged in
-      if (user?._id && !connection.isAuthenticated) {
-        console.log(`Auto-authenticating socket for user: ${user._id}`);
-        socketInstance.emit("auth:authenticate", { userId: user._id });
+      // Auto-authenticate with user ID or anonymous ID
+      const userId = user?._id || getOrCreateAnonymousUserId();
+      if (userId && !connection.isAuthenticated) {
+        console.log(`Auto-authenticating socket for user: ${userId}`);
+        socketInstance.emit("auth:authenticate", { userId });
       }
     });
 
@@ -225,9 +227,10 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       });
 
-      // Authenticate if user is available
-      if (user?._id) {
-        authenticateSocket(user._id, "/");
+      // Authenticate if user is available or create anonymous user
+      const userId = user?._id || getOrCreateAnonymousUserId();
+      if (userId) {
+        authenticateSocket(userId, "/");
       }
 
       return true;
@@ -268,9 +271,10 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
         });
       });
 
-      // Authenticate if user is available
-      if (user?._id) {
-        authenticateSocket(user._id, "/");
+      // Authenticate if user is available or create anonymous user
+      const userId = user?._id || getOrCreateAnonymousUserId();
+      if (userId) {
+        authenticateSocket(userId, "/");
       }
 
       return true;
