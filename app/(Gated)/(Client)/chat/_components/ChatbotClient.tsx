@@ -2,11 +2,25 @@
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSocketContext } from "@/context/useSocketContext";
-import { getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, setIsMetadataLoading, setRegeneratingMessageId, updateBotMessage, updateStreamingMessage, } from "@/store/reducers/aiSessionSlice";
+import {
+  getChatMetadataBySession,
+  getChatSession,
+  getMessagesBySession,
+  setChatMetadata,
+  setIsMetadataLoading,
+  setRegeneratingMessageId,
+  updateBotMessage,
+  updateStreamingMessage,
+} from "@/store/reducers/aiSessionSlice";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
 import { socketEvents } from "@/store/socket/events";
 import { AppDispatch, RootState } from "@/store/store";
-import { BriefcaseBusiness, FileText, HomeIcon, ShieldCheck } from "lucide-react";
+import {
+  BriefcaseBusiness,
+  FileText,
+  HomeIcon,
+  ShieldCheck,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "next/navigation";
@@ -21,14 +35,21 @@ import { assistant, user as userRes } from "@openai/agents";
 import { cn } from "@/lib/utils";
 
 const ChatbotClient = () => {
-
   ///////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////////////
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const { defaultSocket: { socket, isConnected }, connectAgain, } = useSocketContext();
+  const {
+    defaultSocket: { socket, isConnected },
+    connectAgain,
+  } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
   const searchParams = useSearchParams();
-  const { messages, currentSessionId: sessionId, sessionMetadata, isMetadataLoading, } = useSelector((state: RootState) => state.aiSession);
+  const {
+    messages,
+    currentSessionId: sessionId,
+    sessionMetadata,
+    isMetadataLoading,
+  } = useSelector((state: RootState) => state.aiSession);
   const { user } = useSelector((state: RootState) => state.auth);
   const isNewSession = messages.length === 0;
   const samplePrompts = [
@@ -46,8 +67,7 @@ const ChatbotClient = () => {
     {
       icon: <ShieldCheck className="w-5 h-5 text-primary" />,
       title: "Intellectual Property",
-      description:
-        "How can I protect my intellectual property in Pakistan?",
+      description: "How can I protect my intellectual property in Pakistan?",
     },
     {
       icon: <FileText className="w-5 h-5 text-primary" />,
@@ -59,11 +79,20 @@ const ChatbotClient = () => {
 
   ///////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////////////
   const [showDictionary, setShowDictionary] = useState(false);
-  const [chatViewMode, setChatViewMode] = useState<"compact" | "card" | "timeline">("card");
+  const [chatViewMode, setChatViewMode] = useState<
+    "compact" | "card" | "timeline"
+  >("card");
   const [textSize, setTextSize] = useState(16);
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const { cases, references, aiConfidence: confidence, legalContext, quickAction, referencedLinks, } = useSelector((state: RootState) => state.aiSession);
+  const {
+    cases,
+    references,
+    aiConfidence: confidence,
+    legalContext,
+    quickAction,
+    referencedLinks,
+  } = useSelector((state: RootState) => state.aiSession);
 
   // Check if screen is desktop size for default sidebar states
   const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -186,7 +215,9 @@ const ChatbotClient = () => {
 
     if (!userMessageId && messages && messages.length > 0) {
       // find the bot message index in the messages array
-      const botMessageIndex = messages.findIndex((m) => m._id === botMessage._id);
+      const botMessageIndex = messages.findIndex(
+        (m) => m._id === botMessage._id
+      );
       if (botMessageIndex > 0) {
         // look for the previous user message
         for (let i = botMessageIndex - 1; i >= 0; i--) {
@@ -236,7 +267,10 @@ const ChatbotClient = () => {
           />
         )}
 
-        <ChatbotSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <ChatbotSidebar
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+        />
 
         {/* Main Content Area (Chat + Rightbar) */}
         <div className="flex flex-[8] flex-col h-full w-full bg-background overflow-hidden">
@@ -258,9 +292,12 @@ const ChatbotClient = () => {
           <div className="flex h-full w-full min-h-0">
             {/* Main Chat Area */}
             <div className="flex flex-col h-full w-full bg-background overflow-hidden">
-              <div className={cn("w-full mx-auto flex flex-1 flex-col min-h-0",
-                isNewSession ? 'justify-center items-center' : ''
-              )}>
+              <div
+                className={cn(
+                  "w-full mx-auto flex flex-1 flex-col min-h-0",
+                  isNewSession ? "justify-center items-center" : ""
+                )}
+              >
                 {/* Main Chat Content */}
                 {!isNewSession && (
                   <MessageBox
@@ -273,10 +310,14 @@ const ChatbotClient = () => {
                 )}
 
                 {/* Main Input Container */}
-                <div className={cn(
-                  "w-full max-w-3xl mx-auto px-4 py-4",
-                  isNewSession ? "space-y-8" : "bg-gradient-to-t from-background via-background to-transparent"
-                )}>
+                <div
+                  className={cn(
+                    "w-full max-w-3xl mx-auto px-4 py-4",
+                    isNewSession
+                      ? "space-y-8"
+                      : "bg-gradient-to-t from-background via-background to-transparent"
+                  )}
+                >
                   {/* Welcome Message - Only show on new session */}
                   {isNewSession && (
                     <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -309,30 +350,32 @@ const ChatbotClient = () => {
                         Try asking:
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {
-                          samplePrompts.map((p, index) => (
-                            <button
-                              key={index}
-                              onClick={() => {
-                                if (textareaRef.current) {
-                                  textareaRef.current.value = p.description;
-                                  textareaRef.current.focus();
-                                }
-                              }}
-                              className="group p-4 text-left rounded-xl border border-border bg-surface hover:bg-secondary hover:border-primary/30 hover:cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
-                            >
-                              <div className="flex items-start gap-3">
-                                <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                                  {p.icon}
-                                </div>
-                                <div className="flex-1">
-                                  <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">{p.title}</h3>
-                                  <p className="text-xs text-muted-foreground line-clamp-2">{p.description}</p>
-                                </div>
+                        {samplePrompts.map((p, index) => (
+                          <button
+                            key={index}
+                            onClick={() => {
+                              if (textareaRef.current) {
+                                textareaRef.current.value = p.description;
+                                textareaRef.current.focus();
+                              }
+                            }}
+                            className="group p-4 text-left rounded-xl border border-border bg-surface hover:bg-secondary hover:border-primary/30 hover:cursor-pointer transition-all duration-200 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+                          >
+                            <div className="flex items-start gap-3">
+                              <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                                {p.icon}
                               </div>
-                            </button>
-                          ))
-                        }
+                              <div className="flex-1">
+                                <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">
+                                  {p.title}
+                                </h3>
+                                <p className="text-xs text-muted-foreground line-clamp-2">
+                                  {p.description}
+                                </p>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
                       </div>
                     </div>
                   )}

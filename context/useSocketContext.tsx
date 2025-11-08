@@ -92,12 +92,13 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
           ...prev[namespace],
           isConnected: true,
           connectError: null,
+          isAuthenticated: false, // Reset auth status on new connection
         },
       }));
 
       // Auto-authenticate with user ID or anonymous ID
       const userId = user?._id || getOrCreateAnonymousUserId();
-      if (userId && !connection.isAuthenticated) {
+      if (userId) {
         console.log(`Auto-authenticating socket for user: ${userId}`);
         socketInstance.emit("auth:authenticate", { userId });
       }
