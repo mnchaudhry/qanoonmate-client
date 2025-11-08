@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge";
 import { Save, Shield, X } from "lucide-react";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
-import { LawCategory, LawyerLanguage } from "@/lib/enums";
+import { LawCategory, Languages } from "@/lib/enums";
 import { enumToLabel } from "@/lib/utils";
 import TagInput from "@/components/ui/tag-input";
 
@@ -218,7 +218,7 @@ export function LegalExpertiseSection({ profile, completion, onUpdate }: LegalEx
               </p>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {Object.values(LawyerLanguage).map(language => (
+                {Object.values(Languages).map(language => (
                   <Button
                     key={language}
                     variant={form.languages.includes(language) ? "default" : "outline"}

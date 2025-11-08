@@ -1,30 +1,20 @@
 'use client';
 
 import React, { useState } from 'react';
-import {  Dialog,  DialogContent,  DialogDescription,  DialogFooter,  DialogHeader,  DialogTitle,} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { 
-  LogIn, 
-  User, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  AlertCircle, 
-  CreditCard,
-  Coins,
-  ArrowRight,
-  Sparkles
-} from 'lucide-react';
+import { LogIn, User, Lock, Eye, EyeOff, AlertCircle, CreditCard, Coins, ArrowRight, Sparkles } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
 import { login } from '@/store/reducers/authSlice';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 import { UserRole } from '@/lib/enums';
+import Link from 'next/link';
 
 interface SignInModalProps {
   isOpen: boolean;
@@ -36,26 +26,19 @@ interface SignInModalProps {
   redirectAfterLogin?: string;
 }
 
-export const SignInModal: React.FC<SignInModalProps> = ({
-  isOpen,
-  onClose,
-  onSuccess,
-  title = "Sign In Required",
-  description = "Please sign in to continue with your request",
-  showBenefits = true,
-  redirectAfterLogin
-}) => {
+export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose, onSuccess, title = "Sign In Required", description = "Please sign in to continue with your request", showBenefits = true, redirectAfterLogin }) => {
+
+  //////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////// 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const { isLoading, error } = useSelector((state: RootState) => state.auth);
 
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+  //////////////////////////////////////////////// STATES //////////////////////////////////////////////// 
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
+  //////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////// 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
 
@@ -77,22 +60,16 @@ export const SignInModal: React.FC<SignInModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     try {
-      await dispatch(login({
-        role: UserRole.CLIENT, // Default to client role for modal
-        data: {
-          email: formData.email,
-          password: formData.password
-        }
-      })).unwrap();
+      await dispatch(login({ role: UserRole.CLIENT, data: { email: formData.email, password: formData.password } })).unwrap();
 
       toast.success('Welcome back!');
-      
+
       // Close modal and execute success callback
       onClose();
       if (onSuccess) {
@@ -104,7 +81,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({
         router.push(redirectAfterLogin);
       }
     } catch (error: any) {
-      toast.error(error || 'Failed to sign in');
+      console.log(error?.message || 'Failed to sign in');
     }
   };
 
@@ -116,16 +93,12 @@ export const SignInModal: React.FC<SignInModalProps> = ({
     }
   };
 
-  const handleSignUpRedirect = () => {
-    onClose();
-    router.push('/auth/sign-up');
-  };
-
   const handleForgotPassword = () => {
     onClose();
     router.push('/auth/forgot-password');
   };
 
+  //////////////////////////////////////////////// RENDER //////////////////////////////////////////////// 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
@@ -279,29 +252,17 @@ export const SignInModal: React.FC<SignInModalProps> = ({
 
             <div className="text-center">
               <p className="text-sm text-gray-600 mb-2">
-                Don&apos;t have an account?
+                Don&apos;t have an account? <Link
+                  href='/auth/sign-up'
+                  onClick={() => onClose()}
+                  className='hover:underline text-primary'
+                >Create Account</Link>
               </p>
-              <Button
-                variant="outline"
-                onClick={handleSignUpRedirect}
-                className="w-full"
-              >
-                Create Account
-              </Button>
             </div>
           </div>
         </div>
 
-        <DialogFooter className="flex-col sm:flex-row space-y-2 sm:space-y-0">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            disabled={isLoading}
-            className="w-full sm:w-auto"
-          >
-            Cancel
-          </Button>
-        </DialogFooter>
+
       </DialogContent>
     </Dialog>
   );

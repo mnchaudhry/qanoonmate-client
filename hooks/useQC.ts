@@ -3,17 +3,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useCallback, useState } from 'react';
 import { RootState, AppDispatch } from '@/store/store';
-import {
-  fetchBalance,
-  deductQC,
-  deductChatbot,
-  deductSummarizer,
-  deductKnowledgebase,
-  deductConsultation,
-  deductBlogPublishing,
-  purchaseQC,
-  refundQC
-} from '@/store/reducers/credits';
+import { fetchBalance, deductQC, purchaseQC } from '@/store/reducers/creditSlice';
 import { QCServiceType, PaymentMethod } from '@/lib/enums';
 
 export const useQC = () => {
@@ -29,16 +19,16 @@ export const useQC = () => {
   // Get service cost from service rates
   const getServiceCost = useCallback((service: QCServiceType, quantity: number = 1) => {
     // This would typically come from service rates, but for now we'll use hardcoded values
-    const rates = {
-      chatbot: 0.25,
-      summary: 2,
-      knowledgebase: 1,
-      consultation: 5,
-      blog_publishing: 3,
-      other: 1
+    const rates: Record<QCServiceType, number> = {
+      [QCServiceType.CHATBOT]: 0.25,
+      [QCServiceType.SUMMARIZER]: 2,
+      [QCServiceType.KNOWLEDGEBASE]: 1,
+      [QCServiceType.CONSULTATION]: 5,
+      [QCServiceType.BLOG_PUBLISHING]: 3,
+      [QCServiceType.OTHER]: 1
     };
-    
-    return rates[service] * quantity;
+
+    return (rates[service] || rates[QCServiceType.OTHER]) * quantity;
   }, []);
 
   // Deduct QC with confirmation
@@ -48,7 +38,7 @@ export const useQC = () => {
     metadata?: any
   ) => {
     const cost = getServiceCost(service, quantity);
-    
+
     if (!hasSufficientBalance(cost)) {
       throw new Error(`Insufficient balance. Required: ${cost} QC, Available: ${balance?.balance || 0} QC`);
     }
@@ -60,7 +50,7 @@ export const useQC = () => {
         quantity,
         metadata
       })).unwrap();
-      
+
       return result;
     } finally {
       setIsConfirming(false);
@@ -69,16 +59,16 @@ export const useQC = () => {
 
   // Service-specific deduction functions
   const useChatbot = useCallback(async (metadata?: any) => {
-    return dispatch(deductChatbot({
-      service: 'chatbot',
+    return dispatch(deductQC({
+      service: QCServiceType.CHATBOT,
       quantity: 1,
       metadata
     })).unwrap();
   }, [dispatch]);
 
   const useSummarizer = useCallback(async (documentId: string, wordCount?: number, pageCount?: number) => {
-    return dispatch(deductSummarizer({
-      service: 'summary',
+    return dispatch(deductQC({
+      service: QCServiceType.SUMMARIZER,
       quantity: 1,
       metadata: {
         documentId,
@@ -94,9 +84,9 @@ export const useQC = () => {
     bulkSize?: number
   ) => {
     const quantity = isBulkDownload ? Math.ceil((bulkSize || documentIds?.length || 1) / 10) : (documentIds?.length || 1);
-    
-    return dispatch(deductKnowledgebase({
-      service: 'knowledgebase',
+
+    return dispatch(deductQC({
+      service: QCServiceType.KNOWLEDGEBASE,
       quantity,
       metadata: {
         documentIds,
@@ -112,9 +102,9 @@ export const useQC = () => {
     lawyerId?: string
   ) => {
     const blocks = duration ? Math.ceil(duration / 10) : 1;
-    
-    return dispatch(deductConsultation({
-      service: 'consultation',
+
+    return dispatch(deductQC({
+      service: QCServiceType.CONSULTATION,
       quantity: blocks,
       metadata: {
         consultationId,
@@ -129,8 +119,8 @@ export const useQC = () => {
     wordCount?: number,
     isLawyer?: boolean
   ) => {
-    return dispatch(deductBlogPublishing({
-      service: 'blog_publishing',
+    return dispatch(deductQC({
+      service: QCServiceType.BLOG_PUBLISHING,
       quantity: 1,
       metadata: {
         blogId,
@@ -208,14 +198,14 @@ export const useQC = () => {
     loading,
     error,
     isConfirming,
-    
+
     // Utilities
     hasSufficientBalance,
     getServiceCost,
     formatQC,
     getBalanceStatus,
     getBalanceColor,
-    
+
     // Actions
     deductWithConfirmation,
     useChatbot,

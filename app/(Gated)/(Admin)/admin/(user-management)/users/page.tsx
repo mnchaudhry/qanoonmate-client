@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useDebounce } from '@/hooks/use-debounce'
+import { useDebounce } from '@/hooks/useDebounce'
 import { useDispatch, useSelector } from 'react-redux'
 import { PageHeader } from '../../../_components/PageHeader'
 import { AppDispatch, RootState } from '@/store/store'

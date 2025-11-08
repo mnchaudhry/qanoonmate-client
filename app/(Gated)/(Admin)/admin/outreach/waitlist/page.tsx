@@ -9,7 +9,7 @@ import { TableSkeleton } from '@/components/skeletons'
 import { RefreshCw } from 'lucide-react'
 import WaitlistFilters from './_components/WaitlistFilters'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useDebounce } from '@/hooks/use-debounce'
+import { useDebounce } from '@/hooks/useDebounce'
 import WaitlistTable from './_components/WaitlistTable'
 
 const PAGE_SIZE = 20

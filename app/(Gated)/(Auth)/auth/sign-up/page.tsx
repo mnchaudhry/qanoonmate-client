@@ -31,7 +31,7 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <AuthFlowGuard allowedRoles={[UserRole.CLIENT, UserRole.LAWYER]}>
+    <div>
       <div className="w-full border-stroke xl:border-l-2 lg:pl-12">
         <div className="w-full p-4 sm:py-12.5 xl:py-17.5">
           <h2 className="mb-9 text-2xl font-bold text-foreground sm:text-title-xl2">
@@ -58,7 +58,7 @@ const SignUp: React.FC = () => {
           </Tabs>
         </div>
       </div>
-    </AuthFlowGuard>
+    </div>
   );
 };
 

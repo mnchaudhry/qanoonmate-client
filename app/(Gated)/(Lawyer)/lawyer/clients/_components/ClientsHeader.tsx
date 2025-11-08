@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { X, Filter } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import ViewToggle from '@/components/ViewToggle';
-import { useDebounce } from '@/hooks/use-debounce';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useEffect } from 'react';
 
 const FILTERS = ["All", "Active", "Inactive"];

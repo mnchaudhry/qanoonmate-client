@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
-import { fetchBalance } from '@/store/reducers/credits';
+import { fetchBalance } from '@/store/reducers/creditSlice';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Wallet, Plus, Coins } from 'lucide-react';

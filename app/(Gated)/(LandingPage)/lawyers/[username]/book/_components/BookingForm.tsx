@@ -15,7 +15,7 @@ import { CalendarIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AppDispatch, RootState } from "@/store/store";
 import { bookConsultation } from "@/store/reducers/consultationSlice";
-import { AvailabilityDay, ConsultationMode, ConsultationType } from "@/lib/enums";
+import { Days, ConsultationMode, ConsultationType } from "@/lib/enums";
 
 interface BookingFormProps {
     selectedMode: ConsultationMode;
@@ -47,34 +47,34 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
     ].filter(mode => lawyer?.settings?.consultation?.modes?.includes(mode.value));
     console.log("Lawyer Settings", lawyer?.settings)
     // Weekdays as enum array
-    const weekDays: AvailabilityDay[] = useMemo(() => [
-        AvailabilityDay.MONDAY,
-        AvailabilityDay.TUESDAY,
-        AvailabilityDay.WEDNESDAY,
-        AvailabilityDay.THURSDAY,
-        AvailabilityDay.FRIDAY,
-        AvailabilityDay.SATURDAY,
-        AvailabilityDay.SUNDAY
+    const weekDays: Days[] = useMemo(() => [
+        Days.MONDAY,
+        Days.TUESDAY,
+        Days.WEDNESDAY,
+        Days.THURSDAY,
+        Days.FRIDAY,
+        Days.SATURDAY,
+        Days.SUNDAY
     ], []);
 
     ///////////////////////////////////////////////////////// STATES ///////////////////////////////////////////////////////////////
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("");
     const [notes, setNotes] = useState<string>("");
-    const [selectedDay, setSelectedDay] = useState<AvailabilityDay | null>(null);
+    const [selectedDay, setSelectedDay] = useState<Days | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     ///////////////////////////////////////////////////////// OTHER HOOKS ///////////////////////////////////////////////////////////////
     // Memoize available days for performance and clarity
-    const availableDays: Record<AvailabilityDay, string[]> = useMemo(() => {
-        const days: Record<AvailabilityDay, string[]> = weekDays.reduce((acc, day) => {
+    const availableDays: Record<Days, string[]> = useMemo(() => {
+        const days: Record<Days, string[]> = weekDays.reduce((acc, day) => {
             acc[day] = [];
             return acc;
-        }, {} as Record<AvailabilityDay, string[]>);
+        }, {} as Record<Days, string[]>);
         if (lawyer?.settings?.availability) {
             lawyer?.settings.availability.forEach(slot => {
                 if (slot.day) {
-                    days[slot.day as AvailabilityDay] = slot.timeSlots || [];
+                    days[slot.day as Days] = slot.timeSlots || [];
                 }
             });
         }
@@ -84,9 +84,9 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
     console.log("available days", availableDays)
 
     ///////////////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////////////////
-    const getDayName = (date: Date): AvailabilityDay => {
+    const getDayName = (date: Date): Days => {
         // Always returns lowercased string, cast to enum
-        return date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as AvailabilityDay;
+        return date.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as Days;
     };
 
     const isDateAvailable = (date: Date): boolean => {

@@ -89,7 +89,7 @@ const SignIn: React.FC = () => {
 
   ////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////////////////
   return (
-    <AuthFlowGuard allowedRoles={[UserRole.CLIENT, UserRole.LAWYER]}>
+    <div>
       <div className="w-full border-stroke xl:border-l-2 lg:pl-12 py-20 ">
 
         <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
@@ -176,7 +176,7 @@ const SignIn: React.FC = () => {
         </form>
         </div>
       </div>
-    </AuthFlowGuard>
+    </div>
   );
 };
 

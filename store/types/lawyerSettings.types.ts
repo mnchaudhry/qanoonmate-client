@@ -126,7 +126,7 @@ export interface LawyerSettings {
   updatedAt: string;
 }
 
-export interface GetLawyerSettingsResponse extends APIResponse<LawyerSettings> { }
+export type GetLawyerSettingsResponse = APIResponse<LawyerSettings>
 export interface UpdateLawyerSettingsRequest {
   preferences?: Partial<Preferences>;
   consultation?: Partial<ConsultationSettings>;
@@ -136,15 +136,15 @@ export interface UpdateLawyerSettingsRequest {
   dangerZone?: Partial<DangerZone>;
   availability?: Partial<Availability>[];
 }
-export interface UpdateLawyerSettingsResponse extends APIResponse<LawyerSettings> { }
-export interface UpdateConsultationSettingsRequest extends Partial<ConsultationSettings> { }
-export interface UpdateConsultationSettingsResponse extends APIResponse<LawyerSettings> { }
-export interface UpdateAvailabilityRequest extends Array<Partial<Availability>> { }
-export interface UpdateAvailabilityResponse extends APIResponse<LawyerSettings> { }
-export interface UpdateNotificationPreferencesRequest extends NotificationPreferences { }
-export interface UpdateNotificationPreferencesResponse extends APIResponse<LawyerSettings> { }
-export interface UpdateSecurityPreferencesRequest extends Partial<Security> { }
-export interface UpdateSecurityPreferencesResponse extends APIResponse<LawyerSettings> { }
-export interface UpdateBillingRequest extends Partial<Billing> { }
-export interface UpdateBillingResponse extends APIResponse<LawyerSettings> { }
-export interface DeleteLawyerSettingsResponse extends APIResponse<{ message: string }> { }
+export type UpdateLawyerSettingsResponse = APIResponse<LawyerSettings>
+export type UpdateConsultationSettingsRequest = Partial<ConsultationSettings>
+export type UpdateConsultationSettingsResponse = APIResponse<LawyerSettings>
+export type UpdateAvailabilityRequest = Array<Partial<Availability>>
+export type UpdateAvailabilityResponse = APIResponse<LawyerSettings>
+export type UpdateNotificationPreferencesRequest = NotificationPreferences
+export type UpdateNotificationPreferencesResponse = APIResponse<LawyerSettings>
+export type UpdateSecurityPreferencesRequest = Partial<Security>
+export type UpdateSecurityPreferencesResponse = APIResponse<LawyerSettings>
+export type UpdateBillingRequest = Partial<Billing>
+export type UpdateBillingResponse = APIResponse<LawyerSettings>
+export type DeleteLawyerSettingsResponse = APIResponse<{ message: string }> 

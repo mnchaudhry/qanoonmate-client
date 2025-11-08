@@ -23,8 +23,8 @@ import betaRequest from './betaRequestSlice';
 import email from './emailSlice';
 import communication from './communicationSlice';
 import newsletter from './newsletterSlice';
-import credits from './credits';
-import payments from './payments';
+import credits from './creditSlice';
+import payments from './paymentSlice';
 import profile from './profileSlice';
 
 const rootReducer = combineReducers({
