@@ -51,11 +51,9 @@ export const getQCBalance = createAsyncThunk<GetQCBalanceResponse, void>('credit
   try {
     const { data } = await creditsAPI.getQCBalance();
     if (data.success) {
-      toast.success(data.message)
       return data;
     }
     else {
-      toast.error(data.message)
       return rejectWithValue(data.message);
     }
   } catch (error: any) {
@@ -68,11 +66,9 @@ export const getQCPackages = createAsyncThunk<GetQCPackagesResponse, GetQCPackag
   try {
     const { data } = await creditsAPI.getQCPackages();
     if (data.success) {
-      toast.success(data.message)
       return data;
     }
     else {
-      toast.error(data.message)
       return rejectWithValue(data.message);
     }
   } catch (error: any) {
@@ -85,11 +81,9 @@ export const getQCServiceRates = createAsyncThunk<GetQCServiceRatesResponse, Get
   try {
     const { data } = await creditsAPI.getQCServiceRates();
     if (data.success) {
-      toast.success(data.message)
       return data;
     }
     else {
-      toast.error(data.message)
       return rejectWithValue(data.message);
     }
   } catch (error: any) {
@@ -102,11 +96,9 @@ export const getQCTransactionHistory = createAsyncThunk<GetQCTransactionHistoryR
   try {
     const { data } = await creditsAPI.getQCTransactionHistory(params);
     if (data.success) {
-      toast.success(data.message)
       return data;
     }
     else {
-      toast.error(data.message)
       return rejectWithValue(data.message);
     }
   } catch (error: any) {

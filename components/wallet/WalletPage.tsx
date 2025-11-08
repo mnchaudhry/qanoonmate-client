@@ -3,13 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
-import { fetchBalance, fetchPackages, fetchTransactionHistory } from '@/store/reducers/credits';
+import { fetchBalance, fetchPackages, fetchTransactionHistory } from '@/store/reducers/creditSlice';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wallet, Coins, TrendingUp, Clock, CheckCircle, Plus, ArrowUpRight, ArrowDownLeft, Gift } from 'lucide-react';
-import { QCPackage } from '@/store/types/credits.types';
+import { IQCPackage } from '@/store/types/credits.types';
 import { format } from 'date-fns';
 import QCPurchaseModal from './QCPurchaseModal';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
@@ -18,7 +18,7 @@ import SignInModal from '../auth/SignInModal';
 export const WalletPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { balance, packages, transactionHistory, loading } = useSelector((state: RootState) => state.credits);
-  const [selectedPackage, setSelectedPackage] = useState<QCPackage | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<IQCPackage | null>(null);
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const { requireAuth, showSignInModal, modalConfig, handleSignInSuccess, handleSignInCancel } = useAuthGuard();
 
@@ -28,7 +28,7 @@ export const WalletPage: React.FC = () => {
     dispatch(fetchTransactionHistory({ limit: 20 }));
   }, [dispatch]);
 
-  const handlePurchase = async (pkg: QCPackage) => {
+  const handlePurchase = async (pkg: IQCPackage) => {
     requireAuth(() => {
       setSelectedPackage(pkg);
       setShowPurchaseModal(true);

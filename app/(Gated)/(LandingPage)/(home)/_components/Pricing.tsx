@@ -4,39 +4,30 @@ import { CheckIcon, Coins, Zap } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import SectionHeading from "./SectionHeading";
-import { creditPackages } from "@/constants";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { creditsAPI } from "@/store/api/credits";
-import { QCPackage } from "@/store/types/credits.types";
+import { useEffect } from "react";
+import { getQCPackages } from "@/store/reducers/creditSlice";
+import { useAppDispatch, useAppSelector } from "@/store/store";
 
 function Pricing() {
+
+  /////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////// 
   const router = useRouter();
-  const [packages, setPackages] = useState<QCPackage[]>(creditPackages);
-  const [loading, setLoading] = useState(true);
-  console.log('loading', loading)
+  const dispatch = useAppDispatch();
+  const { packages } = useAppSelector(state => state.credits)
 
+  /////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////// 
+
+  /////////////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////////// 
   useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        const apiPackages = await creditsAPI.getPackages();
-        setPackages(apiPackages);
-      } catch (error) {
-        console.error('Failed to fetch packages:', error);
-        // Fallback to static packages
-        setPackages(creditPackages);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPackages();
-  }, []);
+    dispatch(getQCPackages())
+  }, [dispatch]);
 
   const handlePurchase = () => {
     router.push('/wallet');
   };
 
+  /////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////// 
   return (
     <section className="bg-neutral py-24 !px-4">
       <div className="container mx-auto flex text-center justify-center items-center gap-4 flex-col">

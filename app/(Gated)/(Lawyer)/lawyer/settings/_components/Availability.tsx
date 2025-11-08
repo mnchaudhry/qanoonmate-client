@@ -6,18 +6,18 @@ import { Calendar } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { updateAvailability } from '@/store/reducers/lawyerSettingsSlice';
-import { AvailabilityDay, TimeSlot } from '@/lib/enums';
+import { Days, TimeSlot } from '@/lib/enums';
 
 const TIME_SLOTS = Object.values(TimeSlot);
 
 const DAY_LABELS: Record<string, string> = {
-    [AvailabilityDay.MONDAY]: 'Monday',
-    [AvailabilityDay.TUESDAY]: 'Tuesday',
-    [AvailabilityDay.WEDNESDAY]: 'Wednesday',
-    [AvailabilityDay.THURSDAY]: 'Thursday',
-    [AvailabilityDay.FRIDAY]: 'Friday',
-    [AvailabilityDay.SATURDAY]: 'Saturday',
-    [AvailabilityDay.SUNDAY]: 'Sunday',
+    [Days.MONDAY]: 'Monday',
+    [Days.TUESDAY]: 'Tuesday',
+    [Days.WEDNESDAY]: 'Wednesday',
+    [Days.THURSDAY]: 'Thursday',
+    [Days.FRIDAY]: 'Friday',
+    [Days.SATURDAY]: 'Saturday',
+    [Days.SUNDAY]: 'Sunday',
 };
 
 const Availability = () => {
@@ -34,7 +34,7 @@ const Availability = () => {
     useEffect(() => {
         console.log('selectedSettings?.availability', selectedSettings?.availability, selectedSettings);
         if (selectedSettings?.availability) setAvailability(selectedSettings.availability);
-        else setAvailability(Object.values(AvailabilityDay).map(day => ({ day, timeSlots: [] })));
+        else setAvailability(Object.values(Days).map(day => ({ day, timeSlots: [] })));
     }, [selectedSettings]);
 
     //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
@@ -81,7 +81,7 @@ const Availability = () => {
             <CardContent className="space-y-6">
                 <section className="py-0">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {Object.values(AvailabilityDay).map(day => {
+                        {Object.values(Days).map(day => {
                             const dayData = availability.find(d => d.day === day) || { day, timeSlots: [] };
                             const allChecked = TIME_SLOTS.every(slot => dayData.timeSlots.includes(slot));
                             return (

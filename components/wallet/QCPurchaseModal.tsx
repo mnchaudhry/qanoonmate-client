@@ -18,8 +18,8 @@ import { Badge } from '@/components/ui/badge';
 import { Coins, CreditCard, User, MapPin, Phone, Mail, AlertCircle } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
-import { purchaseQC } from '@/store/reducers/credits';
-import { QCPackage } from '@/store/types/credits.types';
+import { purchaseQC } from '@/store/reducers/creditSlice';
+import { IQCPackage } from '@/store/types/credits.types';
 import { PaymentMethod } from '@/lib/enums';
 import { toast } from 'react-hot-toast';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
@@ -28,7 +28,7 @@ import SignInModal from '@/components/auth/SignInModal';
 interface QCPurchaseModalProps {
   isOpen: boolean;
   onClose: () => void;
-  package: QCPackage | null;
+  package: IQCPackage | null;
 }
 
 interface BillingDetails {

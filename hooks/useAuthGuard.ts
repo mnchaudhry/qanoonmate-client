@@ -16,23 +16,12 @@ export const useAuthGuard = () => {
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
   const [showSignInModal, setShowSignInModal] = useState(false);
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
-  const [modalConfig, setModalConfig] = useState<{
-    title?: string;
-    description?: string;
-    showBenefits?: boolean;
-  }>({});
-  
+  const [modalConfig, setModalConfig] = useState<{ title?: string; description?: string; showBenefits?: boolean; }>({});
+
   const router = useRouter();
 
-  const requireAuth = useCallback((
-    action: () => void,
-    options: AuthGuardOptions = {}
-  ) => {
-    const {
-      redirectTo,
-      showSignInModal: showModal = true,
-      customMessage
-    } = options;
+  const requireAuth = useCallback((action: () => void, options: AuthGuardOptions = {}) => {
+    const { redirectTo, showSignInModal: showModal = true, customMessage } = options;
 
     if (isAuthenticated && user) {
       // User is authenticated, proceed with action

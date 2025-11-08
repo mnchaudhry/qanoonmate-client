@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
-import { fetchPayments, fetchPaymentStats, fetchPaymentMethods, fetchAvailableGateways } from '@/store/reducers/payments';
+import { fetchPayments, fetchPaymentStats, fetchPaymentMethods, fetchAvailableGateways } from '@/store/reducers/paymentSlice';
 import PaymentStats from './_components/PaymentStats';
 import PaymentFilters from './_components/PaymentFilters';
 import PaymentTable from './_components/PaymentTable';

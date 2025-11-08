@@ -7,7 +7,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Filter, X, Calendar, Video, Phone, MessageSquare, MapPin } from 'lucide-react';
 import SearchBar from "@/components/SearchBar";
 import { ConsultationStatus, ConsultationType, ConsultationMode } from "@/lib/enums";
-import { useDebounce } from "@/hooks/use-debounce";
+import { useDebounce } from "@/hooks/useDebounce";
 import { enumToLabel } from "@/lib/utils";
 
 const statusOptions = ['All', ...Object.values(ConsultationStatus)];

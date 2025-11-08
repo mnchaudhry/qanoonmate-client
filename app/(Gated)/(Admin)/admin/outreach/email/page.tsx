@@ -8,7 +8,7 @@ import EmailFilters from './_components/EmailFilters'
 import { EmailComposer } from './_components/EmailComposer'
 import { UsersPickTable } from './_components/UsersPickTable'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { useDebounce } from '@/hooks/use-debounce'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export default function AdminEmailPage() {
 

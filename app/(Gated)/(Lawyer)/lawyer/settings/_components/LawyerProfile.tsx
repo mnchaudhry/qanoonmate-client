@@ -8,11 +8,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { Lawyer } from '@/store/types/lawyer.types';
-import { LawCategory, LawyerLanguage, Courts, Gender, BarCouncils, UserLanguagePreference } from '@/lib/enums';
+import { LawCategory, Languages, Courts, Gender, BarCouncils, UserLanguagePreference } from '@/lib/enums';
 import { Upload, User, Loader2 } from 'lucide-react';
 import { enumToLabel } from '@/lib/utils';
 import TagInput from '@/components/ui/tag-input';
-import { useDebounce } from '@/hooks/use-debounce';
+import { useDebounce } from '@/hooks/useDebounce';
 import { checkUsername, updateAvatar } from '@/store/reducers/userSlice';
 import { updateMeLawyer } from '@/store/reducers/lawyerSlice';
 
@@ -41,7 +41,7 @@ const PRACTICE_AREAS = [
     { key: LawCategory.DEPARTMENTAL_LAWS, label: 'Departmental Laws', sub: ['Service Rules', 'Departmental Inquiries', 'Disciplinary Actions'] },
     { key: LawCategory.GENERAL_LAWS, label: 'General Laws', sub: ['Constitutional Law', 'Administrative Law', 'Public Interest Litigation'] },
 ];
-const LANGUAGES = Object.values(LawyerLanguage);
+const LANGUAGES = Object.values(Languages);
 const COURTS = Object.values(Courts);
 const EXPERIENCE_CATEGORIES = [
     { label: '<5', value: 3 },

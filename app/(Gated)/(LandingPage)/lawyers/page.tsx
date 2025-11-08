@@ -9,12 +9,12 @@ import { getLawyers } from "@/store/reducers/lawyerSlice";
 import { AppDispatch } from "@/store/store";
 import LawyersSidebar from "./_components/LawyersSidebar";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useDebounce } from "@/hooks/use-debounce";
+import { useDebounce } from "@/hooks/useDebounce";
 import ViewToggle from "@/components/ViewToggle";
 import EmptyState from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LawCategory, LawyerLanguage, AvailabilityDay, PakistanCities, PakistanProvinces, LawyerRating, LawyerFeeRange, LawyerExperienceRange, AccountStatus } from "@/lib/enums";
+import { LawCategory, Languages, Days, PakistanCities, PakistanProvinces, Ratings, LawyerFeeRange, LawyerExperienceRange, AccountStatus } from "@/lib/enums";
 
 const PAGE_SIZE = 42;
 
@@ -48,11 +48,11 @@ const LawyersDirectory = () => {
   /////////////////////////////////////////////////// STATIC FILTER OPTIONS /////////////////////////////////////////////////////////
   const filterOptions = {
     specialization: Object.values(LawCategory),
-    language: Object.values(LawyerLanguage),
-    availability: Object.values(AvailabilityDay),
+    language: Object.values(Languages),
+    availability: Object.values(Days),
     city: Object.values(PakistanCities),
     province: Object.values(PakistanProvinces),
-    rating: Object.values(LawyerRating),
+    rating: Object.values(Ratings),
     fee_range: Object.values(LawyerFeeRange).map(fee => ({ label: fee, value: fee })),
     experience_range: Object.values(LawyerExperienceRange).map(experience => ({ label: experience, value: experience }))
   };

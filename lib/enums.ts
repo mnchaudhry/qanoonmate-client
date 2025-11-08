@@ -1,7 +1,8 @@
 export enum UserRole {
   ADMIN = "admin",
   CLIENT = "client",
-  LAWYER = "lawyer"
+  LAWYER = "lawyer", 
+  ANY = "any",
 }
 
 export enum OtpVerificationType {
@@ -161,13 +162,13 @@ export enum Days {
 }
 
 export enum BarCouncils {
-  PunjabBarCouncil = "Punjab Bar Council",
-  SindhBarCouncil = "Sindh Bar Council",
-  KhyberPakhtunkhwaBarCouncil = "Khyber Pakhtunkhwa Bar Council",
-  BalochistanBarCouncil = "Balochistan Bar Council",
-  IslamabadBarCouncil = "Islamabad Bar Council",
-  AzadJammuAndKashmirBarCouncil = "Azad Jammu and Kashmir Bar Council",
-  GilgitBaltistanBarCouncil = "Gilgit Baltistan Bar Council"
+    PunjabBarCouncil = "Punjab Bar Council",
+    SindhBarCouncil = "Sindh Bar Council",
+    KhyberPakhtunkhwaBarCouncil = "KP Bar Council",
+    BalochistanBarCouncil = "Balochistan Bar Council",
+    IslamabadBarCouncil = "Islamabad Bar Council",
+    AzadJammuAndKashmirBarCouncil = "Azad Jammu and Kashmir Bar Council",
+    GilgitBaltistanBarCouncil = "Gilgit Baltistan Bar Council"
 }
 
 
