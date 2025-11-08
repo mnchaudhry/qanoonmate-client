@@ -1,8 +1,9 @@
 import { APIClient } from './axios';
 import {
   QCBalanceResponse,
-  QCPackage,
-  QCServiceRate,
+  IQCPackage,
+  IQCServiceRate,
+  QCServicePricing,
   QCTransactionHistory,
   QCPurchaseRequest,
   QCDeductionRequest,
@@ -11,6 +12,7 @@ import {
   GetQCBalanceResponse,
   GetQCPackagesResponse,
   GetQCServiceRatesResponse,
+  GetQCServicePricingResponse,
   PurchaseQCResponse,
   DeductQCResponse,
   RefundQCResponse,
@@ -18,33 +20,35 @@ import {
   GetQCUsageAnalyticsResponse,
   UpdateQCServiceRateRequest,
   UpdateQCServiceRateResponse,
-  AddBonusQCRequest,
-  AddBonusQCResponse,
 } from '../types/credits.types';
 
-// API Functions
+// ========================= CREDITS API =========================
 export const creditsAPI = {
-  // Get user's QC balance
-  getBalance: async (): Promise<QCBalanceResponse> => {
-    const response = await APIClient.get<GetQCBalanceResponse>('/credits/balance');
-    return response.data.data;
-  },
-
+  // ==================== PUBLIC ROUTES (No Auth) ====================
+  
   // Get available QC packages
-  getPackages: async (): Promise<QCPackage[]> => {
+  getPackages: async (): Promise<IQCPackage[]> => {
     const response = await APIClient.get<GetQCPackagesResponse>('/credits/packages');
     return response.data.data;
   },
 
   // Get service rates
-  getServiceRates: async (): Promise<QCServiceRate[]> => {
+  getServiceRates: async (): Promise<IQCServiceRate[]> => {
     const response = await APIClient.get<GetQCServiceRatesResponse>('/credits/rates');
     return response.data.data;
   },
 
   // Get service pricing information
-  getServicePricing: async (): Promise<any[]> => {
-    const response = await APIClient.get<{ success: boolean; data: any[] }>('/credits/service-pricing');
+  getServicePricing: async (): Promise<QCServicePricing[]> => {
+    const response = await APIClient.get<GetQCServicePricingResponse>('/credits/service-pricing');
+    return response.data.data;
+  },
+
+  // ==================== PROTECTED ROUTES (Auth Required) ====================
+  
+  // Get user's QC balance
+  getBalance: async (): Promise<QCBalanceResponse> => {
+    const response = await APIClient.get<GetQCBalanceResponse>('/credits/balance');
     return response.data.data;
   },
 
@@ -61,7 +65,7 @@ export const creditsAPI = {
 
   // Deduct QC for a service
   deductQC: async (data: QCDeductionRequest): Promise<{
-    transactionId: string;
+    transactionId?: string;
     remainingBalance: number;
     deductedAmount: number;
     message: string;
@@ -89,10 +93,12 @@ export const creditsAPI = {
     dateFrom?: string;
     dateTo?: string;
   }): Promise<QCTransactionHistory> => {
-    const response = await APIClient.get<GetQCTransactionHistoryResponse>('/credits/transactions', { params });
+    const response = await APIClient.get<GetQCTransactionHistoryResponse>('/credits/transactions-history', { params });
     return response.data.data;
   },
 
+  // ==================== ADMIN ROUTES ====================
+  
   // Get usage analytics (Admin only)
   getUsageAnalytics: async (params?: {
     userId?: string;
@@ -104,82 +110,10 @@ export const creditsAPI = {
   },
 
   // Update service rate (Admin only)
-  updateServiceRate: async (data: UpdateQCServiceRateRequest): Promise<QCServiceRate> => {
+  updateServiceRate: async (data: UpdateQCServiceRateRequest): Promise<IQCServiceRate> => {
     const response = await APIClient.put<UpdateQCServiceRateResponse>('/credits/rates', data);
     return response.data.data;
   },
-
-  // Add bonus QC (Admin only)
-  addBonusQC: async (data: AddBonusQCRequest): Promise<{
-    transactionId: string;
-    amount: number;
-    reason: string;
-  }> => {
-    const response = await APIClient.post<AddBonusQCResponse>('/credits/bonus', data);
-    return response.data.data;
-  },
-
-  // Service-specific deduction endpoints
-  deductChatbot: async (data: {
-    service: string;
-    quantity?: number;
-    metadata?: any;
-  }) => {
-    const response = await APIClient.post('/credits/deduct/chatbot', data);
-    return response.data.data;
-  },
-
-  deductSummarizer: async (data: {
-    service: string;
-    quantity?: number;
-    metadata: {
-      documentId: string;
-      wordCount?: number;
-      pageCount?: number;
-    };
-  }) => {
-    const response = await APIClient.post('/credits/deduct/summarizer', data);
-    return response.data.data;
-  },
-
-  deductKnowledgebase: async (data: {
-    service: string;
-    quantity?: number;
-    metadata?: {
-      documentIds?: string[];
-      isBulkDownload?: boolean;
-      bulkSize?: number;
-    };
-  }) => {
-    const response = await APIClient.post('/credits/deduct/knowledgebase', data);
-    return response.data.data;
-  },
-
-  deductConsultation: async (data: {
-    service: string;
-    quantity?: number;
-    metadata: {
-      consultationId: string;
-      duration?: number;
-      lawyerId?: string;
-    };
-  }) => {
-    const response = await APIClient.post('/credits/deduct/consultation', data);
-    return response.data.data;
-  },
-
-  deductBlogPublishing: async (data: {
-    service: string;
-    quantity?: number;
-    metadata: {
-      blogId: string;
-      wordCount?: number;
-      isLawyer?: boolean;
-    };
-  }) => {
-    const response = await APIClient.post('/credits/deduct/blog-publishing', data);
-    return response.data.data;
-  }
 };
 
 export default creditsAPI;

@@ -139,7 +139,7 @@ export enum Courts {
   OTHER = "Other"
 }
 
-export enum LawyerLanguage {
+export enum Languages {
   ENGLISH = "english",
   URDU = "urdu",
   PASHTO = "pashto",
@@ -150,7 +150,7 @@ export enum LawyerLanguage {
   PERSIAN = "persian"
 }
 
-export enum AvailabilityDay {
+export enum Days {
   MONDAY = "monday",
   TUESDAY = "tuesday",
   WEDNESDAY = "wednesday",
@@ -171,7 +171,7 @@ export enum BarCouncils {
 }
 
 
-export enum LawyerRating {
+export enum Ratings {
   FIVE = "5",
   FOUR = "4",
   THREE = "3",
@@ -194,15 +194,7 @@ export enum LawyerExperienceRange {
 }
 
 export enum PaymentMethod {
-  CREDIT_CARD = "credit_card",
-  DEBIT_CARD = "debit_card",
-  BANK_TRANSFER = "bank_transfer",
-  MOBILE_WALLET = "mobile_wallet",
-  CASH = "cash",
-  STRIPE = "stripe",
-  PAYPAL = "paypal",
-  EASYPAISA = "easypaisa",
-  JAZZCASH = "jazzcash",
+  SAFEPAY = "safepay",
 }
 
 export enum UserTheme {

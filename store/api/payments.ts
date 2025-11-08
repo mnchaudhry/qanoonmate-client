@@ -3,14 +3,11 @@ import {
   Payment,
   CreatePaymentRequest,
   ProcessPaymentRequest,
-  RefundPaymentRequest,
   CancelPaymentRequest,
-  RetryPaymentRequest,
   PaymentGatewayResponse,
   PaymentStats,
   PaymentFilters,
   PaymentMethodConfig,
-  GatewayConfig,
   PaymentAuditLog,
   CreatePaymentResponse,
   ProcessPaymentResponse,
@@ -21,7 +18,6 @@ import {
   CancelPaymentResponse,
   RetryPaymentResponse,
   GetAvailableGatewaysResponse,
-  GetGatewayConfigResponse,
   GetPaymentMethodsResponse,
   GetPaymentInstructionsResponse,
   HandleWebhookResponse,
@@ -74,12 +70,6 @@ export const paymentsAPI = {
     return response.data.data;
   },
 
-  // Refund a payment
-  refundPayment: async (paymentId: string, data: Omit<RefundPaymentRequest, 'paymentId'>): Promise<Payment> => {
-    const response = await APIClient.post<RefundPaymentResponse>(`/payments/payments/${paymentId}/refund`, data);
-    return response.data.data;
-  },
-
   // Cancel a payment
   cancelPayment: async (paymentId: string, data: Omit<CancelPaymentRequest, 'paymentId'>): Promise<Payment> => {
     const response = await APIClient.post<CancelPaymentResponse>(`/payments/payments/${paymentId}/cancel`, data);
@@ -98,25 +88,9 @@ export const paymentsAPI = {
     return response.data.data;
   },
 
-  // Get gateway configuration
-  getGatewayConfig: async (gatewayName: string): Promise<any> => {
-    const response = await APIClient.get<GetGatewayConfigResponse>(`/payments/gateways/${gatewayName}`);
-    return response.data.data;
-  },
-
   // Get available payment methods
   getPaymentMethods: async (): Promise<PaymentMethodConfig[]> => {
     const response = await APIClient.get<GetPaymentMethodsResponse>('/payments/methods');
-    return response.data.data;
-  },
-
-  // Get payment instructions
-  getPaymentInstructions: async (paymentId: string): Promise<{
-    instructions: string;
-    gateway: string;
-    paymentMethod: string;
-  }> => {
-    const response = await APIClient.get<GetPaymentInstructionsResponse>(`/payments/payments/${paymentId}/instructions`);
     return response.data.data;
   },
 

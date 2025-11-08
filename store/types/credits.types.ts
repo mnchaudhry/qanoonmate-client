@@ -1,8 +1,9 @@
-import { QCServiceType, QCTransactionType, PaymentMethod, Currency } from "@/lib/enums";
+import { QCServiceType, QCTransactionType, PaymentMethod as PaymentMethod, Currency } from "@/lib/enums";
+import { APIResponse } from "./api";
 
-// ================= QC TRANSACTION TYPES =================
+// ========================= SHARED DATA TYPES =========================
 
-export interface QCTransaction {
+export interface IQCTransaction {
   id: string;
   userId: string;
   type: QCTransactionType;
@@ -17,15 +18,11 @@ export interface QCTransaction {
     originalTransactionId?: string; // For refunds
     [key: string]: any;
   };
-  timestamp: string;
-  createdAt: string;
-  updatedAt: string;
+  timestamp: Date;
   createdBy?: string; // Admin user ID for manual adjustments
 }
 
-// ================= QC SERVICE RATE TYPES =================
-
-export interface QCServiceRate {
+export interface IQCServiceRate {
   serviceName: QCServiceType;
   qcCost: number;
   unit: string; // per query, per page, per download, per consultation, per minute
@@ -37,11 +34,11 @@ export interface QCServiceRate {
     maxCost?: number;
     minCost?: number;
   };
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
-// ================= QC PACKAGE TYPES =================
-
-export interface QCPackage {
+export interface IQCPackage {
   id: string;
   name: string;
   qcAmount: number;
@@ -53,17 +50,52 @@ export interface QCPackage {
   savings?: string | null;
 }
 
-// ================= QC BALANCE RESPONSE =================
-
-export interface QCBalanceResponse {
-  balance: number;
-  currency: string;
-  lastUpdated: string;
+export interface QCServicePricing {
+  service: string;
+  price: string;
+  description: string;
+  icon: string;
 }
 
-// ================= QC PURCHASE REQUEST/RESPONSE =================
+export interface QCTransactionHistory {
+  transactions: IQCTransaction[];
+  totalCount: number;
+  currentBalance: number;
+}
 
-export interface QCPurchaseRequest {
+export interface QCUsageAnalytics {
+  serviceStats: ServiceUsageStat[];
+  totalTransactions: number;
+  totalQCUsed: number;
+}
+
+export interface ServiceUsageStat {
+  service: QCServiceType;
+  totalDeductions: number;
+  transactionCount: number;
+  averagePerTransaction: number;
+}
+
+// ========================= API REQUEST/RESPONSE TYPES =========================
+
+// getQCPackages
+export type GetQCPackagesRequest = void;
+export type GetQCPackagesResponse = APIResponse<IQCPackage[]>;
+
+// getQCServiceRates
+export type GetQCServiceRatesRequest = void;
+export type GetQCServiceRatesResponse = APIResponse<IQCServiceRate[]>;
+
+// getQCServicePricing
+export type GetQCServicePricingRequest = void;
+export type GetQCServicePricingResponse = APIResponse<QCServicePricing[]>;
+
+// getQCBalance
+export type GetQCBalanceRequest = void;
+export type GetQCBalanceResponse = APIResponse<{ balance: number; currency: string; }>;
+
+// purchaseQC
+export interface PurchaseQCRequest {
   qcAmount: number;
   paymentMethod: PaymentMethod;
   billingDetails: {
@@ -80,17 +112,15 @@ export interface QCPurchaseRequest {
     };
   };
 }
-
-export interface QCPurchaseResponse {
+export type PurchaseQCResponse = APIResponse<{
   transactionId: string;
   paymentUrl?: string;
   qcAmount: number;
   message: string;
-}
+}>;
 
-// ================= QC DEDUCTION REQUEST/RESPONSE =================
-
-export interface QCDeductionRequest {
+// deductQC
+export interface DeductQCRequest {
   service: QCServiceType;
   quantity?: number;
   metadata?: {
@@ -100,275 +130,47 @@ export interface QCDeductionRequest {
     [key: string]: any;
   };
 }
-
-export interface QCDeductionResponse {
-  transactionId: string;
+export type DeductQCResponse = APIResponse<{
+  transactionId?: string;
   remainingBalance: number;
   deductedAmount: number;
   message: string;
-}
+}>;
 
-// ================= QC REFUND REQUEST/RESPONSE =================
-
-export interface QCRefundRequest {
+// refundQC
+export interface RefundQCRequest {
   originalTransactionId: string;
   reason: string;
   partialAmount?: number;
 }
-
-export interface QCRefundResponse {
+export type RefundQCResponse = APIResponse<{
   transactionId: string;
   refundedAmount: number;
   message: string;
+}>;
+
+// getQCTransactionHistory
+export interface GetQCTransactionHistoryRequest {
+  limit?: number;
+  offset?: number;
+  type?: string[];
+  service?: string[];
+  dateFrom?: string;
+  dateTo?: string;
 }
+export type GetQCTransactionHistoryResponse = APIResponse<QCTransactionHistory>;
 
-// ================= QC TRANSACTION HISTORY =================
-
-export interface QCTransactionHistory {
-  transactions: QCTransaction[];
-  totalCount: number;
-  currentBalance: number;
+// getQCUsageAnalytics (Admin)
+export interface GetQCUsageAnalyticsRequest {
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
 }
+export type GetQCUsageAnalyticsResponse = APIResponse<QCUsageAnalytics>;
 
-// ================= QC USAGE ANALYTICS =================
-
-export interface QCUsageAnalytics {
-  serviceStats: ServiceUsageStat[];
-  totalTransactions: number;
-  totalQCUsed: number;
-  dateRange?: {
-    start: string;
-    end: string;
-  };
-}
-
-export interface ServiceUsageStat {
-  service: QCServiceType;
-  totalDeductions: number;
-  transactionCount: number;
-  averagePerTransaction: number;
-}
-
-// ================= QC ADMIN TYPES =================
-
-export interface QCAdminStats {
-  totalUsers: number;
-  totalQCInCirculation: number;
-  totalRevenue: number;
-  topServices: ServiceUsageStat[];
-  recentTransactions: QCTransaction[];
-  userBalances: UserBalanceStat[];
-}
-
-export interface UserBalanceStat {
-  userId: string;
-  username: string;
-  email: string;
-  balance: number;
-  lastTransaction: string;
-}
-
-// ================= QC ERROR TYPES =================
-
-export interface QCError {
-  code: string;
-  message: string;
-  details?: {
-    required?: number;
-    available?: number;
-    shortfall?: number;
-    service?: QCServiceType;
-  };
-}
-
-// ================= QC SERVICE-SPECIFIC METADATA =================
-
-export interface ChatbotUsageMetadata {
-  sessionId?: string;
-  queryCount?: number;
-  model?: string;
-  tokens?: number;
-}
-
-export interface SummarizerUsageMetadata {
-  documentId: string;
-  wordCount?: number;
-  pageCount?: number;
-  language?: string;
-}
-
-export interface KnowledgebaseUsageMetadata {
-  documentIds?: string[];
-  isBulkDownload?: boolean;
-  bulkSize?: number;
-  category?: string;
-}
-
-export interface ConsultationUsageMetadata {
-  consultationId: string;
-  duration?: number; // in minutes
-  lawyerId?: string;
-  type?: 'video' | 'audio' | 'chat';
-}
-
-export interface BlogPublishingMetadata {
-  blogId: string;
-  wordCount?: number;
-  isLawyer?: boolean;
-  category?: string;
-}
-
-// ================= QC BUNDLE TYPES =================
-
-export interface QCBundle {
-  id: string;
-  name: string;
-  description: string;
-  qcAmount: number;
-  price: number;
-  currency: Currency;
-  discount?: {
-    percentage?: number;
-    amount?: number;
-  };
-  validFrom: string;
-  validTo: string;
-  isActive: boolean;
-  maxPurchases?: number;
-  userLimit?: number; // per user
-}
-
-// ================= QC PROMO TYPES =================
-
-export interface QCPromoCode {
-  code: string;
-  description: string;
-  type: 'percentage' | 'fixed' | 'bonus';
-  value: number;
-  minPurchase?: number;
-  maxDiscount?: number;
-  validFrom: string;
-  validTo: string;
-  usageLimit?: number;
-  usedCount: number;
-  isActive: boolean;
-}
-
-// ================= QC SUBSCRIPTION TYPES =================
-
-export interface QCSubscription {
-  id: string;
-  userId: string;
-  planId: string;
-  qcPerMonth: number;
-  price: number;
-  currency: Currency;
-  startDate: string;
-  endDate: string;
-  isActive: boolean;
-  autoRenew: boolean;
-}
-
-// ================= QC WALLET TYPES =================
-
-export interface QCWallet {
-  userId: string;
-  balance: number;
-  frozenBalance: number; // For pending transactions
-  totalEarned: number;
-  totalSpent: number;
-  lastActivity: string;
-  settings: {
-    lowBalanceAlert: boolean;
-    alertThreshold: number;
-    autoTopUp: boolean;
-    autoTopUpAmount: number;
-  };
-}
-
-// ================= API REQUEST/RESPONSE TYPES =================
-
-// Get Balance
-export type GetQCBalanceResponse = {
-  success: boolean;
-  data: QCBalanceResponse;
-  message: string;
-};
-
-// Get Packages
-export type GetQCPackagesResponse = {
-  success: boolean;
-  data: QCPackage[];
-  message: string;
-};
-
-// Get Service Rates
-export type GetQCServiceRatesResponse = {
-  success: boolean;
-  data: QCServiceRate[];
-  message: string;
-};
-
-// Purchase QC
-export type PurchaseQCResponse = {
-  success: boolean;
-  data: QCPurchaseResponse;
-  message: string;
-};
-
-// Deduct QC
-export type DeductQCResponse = {
-  success: boolean;
-  data: QCDeductionResponse;
-  message: string;
-};
-
-// Refund QC
-export type RefundQCResponse = {
-  success: boolean;
-  data: QCRefundResponse;
-  message: string;
-};
-
-// Get Transaction History
-export type GetQCTransactionHistoryResponse = {
-  success: boolean;
-  data: QCTransactionHistory;
-  message: string;
-};
-
-// Get Usage Analytics (Admin)
-export type GetQCUsageAnalyticsResponse = {
-  success: boolean;
-  data: QCUsageAnalytics;
-  message: string;
-};
-
-// Update Service Rate (Admin)
-export type UpdateQCServiceRateRequest = {
+// updateQCServiceRate (Admin)
+export interface UpdateQCServiceRateRequest {
   serviceName: QCServiceType;
   qcCost: number;
-};
-
-export type UpdateQCServiceRateResponse = {
-  success: boolean;
-  data: QCServiceRate;
-  message: string;
-};
-
-// Add Bonus QC (Admin)
-export type AddBonusQCRequest = {
-  userId: string;
-  amount: number;
-  reason: string;
-};
-
-export type AddBonusQCResponse = {
-  success: boolean;
-  data: {
-    transactionId: string;
-    amount: number;
-    reason: string;
-  };
-  message: string;
-};
+}
+export type UpdateQCServiceRateResponse = APIResponse<IQCServiceRate>;
