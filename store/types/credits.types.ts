@@ -1,4 +1,4 @@
-import { QCServiceType, QCTransactionType, PaymentMethod as PaymentMethod, Currency } from "@/lib/enums";
+import { QCServiceType, QCTransactionType, Currency } from "@/lib/enums";
 import { APIResponse } from "./api";
 
 // ========================= SHARED DATA TYPES =========================
@@ -39,7 +39,8 @@ export interface IQCServiceRate {
 }
 
 export interface IQCPackage {
-  id: string;
+  _id: string;
+  id: string; // 'starter', 'standard', 'premium'
   name: string;
   qcAmount: number;
   price: number;
@@ -96,26 +97,13 @@ export type GetQCBalanceResponse = APIResponse<{ balance: number; currency: stri
 
 // purchaseQC
 export interface PurchaseQCRequest {
-  qcAmount: number;
-  paymentMethod: PaymentMethod;
-  billingDetails: {
-    name: string;
-    email: string;
-    phone?: string;
-    address?: {
-      line1?: string;
-      line2?: string;
-      city?: string;
-      state?: string;
-      postalCode?: string;
-      country?: string;
-    };
-  };
+  planId: string;
 }
 export type PurchaseQCResponse = APIResponse<{
   transactionId: string;
   paymentUrl?: string;
   qcAmount: number;
+  price: number;
   message: string;
 }>;
 

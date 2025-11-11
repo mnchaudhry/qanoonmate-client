@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as api from '../api/index'
 import toast from 'react-hot-toast';
-import { CancelPaymentRequest, CancelPaymentResponse, CleanupExpiredPaymentsResponse, CreatePaymentRequest, CreatePaymentResponse, GetPaymentByIdRequest, GetPaymentByIdResponse, GetPaymentsRequest, GetPaymentsResponse, GetPaymentStatsRequest, GetPaymentStatsResponse, IPayment, PaymentStats, ProcessPaymentRequest, ProcessPaymentResponse, RetryPaymentRequest, RetryPaymentResponse } from '../types/payments.types';
+import { CleanupExpiredPaymentsResponse, GetPaymentByIdRequest, GetPaymentByIdResponse, GetPaymentsRequest, GetPaymentsResponse, GetPaymentStatsRequest, GetPaymentStatsResponse, IPayment, PaymentStats } from '../types/payments.types';
 import { getErrorMessage } from '@/lib/utils';
 
 // Types
@@ -88,42 +88,6 @@ export const getPaymentById = createAsyncThunk<GetPaymentByIdResponse, GetPaymen
     return rejectWithValue(message);
   }
 })
-export const createPayment = createAsyncThunk<CreatePaymentResponse, CreatePaymentRequest>('payment/createPayment', async (input, { rejectWithValue }) => {
-  try {
-    const { data } = await api.createPayment(input);
-    if (data.success) {
-      toast.success(data.message);
-      return data;
-    }
-    else {
-      toast.error(data.message);
-      return rejectWithValue(data.message);
-    }
-  }
-  catch (err: unknown) {
-    const message = getErrorMessage(err, 'Failed to create payment');
-    toast.error(message);
-    return rejectWithValue(message);
-  }
-})
-export const processPayment = createAsyncThunk<ProcessPaymentResponse, ProcessPaymentRequest>('payment/processPayment', async (input, { rejectWithValue }) => {
-  try {
-    const { data } = await api.processPayment(input);
-    if (data.success) {
-      toast.success(data.message);
-      return data;
-    }
-    else {
-      toast.error(data.message);
-      return rejectWithValue(data.message);
-    }
-  }
-  catch (err: unknown) {
-    const message = getErrorMessage(err, 'Failed to process payment');
-    toast.error(message);
-    return rejectWithValue(message);
-  }
-})
 export const getPaymentStats = createAsyncThunk<GetPaymentStatsResponse, GetPaymentStatsRequest>('payment/getPaymentStats', async (input, { rejectWithValue }) => {
   try {
     const { data } = await api.getPaymentStats(input);
@@ -138,42 +102,6 @@ export const getPaymentStats = createAsyncThunk<GetPaymentStatsResponse, GetPaym
   }
   catch (err: unknown) {
     const message = getErrorMessage(err, 'Failed to fetch payment stats');
-    toast.error(message);
-    return rejectWithValue(message);
-  }
-})
-export const retryPayment = createAsyncThunk<RetryPaymentResponse, RetryPaymentRequest>('payment/retryPayment', async (input, { rejectWithValue }) => {
-  try {
-    const { data } = await api.retryPayment(input);
-    if (data.success) {
-      toast.success(data.message);
-      return data;
-    }
-    else {
-      toast.error(data.message);
-      return rejectWithValue(data.message);
-    }
-  }
-  catch (err: unknown) {
-    const message = getErrorMessage(err, 'Failed to retry payment');
-    toast.error(message);
-    return rejectWithValue(message);
-  }
-})
-export const cancelPayment = createAsyncThunk<CancelPaymentResponse, CancelPaymentRequest>('payment/cancelPayment', async (input, { rejectWithValue }) => {
-  try {
-    const { data } = await api.cancelPayment(input);
-    if (data.success) {
-      toast.success(data.message);
-      return data;
-    }
-    else {
-      toast.error(data.message);
-      return rejectWithValue(data.message);
-    }
-  }
-  catch (err: unknown) {
-    const message = getErrorMessage(err, 'Failed to cancel payment');
     toast.error(message);
     return rejectWithValue(message);
   }
@@ -267,36 +195,6 @@ const paymentsSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // createPayment
-      .addCase(createPayment.pending, (state) => {
-        state.loading.create = true;
-        state.error = null;
-      })
-      .addCase(createPayment.fulfilled, (state, action) => {
-        state.loading.create = false;
-        if (action.payload.data) {
-          state.currentPayment = action.payload.data as any;
-          state.payments.unshift(action.payload.data as any);
-        }
-      })
-      .addCase(createPayment.rejected, (state, action) => {
-        state.loading.create = false;
-        state.error = action.payload as string;
-      })
-
-      // processPayment
-      .addCase(processPayment.pending, (state) => {
-        state.loading.process = true;
-        state.error = null;
-      })
-      .addCase(processPayment.fulfilled, (state) => {
-        state.loading.process = false;
-      })
-      .addCase(processPayment.rejected, (state, action) => {
-        state.loading.process = false;
-        state.error = action.payload as string;
-      })
-
       // getPaymentStats
       .addCase(getPaymentStats.pending, (state) => {
         state.loading.stats = true;
@@ -310,50 +208,6 @@ const paymentsSlice = createSlice({
       })
       .addCase(getPaymentStats.rejected, (state, action) => {
         state.loading.stats = false;
-        state.error = action.payload as string;
-      })
-
-      // retryPayment
-      .addCase(retryPayment.pending, (state) => {
-        state.loading.retry = true;
-        state.error = null;
-      })
-      .addCase(retryPayment.fulfilled, (state, action) => {
-        state.loading.retry = false;
-        if (action.payload.data) {
-          const index = state.payments.findIndex(p => p.paymentId === action.payload.data!.paymentId);
-          if (index !== -1) {
-            state.payments[index] = action.payload.data as any;
-          }
-          if (state.currentPayment?.paymentId === action.payload.data.paymentId) {
-            state.currentPayment = action.payload.data as any;
-          }
-        }
-      })
-      .addCase(retryPayment.rejected, (state, action) => {
-        state.loading.retry = false;
-        state.error = action.payload as string;
-      })
-
-      // cancelPayment
-      .addCase(cancelPayment.pending, (state) => {
-        state.loading.cancel = true;
-        state.error = null;
-      })
-      .addCase(cancelPayment.fulfilled, (state, action) => {
-        state.loading.cancel = false;
-        if (action.payload.data) {
-          const index = state.payments.findIndex(p => p.paymentId === action.payload.data!.paymentId);
-          if (index !== -1) {
-            state.payments[index] = action.payload.data as any;
-          }
-          if (state.currentPayment?.paymentId === action.payload.data.paymentId) {
-            state.currentPayment = action.payload.data as any;
-          }
-        }
-      })
-      .addCase(cancelPayment.rejected, (state, action) => {
-        state.loading.cancel = false;
         state.error = action.payload as string;
       })
 

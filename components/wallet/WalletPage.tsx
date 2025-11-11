@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
-import { fetchBalance, fetchPackages, fetchTransactionHistory } from '@/store/reducers/creditSlice';
+import { getQCBalance, getQCPackages, getQCTransactionHistory, purchaseQC } from '@/store/reducers/creditSlice';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,36 +11,39 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wallet, Coins, TrendingUp, Clock, CheckCircle, Plus, ArrowUpRight, ArrowDownLeft, Gift } from 'lucide-react';
 import { IQCPackage } from '@/store/types/credits.types';
 import { format } from 'date-fns';
-import QCPurchaseModal from './QCPurchaseModal';
 import { useAuthGuard } from '@/hooks/useAuthGuard';
 import SignInModal from '../auth/SignInModal';
+import { toast } from 'sonner';
 
 export const WalletPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { balance, packages, transactionHistory, loading } = useSelector((state: RootState) => state.credits);
-  const [selectedPackage, setSelectedPackage] = useState<IQCPackage | null>(null);
-  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
   const { requireAuth, showSignInModal, modalConfig, handleSignInSuccess, handleSignInCancel } = useAuthGuard();
 
   useEffect(() => {
-    dispatch(fetchBalance());
-    dispatch(fetchPackages());
-    dispatch(fetchTransactionHistory({ limit: 20 }));
+    dispatch(getQCBalance());
+    dispatch(getQCPackages());
+    dispatch(getQCTransactionHistory({ limit: 20 }));
   }, [dispatch]);
 
   const handlePurchase = async (pkg: IQCPackage) => {
-    requireAuth(() => {
-      setSelectedPackage(pkg);
-      setShowPurchaseModal(true);
+    requireAuth(async () => {
+      try {
+        const result = await dispatch(purchaseQC({ planId: pkg.id })).unwrap();
+        
+        toast.success('Payment initiated successfully!');
+        
+        // Redirect to payment gateway
+        if (result?.data?.paymentUrl) {
+          window.location.href = result.data.paymentUrl;
+        }
+      } catch (error: any) {
+        toast.error(error || 'Failed to initiate payment');
+      }
     }, {
       customMessage: 'Please sign in to purchase Qanoon Credits',
       showBenefits: true
     });
-  };
-
-  const handleClosePurchaseModal = () => {
-    setShowPurchaseModal(false);
-    setSelectedPackage(null);
   };
 
   const getTransactionIcon = (type: string) => {
@@ -109,7 +112,7 @@ export const WalletPage: React.FC = () => {
                     {balance ? formatAmount(balance.balance) : '0'} QC
                   </div>
                   <p className="text-sm text-gray-500 mt-1">
-                    Last updated: {balance ? format(new Date(balance.lastUpdated || new Date()), 'PPp') : 'Never'}
+                    Last updated: {balance ? format(new Date(), 'PPp') : 'Never'}
                   </p>
                 </div>
                 <div className="text-right">
@@ -272,7 +275,7 @@ export const WalletPage: React.FC = () => {
                 <p className="text-gray-600 mb-4">
                   Your transaction history will appear here once you start using Qanoon Credits.
                 </p>
-                <Button onClick={() => dispatch(fetchPackages())}>
+                <Button onClick={() => dispatch(getQCPackages())}>
                   <Plus className="h-4 w-4 mr-2" />
                   Buy Your First Credits
                 </Button>
@@ -281,13 +284,6 @@ export const WalletPage: React.FC = () => {
           )}
         </TabsContent>
       </Tabs>
-
-      {/* Purchase Modal */}
-      <QCPurchaseModal
-        isOpen={showPurchaseModal}
-        onClose={handleClosePurchaseModal}
-        package={selectedPackage}
-      />
 
       {/* Sign In Modal */}
       <SignInModal

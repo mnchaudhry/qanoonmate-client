@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -66,7 +66,7 @@ export const SignInModal: React.FC<SignInModalProps> = ({ isOpen, onClose, onSuc
     }
 
     try {
-      await dispatch(login({ role: UserRole.CLIENT, data: { email: formData.email, password: formData.password } })).unwrap();
+      await dispatch(login({ role: UserRole.ANY, data: { email: formData.email, password: formData.password } })).unwrap();
 
       toast.success('Welcome back!');
 

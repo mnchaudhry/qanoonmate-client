@@ -33,21 +33,6 @@ export interface IPayment extends Document {
     rawResponse?: any;
   };
 
-  // Billing Information
-  billingDetails: {
-    name: string;
-    email: string;
-    phone?: string;
-    address?: {
-      line1?: string;
-      line2?: string;
-      city?: string;
-      state?: string;
-      postalCode?: string;
-      country?: string;
-    };
-  };
-
   // Metadata
   description: string;
   metadata?: Record<string, any>;
@@ -75,40 +60,12 @@ export interface IPayment extends Document {
   retryCount: number;
   lastRetryAt?: Date;
   maxRetries: number;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // ========================= SERVICE METHOD REQUEST/RESPONSE TYPES =========================
-// createPayment
-export type CreatePaymentRequest = {
-  userId: string;
-  userType: UserRole;
-  amount: number;
-  idempotencyKey?: string;
-  currency?: Currency;
-  paymentType: PaymentTypeEnum;
-  paymentMethod: PaymentMethod;
-  consultationId?: string;
-  description: string;
-  billingDetails: {
-    name: string;
-    email: string;
-    phone?: string;
-    address?: { line1?: string; line2?: string; city?: string; state?: string; postalCode?: string; country?: string; };
-  };
-  metadata?: Record<string, any>;
-  ipAddress?: string;
-  userAgent?: string;
-};
-export type CreatePaymentResponse = APIResponse<IPayment>;
-
-// processPayment
-export type ProcessPaymentRequest = { paymentId: string; paymentToken?: string; paymentMethodData?: any; };
-export type ProcessPaymentResponse = APIResponse<PaymentGatewayResponse>;
-
-// finalizePayment
-export type FinalizePaymentRequest = { paymentId: string; gatewayResponse?: PaymentGatewayResponse; };
-export type FinalizePaymentResponse = APIResponse<void>;
-
 // getPaymentById
 export type GetPaymentByIdRequest = { paymentId: string; };
 export type GetPaymentByIdResponse = APIResponse<IPayment>;
@@ -120,14 +77,6 @@ export type GetPaymentsResponse = APIResponse<{ payments: IPayment[]; meta: Pagi
 // getPaymentStats
 export type GetPaymentStatsRequest = { userId?: string; dateRange?: { start: Date; end: Date; }; };
 export type GetPaymentStatsResponse = APIResponse<PaymentStats>;
-
-// retryPayment
-export type RetryPaymentRequest = { paymentId: string; };
-export type RetryPaymentResponse = APIResponse<IPayment>;
-
-// cancelPayment
-export type CancelPaymentRequest = { paymentId: string; reason: string; cancelledBy: string; };
-export type CancelPaymentResponse = APIResponse<IPayment>;
 
 // handleWebhook
 export type HandleWebhookRequest = { gateway: string; event: SafepayWebhookPayload | unknown; };

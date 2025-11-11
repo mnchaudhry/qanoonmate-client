@@ -3,8 +3,8 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useCallback, useState } from 'react';
 import { RootState, AppDispatch } from '@/store/store';
-import { fetchBalance, deductQC, purchaseQC } from '@/store/reducers/creditSlice';
-import { QCServiceType, PaymentMethod } from '@/lib/enums';
+import { deductQC, getQCBalance, purchaseQC } from '@/store/reducers/creditSlice';
+import { QCServiceType } from '@/lib/enums';
 
 export const useQC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -131,16 +131,7 @@ export const useQC = () => {
   }, [dispatch]);
 
   // Purchase QC
-  const buyQC = useCallback(async (data: {
-    qcAmount: number;
-    paymentMethod: PaymentMethod;
-    billingDetails: {
-      name: string;
-      email: string;
-      phone?: string;
-      address?: any;
-    };
-  }) => {
+  const buyQC = useCallback(async (data: { planId: string }) => {
     return dispatch(purchaseQC(data)).unwrap();
   }, [dispatch]);
 
@@ -155,7 +146,7 @@ export const useQC = () => {
 
   // Refresh balance
   const refreshBalance = useCallback(() => {
-    dispatch(fetchBalance());
+    dispatch(getQCBalance());
   }, [dispatch]);
 
   // Format QC amount

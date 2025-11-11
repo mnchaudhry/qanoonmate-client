@@ -1,38 +1,38 @@
 import { Button } from '@/components/ui/button'
 import { Check, Coins, Zap } from 'lucide-react'
-import React, { useState } from 'react'
+import React from 'react'
 import { IQCPackage } from '@/store/types/credits.types'
-import QCPurchaseModal from './wallet/QCPurchaseModal'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import SignInModal from './auth/SignInModal'
 import { useAppDispatch } from '@/store/store'
 import { purchaseQC } from '@/store/reducers/creditSlice'
+import { toast } from 'sonner'
 
 const Plan = ({ plan }: { plan: IQCPackage }) => {
-
+    console.log('plan', plan);
     ////////////////////////////////////////// VARIABLES ////////////////////////////////////////// 
     const { requireAuth, showSignInModal, modalConfig, handleSignInSuccess, handleSignInCancel } = useAuthGuard();
     const dispatch = useAppDispatch();
 
-    ////////////////////////////////////////// STATES ////////////////////////////////////////// 
-    const [showPurchaseModal, setShowPurchaseModal] = useState(false);
-
     ////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////// 
-    const handlePurchase = () => {
-        requireAuth(() => {
-            dispatch(purchaseQC({
-                billingDetails: {},
-                packageId: plan.id,
-                
-            }))
+    const handlePurchase = async () => {
+        requireAuth(async () => {
+            try {
+                const result = await dispatch(purchaseQC({ planId: plan.id })).unwrap();
+
+                toast.success('Payment initiated successfully!');
+
+                // Redirect to payment gateway
+                if (result?.data?.paymentUrl) {
+                    window.location.href = result.data.paymentUrl;
+                }
+            } catch (error: any) {
+                toast.error(error || 'Failed to initiate payment');
+            }
         }, {
             customMessage: 'Please sign in to purchase Qanoon Credits',
             showBenefits: true
         });
-    };
-
-    const handleClosePurchaseModal = () => {
-        setShowPurchaseModal(false);
     };
 
     ////////////////////////////////////////// RENDER ////////////////////////////////////////// 
