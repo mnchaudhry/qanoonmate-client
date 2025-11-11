@@ -328,9 +328,5 @@ export const updateQCServiceRate = (data: CreditsAPI.UpdateQCServiceRateRequest)
 ////////////////////////////////////////////////////////// PAYMENTS ////////////////////////////////////////////////////////////
 export const getPayments = (params?: PaymentsAPI.GetPaymentsRequest) => APIClient.get<PaymentsAPI.GetPaymentsResponse>("/payments/payments", { params });
 export const getPaymentById = ({ paymentId }: PaymentsAPI.GetPaymentByIdRequest) => APIClient.get<PaymentsAPI.GetPaymentByIdResponse>(`/payments/payments/${paymentId}`);
-export const createPayment = (data: PaymentsAPI.CreatePaymentRequest) => APIClient.post<PaymentsAPI.CreatePaymentResponse>("/payments/create", data);
-export const processPayment = (data: PaymentsAPI.ProcessPaymentRequest) => APIClient.post<PaymentsAPI.ProcessPaymentResponse>("/payments/process", data);
 export const getPaymentStats = (params?: PaymentsAPI.GetPaymentStatsRequest) => APIClient.get<PaymentsAPI.GetPaymentStatsResponse>("/payments/stats/overview", { params });
-export const retryPayment = ({ paymentId }: PaymentsAPI.RetryPaymentRequest) => APIClient.post<PaymentsAPI.RetryPaymentResponse>(`/payments/payments/${paymentId}/retry`);
-export const cancelPayment = (data: PaymentsAPI.CancelPaymentRequest) => APIClient.post<PaymentsAPI.CancelPaymentResponse>(`/payments/payments/${data.paymentId}/cancel`, data);
 export const cleanupExpiredPayments = () => APIClient.post<PaymentsAPI.CleanupExpiredPaymentsResponse>("/payments/payments/cleanup/expired");

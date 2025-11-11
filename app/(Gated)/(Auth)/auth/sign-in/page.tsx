@@ -11,7 +11,6 @@ import Link from 'next/link';
 import { login } from '@/store/reducers/authSlice';
 import { UserRole } from '@/lib/enums';
 import { LoginRequest } from '@/store/types/auth.types';
-import AuthFlowGuard from '@/components/auth/AuthFlowGuard';
 
 const SignIn: React.FC = () => {
 
@@ -98,82 +97,82 @@ const SignIn: React.FC = () => {
             Sign in{role in Object.values(UserRole) ? <> as a <span className="capitalize">{role}</span></> : ' to QanoonMate'}
           </h2>
 
-        <form onSubmit={onSubmit}>
+          <form onSubmit={onSubmit}>
 
-          <div className="mb-4">
-            <label className="mb-2.5 block font-medium text-foreground">
-              Email
-            </label>
-            <div className="relative">
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onBlur={() => validateFields('email')}
-                onKeyUp={() => validateFields('email')}
-                onChange={onChange}
-                placeholder="Enter your email"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none "
-              />
-              <span className="absolute right-4 top-4">
-                <Mail />
-              </span>
-            </div>
-            {inputError.email.length > 0 && (
-              <span className="text-sm text-destructive">{inputError.email}</span>
-            )}
-          </div>
-
-          <div className="mb-6">
-            <div className="w flex items-center justify-between">
+            <div className="mb-4">
               <label className="mb-2.5 block font-medium text-foreground">
-                Password
+                Email
               </label>
-              <button type="button" onClick={onForgetPassword} className="cursor-pointer font-normal text-primary hover:underline " >
-                Forget Password?
-              </button>
+              <div className="relative">
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onBlur={() => validateFields('email')}
+                  onKeyUp={() => validateFields('email')}
+                  onChange={onChange}
+                  placeholder="Enter your email"
+                  className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none "
+                />
+                <span className="absolute right-4 top-4">
+                  <Mail />
+                </span>
+              </div>
+              {inputError.email.length > 0 && (
+                <span className="text-sm text-destructive">{inputError.email}</span>
+              )}
             </div>
-            <div className="relative">
+
+            <div className="mb-6">
+              <div className="w flex items-center justify-between">
+                <label className="mb-2.5 block font-medium text-foreground">
+                  Password
+                </label>
+                <button type="button" onClick={onForgetPassword} className="cursor-pointer font-normal text-primary hover:underline " >
+                  Forget Password?
+                </button>
+              </div>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onBlur={() => validateFields('password')}
+                  onKeyUp={() => validateFields('password')}
+                  onChange={onChange}
+                  placeholder="Your password"
+                  className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none "
+                />
+                <button
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); setShowPassword((pre) => !pre); }}
+                  className="absolute right-4 top-4"
+                >
+                  {showPassword ? (<EyeOff className="text-gray-icon" />) : (<Eye className="text-gray-icon" />)}
+                </button>
+              </div>
+              {inputError.password.length > 0 && <span className="text-sm text-destructive">{inputError.password}</span>}
+            </div>
+
+            <div className="mb-5">
               <input
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={formData.password}
-                onBlur={() => validateFields('password')}
-                onKeyUp={() => validateFields('password')}
-                onChange={onChange}
-                placeholder="Your password"
-                className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none "
+                type="submit"
+                disabled={loading}
+                value={loading ? 'Processing...' : 'Sign In'}
+                className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-neutral transition hover:bg-opacity-90"
               />
-              <button
-                type="button"
-                onClick={(e) => { e.preventDefault(); setShowPassword((pre) => !pre); }}
-                className="absolute right-4 top-4"
-              >
-                {showPassword ? (<EyeOff className="text-gray-icon" />) : (<Eye className="text-gray-icon" />)}
-              </button>
             </div>
-            {inputError.password.length > 0 && <span className="text-sm text-destructive">{inputError.password}</span>}
-          </div>
 
-          <div className="mb-5">
-            <input
-              type="submit"
-              disabled={loading}
-              value={loading ? 'Processing...' : 'Sign In'}
-              className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-neutral transition hover:bg-opacity-90"
-            />
-          </div>
+            <div className="mt-6 text-center">
+              <p>
+                Don&apos;t have any account?{' '}
+                <Link href={`/auth/sign-up?role=${role}`} className="text-primary">
+                  Sign Up
+                </Link>
+              </p>
+            </div>
 
-          <div className="mt-6 text-center">
-            <p>
-              Don&apos;t have any account?{' '}
-              <Link href={`/auth/sign-up?role=${role}`} className="text-primary">
-                Sign Up
-              </Link>
-            </p>
-          </div>
-
-        </form>
+          </form>
         </div>
       </div>
     </div>
