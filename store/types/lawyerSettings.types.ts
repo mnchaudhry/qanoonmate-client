@@ -1,46 +1,75 @@
-// Lawyer Settings Types (in sync with backend)
-
-import { Currency, DateFormat, ExportStatus, FontSize, IdentityVerificationStatus, PaymentMethod, TimeSlot, Timezone, UserTheme } from "@/lib/enums";
+import { DateFormat, ExportStatus, FontSize, IdentityVerificationStatus, PaymentMethod, Timezone, UserTheme } from "@/lib/enums";
 import { APIResponse } from "./api";
 
-export interface NotificationPreferences {
-  email?: boolean;
-  sms?: boolean;
-  push?: boolean;
-  newsletter?: boolean;
+///////////////////////////////////////////////////// SCHEMA INTERFACES /////////////////////////////////////////////////
+export interface ILawyerSettings {
+  _id: string;
+  user: string;
+  consultation: IConsultationSettings;
+  preferences: IPreferences;
+  identityVerification: IIdentityVerification;
+  billing: IBilling;
+  security: ISecurity;
+  dangerZone: IDangerZone;
+  createdAt: string;
+  updatedAt: string;
 }
+export interface IConsultationSettings {
+  availabilityRanges: {
+    day: string;
+    slots: { start: string; end: string; }[];
+  }[];
 
-export interface Preferences {
-  notification: NotificationPreferences;
+  bufferMinutes: number;
+
+  maxAdvanceBookingDays: number;
+  cancelCutoffHours: number;
+  refundOnCancel: boolean;
+
+  autoApprove: boolean;
+  allowNotesBefore: boolean;
+  allowNotesAfter: boolean;
+
+  prerequisitesForClients: string[];
+}
+export interface IPreferences {
+  notification: INotificationPreferences;
   timezone: Timezone;
   dateFormat: DateFormat;
   theme: UserTheme;
   fontSize: FontSize;
   highContrast: boolean;
 }
-
-export interface ConsultationFee {
-  amount: number;
+export interface INotificationPreferences {
+  email?: boolean;
+  sms?: boolean;
+  push?: boolean;
+  newsletter?: boolean;
 }
+export interface IIdentityVerification {
+  cnicFront?: string | null; // optional for progressive signup
+  cnicBack?: string | null; // optional for progressive signup
+  barCardFront?: string | null; // optional for progressive signup
+  barCardBack?: string | null; // optional for progressive signup
+  selfie?: string | null; // optional for progressive signup
 
-export interface ConsultationSettings {
-  durations: number[];
-  maxDurations: number;
-  fees: ConsultationFee[];
-  free: boolean;
-  currency: Currency;
-  buffer: number;
-  advanceWindow: number;
-  advanceWindowUnit: 'days' | 'weeks' | 'months';
-  cancelCutoff: number;
-  refund: boolean;
-  cancelPolicy: string;
-  autoApprove: boolean;
-  preNotes: boolean;
-  postNotes: boolean;
-  prerequisitesForClients: string[];
+  status: IdentityVerificationStatus;
+  rejectionReason?: string;
+  verifiedAt?: string | null;
+  verifiedBy?: string | null;
 }
-
+export interface IBilling {
+  paymentMethod: PaymentMethod;
+}
+export interface ISecurity {
+  twoFactorEnabled: boolean;
+  devices: SecurityDevice[];
+  activityLogs: SecurityActivityLog[];
+  securityQuestion?: string;
+  securityAnswerHash?: string;
+  authorizedApps: SecurityAuthorizedApp[];
+  emailChangeRequests: SecurityEmailChangeRequest[];
+}
 export interface SecurityDevice {
   id: string;
   name: string;
@@ -63,17 +92,7 @@ export interface SecurityEmailChangeRequest {
   requestedAt: string;
   verified: boolean;
 }
-export interface Security {
-  twoFactorEnabled: boolean;
-  devices: SecurityDevice[];
-  activityLogs: SecurityActivityLog[];
-  securityQuestion?: string;
-  securityAnswerHash?: string;
-  authorizedApps: SecurityAuthorizedApp[];
-  emailChangeRequests: SecurityEmailChangeRequest[];
-}
-
-export interface DangerZone {
+export interface IDangerZone {
   deactivated: boolean;
   deleted: boolean;
   deletedAt?: string;
@@ -86,63 +105,74 @@ export interface DangerZone {
   exportUrl?: string;
 }
 
-export interface Billing {
-  paymentMethod: PaymentMethod;
-}
 
-export interface Availability {
-  day: string;
-  timeSlots: TimeSlot[];
-  isAvailable: boolean;
-  notes?: string;
-}
+///////////////////////////////////////////////////// API TYPES /////////////////////////////////////////////////
 
-export interface IdentityVerification {
-  cnicFront: string;
-  cnicBack: string;
-  barCardFront: string;
-  barCardBack: string;
-  selfie: string;
+// createDefaultSettings
+export type CreateDefaultSettingsRequest = { lawyerId: string; }
+export type CreateDefaultSettingsResponse = APIResponse<ILawyerSettings | null>;
 
-  status: IdentityVerificationStatus;
-  rejectionReason?: string;
-  verifiedAt?: string | null;
-  verifiedBy?: string | null;
-}
+// getSettings
+export type GetSettingsRequest = { lawyerId: string; }
+export type GetSettingsResponse = APIResponse<ILawyerSettings | null>;
 
-export interface LawyerSettings {
-  _id: string;
-  user: string;
-  availability: Availability[];
-  consultation: ConsultationSettings;
-  preferences: Preferences;
-  identityVerification: IdentityVerification;
-  billing: Billing;
-  security: Security;
-  dangerZone: DangerZone;
-  createdAt: string;
-  updatedAt: string;
+// updateSettings
+export type UpdateSettingsRequest = {
+  lawyerId: string; updateData: {
+    preferences?: Partial<IPreferences>;
+    consultation?: Partial<IConsultationSettings>;
+    security?: Partial<ISecurity>;
+    billing?: Partial<IBilling>;
+    identityVerification?: Partial<IIdentityVerification>;
+    dangerZone?: Partial<IDangerZone>;
+  }
 }
+export type UpdateSettingsResponse = APIResponse<ILawyerSettings | null>;
 
-export type GetLawyerSettingsResponse = APIResponse<LawyerSettings>
-export interface UpdateLawyerSettingsRequest {
-  preferences?: Partial<Preferences>;
-  consultation?: Partial<ConsultationSettings>;
-  security?: Partial<Security>;
-  billing?: Partial<Billing>;
-  identityVerification?: Partial<IdentityVerification>;
-  dangerZone?: Partial<DangerZone>;
-  availability?: Partial<Availability>[];
-}
-export type UpdateLawyerSettingsResponse = APIResponse<LawyerSettings>
-export type UpdateConsultationSettingsRequest = Partial<ConsultationSettings>
-export type UpdateConsultationSettingsResponse = APIResponse<LawyerSettings>
-export type UpdateAvailabilityRequest = Array<Partial<Availability>>
-export type UpdateAvailabilityResponse = APIResponse<LawyerSettings>
-export type UpdateNotificationPreferencesRequest = NotificationPreferences
-export type UpdateNotificationPreferencesResponse = APIResponse<LawyerSettings>
-export type UpdateSecurityPreferencesRequest = Partial<Security>
-export type UpdateSecurityPreferencesResponse = APIResponse<LawyerSettings>
-export type UpdateBillingRequest = Partial<Billing>
-export type UpdateBillingResponse = APIResponse<LawyerSettings>
-export type DeleteLawyerSettingsResponse = APIResponse<{ message: string }> 
+// getConsultationSettings
+export type GetConsultationSettingsRequest = { lawyerId: string; }
+export type GetConsultationSettingsResponse = APIResponse<ILawyerSettings | null>;
+
+// updateConsultationSettings
+export type UpdateConsultationSettingsRequest = { lawyerId: string; updateData: Partial<IConsultationSettings>; }
+export type UpdateConsultationSettingsResponse = APIResponse<ILawyerSettings>;
+
+// getIdentityVerification
+export type GetIdentityVerificationRequest = { lawyerId: string; }
+export type GetIdentityVerificationResponse = APIResponse<ILawyerSettings | null>;
+
+// submitIdentityVerification
+export type SubmitIdentityVerificationRequest = { lawyerId: string; updateData: Record<string, any>; }
+export type SubmitIdentityVerificationResponse = APIResponse<ILawyerSettings | null>;
+
+// getNotificationPreferences
+export type GetNotificationPreferencesRequest = { lawyerId: string; }
+export type GetNotificationPreferencesResponse = APIResponse<ILawyerSettings | null>;
+
+// updateNotificationPreferences
+export type UpdateNotificationPreferencesRequest = { lawyerId: string; updateData: Partial<INotificationPreferences>; }
+export type UpdateNotificationPreferencesResponse = APIResponse<ILawyerSettings>;
+
+// getSecurityPreferences
+export type GetSecurityPreferencesRequest = { lawyerId: string; }
+export type GetSecurityPreferencesResponse = APIResponse<ILawyerSettings | null>;
+
+// updateSecurityPreferences
+export type UpdateSecurityPreferencesRequest = { lawyerId: string; updateData: Partial<ISecurity>; }
+export type UpdateSecurityPreferencesResponse = APIResponse<ILawyerSettings>;
+
+// deleteAccount
+export type DeleteAccountRequest = { lawyerId: string; }
+export type DeleteAccountResponse = APIResponse<ILawyerSettings | null>;
+
+// getBilling
+export type GetBillingRequest = { lawyerId: string; }
+export type GetBillingResponse = APIResponse<ILawyerSettings | null>;
+
+// updateBilling
+export type UpdateBillingRequest = { lawyerId: string; updateData: Partial<IBilling>; }
+export type UpdateBillingResponse = APIResponse<ILawyerSettings>;
+
+// deleteSettings
+export type DeleteSettingsRequest = { lawyerId: string; }
+export type DeleteSettingsResponse = APIResponse<ILawyerSettings | null>;

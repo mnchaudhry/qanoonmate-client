@@ -33,8 +33,8 @@ export interface User {
     lastLogin: Date | null;
     qcBalance: number;
     kind: "User";
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 

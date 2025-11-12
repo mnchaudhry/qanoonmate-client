@@ -1,7 +1,7 @@
 import { User } from './user.types';
 import { APIResponse } from './api';
-import { BarCouncils, Currency, PakistanProvinces } from '@/lib/enums';
-import { LawyerSettings } from './lawyerSettings.types';
+import { BarCouncils, Currency } from '@/lib/enums';
+import { ILawyerSettings } from './lawyerSettings.types';
 import { LawCategory } from '@/lib/enums';
 import { Client } from './client.types';
 
@@ -56,7 +56,7 @@ export interface ILawyer extends User {
     testimonialsEnabled: boolean;
   };
 
-  settings?: LawyerSettings | string | null;
+  settings?: ILawyerSettings | string | null;
 
   createdAt: string;
   updatedAt: string;
