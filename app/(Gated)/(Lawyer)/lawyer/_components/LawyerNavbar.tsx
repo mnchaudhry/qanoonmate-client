@@ -15,7 +15,7 @@ import { cn, enumToLabel } from '@/lib/utils';
 import { fetchNotifications } from '@/store/reducers/notificationSlice';
 import { useEffect } from 'react';
 import { useStateContext } from '@/context/useStateContext';
-import { Lawyer } from '@/store/types/lawyer.types';
+import { ILawyer } from '@/store/types/lawyer.types';
 
 export default function LawyerNavbar() {
     //////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
@@ -24,7 +24,7 @@ export default function LawyerNavbar() {
     const dispatch = useDispatch<AppDispatch>();
     const { unreadCount, notifications } = useSelector((state: RootState) => state.notification);
     const { setIsBetaUser } = useStateContext();
-    const { user } = useSelector((state: RootState) => state.auth) as { user: Lawyer };
+    const { user } = useSelector((state: RootState) => state.auth) as { user: ILawyer };
 
     //////////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////
     useEffect(() => {

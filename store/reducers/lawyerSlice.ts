@@ -1,15 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import { Lawyer, PaginatedLawyerResponse, SingleLawyerResponse, LawyerReviewsResponse, LawyerAvailabilityResponse, LawyerQuery, SubmitReviewResponse, MyClientsResponse, DashboardStats, Activity, Review } from '@/store/types/lawyer.types';
+import { ILawyer, PaginatedLawyerResponse, SingleLawyerResponse, LawyerReviewsResponse, LawyerAvailabilityResponse, LawyerQuery, SubmitReviewResponse, MyClientsResponse, DashboardStats, Activity, Review } from '@/store/types/lawyer.types';
 import { Availability } from '@/store/types/lawyerSettings.types';
 import { Client } from '../types/client.types';
 import { PaginationMeta } from '../types/api';
 
 interface LawyerState {
-    lawyers: Lawyer[];
-    selectedLawyer: Lawyer | null;
-    similarLawyers: Lawyer[];
+    lawyers: ILawyer[];
+    selectedLawyer: ILawyer | null;
+    similarLawyers: ILawyer[];
     isLoading: boolean;
     error: string | null;
     reviews: Review[];
@@ -82,7 +82,7 @@ export const getMyClients = createAsyncThunk<MyClientsResponse, void>('lawyer/ge
     }
 });
 
-export const updateMeLawyer = createAsyncThunk<SingleLawyerResponse, Partial<Lawyer>>('lawyer/updateMeLawyer', async (formData, { rejectWithValue }) => {
+export const updateMeLawyer = createAsyncThunk<SingleLawyerResponse, Partial<ILawyer>>('lawyer/updateMeLawyer', async (formData, { rejectWithValue }) => {
     try {
         const { data } = await api.updateMeLawyer(formData);
         toast.success('Profile updated successfully');

@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { cancelConsultation } from "@/store/reducers/consultationSlice";
 import { Consultation } from "@/store/types/api";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { ConsultationStatus } from "@/lib/enums";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Hint from "@/components/Hint";
@@ -63,28 +63,28 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <Avatar className="h-[72px] w-[72px]">
-              <AvatarImage src={(consultation.lawyerId as Lawyer)?.profilePicture} />
+              <AvatarImage src={(consultation.lawyerId as ILawyer)?.profilePicture} />
               <AvatarFallback className="uppercase text-xl">
-                {(consultation.lawyerId as Lawyer)?.firstname?.[0] || "L"}
-                {(consultation.lawyerId as Lawyer)?.lastname?.[0] || "L"}
+                {(consultation.lawyerId as ILawyer)?.firstname?.[0] || "L"}
+                {(consultation.lawyerId as ILawyer)?.lastname?.[0] || "L"}
               </AvatarFallback>
             </Avatar>
             <div>
               <div className="text-lg font-semibold text-foreground capitalize">
-                {(consultation.lawyerId as Lawyer)?.firstname} {(consultation.lawyerId as Lawyer)?.lastname}
+                {(consultation.lawyerId as ILawyer)?.firstname} {(consultation.lawyerId as ILawyer)?.lastname}
               </div>
               <div className="flex gap-2 mt-1">
                 <Hint label="Specialization">
                   <Tag className="h-4 w-4 text-primary cursor-pointer" />
                 </Hint>
                 <span className="text-xs text-muted-foreground">
-                  {(consultation.lawyerId as Lawyer)?.specializations?.[0] || "General Law"}
+                  {(consultation.lawyerId as ILawyer)?.specializations?.[0] || "General Law"}
                 </span>
                 <Hint label="City">
                   <MapPin className="h-4 w-4 text-primary cursor-pointer" />
                 </Hint>
                 <span className="text-xs text-muted-foreground">
-                  {(consultation.lawyerId as Lawyer)?.location?.city || "Not specified"}
+                  {(consultation.lawyerId as ILawyer)?.location?.city || "Not specified"}
                 </span>
               </div>
             </div>

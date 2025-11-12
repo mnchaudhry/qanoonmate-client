@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
 import { calculateProfileCompletion } from "@/lib/utils/profileCompletion";
 
@@ -31,7 +31,7 @@ interface SettingsContentProps {
 
 export function SettingsContent({ activeSection }: SettingsContentProps) {
   const { user } = useSelector((state: RootState) => state.auth);
-  const lawyer = user as Lawyer;
+  const lawyer = user as ILawyer;
 
   const [lawyerProfile, setLawyerProfile] = useState<LawyerProfile | null>(null);
   const [completion, setCompletion] = useState<ProfileCompletionData | null>(null);

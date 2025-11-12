@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import Link from "next/link";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 
 interface LawyerInformationProps {
   consultation: Consultation;
 }
 
 export default function LawyerInformation({ consultation }: LawyerInformationProps) {
-  const lawyer = consultation.lawyerId as Lawyer;
+  const lawyer = consultation.lawyerId as ILawyer;
 
   if (!lawyer) {
     return (

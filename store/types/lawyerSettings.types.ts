@@ -1,6 +1,6 @@
 // Lawyer Settings Types (in sync with backend)
 
-import { ConsultationMode, Currency, DateFormat, ExportStatus, FontSize, IdentityVerificationStatus, PaymentMethod, TimeSlot, Timezone, UserTheme } from "@/lib/enums";
+import { Currency, DateFormat, ExportStatus, FontSize, IdentityVerificationStatus, PaymentMethod, TimeSlot, Timezone, UserTheme } from "@/lib/enums";
 import { APIResponse } from "./api";
 
 export interface NotificationPreferences {
@@ -20,12 +20,10 @@ export interface Preferences {
 }
 
 export interface ConsultationFee {
-  mode: ConsultationMode;
   amount: number;
 }
 
 export interface ConsultationSettings {
-  modes: ConsultationMode[];
   durations: number[];
   maxDurations: number;
   fees: ConsultationFee[];

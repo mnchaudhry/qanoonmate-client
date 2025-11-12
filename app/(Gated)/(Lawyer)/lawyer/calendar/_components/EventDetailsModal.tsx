@@ -35,7 +35,6 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
     startTime: '',
     endTime: '',
     location: '',
-    locationType: 'physical',
     type: 'consultation',
     tags: [],
     notes: '',
@@ -55,7 +54,6 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
         startTime: '',
         endTime: '',
         location: '',
-        locationType: 'physical',
         type: 'consultation',
         tags: [],
         notes: '',
@@ -190,21 +188,6 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
                     className="border-secondary-200"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="locationType">Location Type</Label>
-                  <Select 
-                    value={formData.locationType} 
-                    onValueChange={(value) => handleInputChange('locationType', value)}
-                  >
-                    <SelectTrigger className="border-secondary-200">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="physical">Physical</SelectItem>
-                      <SelectItem value="online">Online</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </div>
 
               {formData.type === 'consultation' && (
@@ -287,13 +270,6 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
                         {formData.startTime && formatTime(formData.startTime)} – {formData.endTime && formatTime(formData.endTime)}
                       </span>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-4">
-                    <MapPin className="w-4 h-4 text-secondary-600" />
-                    <span className="text-sm text-secondary-700">
-                      {formData.location} ({formData.locationType})
-                    </span>
                   </div>
 
                   {formData.tags && formData.tags.length > 0 && (

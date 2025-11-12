@@ -1,16 +1,6 @@
-import {
-  ConsultationMode,
-  ConsultationStatus,
-  ConsultationType,
-  UserRole,
-  PaymentMethod,
-  Currency,
-  NotificationDeliveryChannel,
-  NotificationType,
-  NotificationContextType,
-} from "@/lib/enums";
+import { ConsultationStatus, ConsultationType, UserRole, NotificationDeliveryChannel, NotificationType, NotificationContextType, } from "@/lib/enums";
 import { User } from "./user.types";
-import { Lawyer } from "./lawyer.types";
+import { ILawyer } from "./lawyer.types";
 
 export interface APIResponse<T = any> {
   data?: T;
@@ -186,7 +176,6 @@ export interface Act {
 export interface BookConsultationRequest {
   lawyerId: string;
   type: ConsultationType;
-  mode: ConsultationMode;
   scheduledDate: string;
   duration: number;
   description: string;
@@ -199,7 +188,6 @@ export type BookConsultationResponse = APIResponse<Consultation>;
 export interface GetConsultationsRequest {
   status?: ConsultationStatus;
   type?: ConsultationType;
-  mode?: ConsultationMode;
   dateFrom?: string;
   dateTo?: string;
   lawyerId?: string;
@@ -307,9 +295,8 @@ export type UploadConsultationDocumentResponse = APIResponse<Consultation>;
 export interface Consultation {
   _id: string;
   clientId: User | string;
-  lawyerId: Lawyer | string;
+  lawyerId: ILawyer | string;
   type: ConsultationType;
-  mode: ConsultationMode;
   status: ConsultationStatus;
   scheduledDate: string;
   duration: number;
@@ -647,8 +634,8 @@ export type CreateUserResponse = APIResponse<Admin>;
 export interface AIChatSession {
   _id: string;
   user:
-    | string
-    | { _id: string; firstname: string; lastname: string; email: string };
+  | string
+  | { _id: string; firstname: string; lastname: string; email: string };
   title: string;
   createdAt?: string;
   updatedAt?: string;
@@ -1012,11 +999,11 @@ export interface LegalGuide {
   category: string;
   urduTranslation?: GuideTranslation;
   status?:
-    | "draft"
-    | "pending_review"
-    | "approved"
-    | "needs_revision"
-    | "archived";
+  | "draft"
+  | "pending_review"
+  | "approved"
+  | "needs_revision"
+  | "archived";
   isApproved?: boolean;
   verifiedBy?: string | null;
   version?: string;

@@ -2,7 +2,7 @@
 
 import { OtpVerificationType } from '@/lib/enums';
 import { Summary } from '@/store/types/api';
-import { Lawyer } from '@/store/types/lawyer.types';
+import { ILawyer } from '@/store/types/lawyer.types';
 import { User } from '@/store/types/user.types';
 import React, { createContext, useContext, useState, ReactNode, useEffect, Dispatch, SetStateAction } from 'react';
 
@@ -10,7 +10,7 @@ interface StateContextType {
     isBetaUser: boolean, setIsBetaUser: Dispatch<SetStateAction<boolean>>,
     OTPType: OtpVerificationType, setOTPType: (value: OtpVerificationType) => void
     selectedUser: User | null, setSelectedUser: Dispatch<SetStateAction<User | null>>,
-    selectedLawyer: Lawyer | null, setSelectedLawyer: Dispatch<SetStateAction<Lawyer | null>>,
+    selectedLawyer: ILawyer | null, setSelectedLawyer: Dispatch<SetStateAction<ILawyer | null>>,
     selectedSummary: Summary | null, setSelectedSummary: Dispatch<SetStateAction<Summary | null>>,
     isScrolled: boolean, setIsScrolled: Dispatch<SetStateAction<boolean>>,
 }
@@ -32,7 +32,7 @@ export const ContextProvider: React.FC<{ children: ReactNode }> = ({ children })
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
     // For Admin Screens
-    const [selectedLawyer, setSelectedLawyer] = useState<Lawyer | null>(null)
+    const [selectedLawyer, setSelectedLawyer] = useState<ILawyer | null>(null)
     const [selectedSummary, setSelectedSummary] = useState<Summary | null>(null)
 
     ///////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////////////

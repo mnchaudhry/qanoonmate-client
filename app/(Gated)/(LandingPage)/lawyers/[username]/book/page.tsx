@@ -8,7 +8,6 @@ import { getLawyerByUsername } from "@/store/reducers/lawyerSlice";
 import BookingHeader from "./_components/BookingHeader";
 import BookingForm from "./_components/BookingForm";
 import BookingSummary from "./_components/BookingSummary";
-import { ConsultationMode } from "@/lib/enums";
 
 export default function BookConsultationPage() {
 
@@ -16,12 +15,10 @@ export default function BookConsultationPage() {
   const { username } = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const { selectedLawyer: lawyer } = useSelector((state: RootState) => state.lawyer);
-  const modes = lawyer?.settings?.consultation?.modes || [ConsultationMode.VIDEO_CALL];
   console.log('lawyer', lawyer);
 
   //////////////////////////////////////////////// STATES ///////////////////////////////////////////
   const [loading, setLoading] = useState(false);
-  const [selectedMode, setSelectedMode] = useState<ConsultationMode>(modes[0]);
 
   //////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////
   useEffect(() => {
@@ -60,10 +57,10 @@ export default function BookConsultationPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
         <div className="lg:col-span-2">
-          <BookingForm selectedMode={selectedMode} setSelectedMode={setSelectedMode} />
+          <BookingForm />
         </div>
         <div className="lg:col-span-1">
-          <BookingSummary selectedMode={selectedMode} />
+          <BookingSummary />
         </div>
       </div>
     </div>

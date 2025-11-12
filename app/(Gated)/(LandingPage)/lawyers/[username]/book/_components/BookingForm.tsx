@@ -8,43 +8,20 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AppDispatch, RootState } from "@/store/store";
 import { bookConsultation } from "@/store/reducers/consultationSlice";
-import { Days, ConsultationMode, ConsultationType } from "@/lib/enums";
+import { Days, ConsultationType } from "@/lib/enums";
 
-interface BookingFormProps {
-    selectedMode: ConsultationMode;
-    setSelectedMode: (mode: ConsultationMode) => void;
-}
 
-export default function BookingForm({ selectedMode, setSelectedMode }: BookingFormProps) {
+export default function BookingForm() {
     ///////////////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////////////////
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
     const { selectedLawyer: lawyer } = useSelector((state: RootState) => state.lawyer);
-    const modes = [
-        {
-            value: ConsultationMode.VIDEO_CALL,
-            label: 'Online (Video Call)'
-        },
-        {
-            value: ConsultationMode.IN_PERSON,
-            label: 'In-person (Office Visit)'
-        },
-        {
-            value: ConsultationMode.PHONE_CALL,
-            label: 'Phone Call'
-        },
-        {
-            value: ConsultationMode.CHAT,
-            label: 'Chat'
-        }
-    ].filter(mode => lawyer?.settings?.consultation?.modes?.includes(mode.value));
     console.log("Lawyer Settings", lawyer?.settings)
     // Weekdays as enum array
     const weekDays: Days[] = useMemo(() => [
@@ -119,11 +96,6 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
         setErrors(prev => ({ ...prev, timeSlot: "" }));
     };
 
-    const handleModeChange = (value: ConsultationMode) => {
-        setSelectedMode(value);
-        setErrors(prev => ({ ...prev, mode: "" }));
-    };
-
     const handleNotesChange = (value: string) => {
         setNotes(value);
     };
@@ -144,7 +116,6 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
         const newErrors: Record<string, string> = {};
         if (!selectedDate) newErrors.date = "Please select a date for your consultation.";
         if (!selectedTimeSlot) newErrors.timeSlot = "Please select a time slot.";
-        if (!selectedMode) newErrors.mode = "Please select a consultation mode.";
         const description = notes || "Consultation request for legal advice and guidance";
         if (description.length < 10) newErrors.notes = "Description must be at least 10 characters long.";
         else if (description.length > 1000) newErrors.notes = "Description must be less than 1000 characters.";
@@ -161,7 +132,6 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
         const formData = {
             lawyerId: lawyer ? lawyer._id! : '',
             type: ConsultationType.GENERAL,
-            mode: selectedMode,
             scheduledDate,
             duration: 60,
             description: notes || "Consultation request for legal advice and guidance",
@@ -261,28 +231,7 @@ export default function BookingForm({ selectedMode, setSelectedMode }: BookingFo
                             <p className="text-sm text-red-500">{errors.timeSlot}</p>
                         )}
                     </div>
-                    {/* Consultation Mode */}
-                    <div className="flex flex-col space-y-3">
-                        <label className="text-sm font-medium">Consultation Mode</label>
-                        <RadioGroup
-                            onValueChange={handleModeChange}
-                            value={selectedMode}
-                            className="flex flex-col space-y-1"
-                        >{
-                                modes.map((mode, index) => (
-                                    <div key={index} className="flex items-center space-x-3 space-y-0">
-                                        <RadioGroupItem value={mode.value} />
-                                        <label className="font-normal">
-                                            {mode.label}
-                                        </label>
-                                    </div>
-                                ))
-                            }
-                        </RadioGroup>
-                        {errors.mode && (
-                            <p className="text-sm text-red-500">{errors.mode}</p>
-                        )}
-                    </div>
+
                     {/* Additional Notes */}
                     <div className="flex flex-col space-y-2">
                         <label className="text-sm font-medium">Additional Notes</label>

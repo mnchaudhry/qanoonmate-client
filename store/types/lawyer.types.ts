@@ -1,6 +1,6 @@
 import { User } from './user.types';
 import { APIResponse } from './api';
-import { BarCouncils, PakistanProvinces } from '@/lib/enums';
+import { BarCouncils, Currency, PakistanProvinces } from '@/lib/enums';
 import { LawyerSettings } from './lawyerSettings.types';
 import { LawCategory } from '@/lib/enums';
 import { Client } from './client.types';
@@ -21,41 +21,50 @@ export interface LawyerQuery {
   [key: string]: any
 }
 
-export interface Lawyer extends User {
+export interface ILawyer extends User {
   _id: string;
   fullName: string;  // must match CNIC + bar card
   title?: string;
   summary?: string;
+
   cnic?: string;
-  licenseNumber: string;   // enrollment/license no.
-  licenseValidity?: Date | null;
-  barCouncil: BarCouncils;
+  licenseNumber?: string;   // enrollment/license no. - optional for progressive signup
+  licenseValidity?: Date;
+  barCouncil?: BarCouncils; // optional for progressive signup
   barAssociation?: string;
   barCouncilEnrollmentDate?: Date;
   preLicensedYearsOfExperience?: number;
+
   education?: string[];
   certifications?: string[];
   specializations?: LawCategory[];
   primarySpecialization?: LawCategory;
   jurisdictions?: {
     geography: {
-      province: PakistanProvinces;
+      province: string;
       district?: string | null;  // null = whole province
       tehsil?: string | null;
     };
     courts: string[];
   }[];
+
+  hourlyRate?: number;  // e.g., 5000 (per hour)
+  currency?: Currency;  // e.g., "PKR"
+
   profileVisibility?: {
     public: boolean;
     testimonialsEnabled: boolean;
   };
-  settings?: LawyerSettings | null;
 
+  settings?: LawyerSettings | string | null;
+
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type PaginatedLawyerResponse = APIResponse<Lawyer[]>
+export type PaginatedLawyerResponse = APIResponse<ILawyer[]>
 
-export type SingleLawyerResponse = APIResponse<Lawyer>
+export type SingleLawyerResponse = APIResponse<ILawyer>
 
 export type MyClientsResponse = APIResponse<Client[]>
 

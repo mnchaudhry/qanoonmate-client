@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Users, MapPin, Star, ArrowRight, Loader2 } from "lucide-react";
 import { AppDispatch, RootState } from "@/store/store";
 import { getSimilarLawyers } from "@/store/reducers/lawyerSlice";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { enumToLabel } from "@/lib/utils";
 
 interface SimilarLawyersProps {
@@ -30,13 +30,13 @@ export function SimilarLawyers({ lawyerId }: SimilarLawyersProps) {
     }
   }, [dispatch, lawyerId, hasFetched]);
 
-  const getLowestPrice = (lawyer: Lawyer) => {
+  const getLowestPrice = (lawyer: ILawyer) => {
     if (!lawyer.settings?.consultation?.fees?.length) return "Contact for pricing";
     const lowestPrice = Math.min(...lawyer.settings.consultation.fees.map(fee => fee.amount));
     return `Starting from ${lowestPrice.toLocaleString()} PKR`;
   };
 
-  const getAverageRating = (lawyer: Lawyer) => {
+  const getAverageRating = (lawyer: ILawyer) => {
     if (!lawyer.reviews?.length) return 0;
     const totalRating = lawyer.reviews.reduce((sum, review) => sum + review.rating, 0);
     return totalRating / lawyer.reviews.length;

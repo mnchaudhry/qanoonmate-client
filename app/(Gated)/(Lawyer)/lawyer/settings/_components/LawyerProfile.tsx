@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
-import { Lawyer } from '@/store/types/lawyer.types';
+import { ILawyer } from '@/store/types/lawyer.types';
 import { LawCategory, Languages, Courts, Gender, BarCouncils, UserLanguagePreference } from '@/lib/enums';
 import { Upload, User, Loader2 } from 'lucide-react';
 import { enumToLabel } from '@/lib/utils';
@@ -53,7 +53,7 @@ const EXPERIENCE_CATEGORIES = [
 const LawyerProfile = () => {
     //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
     const dispatch = useDispatch<AppDispatch>();
-    const user = useSelector((state: RootState) => state.auth.user) as Lawyer;
+    const user = useSelector((state: RootState) => state.auth.user) as ILawyer;
 
     //////////////////////////////////////////////// STATE /////////////////////////////////////////////////
     const [form, setForm] = useState({
@@ -167,7 +167,7 @@ const LawyerProfile = () => {
     };
     const handleSubmit = () => {
         // setLoading(true);
-        const payload: Partial<Lawyer> = {
+        const payload: Partial<ILawyer> = {
             ...form,
             primarySpecialization: form.primarySpecialization as LawCategory,
             location: { city: form.city!, province: form.province! },

@@ -16,7 +16,7 @@ import { SimilarLawyers } from "./_components/SimilarLawyers";
 import { EditModalProvider } from "./_components/edit/EditModalContext";
 import { getLawyerByUsername } from "@/store/reducers/lawyerSlice";
 import { RootState, AppDispatch } from "@/store/store";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { PakistanCities, PakistanProvinces, LawCategory } from "@/lib/enums";
 
 export default function LawyerProfilePage() {
@@ -25,7 +25,7 @@ export default function LawyerProfilePage() {
   const params = useParams();
   const username = params.username as string;
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth) as { user: Lawyer };
+  const { user } = useSelector((state: RootState) => state.auth) as { user: ILawyer };
   const { selectedLawyer } = useSelector((state: RootState) => state.lawyer);
 
   //////////////////////////////////////////////// STATES ///////////////////////////////////////////
@@ -74,7 +74,7 @@ export default function LawyerProfilePage() {
   }, [fetchLawyerProfile, username]);
 
   //////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////
-  const convertLawyerToProfile = (lawyer: Lawyer): LawyerProfile => {
+  const convertLawyerToProfile = (lawyer: ILawyer): LawyerProfile => {
     return {
       personalInfo: {
         firstname: lawyer.firstname,

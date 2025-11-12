@@ -1,7 +1,7 @@
 import { Eye, Edit, Flag, Scale, Bell, Video, Phone, MapPin, UserIcon, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
 import { format } from 'date-fns'
 import { Consultation } from '@/store/types/api'
-import { Lawyer } from '@/store/types/lawyer.types'
+import { ILawyer } from '@/store/types/lawyer.types'
 import { User } from '@/store/types/user.types'
 
 interface ConsultationsTableProps {
@@ -131,10 +131,10 @@ const ConsultationsTable = ({ consultations, selectedConsultations, handleView, 
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-foreground">
-                    {(consultation.lawyerId as Lawyer)?.firstname} {(consultation.lawyerId as Lawyer)?.lastname}
+                    {(consultation.lawyerId as ILawyer)?.firstname} {(consultation.lawyerId as ILawyer)?.lastname}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {(consultation.lawyerId as Lawyer)?.specializations?.slice(0, 1).join(', ')}
+                    {(consultation.lawyerId as ILawyer)?.specializations?.slice(0, 1).join(', ')}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">

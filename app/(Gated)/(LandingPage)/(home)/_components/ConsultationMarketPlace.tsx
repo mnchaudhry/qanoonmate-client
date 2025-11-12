@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn, enumToLabel } from '@/lib/utils'
 import * as api from '@/store/api'
-import type { Lawyer, PaginatedLawyerResponse } from '@/store/types/lawyer.types'
+import type { ILawyer, PaginatedLawyerResponse } from '@/store/types/lawyer.types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import SearchBar from '@/components/SearchBar'
 import { AccountStatus, LawCategory, PakistanCities } from '@/lib/enums'
@@ -27,7 +27,7 @@ const Consultations: React.FC = () => {
   const [page, setPage] = useState<number>(1)
   const pageSize = 9
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [allLawyers, setAllLawyers] = useState<Lawyer[]>([])
+  const [allLawyers, setAllLawyers] = useState<ILawyer[]>([])
 
   /////////////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////////////
   useEffect(() => {
@@ -226,7 +226,7 @@ function CardSkeleton() {
   )
 }
 
-function LawyerCard({ lawyer }: { lawyer: Lawyer }) {
+function LawyerCard({ lawyer }: { lawyer: ILawyer }) {
 
   return (
     <div className={cn(

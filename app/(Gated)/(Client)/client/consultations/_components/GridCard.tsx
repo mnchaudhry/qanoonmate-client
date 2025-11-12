@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Clock, Tag, MapPin, Star, XCircle, MessageSquare, RotateCcw, CalendarClock, FileText } from "lucide-react";
 import { Consultation } from "@/store/types/api";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { ConsultationStatus } from "@/lib/enums";
 import Hint from "@/components/Hint";
 import Link from "next/link";
@@ -43,14 +43,14 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
   return (
     <Card className="flex flex-col items-center p-4 border !border-border bg-background rounded-xl shadow-sm h-full">
       <Avatar className="h-[72px] w-[72px] mb-2">
-        <AvatarImage src={(consultation.lawyerId as Lawyer)?.profilePicture} />
+        <AvatarImage src={(consultation.lawyerId as ILawyer)?.profilePicture} />
         <AvatarFallback className="uppercase text-xl">
-          {(consultation.lawyerId as Lawyer)?.firstname?.[0] || "L"}
-          {(consultation.lawyerId as Lawyer)?.lastname?.[0] || "L"}
+          {(consultation.lawyerId as ILawyer)?.firstname?.[0] || "L"}
+          {(consultation.lawyerId as ILawyer)?.lastname?.[0] || "L"}
         </AvatarFallback>
       </Avatar>
       <div className="text-base font-semibold text-foreground text-center capitalize">
-        {(consultation.lawyerId as Lawyer)?.firstname} {(consultation.lawyerId as Lawyer)?.lastname}
+        {(consultation.lawyerId as ILawyer)?.firstname} {(consultation.lawyerId as ILawyer)?.lastname}
       </div>
       {/* Case Description */}
       {consultation.description && (
@@ -74,11 +74,11 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
         <Hint label="Specialization">
           <Tag className="h-3 w-3 cursor-pointer" />
         </Hint>
-        <span>{(consultation.lawyerId as Lawyer)?.specializations?.[0] || "General Law"}</span>
+        <span>{(consultation.lawyerId as ILawyer)?.specializations?.[0] || "General Law"}</span>
         <Hint label="City">
           <MapPin className="h-3 w-3 cursor-pointer ml-2" />
         </Hint>
-        <span>{(consultation.lawyerId as Lawyer)?.location?.city || "Not specified"}</span>
+        <span>{(consultation.lawyerId as ILawyer)?.location?.city || "Not specified"}</span>
       </div>
       <div className="mt-2 mb-3">{getStatusBadge(consultation.status)}</div>
       <CardFooter className="w-full flex justify-center p-0">

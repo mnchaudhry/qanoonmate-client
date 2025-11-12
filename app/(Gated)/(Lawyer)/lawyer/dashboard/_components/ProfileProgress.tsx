@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress"
 import { CheckCircle, Circle, AlertCircle, Shield } from "lucide-react"
 import { useSelector } from "react-redux"
 import { RootState } from "@/store/store"
-import { Lawyer } from "@/store/types/lawyer.types"
+import { ILawyer } from "@/store/types/lawyer.types"
 
 // Import edit modals
 import { EditOverviewModal } from "@/app/(Gated)/(LandingPage)/lawyers/[username]/_components/edit/EditOverviewModal"
@@ -33,7 +33,7 @@ interface ProgressStep {
 
 export default function ProfileProgress() {
   const { user } = useSelector((state: RootState) => state.auth)
-  const lawyer = user as Lawyer
+  const lawyer = user as ILawyer
   const [activeModal, setActiveModal] = useState<string | null>(null)
 
   if (!lawyer || lawyer.role !== 'lawyer') {

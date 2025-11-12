@@ -1,31 +1,26 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ConsultationMode } from "@/lib/enums";
 import { Clock, CreditCard, Info } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { enumToLabel } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
-interface BookingSummaryProps {
-  selectedMode: ConsultationMode;
-}
-
-export default function BookingSummary({ selectedMode }: BookingSummaryProps) {
+export default function BookingSummary() {
 
   ///////////////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////////////////
   const { selectedLawyer: lawyer } = useSelector((state: RootState) => state.lawyer);
 
   ///////////////////////////////////////////////////////// STATES ///////////////////////////////////////////////////////////////
-  const [consultationFee, setConsultationFee] = useState<number | undefined>(lawyer?.settings?.consultation?.fees?.find(f => f.mode === selectedMode)?.amount);
+  const [consultationFee, setConsultationFee] = useState<number | undefined>(3000);
 
   ///////////////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////////////////////////////
   useEffect(() => {
     if (lawyer) {
-      setConsultationFee(lawyer?.settings?.consultation?.fees?.find(f => f.mode === selectedMode)?.amount || 500);
+      setConsultationFee(3000);
     }
-  }, [lawyer, selectedMode]);
+  }, [lawyer]);
 
 
   const formattedFee = new Intl.NumberFormat("en-PK", {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -20,7 +20,7 @@ export function ProfileSettings() {
     const { user } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    const lawyer = user as Lawyer;
+    const lawyer = user as ILawyer;
 
     const [profileVisibility, setProfileVisibility] = useState<'public' | 'private' | 'limited'>('public');
     const [showContactInfo, setShowContactInfo] = useState(true);

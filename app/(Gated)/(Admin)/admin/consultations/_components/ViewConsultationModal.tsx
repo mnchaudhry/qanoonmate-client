@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Consultation } from '@/store/types/api'
-import { Lawyer } from '@/store/types/lawyer.types'
+import { ILawyer } from '@/store/types/lawyer.types'
 import { User } from '@/store/types/user.types'
 
 interface ViewConsultationModalProps {
@@ -241,22 +241,22 @@ const ViewConsultationModal: React.FC<ViewConsultationModalProps> = ({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <UserIcon className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation.lawyerId as Lawyer)?.firstname} {(consultation.lawyerId as Lawyer)?.lastname}</span>
+                <span>{(consultation.lawyerId as ILawyer)?.firstname} {(consultation.lawyerId as ILawyer)?.lastname}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation.lawyerId as Lawyer)?.email}</span>
+                <span>{(consultation.lawyerId as ILawyer)?.email}</span>
               </div>
-              {(consultation.lawyerId as Lawyer)?.phone && (
+              {(consultation.lawyerId as ILawyer)?.phone && (
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{(consultation.lawyerId as Lawyer)?.phone}</span>
+                  <span>{(consultation.lawyerId as ILawyer)?.phone}</span>
                 </div>
               )}
-              {(consultation.lawyerId as Lawyer)?.specializations && (
+              {(consultation.lawyerId as ILawyer)?.specializations && (
                 <div className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  <span>{(consultation.lawyerId as Lawyer)?.specializations?.join(', ')}</span>
+                  <span>{(consultation.lawyerId as ILawyer)?.specializations?.join(', ')}</span>
                 </div>
               )}
             </div>

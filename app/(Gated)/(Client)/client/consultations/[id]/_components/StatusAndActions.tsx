@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { cancelConsultation } from "@/store/reducers/consultationSlice";
-import { ConsultationMode, ConsultationStatus } from "@/lib/enums";
+import { ConsultationStatus } from "@/lib/enums";
 
 interface StatusAndActionsProps {
   consultation: Consultation;
@@ -107,7 +107,7 @@ export default function StatusAndActions({ consultation }: StatusAndActionsProps
         </div>
 
         <div className="flex flex-wrap gap-2 justify-center">
-          {consultation.status === ConsultationStatus.SCHEDULED && consultation.mode === ConsultationMode.VIDEO_CALL && (
+          {consultation.status === ConsultationStatus.SCHEDULED && (
             <Button className="bg-green-600 hover:bg-green-700">
               <Video className="h-4 w-4 mr-2" />
               Join Meeting

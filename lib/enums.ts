@@ -44,13 +44,6 @@ export enum ConsultationType {
   INITIAL = "initial"
 }
 
-export enum ConsultationMode {
-  IN_PERSON = "in_person",
-  VIDEO_CALL = "video_call",
-  PHONE_CALL = "phone_call",
-  CHAT = "chat"
-}
-
 export enum ConsultationStatus {
   PENDING = "pending",
   SCHEDULED = "scheduled",

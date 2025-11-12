@@ -26,20 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { AppDispatch, RootState } from "@/store/store";
 import { ChatParticipant, Message } from "@/store/types/api";
-import {
-  AlertCircle,
-  Calendar,
-  CheckCircle,
-  FileText,
-  Link2,
-  NotebookIcon,
-  NotebookPen,
-  Search,
-  Users,
-  ExternalLink,
-  Download,
-  Loader2,
-} from "lucide-react";
+import { AlertCircle, Calendar, CheckCircle, FileText, Link2, NotebookIcon, NotebookPen, Search, Users, ExternalLink, Download, Loader2, } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -49,34 +36,11 @@ import {
   rescheduleConsultation,
 } from "@/store/reducers/consultationSlice";
 import { JSX } from "@fullcalendar/core/preact.js";
-import { ConsultationMode } from "@/lib/enums";
 import { getRoomFiles, getRoomLinks } from "@/store/reducers/chatSlice";
 
-// const mockTimeline = [
-//     { icon: <Calendar className="w-4 h-4" />, title: 'Consultation Requested', time: '2024-06-01 10:00', action: null },
-//     { icon: <CheckCircle className="w-4 h-4 text-green-600" />, title: 'Lawyer Accepted', time: '2024-06-01 10:15', action: null },
-//     { icon: <AlertCircle className="w-4 h-4 text-yellow-500" />, title: 'Reschedule Requested', time: '2024-06-02 09:00', action: <Button size="sm" variant="outline">View</Button> },
-// ];
 
-// const mockFiles = [
-//     { id: 'f1', name: 'Contract.pdf', type: 'pdf', uploader: 'Ali Khan', time: '2d ago' },
-//     { id: 'f2', name: 'Evidence.jpg', type: 'image', uploader: 'Sara Ahmed', time: '1d ago' },
-// ];
 
-// Dictionary for human-readable labels
-export const ConsultationModeLabels: Record<ConsultationMode, string> = {
-  [ConsultationMode.IN_PERSON]: "In Person",
-  [ConsultationMode.VIDEO_CALL]: "Video Call",
-  [ConsultationMode.PHONE_CALL]: "Phone Call",
-  [ConsultationMode.CHAT]: "Chat",
-};
-
-const Rightbar = ({
-  showRightbar,
-}: {
-  showRightbar: boolean;
-  setShowSidebar: (show: boolean) => void;
-}) => {
+const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (show: boolean) => void; }) => {
   const dispatch = useDispatch<AppDispatch>();
   const {
     messages,
@@ -138,22 +102,22 @@ const Rightbar = ({
       },
       c.status === "scheduled"
         ? {
-            icon: <CheckCircle className="w-4 h-4 text-green-600" />,
-            title: "Lawyer Confirmed",
-          }
+          icon: <CheckCircle className="w-4 h-4 text-green-600" />,
+          title: "Lawyer Confirmed",
+        }
         : null,
       c.status === "completed"
         ? {
-            icon: <CheckCircle className="w-4 h-4 text-green-600" />,
-            title: "Completed",
-          }
+          icon: <CheckCircle className="w-4 h-4 text-green-600" />,
+          title: "Completed",
+        }
         : null,
       c.cancelledAt
         ? {
-            icon: <AlertCircle className="w-4 h-4 text-yellow-500" />,
-            title: "Cancelled",
-            time: c.cancelledAt,
-          }
+          icon: <AlertCircle className="w-4 h-4 text-yellow-500" />,
+          title: "Cancelled",
+          time: c.cancelledAt,
+        }
         : null,
     ].filter(Boolean) as Array<{
       icon: JSX.Element;

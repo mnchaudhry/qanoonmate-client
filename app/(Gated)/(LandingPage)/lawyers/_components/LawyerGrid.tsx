@@ -7,11 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MapPin, Star, Clock, Globe, DollarSign, Calendar, BadgeCheck } from "lucide-react";
 import Link from "next/link";
-import { Lawyer } from "@/store/types/lawyer.types";
-import { ConsultationMode } from "@/lib/enums";
+import { ILawyer } from "@/store/types/lawyer.types";
 
 interface LawyerGridProps {
-  lawyers: Lawyer[];
+  lawyers: ILawyer[];
   currentPage: number;
   totalPages: number;
   totalCount: number;
@@ -21,7 +20,7 @@ interface LawyerGridProps {
 }
 
 export const LawyerGrid: React.FC<LawyerGridProps> = ({ lawyers, onSpecializationClick }) => {
-  
+
 
   /////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
   const renderStars = (rating: number) => {
@@ -45,7 +44,7 @@ export const LawyerGrid: React.FC<LawyerGridProps> = ({ lawyers, onSpecializatio
     return stars;
   };
 
-  const getAvailabilityStatus = (lawyer: Lawyer) => {
+  const getAvailabilityStatus = (lawyer: ILawyer) => {
     if (!lawyer.settings?.availability || lawyer.settings.availability.length === 0) return "Not Available";
 
     const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
@@ -62,12 +61,12 @@ export const LawyerGrid: React.FC<LawyerGridProps> = ({ lawyers, onSpecializatio
     return "Available";
   };
 
-  const getConsultationFee = (lawyer: Lawyer) => {
-    return lawyer.settings?.consultation?.fees?.find(f => f.mode === ConsultationMode.VIDEO_CALL)?.amount || 3000;
+  const getConsultationFee = (lawyer: ILawyer) => {
+    return 3000;
   };
 
   /////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////
-    if (!lawyers || lawyers.length === 0) {
+  if (!lawyers || lawyers.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-muted-foreground text-6xl mb-4">⚖️</div>

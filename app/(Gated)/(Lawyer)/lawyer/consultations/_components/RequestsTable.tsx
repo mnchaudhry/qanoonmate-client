@@ -6,63 +6,44 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn, enumToLabel } from "@/lib/utils";
 import type { Consultation } from '@/store/types/api';
-import { ConsultationStatus, ConsultationMode } from "@/lib/enums";
-import { 
-  Calendar, 
-  Clock, 
-  User, 
-  Video, 
-  Phone, 
-  MessageSquare, 
-  MapPin,
-  Eye,
-  FileText,
-  Inbox,
-  AlertCircle
-} from "lucide-react";
+import { ConsultationStatus } from "@/lib/enums";
+import { Calendar, Clock, User, Eye, FileText, Inbox, AlertCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 
 const statusConfig: Record<ConsultationStatus, { color: string; icon?: any; label: string }> = {
-  [ConsultationStatus.PENDING]: { 
-    color: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800", 
+  [ConsultationStatus.PENDING]: {
+    color: "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-400 dark:border-yellow-800",
     label: "Pending Review"
   },
-  [ConsultationStatus.SCHEDULED]: { 
-    color: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800", 
+  [ConsultationStatus.SCHEDULED]: {
+    color: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-400 dark:border-blue-800",
     label: "Scheduled"
   },
-  [ConsultationStatus.COMPLETED]: { 
-    color: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800", 
+  [ConsultationStatus.COMPLETED]: {
+    color: "bg-green-50 text-green-700 border-green-200 dark:bg-green-950 dark:text-green-400 dark:border-green-800",
     label: "Completed"
   },
-  [ConsultationStatus.CANCELLED]: { 
-    color: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800", 
+  [ConsultationStatus.CANCELLED]: {
+    color: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-400 dark:border-red-800",
     label: "Cancelled"
   },
-  [ConsultationStatus.NO_SHOW]: { 
-    color: "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-950 dark:text-gray-400 dark:border-gray-800", 
+  [ConsultationStatus.NO_SHOW]: {
+    color: "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-950 dark:text-gray-400 dark:border-gray-800",
     label: "No Show"
   },
-  [ConsultationStatus.RESCHEDULED]: { 
-    color: "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800", 
+  [ConsultationStatus.RESCHEDULED]: {
+    color: "bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950 dark:text-orange-400 dark:border-orange-800",
     label: "Rescheduled"
   },
-  [ConsultationStatus.IN_PROGRESS]: { 
-    color: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800", 
+  [ConsultationStatus.IN_PROGRESS]: {
+    color: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800",
     label: "In Progress"
   },
-  [ConsultationStatus.CONFIRMED]: { 
-    color: "bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950 dark:text-teal-400 dark:border-teal-800", 
+  [ConsultationStatus.CONFIRMED]: {
+    color: "bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950 dark:text-teal-400 dark:border-teal-800",
     label: "Confirmed"
   }
-};
-
-const modeConfig: Record<ConsultationMode, { icon: any; color: string }> = {
-  [ConsultationMode.VIDEO_CALL]: { icon: Video, color: "text-blue-600 dark:text-blue-400" },
-  [ConsultationMode.PHONE_CALL]: { icon: Phone, color: "text-green-600 dark:text-green-400" },
-  [ConsultationMode.CHAT]: { icon: MessageSquare, color: "text-purple-600 dark:text-purple-400" },
-  [ConsultationMode.IN_PERSON]: { icon: MapPin, color: "text-orange-600 dark:text-orange-400" }
 };
 
 // Loading skeleton component
@@ -130,13 +111,13 @@ interface RequestsTableProps {
   onRetry?: () => void;
 }
 
-export default function ConsultationRequestsTable({ 
-  requests = [], 
-  loading = false, 
+export default function ConsultationRequestsTable({
+  requests = [],
+  loading = false,
   error = null,
-  onRetry 
+  onRetry
 }: RequestsTableProps) {
-  
+
   const getClientInfo = (consultation: Consultation) => {
     if (typeof consultation.clientId === 'object') {
       const client = consultation.clientId;
@@ -153,13 +134,6 @@ export default function ConsultationRequestsTable({
       avatar: '',
       initials: 'UC'
     };
-  };
-
-  const getModeIcon = (mode: ConsultationMode) => {
-    const config = modeConfig[mode];
-    if (!config) return null;
-    const Icon = config.icon;
-    return <Icon className={cn("h-4 w-4", config.color)} />;
   };
 
   const formatDateTime = (date: string) => {
@@ -207,9 +181,9 @@ export default function ConsultationRequestsTable({
               requests.map((request) => {
                 const client = getClientInfo(request);
                 const dateTime = formatDateTime(request.scheduledDate);
-                const statusInfo = statusConfig[request.status] || { 
-                  color: "bg-muted text-muted-foreground border-border", 
-                  label: enumToLabel(request.status) 
+                const statusInfo = statusConfig[request.status] || {
+                  color: "bg-muted text-muted-foreground border-border",
+                  label: enumToLabel(request.status)
                 };
 
                 return (
@@ -246,18 +220,10 @@ export default function ConsultationRequestsTable({
                       </div>
                     </TableCell>
 
-                    {/* Mode */}
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        {getModeIcon(request.mode)}
-                        <span className="text-sm">{enumToLabel(request.mode)}</span>
-                      </div>
-                    </TableCell>
-
                     {/* Status */}
                     <TableCell>
-                      <Badge 
-                        variant="outline" 
+                      <Badge
+                        variant="outline"
                         className={cn("font-medium border", statusInfo.color)}
                       >
                         {statusInfo.label}
@@ -291,9 +257,9 @@ export default function ConsultationRequestsTable({
 
                     {/* Actions */}
                     <TableCell className="text-center">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         asChild
                         className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
                       >

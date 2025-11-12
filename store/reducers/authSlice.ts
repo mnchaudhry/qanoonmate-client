@@ -5,13 +5,13 @@ import { fetchAndSetCSRFToken } from '../api/axios';
 import { UserRole } from '@/lib/enums';
 import { ChangePasswordRequest, ForgetPasswordRequest, ForgetPasswordUpdateRequest, LoginRequest, ClientSignupRequest, LawyerSignupStep1Request, UpdateProfileRequest, VerifyOtpRequest } from '../types/auth.types';
 import { Client } from '../types/client.types';
-import { Lawyer } from '../types/lawyer.types';
+import { ILawyer } from '../types/lawyer.types';
 import { User } from '../types/user.types';
 import localStorageManager from '@/utils/localStorage';
 import { getErrorMessage } from '@/lib/utils';
 
 interface AuthState {
-  user: User | Client | Lawyer | null;
+  user: User | Client | ILawyer | null;
   token: string | null;
   sessionId: string | null;
   isAuthenticated: boolean;

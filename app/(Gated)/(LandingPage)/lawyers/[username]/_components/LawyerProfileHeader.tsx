@@ -11,7 +11,7 @@ import { RootState } from "@/store/store";
 import { PlaceholderLawyer } from "@/constants/images";
 import { enumToLabel } from "@/lib/utils";
 import { useRouter, useParams } from "next/navigation";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 
 interface LawyerProfileHeaderProps {
   lawyer: LawyerProfile;
@@ -23,7 +23,7 @@ export function LawyerProfileHeader({ lawyer }: LawyerProfileHeaderProps) {
   const router = useRouter();
   const params = useParams();
   const username = params.username as string;
-  const { user } = useSelector((state: RootState) => state.auth) as { user: Lawyer };
+  const { user } = useSelector((state: RootState) => state.auth) as { user: ILawyer };
   const { selectedLawyer } = useSelector((state: RootState) => state.lawyer);
   const isOwnProfile = user?.email === lawyer.personalInfo.email;
 

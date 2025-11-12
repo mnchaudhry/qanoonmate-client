@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { ProfileCompletionData } from "@/lib/types/profile.types";
 import { calculateProfileCompletion } from "@/lib/utils/profileCompletion";
 import { SettingsSidebar } from "./_components/SettingsSidebar";
@@ -15,7 +15,7 @@ import { SettingsContent } from "./_components/SettingsContent";
 export default function LawyerSettings() {
     const searchParams = useSearchParams();
   const { user } = useSelector((state: RootState) => state.auth);
-  const lawyer = user as Lawyer;
+  const lawyer = user as ILawyer;
 
   const [activeSection, setActiveSection] = useState("profile");
   const [completion, setCompletion] = useState<ProfileCompletionData | null>(null);

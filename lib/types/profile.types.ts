@@ -166,7 +166,6 @@ export interface CaseStudy {
 }
 
 export interface ConsultationFee {
-  mode: 'video' | 'phone' | 'in-person' | 'chat';
   duration: number; // in minutes
   price: number;
   currency: string;

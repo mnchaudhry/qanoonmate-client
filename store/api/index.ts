@@ -87,7 +87,7 @@ export const getMyClients = () => APIClient.get<LawyerAPI.MyClientsResponse>(`/l
 export const getMyReviews = (limit?: number) => APIClient.get<LawyerAPI.LawyerReviewsResponse>(`/lawyer/me/reviews`, { params: { limit } });
 export const getDashboardStats = () => APIClient.get<LawyerAPI.DashboardStatsResponse>(`/lawyer/me/dashboard/stats`);
 export const getActivityLog = (limit?: number) => APIClient.get<LawyerAPI.ActivityLogResponse>(`/lawyer/me/dashboard/activities`, { params: { limit } });
-export const updateMeLawyer = (data: Partial<LawyerAPI.Lawyer>) => APIClient.put<LawyerAPI.SingleLawyerResponse>(`/lawyer/me`, data);
+export const updateMeLawyer = (data: Partial<LawyerAPI.ILawyer>) => APIClient.put<LawyerAPI.SingleLawyerResponse>(`/lawyer/me`, data);
 export const updateLawyerPassword = (password: string) => APIClient.put<LawyerAPI.SingleLawyerResponse>(`/lawyer/me/password`, { password, });
 export const updateLawyerStatus = (id: string, isActive: boolean) => APIClient.put<LawyerAPI.SingleLawyerResponse>(`/lawyer/admin/lawyers/${id}/status`, { isActive });
 export const deleteLawyer = (id: string) => APIClient.delete<LawyerAPI.LawyerDeleteResponse>(`/lawyer/admin/lawyers/${id}`);

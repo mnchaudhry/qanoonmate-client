@@ -5,12 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MapPin, Star, Clock, Globe, DollarSign, Calendar, BadgeCheck } from "lucide-react";
 import Link from "next/link";
-import { Lawyer } from "@/store/types/lawyer.types";
-import { ConsultationMode } from "@/lib/enums";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { enumToLabel } from "@/lib/utils";
 
 interface Props {
-    lawyers: Lawyer[];
+    lawyers: ILawyer[];
     currentPage: number;
     totalPages: number;
     totalCount: number;
@@ -43,7 +42,7 @@ export const LawyersList = ({ lawyers, onSpecializationClick }: Props) => {
         return stars;
     };
 
-    const getAvailabilityStatus = (lawyer: Lawyer) => {
+    const getAvailabilityStatus = (lawyer: ILawyer) => {
         if (!lawyer.settings?.availability || lawyer.settings.availability.length === 0) return "Not Available";
 
         const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
@@ -62,8 +61,8 @@ export const LawyersList = ({ lawyers, onSpecializationClick }: Props) => {
         return "Available";
     };
 
-    const getConsultationFee = (lawyer: Lawyer) => {
-        return lawyer.settings?.consultation?.fees?.find(f => f.mode === ConsultationMode.VIDEO_CALL)?.amount || 3000;
+    const getConsultationFee = (lawyer: ILawyer) => {
+        return 3000;
     };
 
     /////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////

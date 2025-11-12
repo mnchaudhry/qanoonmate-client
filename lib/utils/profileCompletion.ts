@@ -1,4 +1,4 @@
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { ProfileCompletionData } from "@/lib/types/profile.types";
 import { User, Shield, GraduationCap, Award, MessageSquare, Briefcase, Clock, Upload } from "lucide-react";
 
@@ -14,7 +14,7 @@ export function isFieldCompleted(value: any): boolean {
 }
 
 // Calculate profile completion based on Lawyer data
-export function calculateProfileCompletion(lawyer: Lawyer): ProfileCompletionData {
+export function calculateProfileCompletion(lawyer: ILawyer): ProfileCompletionData {
   // Personal Info (15% weight)
   const personalInfoCompleted = isFieldCompleted(lawyer.firstname) && 
                                isFieldCompleted(lawyer.lastname) && 
@@ -105,7 +105,7 @@ export function calculateProfileCompletion(lawyer: Lawyer): ProfileCompletionDat
 }
 
 // Get progress steps for ProfileProgress component
-export function getProgressSteps(lawyer: Lawyer): Array<{
+export function getProgressSteps(lawyer: ILawyer): Array<{
   id: string;
   title: string;
   description: string;

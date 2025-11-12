@@ -5,8 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { FileText, ExternalLink } from "lucide-react";
-import { ConsultationMode, ConsultationStatus } from "@/lib/enums";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ConsultationStatus } from "@/lib/enums";
+import { ILawyer } from "@/store/types/lawyer.types";
 
 interface ConsultationSummaryProps {
   consultation: Consultation;
@@ -24,28 +24,6 @@ export default function ConsultationSummary({ consultation }: ConsultationSummar
     format(new Date(new Date(consultation.scheduledDate).getTime() + (consultation.duration || 30) * 60000), "hh:mm a")
     : "Time not available";
 
-  // Get mode display
-  const getConsultationMode = () => {
-    switch (consultation.mode) {
-      case ConsultationMode.VIDEO_CALL:
-        return "Video Call";
-      case ConsultationMode.PHONE_CALL:
-        return "Phone Call";
-      case ConsultationMode.IN_PERSON:
-        return "In-Person";
-      default:
-        return "Not specified";
-    }
-  };
-
-  // Get platform info
-  const getPlatform = () => {
-    if (consultation.mode === ConsultationMode.VIDEO_CALL) {
-      // This is sample data - in real app would come from the API
-      return "Zoom";
-    }
-    return null;
-  };
 
   return (
     <Card className="mb-6">
@@ -60,11 +38,11 @@ export default function ConsultationSummary({ consultation }: ConsultationSummar
           <div>
             <p className="mb-2">
               <span className="font-medium">Lawyer:</span>{" "}
-              {(consultation.lawyerId as Lawyer)?.firstname} {((consultation.lawyerId as Lawyer))?.lastname}
+              {(consultation.lawyerId as ILawyer)?.firstname} {((consultation.lawyerId as ILawyer))?.lastname}
             </p>
             <p className="mb-2">
               <span className="font-medium">Field:</span>{" "}
-              {((consultation.lawyerId as Lawyer))?.specializations?.[0] || "Not specified"}
+              {((consultation.lawyerId as ILawyer))?.specializations?.[0] || "Not specified"}
             </p>
             <p className="mb-2">
               <span className="font-medium">Date:</span>{" "}
@@ -75,25 +53,6 @@ export default function ConsultationSummary({ consultation }: ConsultationSummar
             <p className="mb-2">
               <span className="font-medium">Time:</span>{" "}
               {formattedTime}
-            </p>
-            <p className="mb-2">
-              <span className="font-medium">Mode:</span>{" "}
-              {getConsultationMode()}
-              {getPlatform() && (
-                <>
-                  {" "}
-                  <span className="text-gray-500">[{getPlatform()}]</span>
-                  {consultation.status === ConsultationStatus.SCHEDULED && (
-                    <Button
-                      variant="link"
-                      size="sm"
-                      className="px-2 py-0 h-auto text-blue-600"
-                    >
-                      Join Link <ExternalLink className="ml-1 h-3 w-3" />
-                    </Button>
-                  )}
-                </>
-              )}
             </p>
             <p className="mb-2">
               <span className="font-medium">Status:</span>{" "}

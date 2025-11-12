@@ -11,7 +11,7 @@ import { useEditModal } from "./edit/EditModalContext";
 import { EditContactModal } from "./edit/EditContactModal";
 import { enumToLabel } from "@/lib/utils";
 import { useRouter, useParams } from "next/navigation";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 
 interface ContactCardProps {
   lawyer: LawyerProfile;
@@ -21,7 +21,7 @@ export function ContactCard({ lawyer }: ContactCardProps) {
   const router = useRouter();
   const params = useParams();
   const username = params.username as string;
-  const { user } = useSelector((state: RootState) => state.auth) as { user: Lawyer };
+  const { user } = useSelector((state: RootState) => state.auth) as { user: ILawyer };
   const { selectedLawyer } = useSelector((state: RootState) => state.lawyer);
   const isOwnProfile = user?.email === lawyer.personalInfo.email;
   const { isContactModalOpen, openContactModal, closeAllModals } = useEditModal();
