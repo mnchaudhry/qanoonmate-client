@@ -1,13 +1,13 @@
 import { Eye, Edit, Flag, Scale, Bell, Video, Phone, MapPin, UserIcon, Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
 import { format } from 'date-fns'
-import { Consultation } from '@/store/types/api'
 import { ILawyer } from '@/store/types/lawyer.types'
 import { User } from '@/store/types/user.types'
+import { IConsultation } from '@/store/types/consultation.types'
 
 interface ConsultationsTableProps {
-  consultations: Consultation[]
+  consultations: IConsultation[]
   selectedConsultations: string[]
-  handleView: (consultation: Consultation) => void
+  handleView: (consultation: IConsultation) => void
   handleSelectConsultation: (consultationId: string) => void
   handleSelectAll: () => void
   page: number
@@ -19,7 +19,7 @@ interface ConsultationsTableProps {
 }
 
 const ConsultationsTable = ({ consultations, selectedConsultations, handleView, handleSelectConsultation, handleSelectAll, page, totalPages, totalCount, setPage, generatePageNumbers, PAGE_SIZE }: ConsultationsTableProps) => {
-  const getStatusBadge = (consultation: Consultation) => {
+  const getStatusBadge = (consultation: IConsultation) => {
     const status = consultation.status?.toLowerCase()
     const baseClasses = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
 
@@ -123,18 +123,18 @@ const ConsultationsTable = ({ consultations, selectedConsultations, handleView, 
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-foreground">
-                    {(consultation.clientId as User)?.firstname} {(consultation.clientId as User)?.lastname}
+                    {(consultation?.client as User)?.firstname} {(consultation?.client as User)?.lastname}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {(consultation.clientId as User)?.email}
+                    {(consultation?.client as User)?.email}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm font-medium text-foreground">
-                    {(consultation.lawyerId as ILawyer)?.firstname} {(consultation.lawyerId as ILawyer)?.lastname}
+                    {(consultation?.lawyer as ILawyer)?.firstname} {(consultation?.lawyer as ILawyer)?.lastname}
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {(consultation.lawyerId as ILawyer)?.specializations?.slice(0, 1).join(', ')}
+                    {(consultation?.lawyer as ILawyer)?.specializations?.slice(0, 1).join(', ')}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">

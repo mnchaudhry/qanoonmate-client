@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Phone, Calendar, DollarSign, Clock, CheckCircle, Edit } from "lucide-react";
+import { MessageCircle, Phone, Calendar, Clock, CheckCircle, Edit } from "lucide-react";
 import { LawyerProfile } from "@/lib/types/profile.types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -27,14 +27,9 @@ export function ContactCard({ lawyer }: ContactCardProps) {
   const { isContactModalOpen, openContactModal, closeAllModals } = useEditModal();
 
   //////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////
-  const getLowestPrice = () => {
-    if (lawyer.services.consultationFees.length === 0) return null;
-    return Math.min(...lawyer.services.consultationFees.map(fee => fee.price));
-  };
-
   const handleSendMessage = () => {
     if (isOwnProfile) return;
-    
+
     // Navigate to messages with the lawyer
     const lawyerId = selectedLawyer?._id;
     if (lawyerId) {
@@ -44,13 +39,13 @@ export function ContactCard({ lawyer }: ContactCardProps) {
 
   const handleBookConsultation = () => {
     if (isOwnProfile) return;
-    
+
     // Navigate to booking page
     router.push(`/lawyers/${username}/book`);
   };
 
   //////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////
-  const lowestPrice = getLowestPrice();
+  const lowestPrice = lawyer.services.hourlyRate
 
   //////////////////////////////////////////////// RENDER ///////////////////////////////////////////
   return (
@@ -62,8 +57,8 @@ export function ContactCard({ lawyer }: ContactCardProps) {
             Get in Touch
           </div>
           {isOwnProfile && (
-            <Edit 
-              className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary" 
+            <Edit
+              className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary"
               onClick={openContactModal}
             />
           )}
@@ -72,8 +67,8 @@ export function ContactCard({ lawyer }: ContactCardProps) {
       <CardContent className="space-y-5">
         {/* Quick Actions */}
         <div className="space-y-3">
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             className="w-full bg-primary hover:bg-primary/90 text-white"
             onClick={handleSendMessage}
             disabled={isOwnProfile}
@@ -82,9 +77,9 @@ export function ContactCard({ lawyer }: ContactCardProps) {
             Send Message
           </Button>
 
-          <Button 
-            size="sm" 
-            variant="outline" 
+          <Button
+            size="sm"
+            variant="outline"
             className="w-full"
             onClick={handleBookConsultation}
             disabled={isOwnProfile}
@@ -95,30 +90,14 @@ export function ContactCard({ lawyer }: ContactCardProps) {
         </div>
 
         {/* Consultation Fees */}
-        {lawyer.services.consultationFees.length > 0 && (
+        {lawyer.services.hourlyRate > 0 && (
           <div className="pt-4 border-t border-gray-100">
             <h4 className="font-medium text-gray-900 mb-3 text-sm">Consultation Fees</h4>
             <div className="space-y-2">
-              {lawyer.services.consultationFees.slice(0, 3).map((fee, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-3.5 h-3.5 text-green-600" />
-                    <span className="text-xs font-medium text-gray-700">
-                      {fee.mode === 'video' ? 'Video Call' :
-                        fee.mode === 'phone' ? 'Phone Call' :
-                          fee.mode === 'in-person' ? 'In-Person' : 'Chat'}
-                    </span>
-                  </div>
-                  <span className="text-xs font-semibold text-primary">
-                    {fee.price} {fee.currency}
-                  </span>
-                </div>
-              ))}
-
               {lowestPrice && (
                 <div className="text-center pt-2">
                   <Badge variant="secondary" className="text-xs bg-gray-100 text-gray-700">
-                    Starting from {lowestPrice} {lawyer.services.consultationFees[0].currency}
+                    Starting from {lowestPrice} PKR/hour
                   </Badge>
                 </div>
               )}
@@ -178,11 +157,11 @@ export function ContactCard({ lawyer }: ContactCardProps) {
           </div>
         </div>
       </CardContent>
-      
+
       {/* Edit Modal */}
-      <EditContactModal 
-        isOpen={isContactModalOpen} 
-        onClose={closeAllModals} 
+      <EditContactModal
+        isOpen={isContactModalOpen}
+        onClose={closeAllModals}
       />
     </Card>
   );

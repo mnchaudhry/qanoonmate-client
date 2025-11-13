@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { getConsultationById } from '@/store/reducers/consultationSlice';
-import { Consultation } from '@/store/types/api';
 
 // Import components
 import Header from './_components/Header';
@@ -16,6 +15,7 @@ import AttachmentsSection from './_components/AttachmentsSection';
 import StatusAndActions from './_components/StatusAndActions';
 import FeedbackSection from './_components/FeedbackSection';
 import RemindersSection from './_components/RemindersSection';
+import { IConsultation } from '@/store/types/consultation.types';
 
 export default function ConsultationDetailPage() {
 
@@ -27,7 +27,7 @@ export default function ConsultationDetailPage() {
     );
 
     /////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////////////////
-    const [consultation, setConsultation] = useState<Consultation | null>(null);
+    const [consultation, setConsultation] = useState<IConsultation | null>(null);
 
     /////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////////////////////
     useEffect(() => {

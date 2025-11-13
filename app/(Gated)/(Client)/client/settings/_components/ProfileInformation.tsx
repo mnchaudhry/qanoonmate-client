@@ -12,14 +12,14 @@ import { updateClientProfile } from '@/store/reducers/clientSlice'
 import { updateProfile } from '@/store/reducers/authSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@/store/store'
-import { Client } from '@/store/types/client.types'
+import { IClient } from '@/store/types/client.types'
 
 const ProfileInformation = () => {
 
   //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>()
   const { user } = useSelector((state: RootState) => state.auth)
-  const client = user as Client
+  const client = user as IClient
 
   //////////////////////////////////////////////// STATE /////////////////////////////////////////////////
   const [formData, setFormData] = useState({

@@ -8,8 +8,8 @@ import { getConsultations, confirmConsultation, startConsultation, completeConsu
 import AlertModal from '@/components/alert-modal'
 import { ConsultationsFilterActionBar, ConsultationsTable, ConsultationsSummaryStats } from './_components'
 import { PageHeader } from '../../_components/PageHeader'
-import { Consultation } from '@/store/types/api'
 import AdminSkeleton from '@/components/skeletons/AdminPageSkeleton'
+import { IConsultation } from '@/store/types/consultation.types'
 
 const PAGE_SIZE = 10;
 
@@ -21,7 +21,7 @@ const ConsultationsPage = () => {
   //////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////
   const [search, setSearch] = useState('')
   const [viewModalOpen, setViewModalOpen] = useState(false)
-  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null)
+  const [selectedConsultation, setSelectedConsultation] = useState<IConsultation | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [filterStatus, setFilterStatus] = useState('all')
@@ -47,7 +47,7 @@ const ConsultationsPage = () => {
   useEffect(() => { setPage(1) }, [search, filterStatus])
 
   //////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
-  const handleView = (consultation: Consultation) => {
+  const handleView = (consultation: IConsultation) => {
     setSelectedConsultation(consultation)
     setViewModalOpen(true)
   }

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Consultation } from "@/store/types/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, XCircle, Clock, RefreshCw, Video } from "lucide-react";
@@ -11,9 +10,10 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { cancelConsultation } from "@/store/reducers/consultationSlice";
 import { ConsultationStatus } from "@/lib/enums";
+import { IConsultation } from "@/store/types/consultation.types";
 
 interface StatusAndActionsProps {
-  consultation: Consultation;
+  consultation: IConsultation;
 }
 
 export default function StatusAndActions({ consultation }: StatusAndActionsProps) {

@@ -5,29 +5,26 @@ import { Clock, CreditCard, Info } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { enumToLabel } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
 export default function BookingSummary() {
 
   ///////////////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////////////////
   const { selectedLawyer: lawyer } = useSelector((state: RootState) => state.lawyer);
 
-  ///////////////////////////////////////////////////////// STATES ///////////////////////////////////////////////////////////////
-  const [consultationFee, setConsultationFee] = useState<number | undefined>(3000);
+  ///////////////////////////////////////////////////////// COMPUTED VALUES ///////////////////////////////////////////////////////////////
+  // Use actual hourly rate from lawyer profile, default to 3000 if not set
+  const consultationFee = useMemo(() => {
+    return lawyer?.hourlyRate || 3000;
+  }, [lawyer?.hourlyRate]);
 
-  ///////////////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////////////////////////////
-  useEffect(() => {
-    if (lawyer) {
-      setConsultationFee(3000);
-    }
-  }, [lawyer]);
-
-
-  const formattedFee = new Intl.NumberFormat("en-PK", {
-    style: "currency",
-    currency: "PKR",
-    minimumFractionDigits: 0,
-  }).format(consultationFee || 500);
+  const formattedFee = useMemo(() => {
+    return new Intl.NumberFormat("en-PK", {
+      style: "currency",
+      currency: "PKR",
+      minimumFractionDigits: 0,
+    }).format(consultationFee);
+  }, [consultationFee]);
 
   ///////////////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////////////////
   return (

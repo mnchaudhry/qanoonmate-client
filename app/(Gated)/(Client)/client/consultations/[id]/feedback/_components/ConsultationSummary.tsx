@@ -1,15 +1,14 @@
 "use client";
 
-import { Consultation } from "@/store/types/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { FileText, ExternalLink } from "lucide-react";
+import { FileText } from "lucide-react";
 import { ConsultationStatus } from "@/lib/enums";
 import { ILawyer } from "@/store/types/lawyer.types";
+import { IConsultation } from "@/store/types/consultation.types";
 
 interface ConsultationSummaryProps {
-  consultation: Consultation;
+  consultation: IConsultation;
 }
 
 export default function ConsultationSummary({ consultation }: ConsultationSummaryProps) {
@@ -38,11 +37,11 @@ export default function ConsultationSummary({ consultation }: ConsultationSummar
           <div>
             <p className="mb-2">
               <span className="font-medium">Lawyer:</span>{" "}
-              {(consultation.lawyerId as ILawyer)?.firstname} {((consultation.lawyerId as ILawyer))?.lastname}
+              {(consultation?.lawyer as ILawyer)?.firstname} {((consultation?.lawyer as ILawyer))?.lastname}
             </p>
             <p className="mb-2">
               <span className="font-medium">Field:</span>{" "}
-              {((consultation.lawyerId as ILawyer))?.specializations?.[0] || "Not specified"}
+              {((consultation?.lawyer as ILawyer))?.specializations?.[0] || "Not specified"}
             </p>
             <p className="mb-2">
               <span className="font-medium">Date:</span>{" "}

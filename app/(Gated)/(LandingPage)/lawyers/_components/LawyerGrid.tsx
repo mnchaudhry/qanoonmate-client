@@ -45,24 +45,19 @@ export const LawyerGrid: React.FC<LawyerGridProps> = ({ lawyers, onSpecializatio
   };
 
   const getAvailabilityStatus = (lawyer: ILawyer) => {
-    if (!lawyer.settings?.availability || lawyer.settings.availability.length === 0) return "Not Available";
+    const settings = typeof lawyer.settings === 'object' ? lawyer.settings : null;
+    if (!settings?.availability || settings.availability.length === 0) return "Not Available";
 
-    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-    const todayAvailability = lawyer.settings.availability.find(a => a.day === today);
+    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    const todayAvailability = settings.availability.find(a => a.day.toLowerCase() === today);
 
-    if (
-      todayAvailability &&
-      Array.isArray(todayAvailability.timeSlots) &&
-      todayAvailability.timeSlots.some((slot: any) => typeof slot === 'object' && 'is_available' in slot && slot.is_available)
-    ) {
+    if (todayAvailability && todayAvailability.isAvailable && todayAvailability.timeSlots.length > 0) {
       return "Available Today";
     }
 
-    return "Available";
-  };
-
-  const getConsultationFee = (lawyer: ILawyer) => {
-    return 3000;
+    // Check if available on any other day
+    const hasAvailability = settings.availability.some(a => a.isAvailable && a.timeSlots.length > 0);
+    return hasAvailability ? "Available" : "Not Available";
   };
 
   /////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////
@@ -157,7 +152,7 @@ export const LawyerGrid: React.FC<LawyerGridProps> = ({ lawyers, onSpecializatio
               </div>
               <div className="flex items-center space-x-1">
                 <DollarSign className="h-3 w-3" />
-                <span>Rs {getConsultationFee(lawyer)}</span>
+                <span>Rs {lawyer?.hourlyRate}</span>
               </div>
               <div className="flex items-center space-x-1">
                 <Calendar className="h-3 w-3" />

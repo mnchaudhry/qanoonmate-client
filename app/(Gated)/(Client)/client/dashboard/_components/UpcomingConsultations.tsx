@@ -61,8 +61,8 @@ const UpcomingConsultations = () => {
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {/* Show lawyer or client name depending on user role */}
-                    {typeof consultation.lawyerId === 'object' && 'firstname' in consultation.lawyerId
-                      ? `${consultation.lawyerId.firstname} ${consultation.lawyerId.lastname}`
+                    {typeof consultation?.lawyer === 'object' && 'firstname' in consultation?.lawyer
+                      ? `${consultation?.lawyer.firstname} ${consultation?.lawyer.lastname}`
                       : ''}
                   </p>
                 </div>

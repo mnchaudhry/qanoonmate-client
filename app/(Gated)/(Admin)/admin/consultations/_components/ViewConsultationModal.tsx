@@ -11,14 +11,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Consultation } from '@/store/types/api'
 import { ILawyer } from '@/store/types/lawyer.types'
 import { User } from '@/store/types/user.types'
+import { IConsultation } from '@/store/types/consultation.types'
 
 interface ViewConsultationModalProps {
   open: boolean;
   onClose: () => void;
-  consultation: Consultation | null;
+  consultation: IConsultation | null;
   onConfirm?: (id: string) => void;
   onStart?: (id: string, formData: any) => void;
   onComplete?: (id: string, formData: any) => void;
@@ -217,16 +217,16 @@ const ViewConsultationModal: React.FC<ViewConsultationModalProps> = ({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <UserIcon className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation.clientId as User)?.firstname} {(consultation.clientId as User)?.lastname}</span>
+                <span>{(consultation?.client as User)?.firstname} {(consultation?.client as User)?.lastname}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation.clientId as User)?.email}</span>
+                <span>{(consultation?.client as User)?.email}</span>
               </div>
-              {(consultation.clientId as User)?.phone && (
+              {(consultation?.client as User)?.phone && (
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{(consultation.clientId as User)?.phone}</span>
+                  <span>{(consultation?.client as User)?.phone}</span>
                 </div>
               )}
             </div>
@@ -241,22 +241,22 @@ const ViewConsultationModal: React.FC<ViewConsultationModalProps> = ({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <UserIcon className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation.lawyerId as ILawyer)?.firstname} {(consultation.lawyerId as ILawyer)?.lastname}</span>
+                <span>{(consultation?.lawyer as ILawyer)?.firstname} {(consultation?.lawyer as ILawyer)?.lastname}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation.lawyerId as ILawyer)?.email}</span>
+                <span>{(consultation?.lawyer as ILawyer)?.email}</span>
               </div>
-              {(consultation.lawyerId as ILawyer)?.phone && (
+              {(consultation?.lawyer as ILawyer)?.phone && (
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{(consultation.lawyerId as ILawyer)?.phone}</span>
+                  <span>{(consultation?.lawyer as ILawyer)?.phone}</span>
                 </div>
               )}
-              {(consultation.lawyerId as ILawyer)?.specializations && (
+              {(consultation?.lawyer as ILawyer)?.specializations && (
                 <div className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  <span>{(consultation.lawyerId as ILawyer)?.specializations?.join(', ')}</span>
+                  <span>{(consultation?.lawyer as ILawyer)?.specializations?.join(', ')}</span>
                 </div>
               )}
             </div>

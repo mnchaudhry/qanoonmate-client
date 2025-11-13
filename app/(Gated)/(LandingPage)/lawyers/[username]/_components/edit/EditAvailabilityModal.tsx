@@ -2,133 +2,98 @@
 
 import { useState, useEffect } from "react";
 import { EditModal } from "./EditModal";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useEditModal } from "./EditModalContext";
-import { Clock, Calendar, CheckCircle, XCircle } from "lucide-react";
+import { Clock, Calendar } from "lucide-react";
+import { Days, TimeSlot } from "@/lib/enums";
+import { Availability } from "@/store/types/lawyerSettings.types";
 
 interface EditAvailabilityModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface TimeSlot {
-  start: string;
-  end: string;
-}
+const TIME_SLOTS = Object.values(TimeSlot);
 
-interface WorkingDay {
-  [key: string]: TimeSlot[];
-}
+const DAY_LABELS: Record<string, string> = {
+  [Days.MONDAY]: 'Monday',
+  [Days.TUESDAY]: 'Tuesday',
+  [Days.WEDNESDAY]: 'Wednesday',
+  [Days.THURSDAY]: 'Thursday',
+  [Days.FRIDAY]: 'Friday',
+  [Days.SATURDAY]: 'Saturday',
+  [Days.SUNDAY]: 'Sunday',
+};
 
 export function EditAvailabilityModal({ isOpen, onClose }: EditAvailabilityModalProps) {
+
+  /////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////
   const { lawyer } = useEditModal();
-  const [formData, setFormData] = useState({
-    timezone: "",
-    workingDays: {} as WorkingDay,
-  });
+  const { updateSection } = useEditModal();
 
-  const [selectedDay, setSelectedDay] = useState("");
-  const [newSlot, setNewSlot] = useState({
-    start: "",
-    end: "",
-  });
-
-  const days = [
-    { key: "monday", label: "Monday" },
-    { key: "tuesday", label: "Tuesday" },
-    { key: "wednesday", label: "Wednesday" },
-    { key: "thursday", label: "Thursday" },
-    { key: "friday", label: "Friday" },
-    { key: "saturday", label: "Saturday" },
-    { key: "sunday", label: "Sunday" },
-  ];
-
-  const timezones = [
-    "Asia/Karachi (PKT)",
-    "Asia/Lahore (PKT)",
-    "Asia/Islamabad (PKT)",
-    "UTC",
-    "America/New_York (EST)",
-    "Europe/London (GMT)",
-  ];
+  /////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////
+  const [availability, setAvailability] = useState<Availability[]>([]);
 
   useEffect(() => {
-    if (lawyer) {
-      setFormData({
-        timezone: "Asia/Karachi (PKT)", // This field doesn't exist in Lawyer type yet
-        workingDays: {}, // This field doesn't exist in Lawyer type yet
-      });
+    if (lawyer?.settings && typeof lawyer.settings === 'object' && lawyer.settings.availability) {
+      setAvailability(lawyer.settings.availability);
+    } else {
+      // Initialize with default availability for all days
+      setAvailability(
+        Object.values(Days).map(day => ({
+          day,
+          timeSlots: [],
+          isAvailable: true,
+          notes: ''
+        }))
+      );
     }
   }, [lawyer]);
 
-  const handleTimezoneChange = (value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      timezone: value
-    }));
+  /////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
+  const handleSlotChange = (day: string, slot: string, checked: boolean) => {
+    setAvailability(prev =>
+      prev.map(d =>
+        d.day === day
+          ? {
+            ...d,
+            timeSlots: checked
+              ? [...d.timeSlots, slot]
+              : d.timeSlots.filter(s => s !== slot),
+            isAvailable: checked ? true : (d.timeSlots.filter(s => s !== slot).length > 0)
+          }
+          : d
+      )
+    );
   };
 
-  const addTimeSlot = () => {
-    if (selectedDay && newSlot.start && newSlot.end) {
-      setFormData(prev => ({
-        ...prev,
-        workingDays: {
-          ...prev.workingDays,
-          [selectedDay]: [...(prev.workingDays[selectedDay] || []), { ...newSlot }]
-        }
-      }));
-      setNewSlot({ start: "", end: "" });
-    }
+  const handleSelectAll = (day: string, checked: boolean) => {
+    setAvailability(prev =>
+      prev.map(d =>
+        d.day === day
+          ? { ...d, timeSlots: checked ? [...TIME_SLOTS] : [], isAvailable: checked }
+          : d
+      )
+    );
   };
 
-  const removeTimeSlot = (day: string, index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      workingDays: {
-        ...prev.workingDays,
-        [day]: prev.workingDays[day].filter((_, i) => i !== index)
-      }
-    }));
-  };
-
-  const clearDay = (day: string) => {
-    setFormData(prev => ({
-      ...prev,
-      workingDays: {
-        ...prev.workingDays,
-        [day]: []
-      }
-    }));
-  };
-
-  const { updateSection } = useEditModal();
 
   const handleSave = async () => {
     if (!lawyer) return;
 
     try {
-      // Use the availability settings update
-      await updateSection('availability', {
-        timezone: formData.timezone,
-        workingDays: formData.workingDays,
-      });
-
-      console.log("Successfully saved availability data:", formData);
+      // Update availability settings
+      await updateSection('availability', availability);
+      console.log("Successfully saved availability data:", availability);
     } catch (error) {
       console.error("Failed to save availability data:", error);
       throw error;
     }
   };
 
-  const getDayStatus = (day: string) => {
-    const slots = formData.workingDays[day];
-    return slots && slots.length > 0 ? 'available' : 'unavailable';
-  };
-
+  /////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////
   return (
     <EditModal
       isOpen={isOpen}
@@ -138,33 +103,6 @@ export function EditAvailabilityModal({ isOpen, onClose }: EditAvailabilityModal
       maxWidth="4xl"
     >
       <div className="space-y-6">
-        {/* Timezone */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-medium flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              Timezone
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label htmlFor="timezone">Select your timezone</Label>
-              <Select value={formData.timezone} onValueChange={handleTimezoneChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select timezone" />
-                </SelectTrigger>
-                <SelectContent>
-                  {timezones.map((tz) => (
-                    <SelectItem key={tz} value={tz}>
-                      {tz}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Working Hours */}
         <Card>
           <CardHeader>
@@ -173,173 +111,81 @@ export function EditAvailabilityModal({ isOpen, onClose }: EditAvailabilityModal
               Working Hours
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Add Time Slot */}
-            <div className="p-4 bg-muted rounded-lg">
-              <h4 className="font-medium text-sm mb-3">Add Time Slot</h4>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <div className="space-y-2">
-                  <Label htmlFor="select-day">Day</Label>
-                  <Select value={selectedDay} onValueChange={setSelectedDay}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select day" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {days.map((day) => (
-                        <SelectItem key={day.key} value={day.key}>
-                          {day.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="start-time">Start Time</Label>
-                  <Input
-                    id="start-time"
-                    type="time"
-                    value={newSlot.start}
-                    onChange={(e) => setNewSlot(prev => ({ ...prev, start: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="end-time">End Time</Label>
-                  <Input
-                    id="end-time"
-                    type="time"
-                    value={newSlot.end}
-                    onChange={(e) => setNewSlot(prev => ({ ...prev, end: e.target.value }))}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>&nbsp;</Label>
-                  <Button onClick={addTimeSlot} className="w-full">
-                    Add Slot
-                  </Button>
-                </div>
-              </div>
-            </div>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {Object.values(Days).map(day => {
+                const dayData = availability.find(d => d.day === day) || {
+                  day,
+                  timeSlots: [],
+                  isAvailable: true,
+                  notes: ''
+                };
+                const allChecked = TIME_SLOTS.every(slot => dayData.timeSlots.includes(slot as string));
 
-            {/* Weekly Schedule */}
-            <div className="space-y-4">
-              <h4 className="font-medium text-sm">Weekly Schedule</h4>
-              <div className="space-y-3">
-                {days.map((day) => {
-                  const status = getDayStatus(day.key);
-                  const slots = formData.workingDays[day.key] || [];
-
-                  return (
-                    <div key={day.key} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                      <div className="flex items-center gap-3">
-                        {status === 'available' ? (
-                          <CheckCircle className="w-4 h-4 text-primary" />
-                        ) : (
-                          <XCircle className="w-4 h-4 text-muted-foreground" />
-                        )}
-                        <div>
-                          <div className="font-medium text-sm">{day.label}</div>
-                          {slots.length > 0 ? (
-                            <div className="text-xs text-muted-foreground">
-                              {slots.map((slot, index) => (
-                                <span key={index}>
-                                  {slot.start} - {slot.end}
-                                  {index < slots.length - 1 && ", "}
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-xs text-muted-foreground">Not available</div>
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {slots.length > 0 && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => clearDay(day.key)}
-                            className="text-xs"
-                          >
-                            Clear Day
-                          </Button>
-                        )}
-                      </div>
+                return (
+                  <div key={day} className="border rounded-lg p-4 bg-muted/30">
+                    <div className="flex items-center mb-2">
+                      <Checkbox
+                        id={`all-${day}`}
+                        checked={allChecked}
+                        onCheckedChange={v => handleSelectAll(day, !!v)}
+                      />
+                      <label htmlFor={`all-${day}`} className="ml-2 font-semibold text-base">
+                        {DAY_LABELS[day]}
+                      </label>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Time Slots Management */}
-            {Object.keys(formData.workingDays).length > 0 && (
-              <div className="space-y-4">
-                <h4 className="font-medium text-sm">Manage Time Slots</h4>
-                <div className="space-y-3">
-                  {Object.entries(formData.workingDays).map(([day, slots]) => {
-                    if (slots.length === 0) return null;
-
-                    const dayLabel = days.find(d => d.key === day)?.label || day;
-
-                    return (
-                      <div key={day} className="p-3 border border-border rounded-lg">
-                        <div className="font-medium text-sm mb-2">{dayLabel}</div>
-                        <div className="space-y-2">
-                          {slots.map((slot, index) => (
-                            <div key={index} className="flex items-center justify-between p-2 bg-background rounded">
-                              <div className="flex items-center gap-2">
-                                <Clock className="w-3 h-3 text-muted-foreground" />
-                                <span className="text-sm">{slot.start} - {slot.end}</span>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground"
-                                onClick={() => removeTimeSlot(day, index)}
-                              >
-                                <XCircle className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          ))}
+                    <div className="grid grid-cols-2 gap-2">
+                      {TIME_SLOTS.map(slot => (
+                        <div key={slot} className="flex items-center">
+                          <Checkbox
+                            id={`${day}-${slot}`}
+                            checked={dayData.timeSlots.includes(slot as string)}
+                            onCheckedChange={v => handleSlotChange(day, slot as string, !!v)}
+                          />
+                          <label htmlFor={`${day}-${slot}`} className="ml-2 text-sm">
+                            {slot}
+                          </label>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
 
         {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base font-medium">Quick Actions</CardTitle>
+            <CardTitle className="text-base font-medium flex items-center gap-2">
+              <Clock className="w-4 h-4" />
+              Quick Actions
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <Button
                 variant="outline"
                 onClick={() => {
-                  const standardSlots = { start: "09:00", end: "17:00" };
-                  const weekdays = ["monday", "tuesday", "wednesday", "thursday", "friday"];
-                  setFormData(prev => ({
-                    ...prev,
-                    workingDays: {
-                      ...prev.workingDays,
-                      ...weekdays.reduce((acc, day) => ({ ...acc, [day]: [standardSlots] }), {})
-                    }
-                  }));
+                  const weekdays = [Days.MONDAY, Days.TUESDAY, Days.WEDNESDAY, Days.THURSDAY, Days.FRIDAY];
+                  setAvailability(prev =>
+                    prev.map(d =>
+                      weekdays.includes(d.day as Days)
+                        ? { ...d, timeSlots: [...TIME_SLOTS], isAvailable: true }
+                        : d
+                    )
+                  );
                 }}
               >
-                Set Standard Business Hours (Mon-Fri 9AM-5PM)
+                Set Standard Business Hours (Mon-Fri)
               </Button>
               <Button
                 variant="outline"
                 onClick={() => {
-                  setFormData(prev => ({
-                    ...prev,
-                    workingDays: {}
-                  }));
+                  setAvailability(prev =>
+                    prev.map(d => ({ ...d, timeSlots: [], isAvailable: false }))
+                  );
                 }}
               >
                 Clear All Hours

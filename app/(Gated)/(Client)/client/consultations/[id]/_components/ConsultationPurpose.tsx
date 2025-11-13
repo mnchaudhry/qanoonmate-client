@@ -1,14 +1,14 @@
 "use client";
 
-import { Consultation } from "@/store/types/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText } from "lucide-react";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import { IConsultation } from "@/store/types/consultation.types";
 
 interface ConsultationPurposeProps {
-  consultation: Consultation;
+  consultation: IConsultation;
 }
 
 export default function ConsultationPurpose({ consultation }: ConsultationPurposeProps) {

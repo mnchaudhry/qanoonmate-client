@@ -22,8 +22,9 @@ export default function BookingForm() {
     const router = useRouter();
     const dispatch = useDispatch<AppDispatch>();
     const { selectedLawyer: lawyer } = useSelector((state: RootState) => state.lawyer);
-    console.log("Lawyer Settings", lawyer?.settings)
-    // Weekdays as enum array
+    const { user } = useSelector((state: RootState) => state.auth);
+    
+    // Weekdays mapping
     const weekDays: Days[] = useMemo(() => [
         Days.MONDAY,
         Days.TUESDAY,
@@ -42,23 +43,28 @@ export default function BookingForm() {
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     ///////////////////////////////////////////////////////// OTHER HOOKS ///////////////////////////////////////////////////////////////
-    // Memoize available days for performance and clarity
+    // Parse lawyer availability from settings.consultation.availabilityRanges
     const availableDays: Record<Days, string[]> = useMemo(() => {
         const days: Record<Days, string[]> = weekDays.reduce((acc, day) => {
             acc[day] = [];
             return acc;
         }, {} as Record<Days, string[]>);
-        if (lawyer?.settings?.availability) {
-            lawyer?.settings.availability.forEach(slot => {
-                if (slot.day) {
-                    days[slot.day as Days] = slot.timeSlots || [];
+
+        const settings = typeof lawyer?.settings === 'object' && lawyer?.settings !== null ? lawyer?.settings : null;
+        const availabilityRanges = settings?.consultation?.availabilityRanges;
+
+        if (availabilityRanges && Array.isArray(availabilityRanges)) {
+            availabilityRanges.forEach((range: any) => {
+                const dayKey = range.day.toLowerCase() as Days;
+                if (range.slots && Array.isArray(range.slots)) {
+                    // Convert slots to formatted time strings
+                    days[dayKey] = range.slots.map((slot: any) => `${slot.start} - ${slot.end}`);
                 }
             });
         }
-        return days;
-    }, [lawyer?.settings?.availability, weekDays]);
 
-    console.log("available days", availableDays)
+        return days;
+    }, [lawyer?.settings, weekDays]);
 
     ///////////////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////////////////
     const getDayName = (date: Date): Days => {
@@ -126,21 +132,31 @@ export default function BookingForm() {
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) return;
+        
+        if (!user?._id) {
+            setErrors(prev => ({ ...prev, submit: 'Please log in to book a consultation.' }));
+            return;
+        }
+        
         const { hour, minute } = parseTimeSlot(selectedTimeSlot);
         const scheduledDate = new Date(selectedDate!);
         scheduledDate.setHours(hour, minute, 0, 0);
+        
+        // Backend expects just the consultation details, not wrapped with clientId
+        // The clientId comes from the authenticated user (req.user.userId)
         const formData = {
-            lawyerId: lawyer ? lawyer._id! : '',
+            lawyerId: lawyer?._id || '',
             type: ConsultationType.GENERAL,
-            scheduledDate,
+            scheduledDate: scheduledDate.toISOString() as any,
             duration: 60,
             description: notes || "Consultation request for legal advice and guidance",
             clientNotes: notes || "",
         };
+        
         try {
-            const result = await dispatch(bookConsultation({ ...formData, scheduledDate: scheduledDate.toISOString() }));
-            console.log("result here", result)
+            const result = await dispatch(bookConsultation(formData));
             const { payload, error } = result as any;
+            
             if (payload && (payload._id || payload.id)) {
                 router.push(`/client/consultations`);
             } else if (error && error.message) {

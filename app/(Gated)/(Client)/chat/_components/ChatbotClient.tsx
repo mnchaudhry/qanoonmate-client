@@ -2,25 +2,11 @@
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSocketContext } from "@/context/useSocketContext";
-import {
-  getChatMetadataBySession,
-  getChatSession,
-  getMessagesBySession,
-  setChatMetadata,
-  setIsMetadataLoading,
-  setRegeneratingMessageId,
-  updateBotMessage,
-  updateStreamingMessage,
-} from "@/store/reducers/aiSessionSlice";
+import { getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, setIsMetadataLoading, setRegeneratingMessageId, updateBotMessage, updateStreamingMessage, } from "@/store/reducers/aiSessionSlice";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
 import { socketEvents } from "@/store/socket/events";
 import { AppDispatch, RootState } from "@/store/store";
-import {
-  BriefcaseBusiness,
-  FileText,
-  HomeIcon,
-  ShieldCheck,
-} from "lucide-react";
+import { BriefcaseBusiness, FileText, HomeIcon, ShieldCheck, } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "next/navigation";
@@ -85,14 +71,7 @@ const ChatbotClient = () => {
   const [textSize, setTextSize] = useState(16);
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const {
-    cases,
-    references,
-    aiConfidence: confidence,
-    legalContext,
-    quickAction,
-    referencedLinks,
-  } = useSelector((state: RootState) => state.aiSession);
+  const { cases, references, aiConfidence: confidence, legalContext, quickAction, referencedLinks, } = useSelector((state: RootState) => state.aiSession);
 
   // Check if screen is desktop size for default sidebar states
   const [sidebarOpen, setSidebarOpen] = useState(() => {

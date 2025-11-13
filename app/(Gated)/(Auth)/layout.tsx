@@ -1,21 +1,37 @@
+"use client";
 import Logo from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { AuthImage } from "@/constants/images";
+import { useAppSelector } from "@/store/store";
 import { Home } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type React from "react";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+
+    const router = useRouter();
+    const { user } = useAppSelector(state => state.auth)
+
+    useEffect(() => {
+        if (user) {
+            toast.success("You are already logged in!");
+            router.push('/');
+        }
+    }, [router, user])
+
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen relative ">
+        <div className="flex min-h-screen relative ">
 
             <Link href='/' className="fixed top-4 left-4" >
                 <Button variant='ghost'><Home /> Back to home</Button>
             </Link>
 
             {/* Left Side - QanoonMate Info */}
-            <div className="hidden h-screen sticky top-0 lg:flex flex-col items-center justify-center bg-gradient-to-r text-neutral px-6">
+            <div className="flex-1 hidden h-screen sticky top-0 lg:flex flex-col items-center justify-center bg-gradient-to-r text-neutral px-6">
 
                 <div className="flex flex-col justify-center items-center gap-4 w-full max-w-md ">
                     <Logo />
@@ -39,7 +55,7 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
 
             {/* Right Side - Authentication Forms */}
-            <div className="flex items-center justify-center p-6 bg-neutral">
+            <div className="flex-1 flex items-center justify-center p-6 bg-neutral">
                 {children}
             </div>
         </div>

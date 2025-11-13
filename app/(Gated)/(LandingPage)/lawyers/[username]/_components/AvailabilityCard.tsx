@@ -138,20 +138,7 @@ export function AvailabilityCard({ lawyer }: AvailabilityCardProps) {
           </div>
         </div>
 
-        {/* Consultation Modes */}
-        <div className="pt-4 border-t border-gray-100">
-          <h4 className="font-medium text-gray-900 mb-2 text-sm">Available Consultation Modes</h4>
-          <div className="flex flex-wrap gap-2">
-            {lawyer.services.consultationModes.map((mode, index) => (
-              <Badge key={index} variant="secondary" className="text-xs bg-gray-50 text-gray-700">
-                {mode === 'video' ? 'Video Call' :
-                  mode === 'phone' ? 'Phone Call' :
-                    mode === 'in-person' ? 'In-Person' :
-                      mode === 'chat' ? 'Chat' : mode}
-              </Badge>
-            ))}
-          </div>
-        </div>
+      
       </CardContent>
       
       {/* Edit Modal */}

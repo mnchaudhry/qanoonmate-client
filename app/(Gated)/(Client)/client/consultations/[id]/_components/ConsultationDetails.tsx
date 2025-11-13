@@ -1,14 +1,14 @@
 "use client";
 
-import { Consultation } from "@/store/types/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { format } from "date-fns";
 import { ConsultationStatus } from "@/lib/enums";
 import { ILawyer } from "@/store/types/lawyer.types";
+import { IConsultation } from "@/store/types/consultation.types";
 
 interface ConsultationDetailsProps {
-  consultation: Consultation;
+  consultation: IConsultation;
 }
 
 export default function ConsultationDetails({ consultation }: ConsultationDetailsProps) {

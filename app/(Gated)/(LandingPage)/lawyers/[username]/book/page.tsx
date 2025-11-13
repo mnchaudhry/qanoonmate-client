@@ -24,7 +24,7 @@ export default function BookConsultationPage() {
   useEffect(() => {
     if (!lawyer?._id && username) {
       setLoading(true);
-      dispatch(getLawyerByUsername(username as string))
+      dispatch(getLawyerByUsername({ username: username as string }))
         .finally(() => {
           setLoading(false);
         });

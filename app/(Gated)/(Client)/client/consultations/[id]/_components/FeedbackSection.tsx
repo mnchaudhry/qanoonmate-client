@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Consultation } from "@/store/types/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star, Edit2, Trash2 } from "lucide-react";
@@ -12,9 +11,10 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { submitFeedback } from "@/store/reducers/consultationSlice";
 import { ConsultationStatus } from "@/lib/enums";
+import { IConsultation } from "@/store/types/consultation.types";
 
 interface FeedbackSectionProps {
-  consultation: Consultation;
+  consultation: IConsultation;
 }
 
 export default function FeedbackSection({ consultation }: FeedbackSectionProps) {

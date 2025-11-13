@@ -1,18 +1,18 @@
 "use client";
 
-import { Consultation } from "@/store/types/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star } from "lucide-react";
 import Link from "next/link";
 import { ILawyer } from "@/store/types/lawyer.types";
+import { IConsultation } from "@/store/types/consultation.types";
 
 interface LawyerInformationProps {
-  consultation: Consultation;
+  consultation: IConsultation;
 }
 
 export default function LawyerInformation({ consultation }: LawyerInformationProps) {
-  const lawyer = consultation.lawyerId as ILawyer;
+  const lawyer = consultation?.lawyer as ILawyer;
 
   if (!lawyer) {
     return (
