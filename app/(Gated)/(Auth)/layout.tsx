@@ -9,7 +9,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useEffect } from "react";
-import toast from "react-hot-toast";
 
 const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 
@@ -18,7 +17,6 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (user) {
-            toast.success("You are already logged in!");
             router.push('/');
         }
     }, [router, user])

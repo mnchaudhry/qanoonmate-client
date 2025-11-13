@@ -65,9 +65,9 @@ export default function LawyerNavbar() {
                                 const isActive = pathname === item.link;
 
                                 return (
-                                    <NavigationMenuItem key={index}>
+                                    <NavigationMenuItem key={index} className='' >
                                         <Link href={item.link} passHref className='cursor-pointer'>
-                                            <span className={cn(navigationMenuTriggerStyle(), isActive ? 'bg-muted' : 'bg-transparent')}>
+                                            <span className={cn(navigationMenuTriggerStyle(), isActive ? 'text-primary' : 'bg-transparent')}>
                                                 {item.label}
                                             </span>
                                         </Link>

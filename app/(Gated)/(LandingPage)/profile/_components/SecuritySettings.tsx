@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Shield, Lock, Eye, EyeOff, Smartphone, Mail, UserCheck, Save, Loader2, AlertCircle, CheckCircle, Key, AlertTriangle } from "lucide-react";
-import { User as UserType } from "@/store/types/user.types";
+import { IUser as UserType } from "@/store/types/user.types";
 import { toast } from "react-hot-toast";
 
 interface SecuritySettingsProps {

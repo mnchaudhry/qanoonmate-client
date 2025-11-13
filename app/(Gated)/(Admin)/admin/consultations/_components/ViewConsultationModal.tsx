@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ILawyer } from '@/store/types/lawyer.types'
-import { User } from '@/store/types/user.types'
+import { IUser } from '@/store/types/user.types'
 import { IConsultation } from '@/store/types/consultation.types'
 
 interface ViewConsultationModalProps {
@@ -217,16 +217,16 @@ const ViewConsultationModal: React.FC<ViewConsultationModalProps> = ({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <UserIcon className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation?.client as User)?.firstname} {(consultation?.client as User)?.lastname}</span>
+                <span>{(consultation?.client as IUser)?.firstname} {(consultation?.client as IUser)?.lastname}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation?.client as User)?.email}</span>
+                <span>{(consultation?.client as IUser)?.email}</span>
               </div>
-              {(consultation?.client as User)?.phone && (
+              {(consultation?.client as IUser)?.phone && (
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{(consultation?.client as User)?.phone}</span>
+                  <span>{(consultation?.client as IUser)?.phone}</span>
                 </div>
               )}
             </div>
@@ -332,13 +332,6 @@ const ViewConsultationModal: React.FC<ViewConsultationModalProps> = ({
               {consultation.notes && (
                 <div className="bg-green-50 p-4 rounded-lg">
                   <h4 className="font-medium text-green-900 mb-2">Client Feedback</h4>
-                  <p className="text-sm text-green-800">{consultation.notes}</p>
-                  {consultation.rating && (
-                    <div className="mt-2">
-                      <span className="text-sm font-medium">Rating: </span>
-                      <span className="text-sm">{consultation.rating}/5 ⭐</span>
-                    </div>
-                  )}
                 </div>
               )}
             </div>

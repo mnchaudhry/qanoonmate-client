@@ -12,7 +12,7 @@ import { ChevronRight, Clock, CheckCircle, AlertCircle, XCircle } from "lucide-r
 import { ConsultationStatus } from "@/lib/enums"
 import { format, isToday, isTomorrow, isYesterday, parseISO } from 'date-fns'
 import Link from "next/link"
-import { User } from "@/store/types/user.types"
+import { IUser } from "@/store/types/user.types"
 import { IConsultation } from "@/store/types/consultation.types"
 
 const getStatusColor = (status: ConsultationStatus) => {
@@ -49,12 +49,12 @@ const formatDate = (dateString: string) => {
   return format(date, 'MMM dd, yyyy h:mm a')
 }
 
-const getClientName = (clientId: User | string): string => {
+const getClientName = (clientId: IUser | string): string => {
   if (typeof clientId === 'string') return 'Client'
   return `${clientId.firstname || ''} ${clientId.lastname || ''}`.trim() || 'Client'
 }
 
-const getClientAvatar = (clientId: User | string): string | undefined => {
+const getClientAvatar = (clientId: IUser | string): string | undefined => {
   if (typeof clientId === 'string') return undefined
   return clientId.profilePicture
 }

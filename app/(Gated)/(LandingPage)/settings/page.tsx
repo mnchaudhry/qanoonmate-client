@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { User } from "@/store/types/user.types";
+import { IUser } from "@/store/types/user.types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -15,7 +15,7 @@ import NotificationPreferences from "../profile/_components/NotificationPreferen
 import ActivityHistory from "../profile/_components/ActivityHistory";
 
 export default function SettingsPage() {
-    const authUser = useSelector((state: RootState) => (state as any)?.auth?.user as User | undefined);
+    const authUser = useSelector((state: RootState) => (state as any)?.auth?.user as IUser | undefined);
     const [activeTab, setActiveTab] = useState("security");
     const [isClient, setIsClient] = useState(false);
 

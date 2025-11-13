@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { User } from "@/store/types/user.types";
+import { IUser } from "@/store/types/user.types";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-hot-toast";
@@ -24,10 +24,10 @@ interface ProfileStats {
 
 export default function ProfilePage() {
   //////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
-  const authUser = useSelector((state: RootState) => (state as any)?.auth?.user as User | undefined);
+  const authUser = useSelector((state: RootState) => (state as any)?.auth?.user as IUser | undefined);
 
   //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
-  const [userData, setUser] = useState<User | null>(null);
+  const [userData, setUser] = useState<IUser | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [stats, setStats] = useState<ProfileStats | null>(null);
@@ -79,7 +79,7 @@ export default function ProfilePage() {
     }
   };
 
-  const handleUpdateUser = async (updatedData: Partial<User>) => {
+  const handleUpdateUser = async (updatedData: Partial<IUser>) => {
     try {
       const res = await fetch('/api/user/me', {
         method: "PUT",
@@ -91,8 +91,8 @@ export default function ProfilePage() {
       if (!res.ok) throw new Error("Failed to update profile");
 
       const json = await res.json();
-      const updated = (json?.data as User) || updatedData;
-      setUser(prev => (prev ? { ...prev, ...updated } as User : (updated as User)));
+      const updated = (json?.data as IUser) || updatedData;
+      setUser(prev => (prev ? { ...prev, ...updated } as IUser : (updated as IUser)));
 
       toast.success("Profile updated successfully!");
       setIsEditing(false);

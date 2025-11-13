@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Calendar, Clock, ChevronRight, MapPin, AlertCircle } from "lucide-react"
 import { format, isAfter, parseISO, startOfDay } from 'date-fns'
 import Link from "next/link"
-import { User } from "@/store/types/user.types"
+import { IUser } from "@/store/types/user.types"
 import { ConsultationStatus } from "@/lib/enums"
 import { IConsultation } from "@/store/types/consultation.types"
 
@@ -24,7 +24,7 @@ const getStatusColor = (status: ConsultationStatus) => {
   }
 }
 
-const getClientName = (clientId: User | string): string => {
+const getClientName = (clientId: IUser | string): string => {
   if (typeof clientId === 'string') return 'Client'
   return `${clientId.firstname || ''} ${clientId.lastname || ''}`.trim() || 'Client'
 }
