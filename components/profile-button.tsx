@@ -17,7 +17,7 @@ const ProfileButton = () => {
   const dispatch = useDispatch<AppDispatch>()
   const { setIsBetaUser } = useStateContext();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth)
-  const showDashboardButton = user?.role === UserRole.LAWYER || user?.role === UserRole.ADMIN;
+  const showDashboardButton = process.env.NODE_ENV === 'development' || user?.role === UserRole.LAWYER || user?.role === UserRole.ADMIN;
 
   //////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
   const handleLogout = () => {

@@ -1,14 +1,14 @@
 "use client"
 
-import React from 'react'   
+import React from 'react'
 import { Shield } from 'lucide-react'
-import PageHeader from '../../_components/PageHeader'
+import DashboardPageHeader from '@/components/DashboardPageHeader'
 
 const DocumentsHeader = () => {
     return (
         <div className='mb-4 space-y-4' >
 
-            <PageHeader
+            <DashboardPageHeader
                 title="Legal Documents & Upload"
                 description="Upload your legal documents (e.g., Agreements, Notices, FIRs) securely here."
             />

@@ -7,7 +7,7 @@ import { getMyConsultations } from "@/store/reducers/consultationSlice";
 import FiltersAndSearch from "./_components/FiltersAndSearch";
 import ConsultationList from "./_components/ConsultationList";
 import Pagination from "./_components/Pagination";
-import PageHeader from "../_components/PageHeader";
+import DashboardPageHeader from "@/components/DashboardPageHeader";
 
 export default function ConsultationsPage() {
     //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////
@@ -47,7 +47,7 @@ export default function ConsultationsPage() {
     return (
         <div className="mx-auto w-full">
 
-            <PageHeader
+            <DashboardPageHeader
                 title="My Consultations"
                 description="Manage your consultations and view your consultation history."
             />

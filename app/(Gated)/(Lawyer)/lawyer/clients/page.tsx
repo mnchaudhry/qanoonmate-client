@@ -8,8 +8,8 @@ import ClientsHeader from './_components/ClientsHeader';
 import ClientsTable, { Client } from './_components/ClientsTable';
 import { Pagination } from '@/components/ui/pagination';
 import { Card } from '@/components/ui/card';
-import PageHeader from '../_components/PageHeader';
 import { Users, UserCheck, UserX, TrendingUp } from 'lucide-react';
+import DashboardPageHeader from '@/components/DashboardPageHeader';
 
 const PAGE_SIZE = 9;
 const FILTERS = ['All', 'Active', 'Inactive'];
@@ -45,13 +45,13 @@ const MyClients = () => {
   //////////////////////////////////////////////// MEMOES //////////////////////////////////////////////////////
   const filteredClients = useMemo(() => {
     let filtered = clients;
-    
+
     // Apply status filter
     if (filter !== 'All') {
       // TODO: Filter based on actual status when available
       filtered = filtered;
     }
-    
+
     // Apply search filter
     if (search.trim()) {
       const q = search.trim().toLowerCase();
@@ -61,7 +61,7 @@ const MyClients = () => {
         c.phone.toLowerCase().includes(q)
       );
     }
-    
+
     return filtered;
   }, [clients, filter, search]);
 
@@ -130,7 +130,7 @@ const MyClients = () => {
   return (
     <div className="space-y-6 pb-8">
       {/* Header */}
-      <PageHeader
+      <DashboardPageHeader
         title="My Clients"
         description="Manage your client relationships, view case details, and communicate effectively with your clients."
       />
@@ -198,9 +198,9 @@ const MyClients = () => {
       />
 
       {/* Clients Table/Grid */}
-      <ClientsTable 
-        clients={paginatedClients} 
-        onAction={handleAction} 
+      <ClientsTable
+        clients={paginatedClients}
+        onAction={handleAction}
         view={view}
         loading={isLoading}
         error={error}

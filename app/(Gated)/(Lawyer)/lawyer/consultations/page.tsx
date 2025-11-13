@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import ConsultationRequestsFilters from './_components/RequestsFilters';
 import ConsultationRequestsTable from './_components/RequestsTable';
-import PageHeader from '../_components/PageHeader';
+import DashboardPageHeader from '@/components/DashboardPageHeader';
 import { Pagination } from '@/components/ui/pagination';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -108,7 +108,7 @@ const ConsultationRequests = () => {
     return (
         <div className="space-y-6 pb-8">
             {/* Header */}
-            <PageHeader
+            <DashboardPageHeader
                 title="Consultations"
                 description="Manage and track all your consultation requests from clients in one centralized dashboard."
             />

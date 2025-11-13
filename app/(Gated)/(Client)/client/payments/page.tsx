@@ -9,7 +9,7 @@ import PaymentFilters from './_components/PaymentFilters';
 import PaymentTable from './_components/PaymentTable';
 import InvoiceDrawer from './_components/InvoiceDrawer';
 import PaymentSecurity from './_components/PaymentSecurity';
-import PageHeader from '../_components/PageHeader';
+import DashboardPageHeader from '@/components/DashboardPageHeader';
 import { Payment } from '@/store/types/payments.types';
 
 const PaymentPage = () => {
@@ -66,7 +66,7 @@ const PaymentPage = () => {
         transaction={selectedTransaction}
       />
 
-      <PageHeader
+      <DashboardPageHeader
         title="Payment Overview"
         description="View your payment history and statistics."
       />

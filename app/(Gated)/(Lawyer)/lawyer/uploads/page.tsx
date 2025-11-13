@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { fetchDocuments, fetchDirectories, createDocument, deleteDocument, createDirectory, deleteDirectory, setCurrentPath, setViewMode, setSortBy, setSortOrder, setSearchQuery, setSelectedDocument } from '@/store/reducers/documentSlice';
-import PageHeader from '../_components/PageHeader';
+import DashboardPageHeader from '@/components/DashboardPageHeader';
 import FileManagerHeader from './_components/FileManagerHeader';
 import FileTree from './_components/FileTree';
 import FileDetailsPanel from './_components/FileDetailsPanel';
@@ -321,7 +321,7 @@ const FileManager = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b !border-border bg-background sticky top-0 z-10 space-y-4 pb-2">
-        <PageHeader
+        <DashboardPageHeader
           title="File Manager"
           description="Manage your legal documents and case files"
         />

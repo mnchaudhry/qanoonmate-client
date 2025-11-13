@@ -9,7 +9,7 @@ import dayGridPlugin from '@fullcalendar/daygrid/index.js';
 import timeGridPlugin from '@fullcalendar/timegrid/index.js';
 import interactionPlugin from '@fullcalendar/interaction/index.js';
 import EventDetailsModal from './_components/EventDetailsModal';
-import PageHeader from '../_components/PageHeader';
+import DashboardPageHeader from '@/components/DashboardPageHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -246,7 +246,7 @@ const Calendar = () => {
   return (
     <div className="space-y-6 pb-8">
       {/* Header */}
-      <PageHeader
+      <DashboardPageHeader
         title="Calendar"
         description="Manage your schedule, view upcoming consultations, and organize your appointments efficiently."
         action={
