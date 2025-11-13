@@ -15,10 +15,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { CalendarIcon, Clock, Plus, Filter, ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, TrendingUp } from 'lucide-react';
-import { Consultation } from '@/store/types/api';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ConsultationStatus, ConsultationType } from '@/lib/enums';
 import { enumToLabel } from '@/lib/utils';
+import { IConsultation } from '@/store/types/consultation.types';
 
 export interface CalendarEvent {
   id: string;
@@ -34,7 +34,7 @@ export interface CalendarEvent {
   clientName?: string;
   judgeName?: string;
   venue?: string;
-  consultation?: Consultation;
+  consultation?: IConsultation;
 }
 
 export type CalendarView = 'dayGridDay' | 'timeGridWeek' | 'dayGridMonth';
@@ -84,8 +84,8 @@ const Calendar = () => {
         return true;
       })
       .map(consultation => {
-        const clientName = typeof consultation.clientId === 'object'
-          ? `${consultation.clientId.firstname} ${consultation.clientId.lastname}`
+        const clientName = typeof consultation?.client === 'object'
+          ? `${consultation?.client.firstname} ${consultation?.client.lastname}`
           : 'Unknown Client';
 
         const startDate = new Date(consultation.scheduledDate);

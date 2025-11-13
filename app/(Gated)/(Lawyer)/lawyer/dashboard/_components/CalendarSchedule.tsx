@@ -10,9 +10,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Calendar, Clock, ChevronRight, MapPin, AlertCircle } from "lucide-react"
 import { format, isAfter, parseISO, startOfDay } from 'date-fns'
 import Link from "next/link"
-import { Consultation } from "@/store/types/api"
 import { User } from "@/store/types/user.types"
 import { ConsultationStatus } from "@/lib/enums"
+import { IConsultation } from "@/store/types/consultation.types"
 
 
 const getStatusColor = (status: ConsultationStatus) => {
@@ -45,12 +45,12 @@ export default function CalendarSchedule() {
     const now = startOfDay(new Date())
 
     return consultations
-      .filter((c: Consultation) => {
+      .filter((c: IConsultation) => {
         const consultationDate = parseISO(c.scheduledDate)
         return isAfter(consultationDate, now) &&
           [ConsultationStatus.SCHEDULED, ConsultationStatus.PENDING, ConsultationStatus.CONFIRMED].includes(c.status)
       })
-      .sort((a: Consultation, b: Consultation) =>
+      .sort((a: IConsultation, b: IConsultation) =>
         new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime()
       )
       .slice(0, 5)
@@ -155,9 +155,9 @@ export default function CalendarSchedule() {
       </CardHeader>
       <CardContent className="max-h-[29rem] overflow-y-auto">
         <div className="space-y-4">
-          {upcomingEvents.map((event: Consultation) => {
-            const clientName = getClientName(event.clientId)
-            const consultationDate = parseISO(event.scheduledDate)
+          {upcomingEvents.map((event: IConsultation) => {
+            const clientName = getClientName(event.client)
+            const consultationDate = parseISO(event.scheduledDate!)
 
             return (
               <Link

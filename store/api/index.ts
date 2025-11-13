@@ -82,7 +82,7 @@ export const deleteClientSettings = () => APIClient.delete<ClientSettingsAPI.Del
 export const getLawyers = (params?: LawyerAPI.LawyerQuery) => APIClient.get<LawyerAPI.PaginatedLawyerResponse>(`/lawyer/all`, { params });
 export const getLawyerById = (id: string) => APIClient.get<LawyerAPI.SingleLawyerResponse>(`/lawyer/id/${id}`);
 export const getLawyerByUsername = (username: string) => APIClient.get<LawyerAPI.SingleLawyerResponse>(`/lawyer/username/${username}`);
-export const getLawyerAvailability = (id: string) => APIClient.get<LawyerAPI.LawyerAvailabilityResponse>(`/lawyer/id/${id}/availability`);
+export const getLawyerAvailability = (id: string) => APIClient.get<LawyerAPI.LawyerAvailabilityResponse>(`/lawyer/id/${id}/consultation-settings`);
 export const getMeLawyer = () => APIClient.get<LawyerAPI.SingleLawyerResponse>(`/lawyer/me`);
 export const getMyClients = () => APIClient.get<LawyerAPI.MyClientsResponse>(`/lawyer/me/clients`);
 export const getMyReviews = (limit?: number) => APIClient.get<LawyerAPI.LawyerReviewsResponse>(`/lawyer/me/reviews`, { params: { limit } });
@@ -106,8 +106,8 @@ export const getConsultationSettings = () => APIClient.get<LawyerSettingsAPI.Get
 export const updateConsultationSettings = (data: LawyerSettingsAPI.UpdateConsultationSettingsRequest) => APIClient.patch<LawyerSettingsAPI.UpdateConsultationSettingsResponse>("/lawyer/settings/consultation", data);
 export const getIdentityVerification = () => APIClient.get<LawyerSettingsAPI.GetIdentityVerificationResponse>("/lawyer/settings/identity-verification");
 export const submitIdentityVerification = (data: LawyerSettingsAPI.SubmitIdentityVerificationRequest) => APIClient.patch<LawyerSettingsAPI.SubmitIdentityVerificationResponse>("/lawyer/settings/identity-verification", data);
-export const getNotificationPreferences = () => APIClient.get<LawyerSettingsAPI.UpdateNotificationPreferencesResponse>("/lawyer/settings/notifications");
-export const updateNotificationPreferences = (data: LawyerSettingsAPI.UpdateNotificationPreferencesRequest) => APIClient.patch<LawyerSettingsAPI.UpdateNotificationPreferencesResponse>("/lawyer/settings/notifications", data);
+export const getPreferences = () => APIClient.get<LawyerSettingsAPI.GetPreferencesResponse>("/lawyer/settings/preferences");
+export const updatePreferences = (data: LawyerSettingsAPI.UpdatePreferencesRequest) => APIClient.patch<LawyerSettingsAPI.UpdatePreferencesResponse>("/lawyer/settings/preferences", data);
 export const getSecurityPreferences = () => APIClient.get<LawyerSettingsAPI.UpdateSecurityPreferencesResponse>("/lawyer/settings/security");
 export const updateSecurityPreferences = (data: LawyerSettingsAPI.UpdateSecurityPreferencesRequest) => APIClient.patch<LawyerSettingsAPI.UpdateSecurityPreferencesResponse>("/lawyer/settings/security", data);
 export const getBilling = () => APIClient.get<LawyerSettingsAPI.UpdateBillingResponse>("/lawyer/settings/billing");

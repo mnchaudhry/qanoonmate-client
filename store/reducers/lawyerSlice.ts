@@ -14,7 +14,6 @@ interface LawyerState {
     error: string | null;
     reviews: Review[];
     categories: string[];
-    availability: Availability[] | null;
     meta: PaginationMeta;
     clients: Client[];
     logs?: any[];
@@ -214,7 +213,7 @@ const initialState: LawyerState = {
     error: null,
     reviews: [],
     categories: [],
-    availability: null,
+    availabilitydd: null,
     meta: { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 },
     clients: [],
     logs: [],
@@ -273,7 +272,7 @@ const lawyerSlice = createSlice({
                 state.error = action.payload as string;
             })
             .addCase(getLawyerAvailability.fulfilled, (state, action) => {
-                state.availability = Array.isArray(action.payload?.data) ? action.payload.data : [];
+                state.availabilitydd = Array.isArray(action.payload?.data) ? action.payload.data : [];
             })
             .addCase(getMeLawyer.fulfilled, (state, action) => {
                 state.selectedLawyer = action.payload?.data || null;

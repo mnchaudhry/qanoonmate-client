@@ -134,7 +134,8 @@ export type GetConsultationSettingsRequest = { lawyerId: string; }
 export type GetConsultationSettingsResponse = APIResponse<ILawyerSettings | null>;
 
 // updateConsultationSettings
-export type UpdateConsultationSettingsRequest = { lawyerId: string; updateData: Partial<IConsultationSettings>; }
+// Note: lawyerId is extracted from auth token in backend, not sent in request body
+export type UpdateConsultationSettingsRequest = Partial<IConsultationSettings>;
 export type UpdateConsultationSettingsResponse = APIResponse<ILawyerSettings>;
 
 // getIdentityVerification
@@ -145,13 +146,13 @@ export type GetIdentityVerificationResponse = APIResponse<ILawyerSettings | null
 export type SubmitIdentityVerificationRequest = { lawyerId: string; updateData: Record<string, any>; }
 export type SubmitIdentityVerificationResponse = APIResponse<ILawyerSettings | null>;
 
-// getNotificationPreferences
-export type GetNotificationPreferencesRequest = { lawyerId: string; }
-export type GetNotificationPreferencesResponse = APIResponse<ILawyerSettings | null>;
+// getPreferences
+export type GetPreferencesRequest = { lawyerId?: string; }
+export type GetPreferencesResponse = APIResponse<ILawyerSettings | null>;
 
-// updateNotificationPreferences
-export type UpdateNotificationPreferencesRequest = { lawyerId: string; updateData: Partial<INotificationPreferences>; }
-export type UpdateNotificationPreferencesResponse = APIResponse<ILawyerSettings>;
+// updatePreferences
+export type UpdatePreferencesRequest = { lawyerId?: string; updateData: Partial<IPreferences>; }
+export type UpdatePreferencesResponse = APIResponse<ILawyerSettings>;
 
 // getSecurityPreferences
 export type GetSecurityPreferencesRequest = { lawyerId: string; }

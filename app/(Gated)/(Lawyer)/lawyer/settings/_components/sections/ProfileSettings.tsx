@@ -17,17 +17,21 @@ import { SectionHeader } from "./SectionHeader";
 import { SubsectionHeader } from "./SubsectionHeader";
 
 export function ProfileSettings() {
+
+    /////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////// 
     const { user } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
     const lawyer = user as ILawyer;
 
+    /////////////////////////////////////////////////// STATES /////////////////////////////////////////////////// 
     const [profileVisibility, setProfileVisibility] = useState<'public' | 'private' | 'limited'>('public');
     const [showContactInfo, setShowContactInfo] = useState(true);
     const [showPricing, setShowPricing] = useState(true);
     const [showAvailability, setShowAvailability] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
 
+    /////////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////// 
     useEffect(() => {
         // Initialize settings from lawyer data
         if (lawyer) {
@@ -39,6 +43,7 @@ export function ProfileSettings() {
         }
     }, [lawyer]);
 
+    /////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////// 
     const handleSaveSettings = async () => {
         if (!lawyer) return;
 
@@ -92,25 +97,30 @@ export function ProfileSettings() {
         }
     };
 
+    /////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////// 
     return (
         <div className="space-y-6">
             {/* Profile Overview */}
+            <SectionHeader
+                title="Profile Settings"
+                description="Manage your profile visibility and display preferences"
+                icon={<User className="w-4 h-4 text-primary" />}
+                action={{
+                    label: "Edit Profile",
+                    onClick: handleEditProfile,
+                    variant: "outline"
+                }}
+            />
             <Card className="border-border">
-                <SectionHeader
-                    title="Profile Settings"
-                    description="Manage your profile visibility and display preferences"
-                    icon={<User className="w-4 h-4 text-primary" />}
-                    action={{
-                        label: "Edit Profile",
-                        onClick: handleEditProfile,
-                        variant: "outline"
-                    }}
-                />
                 <CardContent className="space-y-4">
                     {/* Profile Visibility */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <SubsectionHeader title="Profile Visibility" description="Control who can see your profile" />
+                            <SubsectionHeader
+                                title="Profile Visibility"
+                                description="Control who can see your profile"
+                                className="py-4"
+                            />
                             <div className="flex items-center gap-2">
                                 {getVisibilityIcon(profileVisibility)}
                                 <Badge variant="outline" className="border-border">
@@ -164,7 +174,11 @@ export function ProfileSettings() {
 
                     {/* Display Preferences */}
                     <div className="space-y-2">
-                        <SubsectionHeader title="Display Preferences" />
+                        <SubsectionHeader
+                            title="Display Preferences"
+                            description="Choose what information to show on your profile"
+                            className="py-4"
+                        />
                         <div className="border-2 border-dashed border-border rounded-lg p-4 bg-muted/20">
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">

@@ -16,44 +16,49 @@ export function isFieldCompleted(value: any): boolean {
 // Calculate profile completion based on Lawyer data
 export function calculateProfileCompletion(lawyer: ILawyer): ProfileCompletionData {
   // Personal Info (15% weight)
-  const personalInfoCompleted = isFieldCompleted(lawyer.firstname) && 
-                               isFieldCompleted(lawyer.lastname) && 
-                               isFieldCompleted(lawyer.profilePicture);
-  const personalInfoPercentage = personalInfoCompleted ? 100 : 
-    (isFieldCompleted(lawyer.firstname) ? 33 : 0) + 
-    (isFieldCompleted(lawyer.lastname) ? 33 : 0) + 
+  const personalInfoCompleted = isFieldCompleted(lawyer.firstname) &&
+    isFieldCompleted(lawyer.lastname) &&
+    isFieldCompleted(lawyer.profilePicture);
+  const personalInfoPercentage = personalInfoCompleted ? 100 :
+    (isFieldCompleted(lawyer.firstname) ? 33 : 0) +
+    (isFieldCompleted(lawyer.lastname) ? 33 : 0) +
     (isFieldCompleted(lawyer.profilePicture) ? 34 : 0);
 
   // Professional Overview (20% weight)
-  const professionalOverviewCompleted = isFieldCompleted(lawyer.title) && 
-                                       isFieldCompleted(lawyer.summary);
-  const professionalOverviewPercentage = professionalOverviewCompleted ? 100 : 
-    (isFieldCompleted(lawyer.title) ? 50 : 0) + 
+  const professionalOverviewCompleted = isFieldCompleted(lawyer.title) && isFieldCompleted(lawyer.summary);
+  const professionalOverviewPercentage = professionalOverviewCompleted ? 100 :
+    (isFieldCompleted(lawyer.title) ? 50 : 0) +
     (isFieldCompleted(lawyer.summary) ? 50 : 0);
 
   // Legal Expertise (25% weight)
-  const legalExpertiseCompleted = isFieldCompleted(lawyer.primarySpecialization) && 
-                                 isFieldCompleted(lawyer.specializations);
-  const legalExpertisePercentage = legalExpertiseCompleted ? 100 : 
-    (isFieldCompleted(lawyer.primarySpecialization) ? 50 : 0) + 
+  const legalExpertiseCompleted = isFieldCompleted(lawyer.primarySpecialization) &&
+    isFieldCompleted(lawyer.specializations);
+  const legalExpertisePercentage = legalExpertiseCompleted ? 100 :
+    (isFieldCompleted(lawyer.primarySpecialization) ? 50 : 0) +
     (isFieldCompleted(lawyer.specializations) ? 50 : 0);
 
   // Credentials (20% weight)
-  const credentialsCompleted = isFieldCompleted(lawyer.barCouncil) && 
-                              isFieldCompleted(lawyer.licenseNumber) && 
-                              isFieldCompleted(lawyer.education);
-  const credentialsPercentage = credentialsCompleted ? 100 : 
-    (isFieldCompleted(lawyer.barCouncil) ? 33 : 0) + 
-    (isFieldCompleted(lawyer.licenseNumber) ? 33 : 0) + 
+  const credentialsCompleted = isFieldCompleted(lawyer.barCouncil) &&
+    isFieldCompleted(lawyer.licenseNumber) &&
+    isFieldCompleted(lawyer.education);
+
+  const credentialsPercentage = credentialsCompleted ? 100 :
+    (isFieldCompleted(lawyer.barCouncil) ? 33 : 0) +
+    (isFieldCompleted(lawyer.licenseNumber) ? 33 : 0) +
     (isFieldCompleted(lawyer.education) ? 34 : 0);
 
-  // Portfolio (10% weight) - Currently not available in Lawyer type
+    // Portfolio (10% weight) - Currently not available in Lawyer type
   const portfolioCompleted = false; // Portfolio data doesn't exist in Lawyer type yet
   const portfolioPercentage = 0;
 
-  // Services (15% weight) - This would need to be checked against lawyer settings
-  const servicesCompleted = false; // This would need to be checked against lawyer settings
-  const servicesPercentage = 0;
+  // Services & Availability (15% weight) - Check availability settings
+  const hasAvailability = true // TODO: check lawyer.settings.availability --- IGNORE ---  
+  const hasConsultationFee = isFieldCompleted(lawyer.hourlyRate);
+
+  const servicesCompleted = hasAvailability && hasConsultationFee;
+  const servicesPercentage = servicesCompleted ? 100 :
+    (hasAvailability ? 50 : 0) +
+    (hasConsultationFee ? 50 : 0);
 
   // Verification (5% weight)
   const verificationCompleted = lawyer.identityVerified || false;
@@ -118,7 +123,7 @@ export function getProgressSteps(lawyer: ILawyer): Array<{
   };
 }> {
   const completion = calculateProfileCompletion(lawyer);
-  
+
   return [
     {
       id: 'overview',

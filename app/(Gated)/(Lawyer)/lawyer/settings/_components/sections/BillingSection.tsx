@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { CreditCard, Plus, Trash2, Save, Download, Eye, EyeOff, Calendar, DollarSign } from "lucide-react";
-import { SectionHeader } from "./SectionHeader";
-import { SubsectionHeader } from "./SubsectionHeader";
+import { CreditCard, Plus, Trash2, Download, Calendar, DollarSign, Eye, EyeOff } from "lucide-react";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
+import { SubsectionHeader } from "./SubsectionHeader";
 
 interface BillingSectionProps {
   profile: LawyerProfile;
@@ -111,24 +110,26 @@ export function BillingSection({ }: BillingSectionProps) {
 
   return (
     <div className="space-y-6">
-      <Card className="border-border">
-        <SectionHeader
-          title="Billing & Payments"
-          description="Manage your billing information and payment methods"
-          icon={<CreditCard className="w-4 h-4 text-primary" />}
-          action={{
-            label: "Save Changes",
-            onClick: handleSave,
-            variant: "default"
-          }}
-        />
-        <CardContent className="space-y-4">
-          {/* Payment Methods */}
-          <div className="space-y-2">
-            <SubsectionHeader title="Payment Methods" />
-            <div className="border-2 border-dashed border-border rounded-lg p-4 bg-muted/20">
-              <div className="space-y-4">
-                {paymentMethods.map((method) => (
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+          <CreditCard className="h-4 w-4 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Billing & Payments</h2>
+          <p className="text-sm text-muted-foreground mt-1">Manage your billing information and payment methods</p>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {/* Payment Methods */}
+        <Card>
+          <CardHeader className="pb-4">
+            <SubsectionHeader 
+              title="Payment Methods"
+              description="Manage your payment methods"
+            />
+          </CardHeader>
+          <CardContent className="space-y-4">{paymentMethods.map((method) => (
                   <div key={method.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{getPaymentMethodIcon(method.type)}</span>
@@ -175,16 +176,19 @@ export function BillingSection({ }: BillingSectionProps) {
                   <Plus className="w-4 h-4 mr-2" />
                   Add Payment Method
                 </Button>
-              </div>
-            </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Billing Information */}
-          <div className="space-y-2">
-            <SubsectionHeader title="Billing Information" />
-            <div className="border-2 border-dashed border-border rounded-lg p-4 bg-muted/20">
-              <div className="space-y-4">
-                <div className="space-y-2">
+        {/* Billing Information */}
+        <Card>
+          <CardHeader className="pb-4">
+            <SubsectionHeader 
+              title="Billing Information"
+              description="Update your billing details"
+            />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">{/* prettier-ignore */}
                   <Label htmlFor="company">Company Name</Label>
                   <Input
                     id="company"
@@ -284,16 +288,19 @@ export function BillingSection({ }: BillingSectionProps) {
                     placeholder="Enter email for invoices"
                   />
                 </div>
-              </div>
-            </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Billing History */}
-          <div className="space-y-2">
-            <SubsectionHeader title="Billing History" />
-            <div className="border-2 border-dashed border-border rounded-lg p-4 bg-muted/20">
-              <div className="space-y-3">
-                {billingHistory.map((invoice) => (
+        {/* Billing History */}
+        <Card>
+          <CardHeader className="pb-4">
+            <SubsectionHeader 
+              title="Billing History"
+              description="View your transaction history"
+            />
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {billingHistory.map((invoice) => (
                   <div key={invoice.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -318,44 +325,32 @@ export function BillingSection({ }: BillingSectionProps) {
                     </div>
                   </div>
                 ))}
-              </div>
-            </div>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Billing Tips */}
-          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-            <h4 className="font-medium text-primary mb-2">💳 Billing Tips</h4>
-            <ul className="text-sm text-primary/80 space-y-1">
-              <li>• Keep your billing information up to date for seamless payments</li>
-              <li>• Set up automatic payments to avoid service interruptions</li>
-              <li>• Download invoices for your tax records</li>
-              <li>• Contact support if you have billing questions</li>
-            </ul>
-          </div>
+        {/* Billing Tips */}
+        <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+          <h4 className="font-medium text-primary mb-2">💳 Billing Tips</h4>
+          <ul className="text-sm text-primary/80 space-y-1">
+            <li>• Keep your billing information up to date for seamless payments</li>
+            <li>• Set up automatic payments to avoid service interruptions</li>
+            <li>• Download invoices for your tax records</li>
+            <li>• Contact support if you have billing questions</li>
+          </ul>
+        </div>
 
-          {/* Save Button */}
-          <div className="flex justify-end">
-            <Button
-              onClick={handleSave}
-              disabled={loading}
-              size="sm"
-              className="bg-primary hover:bg-primary/90"
-            >
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Changes
-                </>
-              )}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+        {/* Save Button */}
+        <div className="flex justify-end pt-2">
+          <Button
+            onClick={handleSave}
+            disabled={loading}
+            size="lg"
+            className="bg-primary hover:bg-primary/90"
+          >
+            {loading ? 'Saving...' : 'Save Changes'}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

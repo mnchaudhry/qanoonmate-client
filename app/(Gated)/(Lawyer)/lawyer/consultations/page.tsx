@@ -10,9 +10,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { getMyConsultations } from '@/store/reducers/consultationSlice';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '@/store/store';
-import { Consultation } from '@/store/types/api';
 import { BarChart3, TrendingUp, Clock, CheckCircle2 } from 'lucide-react';
 import { ConsultationStatus } from '@/lib/enums';
+import { IConsultation } from '@/store/types/consultation.types';
 
 const PAGE_SIZE = 10;
 
@@ -30,7 +30,7 @@ const ConsultationRequests = () => {
         search: string
     }>({ status: 'All', type: 'All', mode: 'All', dateRange: { start: '', end: '' }, search: '' });
     const [page, setPage] = useState(1);
-    const [requests, setRequests] = useState<Consultation[]>([]);
+    const [requests, setRequests] = useState<IConsultation[]>([]);
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -75,9 +75,9 @@ const ConsultationRequests = () => {
                 // Calculate from data
                 const allData = data.data || [];
                 setStats({
-                    pending: allData.filter((r: Consultation) => r.status === ConsultationStatus.PENDING).length,
-                    scheduled: allData.filter((r: Consultation) => r.status === ConsultationStatus.SCHEDULED || r.status === ConsultationStatus.CONFIRMED).length,
-                    completed: allData.filter((r: Consultation) => r.status === ConsultationStatus.COMPLETED).length,
+                    pending: allData.filter((r: IConsultation) => r.status === ConsultationStatus.PENDING).length,
+                    scheduled: allData.filter((r: IConsultation) => r.status === ConsultationStatus.SCHEDULED || r.status === ConsultationStatus.CONFIRMED).length,
+                    completed: allData.filter((r: IConsultation) => r.status === ConsultationStatus.COMPLETED).length,
                     total: data.total || allData.length
                 });
             }

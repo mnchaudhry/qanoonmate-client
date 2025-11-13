@@ -12,8 +12,8 @@ import { ChevronRight, Clock, CheckCircle, AlertCircle, XCircle } from "lucide-r
 import { ConsultationStatus } from "@/lib/enums"
 import { format, isToday, isTomorrow, isYesterday, parseISO } from 'date-fns'
 import Link from "next/link"
-import { Consultation } from "@/store/types/api"
 import { User } from "@/store/types/user.types"
+import { IConsultation } from "@/store/types/consultation.types"
 
 const getStatusColor = (status: ConsultationStatus) => {
   switch (status) {
@@ -167,9 +167,9 @@ export default function ConsultationRequests() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {consultations.slice(0, 4).map((consultation: Consultation) => {
-            const clientName = getClientName(consultation.clientId)
-            const clientAvatar = getClientAvatar(consultation.clientId)
+          {consultations.slice(0, 4).map((consultation: IConsultation) => {
+            const clientName = getClientName(consultation?.client)
+            const clientAvatar = getClientAvatar(consultation?.client)
 
             return (
               <Link

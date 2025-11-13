@@ -12,7 +12,6 @@ import draft from './draftSlice'
 import summary from './summarySlice'
 import chat from './chatSlice';
 import client from './clientSlice';
-import blog from './blogSlice'
 import notification from './notificationSlice'
 import document from './documentSlice';
 import clientSettings from './clientSettingsSlice';
@@ -41,7 +40,6 @@ const rootReducer = combineReducers({
     summary,
     chat,
     client,
-    blog,
     notification,
     document,
     clientSettings,

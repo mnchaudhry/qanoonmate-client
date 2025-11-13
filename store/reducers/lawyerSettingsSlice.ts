@@ -16,17 +16,15 @@ const initialState: LawyerSettingsState = {
   error: null,
 };
 
-export const getLawyerSettings = createAsyncThunk<LawyerSettingsApi.GetSettingsResponse, LawyerSettingsApi.GetSettingsRequest>('lawyerSettings/getLawyerSettings', async (_, { rejectWithValue }) => {
+export const getLawyerSettings = createAsyncThunk<LawyerSettingsApi.GetSettingsResponse, void>('lawyerSettings/getLawyerSettings', async (_, { rejectWithValue }) => {
   try {
     const { data } = await api.getLawyerSettings();
     if (data.success) {
-      toast.success(data.message)
       return data;
     }
     else {
       return rejectWithValue(data.message)
     }
-    return data;
   } catch (err: any) {
     toast.error(err.message || 'Failed to fetch lawyer settings');
     return rejectWithValue(err.message);
@@ -50,9 +48,10 @@ export const updateLawyerSettings = createAsyncThunk<LawyerSettingsApi.UpdateSet
   }
 });
 
-export const updateConsultationSettings = createAsyncThunk<LawyerSettingsApi.UpdateConsultationSettingsResponse, LawyerSettingsApi.UpdateConsultationSettingsRequest>('lawyerSettings/updateConsultationSettings', async (update, { rejectWithValue }) => {
+export const updateConsultationSettings = createAsyncThunk<LawyerSettingsApi.UpdateConsultationSettingsResponse, Partial<LawyerSettingsApi.IConsultationSettings>>('lawyerSettings/updateConsultationSettings', async (updateData, { rejectWithValue }) => {
   try {
-    const { data } = await api.updateConsultationSettings(update);
+    // Send updateData directly - backend gets lawyerId from auth token and wraps it as { lawyerId, updateData: req.body }
+    const { data } = await api.updateConsultationSettings(updateData);
     if (data.success) {
       toast.success('Consultation settings updated');
       return data;
@@ -67,20 +66,19 @@ export const updateConsultationSettings = createAsyncThunk<LawyerSettingsApi.Upd
   }
 });
 
-
-export const updateNotificationPreferences = createAsyncThunk<LawyerSettingsApi.UpdateNotificationPreferencesResponse, LawyerSettingsApi.UpdateNotificationPreferencesRequest>('lawyerSettings/updateNotificationPreferences', async (update, { rejectWithValue }) => {
+export const updatePreferences = createAsyncThunk<LawyerSettingsApi.UpdatePreferencesResponse, LawyerSettingsApi.UpdatePreferencesRequest>('lawyerSettings/updateNotificationPreferences', async (update, { rejectWithValue }) => {
   try {
-    const { data } = await api.updateNotificationPreferences(update);
+    const { data } = await api.updatePreferences(update);
     if (data.success) {
-      toast.success('Notification preferences updated');
+      toast.success('Preferences updated');
       return data;
     }
     else {
-      toast.error(data.message || 'Failed to update notification preferences');
+      toast.error(data.message || 'Failed to update preferences');
       return rejectWithValue(data.message);
     }
   } catch (err: any) {
-    toast.error(err.message || 'Failed to update notification preferences');
+    toast.error(err.message || 'Failed to update preferences');
     return rejectWithValue(err.message);
   }
 });
@@ -156,7 +154,7 @@ const lawyerSettingsSlice = createSlice({
       .addCase(updateConsultationSettings.fulfilled, (state, action) => {
         state.selectedSettings = action.payload.data!;
       })
-      .addCase(updateNotificationPreferences.fulfilled, (state, action) => {
+      .addCase(updatePreferences.fulfilled, (state, action) => {
         state.selectedSettings = action.payload.data!;
       })
       .addCase(updateSecurityPreferences.fulfilled, (state, action) => {

@@ -5,11 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn, enumToLabel } from "@/lib/utils";
-import type { Consultation } from '@/store/types/api';
 import { ConsultationStatus } from "@/lib/enums";
 import { Calendar, Clock, User, Eye, FileText, Inbox, AlertCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
+import { IConsultation } from "@/store/types/consultation.types";
 
 const statusConfig: Record<ConsultationStatus, { color: string; icon?: any; label: string }> = {
   [ConsultationStatus.PENDING]: {
@@ -105,7 +105,7 @@ const ErrorState = ({ onRetry }: { onRetry?: () => void }) => (
 );
 
 interface RequestsTableProps {
-  requests: Consultation[];
+  requests: IConsultation[];
   loading?: boolean;
   error?: string | null;
   onRetry?: () => void;
@@ -118,9 +118,9 @@ export default function ConsultationRequestsTable({
   onRetry
 }: RequestsTableProps) {
 
-  const getClientInfo = (consultation: Consultation) => {
-    if (typeof consultation.clientId === 'object') {
-      const client = consultation.clientId;
+  const getClientInfo = (consultation: IConsultation) => {
+    if (typeof consultation?.client === 'object') {
+      const client = consultation?.client;
       return {
         name: `${client.firstname || ''} ${client.lastname || ''}`.trim() || 'Unknown Client',
         email: client.email || '',
