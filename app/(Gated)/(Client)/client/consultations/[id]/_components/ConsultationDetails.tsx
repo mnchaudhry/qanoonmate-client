@@ -17,13 +17,18 @@ export default function ConsultationDetails({ consultation }: ConsultationDetail
     ? format(new Date(consultation.scheduledDate), "EEEE, dd MMMM")
     : "Date not available";
 
-  const formattedTime = consultation.scheduledDate
-    ? format(new Date(consultation.scheduledDate), "hh:mm") + " – " +
-    format(
-      new Date(new Date(consultation.scheduledDate).getTime() + (consultation.duration || 30) * 60000),
-      "hh:mm a"
-    )
-    : "Time not available";
+  // Parse scheduledTime (24-hour format) and calculate end time
+  const formattedTime = (() => {
+    if (!consultation.scheduledTime) return "Time not available";
+    
+    const [hours, minutes] = consultation.scheduledTime.split(':').map(Number);
+    const startDate = new Date();
+    startDate.setHours(hours, minutes, 0, 0);
+    
+    const endDate = new Date(startDate.getTime() + (consultation.duration || 30) * 60000);
+    
+    return `${consultation.scheduledTime} – ${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`;
+  })();
 
 
   return (

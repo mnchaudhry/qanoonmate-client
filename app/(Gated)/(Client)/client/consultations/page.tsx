@@ -13,29 +13,34 @@ export default function ConsultationsPage() {
     //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////
     const dispatch = useDispatch<AppDispatch>();
     const itemsPerPage = 5;
-    const {currentPage, totalPages } = useSelector((state: RootState) => state.consultation);
+    const { currentPage, totalPages } = useSelector((state: RootState) => state.consultation);
 
     //////////////////////////////////////////////// STATES /////////////////////////////////////////
     const [searchQuery, setSearchQuery] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
     const [sortBy, setSortBy] = useState("date-desc");
     const [view, setView] = useState<'list' | 'grid'>('list');
-    const [page, setPage] = useState(1);
 
     //////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////
     useEffect(() => {
         // Build params for backend
-        const params: any = { page, limit: itemsPerPage, };
+        const params: any = { page: currentPage, limit: itemsPerPage, };
         if (searchQuery) params.search = searchQuery;
         if (statusFilter !== "all") params.status = statusFilter;
         if (sortBy) params.sort = sortBy;
-        if (view) params.view = view;
+        
         dispatch(getMyConsultations(params));
-    }, [dispatch, searchQuery, statusFilter, sortBy, view, page]);
+    }, [dispatch, searchQuery, statusFilter, sortBy, currentPage]);
 
     //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////
     const handlePageChange = (newPage: number) => {
-        setPage(newPage);
+        // Update page in the backend call
+        const params: any = { page: newPage, limit: itemsPerPage, };
+        if (searchQuery) params.search = searchQuery;
+        if (statusFilter !== "all") params.status = statusFilter;
+        if (sortBy) params.sort = sortBy;
+        
+        dispatch(getMyConsultations(params));
     };
 
     //////////////////////////////////////////////// RENDER /////////////////////////////////////////

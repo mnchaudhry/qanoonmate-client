@@ -49,7 +49,7 @@ const ClientNavbar: React.FC<ClientNavbarProps> = ({ }) => {
                 return (
                   <NavigationMenuItem key={index}>
                     <Link href={item.link} prefetch={true} passHref className='cursor-pointer'>
-                      <span className={cn(navigationMenuTriggerStyle(), isActive ? 'bg-muted' : 'bg-transparent')}>
+                      <span className={cn(navigationMenuTriggerStyle(), isActive ? 'text-primary' : '')}>
                         {item.label}
                       </span>
                     </Link>

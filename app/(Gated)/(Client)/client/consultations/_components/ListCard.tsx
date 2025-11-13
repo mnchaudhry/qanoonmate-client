@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { Calendar, Clock, MapPin, Tag, CreditCard, Star } from "lucide-react";
+import { Calendar, Clock, MapPin, Tag, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { cancelConsultation } from "@/store/reducers/consultationSlice";
 import { ILawyer } from "@/store/types/lawyer.types";
-import { ConsultationStatus } from "@/lib/enums";
+import { CancellationReason, ConsultationStatus, UserRole } from "@/lib/enums";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Hint from "@/components/Hint";
 import Link from "next/link";
@@ -52,7 +52,7 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
 
   const handleCancel = () => {
     if (confirm("Are you sure you want to cancel this consultation?")) {
-      dispatch(cancelConsultation({ id: consultation._id, reason: "User cancelled" }));
+      dispatch(cancelConsultation({ id: consultation._id, request: { reason: CancellationReason.CLIENT_REQUEST }, userId: '', userRole: UserRole.CLIENT }));
     }
   };
 
@@ -99,7 +99,7 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
               <Hint label="Time">
                 <Clock className="h-4 w-4 ml-2" />
               </Hint>
-              {consultation.scheduledDate ? format(new Date(consultation.scheduledDate), "hh:mm a") : "Time"}
+              {consultation.scheduledTime || "Time"}
               <Hint label="Fee">
                 <CreditCard className="h-4 w-4 ml-2" />
               </Hint>
@@ -121,17 +121,6 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
             {`"${consultation.notes?.[0]}"`}
           </div>
         )}
-        {/* Feedback */}
-        {consultation.status === ConsultationStatus.COMPLETED && consultation.rating && (
-          <div className="flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <Star
-                key={star}
-                className={`h-4 w-4 ${star <= consultation.rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground"}`}
-              />
-            ))}
-          </div>
-        )}
       </CardContent>
       <CardFooter className="flex gap-2 pt-2">
         {consultation.status === ConsultationStatus.PENDING && (
@@ -144,9 +133,6 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
               Cancel
             </Button>
           </>
-        )}
-        {consultation.status === ConsultationStatus.COMPLETED && !consultation.rating && (
-          <Button size="sm">Give Feedback</Button>
         )}
         {consultation.status === ConsultationStatus.CANCELLED && (
           <Button size="sm">Rebook</Button>

@@ -5,7 +5,7 @@ import { Card, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Calendar, Clock, Tag, MapPin, Star, XCircle, MessageSquare, RotateCcw, CalendarClock, FileText } from "lucide-react";
+import { Calendar, Clock, Tag, MapPin, XCircle, MessageSquare, RotateCcw, CalendarClock, FileText } from "lucide-react";
 import { ILawyer } from "@/store/types/lawyer.types";
 import { ConsultationStatus } from "@/lib/enums";
 import Hint from "@/components/Hint";
@@ -68,7 +68,7 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
         <Hint label="Time">
           <Clock className="h-3 w-3 cursor-pointer ml-2" />
         </Hint>
-        {consultation.scheduledDate ? format(new Date(consultation.scheduledDate), "hh:mm a") : "Time"}
+        {consultation.scheduledTime || "Time"}
       </div>
       <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
         <Hint label="Specialization">
@@ -102,12 +102,6 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
                 <XCircle className="h-4 w-4" />
               </Button>
             </>
-          )}
-          {consultation.status === ConsultationStatus.COMPLETED && !consultation.rating && (
-            <Button size='sm' title="Give Feedback">
-              Give Feedback
-              <Star className="h-4 w-4" />
-            </Button>
           )}
           {consultation.status === ConsultationStatus.CANCELLED && (
             <Button size='sm' title="Rebook">
