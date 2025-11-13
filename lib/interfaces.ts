@@ -1,8 +1,8 @@
-import { User } from "@/store/types/user.types";
+import { IUser } from "@/store/types/user.types";
 
 export interface AIChatSession {
   _id: string;
-  user: string | User;
+  user: string | IUser;
   title: string;
   createdAt: string;
   updatedAt: string;

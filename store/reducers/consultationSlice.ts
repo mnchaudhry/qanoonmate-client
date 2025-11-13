@@ -426,10 +426,10 @@ const consultationSlice = createSlice({
             .addCase(getMyConsultations.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.consultations = action.payload.data?.data || [];
-                if (action.payload.meta) {
-                    state.totalCount = action.payload.meta?.totalCount || 0;
-                    state.currentPage = action.payload.meta?.currentPage || 1;
-                    state.totalPages = action.payload.meta?.totalCount / action.payload.meta?.limit;
+                if (action.payload.data?.meta) {
+                    state.totalCount = action.payload.data.meta.totalCount || 0;
+                    state.currentPage = action.payload.data.meta.currentPage || 1;
+                    state.totalPages = Math.ceil((action.payload.data.meta.totalCount || 0) / (action.payload.data.meta.limit || 1));
                 }
             })
             .addCase(getMyConsultations.rejected, (state, action) => {

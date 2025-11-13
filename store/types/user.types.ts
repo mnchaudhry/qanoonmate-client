@@ -2,7 +2,7 @@ import { AccountStatus, Gender, ReleaseChannel, UserRole, UserLanguagePreference
 import { APIResponse, PaginationMeta } from "./api";
 import { Review } from "./review.types";
 
-export interface User {
+export interface IUser {
     _id: string;
     firstname: string;
     lastname: string;
@@ -59,12 +59,12 @@ export interface UserQuery {
 export interface GetUsersRequest extends UserQuery {
     [key: string]: any;
 }
-export type GetUsersResponse = APIResponse<{ users: User[] } & PaginationMeta>;
+export type GetUsersResponse = APIResponse<{ users: IUser[] } & PaginationMeta>;
 
 export interface SearchUsersRequest extends UserQuery {
     query: string;
 }
-export type SearchUsersResponse = APIResponse<{ users: User[] } & PaginationMeta>;
+export type SearchUsersResponse = APIResponse<{ users: IUser[] } & PaginationMeta>;
 
 export interface CheckUsernameRequest {
     username: string;
@@ -96,32 +96,32 @@ export interface AddUserRequest {
 }
 
 
-export type AddUserResponse = APIResponse<{ user: User }>;
+export type AddUserResponse = APIResponse<{ user: IUser }>;
 
 export interface BlockUserRequest {
     id: string;
     block: boolean;
 }
-export type BlockUserResponse = APIResponse<{ user: User }>;
+export type BlockUserResponse = APIResponse<{ user: IUser }>;
 
 export interface AdminDeleteUserRequest {
     id: string;
 }
-export type AdminDeleteUserResponse = APIResponse<{ user: User }>;
+export type AdminDeleteUserResponse = APIResponse<{ user: IUser }>;
 
-export type GetMeResponse = APIResponse<{ user: User }>;
+export type GetMeResponse = APIResponse<{ user: IUser }>;
 
 export interface UpdateAvatarRequest {
     file: File;
 }
-export type UpdateAvatarResponse = APIResponse<{ user: User }>;
+export type UpdateAvatarResponse = APIResponse<{ user: IUser }>;
 
 export interface UpdateUsernameRequest {
     username: string;
 }
-export type UpdateUsernameResponse = APIResponse<{ user: User }>;
+export type UpdateUsernameResponse = APIResponse<{ user: IUser }>;
 
-export type DeleteMeResponse = APIResponse<{ user: User }>;
+export type DeleteMeResponse = APIResponse<{ user: IUser }>;
 
 export interface GetUserRoleRequest {
     id: string;
@@ -131,22 +131,22 @@ export type GetUserRoleResponse = APIResponse<{ role: string }>;
 export interface GetUserByUsernameOrIdRequest {
     usernameOrId: string;
 }
-export type GetUserByUsernameOrIdResponse = APIResponse<{ user: User }>;
+export type GetUserByUsernameOrIdResponse = APIResponse<{ user: IUser }>;
 
 export interface GetUserByIdRequest {
     id: string;
 }
-export type GetUserByIdResponse = APIResponse<{ user: User }>;
+export type GetUserByIdResponse = APIResponse<{ user: IUser }>;
 
 export interface UpdateUserRequest {
     id: string;
-    update: Partial<User>;
+    update: Partial<IUser>;
 }
-export type UpdateUserResponse = APIResponse<{ user: User }>;
+export type UpdateUserResponse = APIResponse<{ user: IUser }>;
 
 export interface DeleteUserRequest {
     id: string;
 }
-export type DeleteUserResponse = APIResponse<{ user: User }>;
+export type DeleteUserResponse = APIResponse<{ user: IUser }>;
 
 

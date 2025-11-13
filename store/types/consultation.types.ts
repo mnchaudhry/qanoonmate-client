@@ -1,15 +1,18 @@
 import { CancellationReason, ConsultationStatus, ConsultationType, PaymentStatus, UserRole } from "@/lib/enums";
 import { APIResponse, PaginationMeta } from "./api";
+import { IClient } from "./client.types";
+import { ILawyer } from "./lawyer.types";
 
 
 //////////////////////////////////////////////////////// SCHEMA TYPES //////////////////////////////////////////////////////// 
 export interface IConsultation {
     _id: string;
-    client: string;
-    lawyer: string;
+    client: IClient | string;
+    lawyer: ILawyer | string;
     type: ConsultationType;
     status: ConsultationStatus;
     scheduledDate: Date;
+    scheduledTime: string; // Time in 24-hour format "14:30"
     duration: number; // in minutes
     fee: number;
     paymentStatus: PaymentStatus;
@@ -17,7 +20,6 @@ export interface IConsultation {
     // Location/Meeting details
     location?: string;
     meetingLink?: string;
-    phoneNumber?: string;
 
     // Content
     description: string;
@@ -43,18 +45,6 @@ export interface IConsultation {
         createdAt: Date;
         isPrivate: boolean;
     }>;
-
-    // Rating & Review
-    rating?: {
-        rating: number;
-        review?: string;
-        categories?: {
-            professionalism: number;
-            communication: number;
-            expertise: number;
-            value: number;
-        };
-    };
 
     // Rescheduling
     rescheduleRequests: Array<{
@@ -92,12 +82,16 @@ export interface IConsultation {
 //////////////////////////////////////////////////////// REQUEST/RESPONSE TYPES //////////////////////////////////////////////////////// 
 // bookConsultation
 export type BookConsultationRequest = {
-    clientId: string; request: {
+    clientId?: string; // Not needed in request, comes from auth
+    request: {
         lawyerId: string;
         type: ConsultationType;
         scheduledDate: Date;
+        scheduledTime: string; // Time in 24-hour format "14:30"
         duration: number;
         description: string;
+        termsAccepted: boolean;  // NEW: Required terms acceptance
+        // Optional fields (removed from required)
         clientNotes?: string;
         location?: string;
     };

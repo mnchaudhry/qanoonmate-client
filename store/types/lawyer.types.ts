@@ -1,4 +1,4 @@
-import { User } from './user.types';
+import { IUser } from './user.types';
 import { APIResponse, PaginationMeta } from './api';
 import { BarCouncils, Currency } from '@/lib/enums';
 import { ILawyerSettings } from './lawyerSettings.types';
@@ -7,7 +7,7 @@ import { IClient } from './client.types';
 
 
 ///////////////////////////////////////////////////// SCHEMA INTERFACES /////////////////////////////////////////////////
-export interface ILawyer extends User {
+export interface ILawyer extends IUser {
   _id: string;
   fullName: string;  // must match CNIC + bar card
   title?: string;

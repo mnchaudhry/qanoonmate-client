@@ -175,3 +175,22 @@ export const onLogout = (dispatch: AppDispatch, callback: () => void) => {
       localStorageManager.clear();
     });
 }
+
+export const formatPhoneNumber = (value: string): string => {
+  // Remove all non-digits
+  const digits = value.replace(/\D/g, '');
+
+  // Format as +92 XXX XXXXXXX
+  if (digits.startsWith('92')) {
+    const rest = digits.slice(2);
+    if (rest.length <= 3) return `+92 ${rest}`;
+    return `+92 ${rest.slice(0, 3)} ${rest.slice(3, 10)}`;
+  } else if (digits.startsWith('0')) {
+    const rest = digits.slice(1);
+    if (rest.length <= 3) return `+92 ${rest}`;
+    return `+92 ${rest.slice(0, 3)} ${rest.slice(3, 10)}`;
+  }
+
+  if (digits.length <= 3) return `+92 ${digits}`;
+  return `+92 ${digits.slice(0, 3)} ${digits.slice(3, 10)}`;
+};

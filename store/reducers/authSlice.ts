@@ -6,12 +6,12 @@ import { UserRole } from '@/lib/enums';
 import { ChangePasswordRequest, ForgetPasswordRequest, ForgetPasswordUpdateRequest, LoginRequest, ClientSignupRequest, LawyerSignupStep1Request, UpdateProfileRequest, VerifyOtpRequest } from '../types/auth.types';
 import { IClient } from '../types/client.types';
 import { ILawyer } from '../types/lawyer.types';
-import { User } from '../types/user.types';
+import { IUser } from '../types/user.types';
 import localStorageManager from '@/utils/localStorage';
 import { getErrorMessage } from '@/lib/utils';
 
 interface AuthState {
-  user: User | IClient | ILawyer | null;
+  user: IUser | IClient | ILawyer | null;
   token: string | null;
   sessionId: string | null;
   isAuthenticated: boolean;

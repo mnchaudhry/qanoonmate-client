@@ -1,5 +1,5 @@
 import { ConsultationStatus, ConsultationType, UserRole, NotificationDeliveryChannel, NotificationType, NotificationContextType, } from "@/lib/enums";
-import { User } from "./user.types";
+import { IUser } from "./user.types";
 import { ILawyer } from "./lawyer.types";
 import { IConsultation } from "./consultation.types";
 
