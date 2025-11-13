@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { ILawyer } from "@/store/types/lawyer.types";
@@ -15,6 +15,7 @@ import { SettingsContent } from "./_components/SettingsContent";
 export default function LawyerSettings() {
 
   ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////// 
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useSelector((state: RootState) => state.auth);
   const lawyer = user as ILawyer;
@@ -40,6 +41,7 @@ export default function LawyerSettings() {
 
   const handleSectionChange = (section: string) => {
     setActiveSection(section);
+    router.push(`/lawyer/settings?section=${section}`, { scroll: false });
   };
 
   ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////// 

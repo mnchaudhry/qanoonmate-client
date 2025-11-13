@@ -26,7 +26,7 @@ interface ConsultationState {
 
 // ==================== ASYNC THUNKS ====================
 
-export const bookConsultation = createAsyncThunk<ConsultationApi.BookConsultationResponse, ConsultationApi.BookConsultationRequest>('consultation/createConsultation', async (formData, { rejectWithValue }) => {
+export const bookConsultation = createAsyncThunk<ConsultationApi.BookConsultationResponse, ConsultationApi.BookConsultationRequest['request']>('consultation/createConsultation', async (formData, { rejectWithValue }) => {
     try {
         const { data } = await api.bookConsultation(formData)
         if (data?.success) {

@@ -1,7 +1,7 @@
 import { PreferredCommunication } from "@/lib/enums";
 import { User } from "./user.types";
 
-export interface Client extends User {
+export interface IClient extends User {
     isFirstTime: boolean
     interests: string[]
     preferredCommunication: PreferredCommunication

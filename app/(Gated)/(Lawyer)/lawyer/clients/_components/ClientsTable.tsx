@@ -2,7 +2,7 @@
 
 import React from 'react';
 import ClientCard from './ClientCard';
-import { Client as APIClient } from '@/store/types/client.types';
+import { IClient as APIClient } from '@/store/types/client.types';
 import { Card } from '@/components/ui/card';
 import { Users, Inbox, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
