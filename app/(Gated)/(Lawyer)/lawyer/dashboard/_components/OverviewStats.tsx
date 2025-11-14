@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 export default function OverviewStats() {
   const dispatch = useAppDispatch();
   const { dashboardStats, statsLoading, statsError } = useAppSelector((state) => state.lawyer);
-
+  console.log('dashboardStats:', dashboardStats);
   useEffect(() => {
     dispatch(getDashboardStats());
   }, [dispatch]);
@@ -53,37 +53,48 @@ export default function OverviewStats() {
     return null;
   }
 
+  // Calculate earnings change percentage if lastMonthEarnings is available
+  const calculateEarningsTrend = () => {
+    if (dashboardStats.lastMonthEarnings && dashboardStats.lastMonthEarnings > 0) {
+      const change = dashboardStats.monthlyEarnings - dashboardStats.lastMonthEarnings;
+      const percentageChange = ((change / dashboardStats.lastMonthEarnings) * 100).toFixed(1);
+      const prefix = change >= 0 ? '+' : '';
+      return `${prefix}${percentageChange}% from last month`;
+    }
+    return dashboardStats.earningsChange || 'No previous data';
+  };
+
   const stats = [
     {
       title: "Total Clients",
-      value: dashboardStats.totalClients.toString(),
-      description: `${dashboardStats.activeClients} active clients`,
+      value: dashboardStats.totalClients?.toString() || '0',
+      description: `${dashboardStats.activeClients || 0} active clients`,
       icon: Users,
-      trend: `+${dashboardStats.newClientsThisWeek} this week`,
+      trend: `+${dashboardStats.newClientsThisWeek || 0} this week`,
       iconColor: "text-primary"
     },
     {
       title: "This Month's Earnings",
-      value: `PKR ${dashboardStats.monthlyEarnings.toLocaleString()}`,
+      value: `PKR ${(dashboardStats.monthlyEarnings || 0).toLocaleString()}`,
       description: "Revenue earned",
       icon: DollarSign,
-      trend: `${dashboardStats.earningsChange} from last month`,
+      trend: calculateEarningsTrend(),
       iconColor: "text-primary"
     },
     {
       title: "Pending Requests",
-      value: dashboardStats.pendingRequests.toString(),
+      value: dashboardStats.pendingRequests?.toString() || '0',
       description: "Consultation requests",
       icon: Clock,
-      trend: `${dashboardStats.newRequestsToday} new today`,
+      trend: `${dashboardStats.newRequestsToday || 0} new today`,
       iconColor: "text-primary"
     },
     {
       title: "Avg. Rating",
-      value: dashboardStats.averageRating.toFixed(1),
+      value: (dashboardStats.averageRating || 0).toFixed(1),
       description: "Client satisfaction",
       icon: Star,
-      trend: `Based on ${dashboardStats.totalReviews} reviews`,
+      trend: `Based on ${dashboardStats.totalReviews || 0} reviews`,
       iconColor: "text-primary"
     }
   ];

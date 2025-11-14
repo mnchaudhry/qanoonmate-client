@@ -1,7 +1,7 @@
 export enum UserRole {
   ADMIN = "admin",
   CLIENT = "client",
-  LAWYER = "lawyer", 
+  LAWYER = "lawyer",
   ANY = "any",
 }
 
@@ -44,13 +44,6 @@ export enum ConsultationType {
   INITIAL = "initial"
 }
 
-export enum ConsultationMode {
-  IN_PERSON = "in_person",
-  VIDEO_CALL = "video_call",
-  PHONE_CALL = "phone_call",
-  CHAT = "chat"
-}
-
 export enum ConsultationStatus {
   PENDING = "pending",
   SCHEDULED = "scheduled",
@@ -61,6 +54,14 @@ export enum ConsultationStatus {
   NO_SHOW = "no_show",
   RESCHEDULED = "rescheduled"
 }
+export enum CancellationReason {
+  CLIENT_REQUEST = "client_request",
+  LAWYER_UNAVAILABLE = "lawyer_unavailable",
+  EMERGENCY = "emergency",
+  TECHNICAL_ISSUE = "technical_issue",
+  OTHER = "other"
+}
+
 export enum PaymentStatus {
   PENDING = "pending",
   PROCESSING = "processing",
@@ -162,13 +163,13 @@ export enum Days {
 }
 
 export enum BarCouncils {
-    PunjabBarCouncil = "Punjab Bar Council",
-    SindhBarCouncil = "Sindh Bar Council",
-    KhyberPakhtunkhwaBarCouncil = "KP Bar Council",
-    BalochistanBarCouncil = "Balochistan Bar Council",
-    IslamabadBarCouncil = "Islamabad Bar Council",
-    AzadJammuAndKashmirBarCouncil = "Azad Jammu and Kashmir Bar Council",
-    GilgitBaltistanBarCouncil = "Gilgit Baltistan Bar Council"
+  PunjabBarCouncil = "Punjab Bar Council",
+  SindhBarCouncil = "Sindh Bar Council",
+  KhyberPakhtunkhwaBarCouncil = "KP Bar Council",
+  BalochistanBarCouncil = "Balochistan Bar Council",
+  IslamabadBarCouncil = "Islamabad Bar Council",
+  AzadJammuAndKashmirBarCouncil = "Azad Jammu and Kashmir Bar Council",
+  GilgitBaltistanBarCouncil = "Gilgit Baltistan Bar Council"
 }
 
 
@@ -210,36 +211,36 @@ export enum UserLanguagePreference {
 }
 
 export enum PakistanCities {
-    PESHAWAR = "peshawar",
-    ISLAMABAD = "islamabad",
-    RAWALPINDI = "rawalpindi",
-    LAHORE = "lahore",
-    KARACHI = "karachi",
-    QUETTA = "quetta",
-    MULTAN = "multan",
-    FAISALABAD = "faisalabad",
-    SIALKOT = "sialkot",
-    GUJRANWALA = "gujranwala",
-    SARGODHA = "sargodha",
-    BAHAWALPUR = "bahawalpur",
-    RAHIM_YAR_KHAN = "rahim_yar_khan",
-    DERA_GHAZI_KHAN = "dera_ghazi_khan",
-    SUKKUR = "sukkur",
-    HYDERABAD = "hyderabad",
-    MIRPUR_KHAS = "mirpur_khas",
-    NAWABSHAH = "nawabshah",
-    LARKANA = "larkana",
-    JACOBABAD = "jacobabad",
-    OTHER = "other"
+  PESHAWAR = "peshawar",
+  ISLAMABAD = "islamabad",
+  RAWALPINDI = "rawalpindi",
+  LAHORE = "lahore",
+  KARACHI = "karachi",
+  QUETTA = "quetta",
+  MULTAN = "multan",
+  FAISALABAD = "faisalabad",
+  SIALKOT = "sialkot",
+  GUJRANWALA = "gujranwala",
+  SARGODHA = "sargodha",
+  BAHAWALPUR = "bahawalpur",
+  RAHIM_YAR_KHAN = "rahim_yar_khan",
+  DERA_GHAZI_KHAN = "dera_ghazi_khan",
+  SUKKUR = "sukkur",
+  HYDERABAD = "hyderabad",
+  MIRPUR_KHAS = "mirpur_khas",
+  NAWABSHAH = "nawabshah",
+  LARKANA = "larkana",
+  JACOBABAD = "jacobabad",
+  OTHER = "other"
 }
 
 export enum PakistanProvinces {
-    KHYBER_PAKHTUNKHWA = "khyber_pakhtunkhwa",
-    PUNJAB = "punjab",
-    SINDH = "sindh",
-    BALOCHISTAN = "balochistan",
-    GILGIT_BALTISTAN = "gilgit_baltistan",
-    AZAD_JAMMU_AND_KASHMIR = "azad_jammu_and_kashmir"
+  KHYBER_PAKHTUNKHWA = "khyber_pakhtunkhwa",
+  PUNJAB = "punjab",
+  SINDH = "sindh",
+  BALOCHISTAN = "balochistan",
+  GILGIT_BALTISTAN = "gilgit_baltistan",
+  AZAD_JAMMU_AND_KASHMIR = "azad_jammu_and_kashmir"
 }
 
 

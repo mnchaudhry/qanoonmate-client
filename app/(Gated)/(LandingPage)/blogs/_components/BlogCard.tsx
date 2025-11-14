@@ -5,11 +5,10 @@ import Link from 'next/link'
 import { toast } from 'react-hot-toast'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/store/store'
-import { Blog } from '@/store/types/api'
 
 
 
-const BlogCard = ({ blog }: { blog: Blog }) => {
+const BlogCard = ({ blog }: { blog: any }) => {
 
   ////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
   const { user } = useSelector((state: RootState) => state.auth);
@@ -36,7 +35,7 @@ const BlogCard = ({ blog }: { blog: Blog }) => {
 
       if (response.ok) {
         setIsLiked(!isLiked)
-        setLikeCount(prev => isLiked ? prev - 1 : prev + 1)
+        setLikeCount((prev: any) => isLiked ? prev - 1 : prev + 1)
         toast.success(isLiked ? 'Removed from likes' : 'Added to likes')
       } else {
         toast.error('Failed to like blog')

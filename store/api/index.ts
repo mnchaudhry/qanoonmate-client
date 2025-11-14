@@ -10,6 +10,7 @@ import type * as EmailAPI from "../types/email.types";
 import type * as CommAPI from "../types/communication.types";
 import type * as CreditsAPI from "../types/credits.types";
 import type * as PaymentsAPI from "../types/payments.types";
+import type * as ConsultationAPI from "../types/consultation.types";
 
 import { APIClient, FormDataAPI } from "./axios";
 import { UserRole } from "@/lib/enums";
@@ -78,42 +79,42 @@ export const updateClientNotifications = (data: ClientSettingsAPI.UpdateClientNo
 export const deleteClientSettings = () => APIClient.delete<ClientSettingsAPI.DeleteClientSettingsResponse>("/client/settings");
 
 ////////////////////////////////////////////////////////// LAWYERS ////////////////////////////////////////////////////////////
-export const getLawyers = (params?: LawyerAPI.LawyerQuery) => APIClient.get<LawyerAPI.PaginatedLawyerResponse>(`/lawyer/all`, { params });
-export const getLawyerById = (id: string) => APIClient.get<LawyerAPI.SingleLawyerResponse>(`/lawyer/id/${id}`);
-export const getLawyerByUsername = (username: string) => APIClient.get<LawyerAPI.SingleLawyerResponse>(`/lawyer/username/${username}`);
-export const getLawyerAvailability = (id: string) => APIClient.get<LawyerAPI.LawyerAvailabilityResponse>(`/lawyer/id/${id}/availability`);
-export const getMeLawyer = () => APIClient.get<LawyerAPI.SingleLawyerResponse>(`/lawyer/me`);
-export const getMyClients = () => APIClient.get<LawyerAPI.MyClientsResponse>(`/lawyer/me/clients`);
-export const getMyReviews = (limit?: number) => APIClient.get<LawyerAPI.LawyerReviewsResponse>(`/lawyer/me/reviews`, { params: { limit } });
-export const getDashboardStats = () => APIClient.get<LawyerAPI.DashboardStatsResponse>(`/lawyer/me/dashboard/stats`);
-export const getActivityLog = (limit?: number) => APIClient.get<LawyerAPI.ActivityLogResponse>(`/lawyer/me/dashboard/activities`, { params: { limit } });
-export const updateMeLawyer = (data: Partial<LawyerAPI.Lawyer>) => APIClient.put<LawyerAPI.SingleLawyerResponse>(`/lawyer/me`, data);
-export const updateLawyerPassword = (password: string) => APIClient.put<LawyerAPI.SingleLawyerResponse>(`/lawyer/me/password`, { password, });
-export const updateLawyerStatus = (id: string, isActive: boolean) => APIClient.put<LawyerAPI.SingleLawyerResponse>(`/lawyer/admin/lawyers/${id}/status`, { isActive });
-export const deleteLawyer = (id: string) => APIClient.delete<LawyerAPI.LawyerDeleteResponse>(`/lawyer/admin/lawyers/${id}`);
-export const searchLawyers = (params: { query: string } & LawyerAPI.LawyerQuery) => APIClient.get<LawyerAPI.PaginatedLawyerResponse>(`/lawyer/search`, { params, });
-export const getSimilarLawyers = (lawyerId: string, params?: { limit?: number } & LawyerAPI.LawyerQuery) => APIClient.get<LawyerAPI.PaginatedLawyerResponse>(`/lawyer/id/${lawyerId}/similar`, { params });
-export const exportLawyersCsv = (params?: LawyerAPI.LawyerQuery) => APIClient.get(`/lawyer/export/csv`, { params, responseType: 'blob' });
-export const bulkUploadLawyers = (file: File) => { const formData = new FormData(); formData.append('file', file); return FormDataAPI.post(`/lawyer/admin/lawyers/bulk-upload`, formData); };
-export const resetLawyerPassword = (id: string, password?: string) => APIClient.post(`/lawyer/admin/lawyers/${id}/reset-password`, password ? { password } : {});
-export const getLawyerLogs = (id: string) => APIClient.get(`/lawyer/admin/lawyers/${id}/logs`);
+export const getAllLawyers = (params: LawyerAPI.GetAllLawyersRequest) => APIClient.get<LawyerAPI.GetAllLawyersResponse>('/lawyer/all', { params })
+export const searchLawyers = (params: LawyerAPI.SearchLawyersRequest) => APIClient.get<LawyerAPI.SearchLawyersResponse>('/lawyer/search', { params })
+export const getLawyerById = ({ lawyerId }: LawyerAPI.GetLawyerByIdRequest) => APIClient.get<LawyerAPI.GetLawyerByIdResponse>(`/lawyer/id/${lawyerId}`)
+export const getSimilarLawyers = (lawyerId: string) => APIClient.get<LawyerAPI.GetSimilarLawyersResponse>(`/lawyer/id/${lawyerId}/similar`)
+export const getLawyerByUsername = ({ username }: LawyerAPI.GetLawyerByUsernameRequest) => APIClient.get<LawyerAPI.GetLawyerByUsernameResponse>(`/lawyer/username/${username}`)
+export const getLawyerAvailability = ({ lawyerId }: LawyerAPI.GetLawyerAvailabilityRequest) => APIClient.get<LawyerAPI.GetLawyerAvailabilityResponse>(`/lawyer/id/${lawyerId}/availability`)
+export const exportLawyers = (params?: LawyerAPI.GetAllLawyersRequest) => APIClient.get('/lawyer/export/csv', { params, responseType: 'blob' })
+export const getMe = () => APIClient.get<LawyerAPI.GetLawyerByIdResponse>('/lawyer/me')
+export const getMyClients = () => APIClient.get<LawyerAPI.GetMyClientsResponse>('/lawyer/me/clients')
+export const getDashboardStats = () => APIClient.get<LawyerAPI.GetDashboardStatsResponse>('/lawyer/me/dashboard/stats')
+export const getActivityLog = (limit?: number) => APIClient.get<LawyerAPI.GetActivityLogResponse>('/lawyer/me/dashboard/activities', { params: { limit } })
+export const updateMe = (updateData: Partial<LawyerAPI.ILawyer>) => APIClient.put<LawyerAPI.UpdateLawyerResponse>('/lawyer/me', updateData)
+export const updateLawyerStatus = (lawyerId: string, isActive: boolean) => APIClient.put<LawyerAPI.UpdateLawyerStatusResponse>(`/lawyer/admin/lawyers/${lawyerId}/status`, { isActive })
+export const deleteLawyer = (lawyerId: string) => APIClient.delete<LawyerAPI.DeleteLawyerResponse>(`/lawyer/admin/lawyers/${lawyerId}`)
+export const bulkUploadLawyers = (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return FormDataAPI.post('/lawyer/admin/lawyers/bulk-upload', formData);
+}
+export const resetLawyerPassword = (lawyerId: string, password?: string) => APIClient.post(`/lawyer/admin/lawyers/${lawyerId}/reset-password`, password ? { password } : {})
+export const getLawyerLogs = (lawyerId: string) => APIClient.get(`/lawyer/admin/lawyers/${lawyerId}/logs`)
 
 ////////////////////////////////////////////////////////// LAWYER_SETTINGS ///////////////////////////////////////////////////////
-export const getLawyerSettings = () => APIClient.get<LawyerSettingsAPI.GetLawyerSettingsResponse>("/lawyer/settings");
-export const updateLawyerSettings = (data: LawyerSettingsAPI.UpdateLawyerSettingsRequest) => APIClient.patch<LawyerSettingsAPI.UpdateLawyerSettingsResponse>("/lawyer/settings", data);
-export const getConsultationSettings = () => APIClient.get<LawyerSettingsAPI.UpdateConsultationSettingsResponse>("/lawyer/settings/consultation");
+export const getLawyerSettings = () => APIClient.get<LawyerSettingsAPI.GetSettingsResponse>("/lawyer/settings");
+export const updateLawyerSettings = (data: LawyerSettingsAPI.UpdateSettingsRequest) => APIClient.patch<LawyerSettingsAPI.UpdateSettingsResponse>("/lawyer/settings", data);
+export const getConsultationSettings = () => APIClient.get<LawyerSettingsAPI.GetConsultationSettingsResponse>("/lawyer/settings/consultation");
 export const updateConsultationSettings = (data: LawyerSettingsAPI.UpdateConsultationSettingsRequest) => APIClient.patch<LawyerSettingsAPI.UpdateConsultationSettingsResponse>("/lawyer/settings/consultation", data);
-export const getAvailability = () => APIClient.get<LawyerSettingsAPI.UpdateAvailabilityResponse>("/lawyer/settings/availability");
-export const updateAvailability = (data: LawyerSettingsAPI.UpdateAvailabilityRequest) => APIClient.patch<LawyerSettingsAPI.UpdateAvailabilityResponse>("/lawyer/settings/availability", data);
-export const getIdentityVerification = () => APIClient.get<LawyerSettingsAPI.GetLawyerSettingsResponse>("/lawyer/settings/identity-verification");
-export const submitIdentityVerification = (data: LawyerSettingsAPI.IdentityVerification) => APIClient.patch<LawyerSettingsAPI.GetLawyerSettingsResponse>("/lawyer/settings/identity-verification", data);
-export const getNotificationPreferences = () => APIClient.get<LawyerSettingsAPI.UpdateNotificationPreferencesResponse>("/lawyer/settings/notifications");
-export const updateNotificationPreferences = (data: LawyerSettingsAPI.UpdateNotificationPreferencesRequest) => APIClient.patch<LawyerSettingsAPI.UpdateNotificationPreferencesResponse>("/lawyer/settings/notifications", data);
+export const getIdentityVerification = () => APIClient.get<LawyerSettingsAPI.GetIdentityVerificationResponse>("/lawyer/settings/identity-verification");
+export const submitIdentityVerification = (data: LawyerSettingsAPI.SubmitIdentityVerificationRequest) => APIClient.patch<LawyerSettingsAPI.SubmitIdentityVerificationResponse>("/lawyer/settings/identity-verification", data);
+export const getPreferences = () => APIClient.get<LawyerSettingsAPI.GetPreferencesResponse>("/lawyer/settings/preferences");
+export const updatePreferences = (data: LawyerSettingsAPI.UpdatePreferencesRequest) => APIClient.patch<LawyerSettingsAPI.UpdatePreferencesResponse>("/lawyer/settings/preferences", data);
 export const getSecurityPreferences = () => APIClient.get<LawyerSettingsAPI.UpdateSecurityPreferencesResponse>("/lawyer/settings/security");
 export const updateSecurityPreferences = (data: LawyerSettingsAPI.UpdateSecurityPreferencesRequest) => APIClient.patch<LawyerSettingsAPI.UpdateSecurityPreferencesResponse>("/lawyer/settings/security", data);
 export const getBilling = () => APIClient.get<LawyerSettingsAPI.UpdateBillingResponse>("/lawyer/settings/billing");
 export const updateBilling = (data: LawyerSettingsAPI.UpdateBillingRequest) => APIClient.patch<LawyerSettingsAPI.UpdateBillingResponse>("/lawyer/settings/billing", data);
-export const deleteLawyerSettings = () => APIClient.delete<LawyerSettingsAPI.DeleteLawyerSettingsResponse>("/lawyer/settings");
+export const deleteLawyerSettings = () => APIClient.delete<LawyerSettingsAPI.DeleteSettingsResponse>("/lawyer/settings");
 
 ////////////////////////////////////////////////////////// LEGAL-BD ////////////////////////////////////////////////////////////
 export const getLawCategories = () => APIClient.get("/law-category/get-law-categories");
@@ -155,38 +156,32 @@ export const getRoomFiles = (roomId: string) => APIClient.get<API.GetRoomFilesRe
 export const getRoomLinks = (roomId: string) => APIClient.get<API.GetRoomLinksResponse>(`/chat/${roomId}/links`);
 
 ////////////////////////////////////////////////////////// CONSULTATION ////////////////////////////////////////////////////////////
-export const bookConsultation = (data: API.BookConsultationRequest) => APIClient.post<API.BookConsultationResponse>(`/consultation/book`, data);
-export const getAllConsultations = (params?: API.GetConsultationsRequest) => APIClient.get<API.GetConsultationsResponse>(`/consultation`, { params });
-export const getMyConsultations = (params?: API.GetConsultationsRequest) => APIClient.get<API.GetMyConsultationsResponse>(`/consultation/my-consultations`, { params });
-export const getConsultationById = (id: string) => APIClient.get<API.GetConsultationByIdResponse>(`/consultation/${id}`);
-export const updateConsultation = (id: string, data: API.UpdateConsultationRequest) => APIClient.put<API.UpdateConsultationResponse>(`/consultation/${id}`, data);
-export const deleteConsultation = (id: string) => APIClient.delete(`/consultation/${id}`);
+export const bookConsultation = (data: ConsultationAPI.BookConsultationRequest['request']) => APIClient.post<ConsultationAPI.BookConsultationResponse>(`/consultation/book`, data);
+export const getAllConsultations = (params?: ConsultationAPI.GetConsultationsRequest) => APIClient.get<ConsultationAPI.GetConsultationsResponse>(`/consultation`, { params });
+export const getMyConsultations = (params?: ConsultationAPI.GetConsultationsRequest) => APIClient.get<ConsultationAPI.GetConsultationsResponse>(`/consultation/my-consultations`, { params });
+export const getConsultationStats = (params?: ConsultationAPI.GetConsultationStatsRequest) => APIClient.get<ConsultationAPI.GetConsultationStatsResponse>(`/consultation/stats/overview`, { params });
+
+export const getConsultationById = ({ id }: ConsultationAPI.GetConsultationByIdRequest) => APIClient.get<ConsultationAPI.GetConsultationByIdResponse>(`/consultation/id/${id}`);
+export const updateConsultation = ({ id, updates }: ConsultationAPI.UpdateConsultationRequest) => APIClient.put<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}`, updates);
 
 // Consultation Lifecycle (Lawyer Only)
-export const confirmConsultation = (id: string) => APIClient.post<API.ConsultationLifecycleResponse>(`/consultation/${id}/confirm`, {});
-export const startConsultation = (id: string, data?: API.ConsultationLifecycleRequest) => APIClient.post<API.ConsultationLifecycleResponse>(`/consultation/${id}/start`, data || {});
-export const completeConsultation = (id: string, data?: API.ConsultationLifecycleRequest) => APIClient.post<API.ConsultationLifecycleResponse>(`/consultation/${id}/complete`, data || {});
-export const markConsultationAsNoShow = (id: string) => APIClient.post<API.ConsultationLifecycleResponse>(`/consultation/${id}/no-show`, {});
+export const confirmConsultation = ({ id }: ConsultationAPI.UpdateConsultationRequest) => APIClient.post<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}/confirm`, {});
+export const startConsultation = ({ id, updates }: ConsultationAPI.UpdateConsultationRequest) => APIClient.post<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}/start`, updates);
+export const completeConsultation = ({ id, updates }: ConsultationAPI.UpdateConsultationRequest) => APIClient.post<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}/complete`, updates);
+export const markConsultationAsNoShow = ({ id }: ConsultationAPI.UpdateConsultationRequest) => APIClient.post<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}/no-show`);
 
 // Rescheduling
-export const rescheduleConsultation = (id: string, data: API.RescheduleConsultationRequest) => APIClient.post<API.RescheduleConsultationResponse>(`/consultation/${id}/reschedule`, data);
-export const approveRescheduleRequest = (id: string, requestId: string, data?: API.RescheduleRequestActionRequest) => APIClient.post<API.RescheduleRequestActionResponse>(`/consultation/${id}/reschedule/${requestId}/approve`, data || {});
-export const rejectRescheduleRequest = (id: string, requestId: string, data?: API.RescheduleRequestActionRequest) => APIClient.post<API.RescheduleRequestActionResponse>(`/consultation/${id}/reschedule/${requestId}/reject`, data || {});
+export const rescheduleConsultation = ({ id, request }: ConsultationAPI.RescheduleConsultationRequestData) => APIClient.post<ConsultationAPI.RescheduleConsultationResponse>(`/consultation/id/${id}/reschedule`, request);
+export const approveRescheduleRequest = ({ id, updates }: ConsultationAPI.UpdateConsultationRequest) => APIClient.post<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}/reschedule/${id}/approve`, updates);
+export const rejectRescheduleRequest = ({ id, updates }: ConsultationAPI.UpdateConsultationRequest) => APIClient.post<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}/reschedule/${id}/reject`, updates);
 
 // Cancellation & Rating
-export const cancelConsultation = (data: API.CancelConsultationRequest) => APIClient.post<API.CancelConsultationResponse>(`/consultation/${data.id}/cancel`, data);
-export const rateConsultation = (id: string, data: API.RateConsultationRequest) => APIClient.post<API.RateConsultationResponse>(`/consultation/${id}/rate`, data);
+export const cancelConsultation = ({ id, request }: ConsultationAPI.CancelConsultationRequestData) => APIClient.post<ConsultationAPI.CancelConsultationResponse>(`/consultation/id/${id}/cancel`, request);
+export const rateConsultation = ({ id, request }: ConsultationAPI.RateConsultationRequestData) => APIClient.post<ConsultationAPI.RateConsultationResponse>(`/consultation/id/${id}/rate`, request);
 
 // Notes & Documents
-export const addNote = (id: string, data: API.AddNoteRequest) => APIClient.post<API.AddNoteResponse>(`/consultation/${id}/notes`, data);
-export const uploadDocument = (id: string, data: API.UploadConsultationDocumentRequest) => APIClient.post<API.UploadConsultationDocumentResponse>(`/consultation/${id}/documents`, data);
-
-// Statistics
-export const getConsultationStats = (params?: API.GetConsultationStatsRequest) => APIClient.get<API.GetConsultationStatsResponse>(`/consultation/stats/overview`, { params });
-
-// Legacy endpoints (keeping for backward compatibility)
-export const submitFeedback = (id: string, data: API.SubmitFeedbackRequest) => APIClient.post<API.SubmitFeedbackResponse>(`/feedback/${id}`, data);
-export const markAsCompleted = (id: string) => APIClient.post(`/consultation/complete/${id}`);
+export const addNote = ({ id, request }: ConsultationAPI.AddNoteRequestData) => APIClient.post<ConsultationAPI.AddNoteResponse>(`/consultation/id/${id}/notes`, request);
+export const uploadDocument = ({ id, request }: ConsultationAPI.UploadDocumentRequestData) => APIClient.post<ConsultationAPI.UploadDocumentResponse>(`/consultation/id/${id}/documents`, request);
 
 ////////////////////////////////////////////////////////// SUMMARY ////////////////////////////////////////////////////////////
 export const uploadSummaryDocument = (formData: FormData) => FormDataAPI.post<API.UploadSummaryResponse>("/summaries/upload", formData);
@@ -244,16 +239,6 @@ export const createGuide = (data: API.CreateGuideRequest) => APIClient.post<API.
 export const updateGuide = (id: string, data: API.UpdateGuideRequest) => APIClient.put<API.UpdateGuideResponse>(`/guide/${id}`, data);
 export const verifyGuide = (id: string, notes?: string) => APIClient.patch<API.VerifyGuideResponse>(`/guide/${id}/verify`, notes ? { notes } : {});
 export const deleteGuide = (id: string) => APIClient.delete<API.DeleteGuideResponse>(`/guide/${id}`);
-
-////////////////////////////////////////////////////////// BLOGS ////////////////////////////////////////////////////////////
-export const getBlogs = (params?: API.GetBlogsRequest) => APIClient.get<API.GetBlogsResponse>("/blog/get-blogs", { params });
-export const getBlog = (idOrSlug: string) => APIClient.get<API.GetBlogResponse>(`/blog/get-blog/${idOrSlug}`);
-export const createBlog = (data: API.CreateBlogRequest) => APIClient.post<API.CreateBlogResponse>("/blog/create-blog", data);
-export const updateBlog = (id: string, data: API.UpdateBlogRequest) => APIClient.put<API.UpdateBlogResponse>(`/blog/update-blog/${id}`, data);
-export const deleteBlog = (id: string) => APIClient.delete<API.DeleteBlogResponse>(`/blog/delete-blog/${id}`);
-export const addComment = (id: string, comment: API.AddCommentRequest) => APIClient.post<API.AddCommentResponse>(`/blog/add-comment/${id}`, comment);
-export const likeBlog = (id: string) => APIClient.post<API.LikeBlogResponse>(`/blog/like-blog/${id}`);
-export const uploadFeaturedImage = (formData: FormData) => APIClient.post<API.UploadFeaturedImageResponse>("/blog/upload-featured-image", formData);
 
 ////////////////////////////////////////////////////////// NOTIFICATION ////////////////////////////////////////////////////////////
 export const getNotifications = (params?: API.GetNotificationsRequest) => APIClient.get<API.GetNotificationsResponse>("/notification", { params });

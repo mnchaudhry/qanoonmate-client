@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -17,17 +17,21 @@ import { SectionHeader } from "./SectionHeader";
 import { SubsectionHeader } from "./SubsectionHeader";
 
 export function ProfileSettings() {
+
+    /////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////// 
     const { user } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch<AppDispatch>();
     const router = useRouter();
-    const lawyer = user as Lawyer;
+    const lawyer = user as ILawyer;
 
+    /////////////////////////////////////////////////// STATES /////////////////////////////////////////////////// 
     const [profileVisibility, setProfileVisibility] = useState<'public' | 'private' | 'limited'>('public');
     const [showContactInfo, setShowContactInfo] = useState(true);
     const [showPricing, setShowPricing] = useState(true);
     const [showAvailability, setShowAvailability] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
 
+    /////////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////// 
     useEffect(() => {
         // Initialize settings from lawyer data
         if (lawyer) {
@@ -39,6 +43,7 @@ export function ProfileSettings() {
         }
     }, [lawyer]);
 
+    /////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////// 
     const handleSaveSettings = async () => {
         if (!lawyer) return;
 
@@ -92,25 +97,30 @@ export function ProfileSettings() {
         }
     };
 
+    /////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////// 
     return (
         <div className="space-y-6">
             {/* Profile Overview */}
+            <SectionHeader
+                title="Profile Settings"
+                description="Manage your profile visibility and display preferences"
+                icon={<User className="w-4 h-4 text-primary" />}
+                action={{
+                    label: "Edit Profile",
+                    onClick: handleEditProfile,
+                    variant: "outline"
+                }}
+            />
             <Card className="border-border">
-                <SectionHeader
-                    title="Profile Settings"
-                    description="Manage your profile visibility and display preferences"
-                    icon={<User className="w-4 h-4 text-primary" />}
-                    action={{
-                        label: "Edit Profile",
-                        onClick: handleEditProfile,
-                        variant: "outline"
-                    }}
-                />
                 <CardContent className="space-y-4">
                     {/* Profile Visibility */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <SubsectionHeader title="Profile Visibility" description="Control who can see your profile" />
+                            <SubsectionHeader
+                                title="Profile Visibility"
+                                description="Control who can see your profile"
+                                className="py-4"
+                            />
                             <div className="flex items-center gap-2">
                                 {getVisibilityIcon(profileVisibility)}
                                 <Badge variant="outline" className="border-border">
@@ -118,54 +128,56 @@ export function ProfileSettings() {
                                 </Badge>
                             </div>
                         </div>
-                        <div className="border-2 border-dashed border-border rounded-lg p-4 bg-muted/20">
-                            <div className="space-y-2">
-                                <Select value={profileVisibility} onValueChange={(value: 'public' | 'private' | 'limited') => setProfileVisibility(value)}>
-                                    <SelectTrigger className="border-border">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="public">
+                        <div className="space-y-2">
+                            <Select value={profileVisibility} onValueChange={(value: 'public' | 'private' | 'limited') => setProfileVisibility(value)}>
+                                <SelectTrigger className="border-border">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="public">
+                                        <div className="flex items-center gap-2">
+                                            <Globe className="w-4 h-4 text-green-600" />
                                             <div className="flex items-center gap-2">
-                                                <Globe className="w-4 h-4 text-green-600" />
-                                                <div className="flex items-center gap-2">
-                                                    <div className="font-medium">Public</div>
-                                                    <div className="text-xs text-muted-foreground">(Visible to everyone)</div>
-                                                </div>
+                                                <div className="font-medium">Public</div>
+                                                <div className="text-xs text-muted-foreground">(Visible to everyone)</div>
                                             </div>
-                                        </SelectItem>
-                                        <SelectItem value="limited">
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="limited">
+                                        <div className="flex items-center gap-2">
+                                            <Users className="w-4 h-4 text-amber-600" />
                                             <div className="flex items-center gap-2">
-                                                <Users className="w-4 h-4 text-amber-600" />
-                                                <div className="flex items-center gap-2">
-                                                    <div className="font-medium">Limited</div>
-                                                    <div className="text-xs text-muted-foreground">(Visible to verified users)</div>
-                                                </div>
+                                                <div className="font-medium">Limited</div>
+                                                <div className="text-xs text-muted-foreground">(Visible to verified users)</div>
                                             </div>
-                                        </SelectItem>
-                                        <SelectItem value="private">
-                                            <div className="flex items-center gap-2">
-                                                <Lock className="w-4 h-4 text-red-600" />
-                                                <div className="flex items-center gap-2"    >
-                                                    <div className="font-medium">Private</div>
-                                                    <div className="text-xs text-muted-foreground">(Only visible to you)</div>
-                                                </div>
+                                        </div>
+                                    </SelectItem>
+                                    <SelectItem value="private">
+                                        <div className="flex items-center gap-2">
+                                            <Lock className="w-4 h-4 text-red-600" />
+                                            <div className="flex items-center gap-2"    >
+                                                <div className="font-medium">Private</div>
+                                                <div className="text-xs text-muted-foreground">(Only visible to you)</div>
                                             </div>
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
+                                        </div>
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
 
-                                <p className="text-xs text-muted-foreground bg-muted/30 p-3 rounded-lg border border-border">
-                                    {getVisibilityDescription(profileVisibility)}
-                                </p>
-                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                {getVisibilityDescription(profileVisibility)}
+                            </p>
                         </div>
                     </div>
 
                     {/* Display Preferences */}
                     <div className="space-y-2">
-                        <SubsectionHeader title="Display Preferences" />
-                        <div className="border-2 border-dashed border-border rounded-lg p-4 bg-muted/20">
+                        <SubsectionHeader
+                            title="Display Preferences"
+                            description="Choose what information to show on your profile"
+                            className="py-4"
+                        />
+                        <div className="space-y-2">
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <div className="space-y-1">
@@ -214,17 +226,6 @@ export function ProfileSettings() {
                             </div>
                         </div>
 
-                        {/* Save Button */}
-                        <div className="flex justify-end">
-                            <Button
-                                onClick={handleSaveSettings}
-                                disabled={isLoading}
-                                size='sm'
-                                className="bg-primary hover:bg-primary/90"
-                            >
-                                {isLoading ? 'Saving...' : 'Save Settings'}
-                            </Button>
-                        </div>
                     </div>
                 </CardContent>
             </Card>
@@ -255,6 +256,18 @@ export function ProfileSettings() {
                     </Button>
                 </CardContent>
             </Card>
+
+            {/* Submit Button */}
+            <div className="flex justify-end pt-2">
+                <Button
+                    onClick={handleSaveSettings}
+                    className="bg-primary hover:bg-primary/90"
+                    disabled={isLoading}
+                    size="lg"
+                >
+                    {isLoading ? 'Saving...' : 'Save Profile Settings'}
+                </Button>
+            </div>
         </div >
     );
 }

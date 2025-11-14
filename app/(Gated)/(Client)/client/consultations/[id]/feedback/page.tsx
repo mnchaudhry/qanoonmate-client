@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, AlertCircle } from "lucide-react";
-import { Consultation } from "@/store/types/api";
 
 // Import Components
 import ConsultationSummary from "./_components/ConsultationSummary";
@@ -15,12 +14,13 @@ import ReviewTextArea from "./_components/ReviewTextArea";
 import PrivacyAndConsent from "./_components/PrivacyAndConsent";
 import AttachmentsUpload from "./_components/AttachmentsUpload";
 import SubmitButton from "./_components/SubmitButton";
+import { IConsultation } from "@/store/types/consultation.types";
 
 export default function ConsultationFeedbackPage() {
   const params = useParams();
   const router = useRouter();
-  const { consultations, isLoading, error } = useSelector((state: RootState) => state.consultation);
-  const [consultation, setConsultation] = useState<Consultation | null>(null);
+  const { consultations, loading: isLoading, error } = useSelector((state: RootState) => state.consultation);
+  const [consultation, setConsultation] = useState<IConsultation | null>(null);
 
   // Feedback state
   const [rating, setRating] = useState<number>(0);

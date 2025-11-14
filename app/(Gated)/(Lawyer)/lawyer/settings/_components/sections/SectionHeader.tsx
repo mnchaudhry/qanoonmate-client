@@ -18,7 +18,7 @@ interface SectionHeaderProps {
 
 export function SectionHeader({ title, description, icon, action }: SectionHeaderProps) {
   return (
-    <CardHeader className="pb-4">
+    <CardHeader className="pb-4 p-0">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           {icon && (

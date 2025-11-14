@@ -1,38 +1,19 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ConsultationMode } from "@/lib/enums";
 import { Clock, CreditCard, Info } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { enumToLabel } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { enumToLabel, formattedPrice } from "@/lib/utils";
 
-interface BookingSummaryProps {
-  selectedMode: ConsultationMode;
-}
-
-export default function BookingSummary({ selectedMode }: BookingSummaryProps) {
+export default function BookingSummary() {
 
   ///////////////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////////////////
   const { selectedLawyer: lawyer } = useSelector((state: RootState) => state.lawyer);
 
-  ///////////////////////////////////////////////////////// STATES ///////////////////////////////////////////////////////////////
-  const [consultationFee, setConsultationFee] = useState<number | undefined>(lawyer?.settings?.consultation?.fees?.find(f => f.mode === selectedMode)?.amount);
-
-  ///////////////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////////////////////////////
-  useEffect(() => {
-    if (lawyer) {
-      setConsultationFee(lawyer?.settings?.consultation?.fees?.find(f => f.mode === selectedMode)?.amount || 500);
-    }
-  }, [lawyer, selectedMode]);
+  ///////////////////////////////////////////////////////// COMPUTED VALUES ///////////////////////////////////////////////////////////////
 
 
-  const formattedFee = new Intl.NumberFormat("en-PK", {
-    style: "currency",
-    currency: "PKR",
-    minimumFractionDigits: 0,
-  }).format(consultationFee || 500);
 
   ///////////////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////////////////
   return (
@@ -56,7 +37,7 @@ export default function BookingSummary({ selectedMode }: BookingSummaryProps) {
             <CreditCard className="h-4 w-4 text-primary" />
             <h3 className="font-semibold">Consultation Fee</h3>
           </div>
-          <p className="font-medium text-lg">{formattedFee}</p>
+          <p className="font-medium text-lg">{formattedPrice(lawyer?.hourlyRate || 0)}</p>
           <p className="text-sm text-gray-500 mt-1">
             Due at the time of booking
           </p>

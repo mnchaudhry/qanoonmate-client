@@ -6,7 +6,7 @@ import EarningsStatsStrip from './_components/EarningsStatsStrip';
 import EarningsChart from './_components/EarningsChart';
 import EarningsBreakdownTable from './_components/EarningsBreakdownTable';
 import WithdrawalRequestsTable from './_components/WithdrawalRequestsTable';
-import PageHeader from '../_components/PageHeader';
+import DashboardPageHeader from '@/components/DashboardPageHeader';
 import ComingSoon from '@/components/ComingSoon';
 
 export default function Earnings() {
@@ -21,7 +21,7 @@ export default function Earnings() {
   return (
     <div className="space-y-6 pb-8">
 
-      <PageHeader
+      <DashboardPageHeader
         title="Earnings Overview"
         description="Track your earnings, withdrawals, and financial activity at a glance."
       />

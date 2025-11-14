@@ -2,25 +2,11 @@
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useSocketContext } from "@/context/useSocketContext";
-import {
-  getChatMetadataBySession,
-  getChatSession,
-  getMessagesBySession,
-  setChatMetadata,
-  setIsMetadataLoading,
-  setRegeneratingMessageId,
-  updateBotMessage,
-  updateStreamingMessage,
-} from "@/store/reducers/aiSessionSlice";
+import { getChatMetadataBySession, getChatSession, getMessagesBySession, setChatMetadata, setIsMetadataLoading, setRegeneratingMessageId, updateBotMessage, updateStreamingMessage, } from "@/store/reducers/aiSessionSlice";
 import { getLawyers } from "@/store/reducers/lawyerSlice";
 import { socketEvents } from "@/store/socket/events";
 import { AppDispatch, RootState } from "@/store/store";
-import {
-  BriefcaseBusiness,
-  FileText,
-  HomeIcon,
-  ShieldCheck,
-} from "lucide-react";
+import { BriefcaseBusiness, FileText, HomeIcon, ShieldCheck, } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "next/navigation";
@@ -38,20 +24,13 @@ const ChatbotClient = () => {
   ///////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////////////
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const {
-    defaultSocket: { socket, isConnected },
-    connectAgain,
-  } = useSocketContext();
+  const { defaultSocket: { socket, isConnected }, connectAgain, } = useSocketContext();
   const dispatch = useDispatch<AppDispatch>();
   const searchParams = useSearchParams();
-  const {
-    messages,
-    currentSessionId: sessionId,
-    sessionMetadata,
-    isMetadataLoading,
-  } = useSelector((state: RootState) => state.aiSession);
+  const { messages, currentSessionId: sessionId, sessionMetadata, isMetadataLoading, } = useSelector((state: RootState) => state.aiSession);
   const { user } = useSelector((state: RootState) => state.auth);
   const isNewSession = messages.length === 0;
+  const urlMessage = searchParams.get("message");
   const samplePrompts = [
     {
       icon: <BriefcaseBusiness className="w-5 h-5 text-primary" />,
@@ -79,20 +58,11 @@ const ChatbotClient = () => {
 
   ///////////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////////////////
   const [showDictionary, setShowDictionary] = useState(false);
-  const [chatViewMode, setChatViewMode] = useState<
-    "compact" | "card" | "timeline"
-  >("card");
+  const [chatViewMode, setChatViewMode] = useState<"compact" | "card" | "timeline">("card");
   const [textSize, setTextSize] = useState(16);
   const [isScreenReaderMode, setIsScreenReaderMode] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const {
-    cases,
-    references,
-    aiConfidence: confidence,
-    legalContext,
-    quickAction,
-    referencedLinks,
-  } = useSelector((state: RootState) => state.aiSession);
+  const { cases, references, aiConfidence: confidence, legalContext, quickAction, referencedLinks, } = useSelector((state: RootState) => state.aiSession);
 
   // Check if screen is desktop size for default sidebar states
   const [sidebarOpen, setSidebarOpen] = useState(() => {
@@ -103,9 +73,6 @@ const ChatbotClient = () => {
   });
 
   const [showContextPanel, setShowContextPanel] = useState(false);
-
-  // Extract message from URL parameters
-  const urlMessage = searchParams.get("message");
 
   ///////////////////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////////////////////////
   // Get Lawyers
@@ -165,13 +132,7 @@ const ChatbotClient = () => {
       dispatch(updateStreamingMessage(data));
     };
 
-    const handleMetadataDisplay = (data: {
-      aiConfidence: number;
-      references: string[];
-      cases: string[];
-      legalContext: string;
-      quickAction: string;
-    }) => {
+    const handleMetadataDisplay = (data: { aiConfidence: number; references: string[]; cases: string[]; legalContext: string; quickAction: string; }) => {
       dispatch(setChatMetadata(data));
       dispatch(setIsMetadataLoading(false));
     };

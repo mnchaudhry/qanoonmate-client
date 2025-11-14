@@ -41,10 +41,14 @@ export default function FiltersAndSearch({ searchQuery, setSearchQuery, statusFi
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
               <SelectItem value="confirmed">Confirmed</SelectItem>
+              <SelectItem value="scheduled">Scheduled</SelectItem>
+              <SelectItem value="in-progress">In Progress</SelectItem>
               <SelectItem value="completed">Completed</SelectItem>
               <SelectItem value="cancelled">Cancelled</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="rescheduled">Rescheduled</SelectItem>
+              <SelectItem value="no-show">No Show</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -67,23 +71,7 @@ export default function FiltersAndSearch({ searchQuery, setSearchQuery, statusFi
           </Select>
         </div>
 
-        {/* View */}
-        <div className="w-full md:w-40">
-          <Select
-            value={view}
-            onValueChange={setView}
-          >
-            <SelectTrigger className="h-10">
-              <SelectValue placeholder="View" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="upcoming">Upcoming</SelectItem>
-              <SelectItem value="past">Past</SelectItem>
-              <SelectItem value="all">All</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
+        {/* View Toggle */}
         <ViewToggle onViewChange={setView} view={view} />
       </div>
     </div>

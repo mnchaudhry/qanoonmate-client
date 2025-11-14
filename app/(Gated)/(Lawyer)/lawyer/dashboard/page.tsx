@@ -12,8 +12,6 @@ import ProfileProgress from './_components/ProfileProgress'
 
 export default function LawyerDashboard() {
 
-
-
   return (
     <div className="space-y-6 pb-4">
       {/* Header */}

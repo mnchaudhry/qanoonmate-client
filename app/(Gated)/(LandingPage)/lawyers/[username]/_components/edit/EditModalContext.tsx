@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { updateMeLawyer } from "@/store/reducers/lawyerSlice";
-import { updateConsultationSettings, updateAvailability } from "@/store/reducers/lawyerSettingsSlice";
+import { updateConsultationSettings } from "@/store/reducers/lawyerSettingsSlice";
 import { useEffect } from "react";
 
 interface EditModalContextType {
@@ -27,8 +27,8 @@ interface EditModalContextType {
 
   closeAllModals: () => void;
 
-  lawyer: Lawyer | null;
-  setLawyer: (lawyer: Lawyer | null) => void;
+  lawyer: ILawyer | null;
+  setLawyer: (lawyer: ILawyer | null) => void;
 
   // API functions
   updateProfile: (updates: any) => Promise<void>;
@@ -37,10 +37,10 @@ interface EditModalContextType {
 
 const EditModalContext = createContext<EditModalContextType | undefined>(undefined);
 
-export function EditModalProvider({ children, lawyer }: { children: ReactNode; lawyer: Lawyer | null }) {
+export function EditModalProvider({ children, lawyer }: { children: ReactNode; lawyer: ILawyer | null }) {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
-  const [currentLawyer, setCurrentLawyer] = useState<Lawyer | null>(lawyer);
+  const [currentLawyer, setCurrentLawyer] = useState<ILawyer | null>(lawyer);
   const [isOverviewModalOpen, setIsOverviewModalOpen] = useState(false);
   const [isExpertiseModalOpen, setIsExpertiseModalOpen] = useState(false);
   const [isCredentialsModalOpen, setIsCredentialsModalOpen] = useState(false);
@@ -67,7 +67,7 @@ export function EditModalProvider({ children, lawyer }: { children: ReactNode; l
     setIsAvailabilityModalOpen(false);
   };
 
-  const setLawyer = (newLawyer: Lawyer | null) => {
+  const setLawyer = (newLawyer: ILawyer | null) => {
     setCurrentLawyer(newLawyer);
   };
 
@@ -96,13 +96,16 @@ export function EditModalProvider({ children, lawyer }: { children: ReactNode; l
     if (!currentLawyer || !user) throw new Error("No lawyer profile or user available");
 
     try {
+      console.log(`=== UPDATE SECTION: ${section} ===`);
+      console.log("Data type:", typeof data);
+      console.log("Is Array:", Array.isArray(data));
+      console.log("Data:", JSON.stringify(data, null, 2));
+      console.log("==============================");
+      
       // Route to appropriate Redux action based on section
       switch (section) {
         case 'consultation':
           await dispatch(updateConsultationSettings(data)).unwrap();
-          break;
-        case 'availability':
-          await dispatch(updateAvailability(data)).unwrap();
           break;
         default:
           // For other sections, use the general updateMeLawyer

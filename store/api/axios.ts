@@ -13,14 +13,14 @@ export const FormDataAPI = axios.create({
 });
 
 // --- CSRF Token Management ---
-let csrfToken: string | null = null;
+// let csrfToken: string | null = null;
 export const fetchAndSetCSRFToken = async () => {
     try {
-        const { data } = await APIClient.get('/auth/csrf-token');
-        csrfToken = data?.csrfToken;
-        if (csrfToken) {
-            APIClient.defaults.headers['X-CSRF-Token'] = csrfToken;
-        }
+        // const { data } = await APIClient.get('/auth/csrf-token');
+        // csrfToken = data?.csrfToken;
+        // if (csrfToken) {
+        //     APIClient.defaults.headers['X-CSRF-Token'] = csrfToken;
+        // }
     } catch (err) {
         // Optionally handle error
     }

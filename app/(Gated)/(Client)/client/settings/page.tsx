@@ -6,7 +6,7 @@ import Preferences from './_components/Preferences';
 import Verifications from './_components/Verifications';
 import DangerZone from './_components/DangerZone';
 import { User, FileText, AlertTriangle, Settings, Shield, CreditCard, Bell } from 'lucide-react';
-import PageHeader from '../_components/PageHeader';
+import DashboardPageHeader from '@/components/DashboardPageHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Billing from './_components/Billing';
@@ -79,7 +79,7 @@ const SettingsPage = () => {
     //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
     return (
         <div className="w-full space-y-6">
-            <PageHeader
+            <DashboardPageHeader
                 title="Account Settings"
                 description="Manage your account preferences, security, and personal information."
             />

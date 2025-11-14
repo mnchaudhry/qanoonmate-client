@@ -11,7 +11,6 @@ import { AppDispatch } from '@/store/store';
 import { verifyOTP } from '@/store/reducers/authSlice';
 import { forgetPasswordRequest } from '@/store/reducers/authSlice';
 import localStorageManager from '@/utils/localStorage';
-import AuthFlowGuard from '@/components/auth/AuthFlowGuard';
 
 
 const VerifyOTP: React.FC = () => {

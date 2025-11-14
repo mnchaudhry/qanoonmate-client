@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Consultation } from "@/store/types/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, XCircle, Clock, RefreshCw, Video } from "lucide-react";
@@ -10,13 +9,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { cancelConsultation } from "@/store/reducers/consultationSlice";
-import { ConsultationMode, ConsultationStatus } from "@/lib/enums";
+import { CancellationReason, ConsultationStatus } from "@/lib/enums";
+import { IConsultation } from "@/store/types/consultation.types";
 
 interface StatusAndActionsProps {
-  consultation: Consultation;
+  consultation: IConsultation;
 }
 
 export default function StatusAndActions({ consultation }: StatusAndActionsProps) {
+
   const dispatch = useDispatch<AppDispatch>();
   const [cancelReason, setCancelReason] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -72,7 +73,7 @@ export default function StatusAndActions({ consultation }: StatusAndActionsProps
 
     dispatch(cancelConsultation({
       id: consultation._id || "",
-      reason: cancelReason,
+      request: { reason: CancellationReason.CLIENT_REQUEST },
     }));
 
     setIsDialogOpen(false);
@@ -107,7 +108,7 @@ export default function StatusAndActions({ consultation }: StatusAndActionsProps
         </div>
 
         <div className="flex flex-wrap gap-2 justify-center">
-          {consultation.status === ConsultationStatus.SCHEDULED && consultation.mode === ConsultationMode.VIDEO_CALL && (
+          {consultation.status === ConsultationStatus.SCHEDULED && (
             <Button className="bg-green-600 hover:bg-green-700">
               <Video className="h-4 w-4 mr-2" />
               Join Meeting

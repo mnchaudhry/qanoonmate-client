@@ -3,22 +3,14 @@ import { RotateCcw } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { PaymentMethodConfig, type PaymentFilters } from '@/store/types/payments.types';
-import { Skeleton } from '@/components/ui/skeleton';
+import { type PaymentFilters } from '@/store/types/payments.types';
 
 interface PaymentFiltersProps {
   filters: PaymentFilters;
   onFiltersChange: (filters: PaymentFilters) => void;
-  paymentMethods: PaymentMethodConfig[];
-  loading: boolean;
 }
 
-const PaymentFilters: React.FC<PaymentFiltersProps> = ({ 
-  filters, 
-  onFiltersChange, 
-  paymentMethods, 
-  loading 
-}) => {
+const PaymentFilters: React.FC<PaymentFiltersProps> = ({ filters, onFiltersChange }) => {
 
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
   const handleDateRangeChange = (value: string) => {
@@ -56,11 +48,6 @@ const PaymentFilters: React.FC<PaymentFiltersProps> = ({
     onFiltersChange({ ...filters, status });
   };
 
-  const handlePaymentMethodChange = (value: string) => {
-    const paymentMethod = value === 'all' ? undefined : [value as any];
-    onFiltersChange({ ...filters, paymentMethod });
-  };
-
   const handleSearchChange = (value: string) => {
     onFiltersChange({ ...filters, search: value });
   };
@@ -70,7 +57,6 @@ const PaymentFilters: React.FC<PaymentFiltersProps> = ({
       dateFrom: undefined,
       dateTo: undefined,
       status: undefined,
-      paymentMethod: undefined,
       search: '',
       page: 1,
       limit: 10
@@ -80,7 +66,7 @@ const PaymentFilters: React.FC<PaymentFiltersProps> = ({
   // Helper function to get current date range value for display
   const getCurrentDateRangeValue = () => {
     if (!filters.dateFrom || !filters.dateTo) return 'all';
-    
+
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -98,10 +84,6 @@ const PaymentFilters: React.FC<PaymentFiltersProps> = ({
 
   const getCurrentStatusValue = () => {
     return filters.status && filters.status.length > 0 ? filters.status[0] : 'all';
-  };
-
-  const getCurrentPaymentMethodValue = () => {
-    return filters.paymentMethod && filters.paymentMethod.length > 0 ? filters.paymentMethod[0] : 'all';
   };
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
@@ -142,23 +124,6 @@ const PaymentFilters: React.FC<PaymentFiltersProps> = ({
               <SelectItem value="REFUNDED">Refunded</SelectItem>
             </SelectContent>
           </Select>
-        </div>
-        <div className="flex-1 min-w-0">
-          {loading ? (
-            <Skeleton className="w-full h-[42px]" />
-          ) : (
-            <Select value={getCurrentPaymentMethodValue()} onValueChange={handlePaymentMethodChange}>
-              <SelectTrigger className="w-full h-[42px]">
-                <SelectValue placeholder="All Methods" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Methods</SelectItem>
-                {paymentMethods.map(method => (
-                  <SelectItem key={method.id} value={method.id}>{method.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
         </div>
         <div className="flex items-end">
           <Button variant="secondary" className="w-full flex items-center gap-2" onClick={handleReset}>

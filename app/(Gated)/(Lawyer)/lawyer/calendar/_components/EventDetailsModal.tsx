@@ -7,16 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  Edit, 
-  Trash2, 
-  Calendar, 
-  Save, 
-  X, 
-  MapPin, 
-  Clock, 
-  Tag 
-} from 'lucide-react';
+import { Edit, Trash2, Calendar, Save, X, Clock, Tag } from 'lucide-react';
 import { CalendarEvent } from '../page';
 
 interface Props {
@@ -35,7 +26,6 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
     startTime: '',
     endTime: '',
     location: '',
-    locationType: 'physical',
     type: 'consultation',
     tags: [],
     notes: '',
@@ -55,7 +45,6 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
         startTime: '',
         endTime: '',
         location: '',
-        locationType: 'physical',
         type: 'consultation',
         tags: [],
         notes: '',
@@ -131,8 +120,8 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
                 </div>
                 <div>
                   <Label htmlFor="type">Event Type</Label>
-                  <Select 
-                    value={formData.type} 
+                  <Select
+                    value={formData.type}
                     onValueChange={(value) => handleInputChange('type', value)}
                   >
                     <SelectTrigger className="border-secondary-200">
@@ -189,21 +178,6 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
                     onChange={(e) => handleInputChange('location', e.target.value)}
                     className="border-secondary-200"
                   />
-                </div>
-                <div>
-                  <Label htmlFor="locationType">Location Type</Label>
-                  <Select 
-                    value={formData.locationType} 
-                    onValueChange={(value) => handleInputChange('locationType', value)}
-                  >
-                    <SelectTrigger className="border-secondary-200">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="physical">Physical</SelectItem>
-                      <SelectItem value="online">Online</SelectItem>
-                    </SelectContent>
-                  </Select>
                 </div>
               </div>
 
@@ -287,13 +261,6 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
                         {formData.startTime && formatTime(formData.startTime)} – {formData.endTime && formatTime(formData.endTime)}
                       </span>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 mb-4">
-                    <MapPin className="w-4 h-4 text-secondary-600" />
-                    <span className="text-sm text-secondary-700">
-                      {formData.location} ({formData.locationType})
-                    </span>
                   </div>
 
                   {formData.tags && formData.tags.length > 0 && (

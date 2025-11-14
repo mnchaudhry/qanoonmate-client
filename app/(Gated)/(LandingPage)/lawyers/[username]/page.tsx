@@ -16,7 +16,7 @@ import { SimilarLawyers } from "./_components/SimilarLawyers";
 import { EditModalProvider } from "./_components/edit/EditModalContext";
 import { getLawyerByUsername } from "@/store/reducers/lawyerSlice";
 import { RootState, AppDispatch } from "@/store/store";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { PakistanCities, PakistanProvinces, LawCategory } from "@/lib/enums";
 
 export default function LawyerProfilePage() {
@@ -25,7 +25,7 @@ export default function LawyerProfilePage() {
   const params = useParams();
   const username = params.username as string;
   const dispatch = useDispatch<AppDispatch>();
-  const { user } = useSelector((state: RootState) => state.auth) as { user: Lawyer };
+  const { user } = useSelector((state: RootState) => state.auth) as { user: ILawyer };
   const { selectedLawyer } = useSelector((state: RootState) => state.lawyer);
 
   //////////////////////////////////////////////// STATES ///////////////////////////////////////////
@@ -44,7 +44,7 @@ export default function LawyerProfilePage() {
       }
 
       if (!selectedLawyer && username && username != 'me') {
-        dispatch(getLawyerByUsername(username))
+        dispatch(getLawyerByUsername({ username }))
           .then(({ payload, meta }: any) => {
             if (meta.requestStatus === 'fulfilled' && payload?.data) {
               const profile = convertLawyerToProfile(payload.data);
@@ -74,7 +74,7 @@ export default function LawyerProfilePage() {
   }, [fetchLawyerProfile, username]);
 
   //////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////
-  const convertLawyerToProfile = (lawyer: Lawyer): LawyerProfile => {
+  const convertLawyerToProfile = (lawyer: ILawyer): LawyerProfile => {
     return {
       personalInfo: {
         firstname: lawyer.firstname,
@@ -124,8 +124,8 @@ export default function LawyerProfilePage() {
           year: 2010,
           field: "Law"
         })) || [],
-        barCouncil: lawyer.barCouncil,
-        licenseNumber: lawyer.licenseNumber,
+        barCouncil: lawyer.barCouncil!,
+        licenseNumber: lawyer.licenseNumber!,
         licenseValidity: lawyer.licenseValidity || undefined,
         barAssociation: lawyer.barAssociation || "",
         barCouncilEnrollmentDate: lawyer.barCouncilEnrollmentDate,
@@ -147,19 +147,7 @@ export default function LawyerProfilePage() {
         caseStudies: []
       },
       services: {
-        consultationFees: lawyer.settings?.consultation?.fees?.map(fee => ({
-          mode: fee.mode as any,
-          duration: 60,
-          price: fee.amount,
-          currency: "PKR",
-          description: "Legal consultation"
-        })) || [{
-          mode: "video" as const,
-          duration: 60,
-          price: 5000,
-          currency: "PKR",
-          description: "Video consultation"
-        }],
+        hourlyRate: lawyer.hourlyRate || 0,
         availability: {
           timezone: "Asia/Karachi",
           workingDays: {
@@ -175,7 +163,6 @@ export default function LawyerProfilePage() {
         },
         responseTime: "24 hours",
         serviceAreas: [lawyer.location?.city || "Lahore"],
-        consultationModes: lawyer.settings?.consultation?.modes || ["video", "in-person"]
       },
       verification: {
         identityVerified: lawyer.identityVerified || false,

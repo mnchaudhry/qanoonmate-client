@@ -8,7 +8,6 @@ import { resetPassword } from '@/store/reducers/authSlice';
 import { AppDispatch } from '@/store/store';
 import { UserRole } from '@/lib/enums';
 import localStorageManager from '@/utils/localStorage';
-import AuthFlowGuard from '@/components/auth/AuthFlowGuard';
 
 
 const NewPassword: React.FC = () => {

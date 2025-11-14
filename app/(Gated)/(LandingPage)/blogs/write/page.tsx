@@ -4,11 +4,9 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import TagInput from "@/components/ui/tag-input"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { useRouter } from "next/navigation"
 import { toast } from "react-hot-toast"
 import { Eye, EyeOff, Save, Send, Upload, Import, FileDown, Image as ImageIcon } from "lucide-react"
 import dynamic from "next/dynamic"
-import { createBlog } from "@/store/api"
 import type { APIResponse } from "@/store/types/api"
 import { editorDataToMarkdown, editorDataToHTML, markdownToEditorData } from "@/utils/editorjs-convert"
 
@@ -44,7 +42,6 @@ function estimateReadingTimeFromData(data: EditorData): number {
 const WriteBlogPage: React.FC = () => {
 
   //////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////
-  const router = useRouter()
 
   //////////////////////////////////////////////// STATES ///////////////////////////////////////////
   const [title, setTitle] = useState("")
@@ -144,14 +141,7 @@ const WriteBlogPage: React.FC = () => {
         status,
         readingTime,
       }
-      const { data: resp } = await createBlog(payload as any)
-      if ((resp as any)?.success) {
-        toast.success(status === "published" ? "Blog published" : "Draft saved")
-        localStorageManager.removeItem(AUTOSAVE_KEY)
-        router.push("/blogs")
-      } else {
-        throw new Error((resp as any)?.message || "Failed to save")
-      }
+      console.log('payload', payload)
     } catch (e: any) {
       toast.error(e?.message || "Failed to save")
     } finally {

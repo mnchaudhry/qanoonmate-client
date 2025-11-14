@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, MessageSquare, FileText, Star, Clock, User, MoreHorizontal, Filter, Search, AlertCircle, Loader2 } from "lucide-react";
-import { User as UserType } from "@/store/types/user.types";
+import { IUser as UserType } from "@/store/types/user.types";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 

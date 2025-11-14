@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Eye, Edit, MoreVertical, ShieldAlert, FileText, Key } from "lucide-react"
-import { User } from "@/store/types/user.types"
+import { IUser } from "@/store/types/user.types"
 import { Pagination } from "@/components/ui/pagination"
 import { useDispatch, useSelector } from "react-redux"
 import { AppDispatch, RootState } from "@/store/store"
@@ -59,7 +59,7 @@ export default function UsersTable({ setIsModalOpen }: UsersTableProps) {
   const handlePageChange = (page: number) => {
     dispatch(setCurrentPage(page));
   }
-  const onViewUser = (user: User) => {
+  const onViewUser = (user: IUser) => {
     dispatch(setCurrentUser(user));
     setIsModalOpen(true);
   }

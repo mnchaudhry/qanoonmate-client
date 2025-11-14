@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { User } from "@/store/types/user.types";
+import { IUser } from "@/store/types/user.types";
 import { toast } from "react-hot-toast";
 import { UserCircle, MapPin, Globe, Phone, Mail, Calendar, Save, X, Lock } from "lucide-react";
 
 interface PersonalInfoProps {
-  user: User | null;
-  onUpdate: (updatedUser: Partial<User>) => Promise<void>;
+  user: IUser | null;
+  onUpdate: (updatedUser: Partial<IUser>) => Promise<void>;
   isEditing: boolean;
 }
 

@@ -312,21 +312,23 @@ const LawyerSignupForm = () => {
         {/* Security */}
         <div className="relative">
           <label className="mb-2.5 block font-medium text-foreground">Password</label>
-          <input
-            type={showPassword ? "text" : "password"}
-            value={formData.password}
-            onChange={(e) => updateForm('password', e.target.value)}
-            placeholder="At least 8 characters with uppercase, lowercase & number"
-            maxLength={128}
-            className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-          >
-            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-          </button>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={(e) => updateForm('password', e.target.value)}
+              placeholder="At least 8 characters with uppercase, lowercase & number"
+              maxLength={128}
+              className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-foreground outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
           {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
         </div>
 

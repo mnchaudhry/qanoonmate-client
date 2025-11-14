@@ -3,23 +3,23 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
-import { fetchPayments, fetchPaymentStats, fetchPaymentMethods, fetchAvailableGateways } from '@/store/reducers/paymentSlice';
+import { getPayments, getPaymentStats } from '@/store/reducers/paymentSlice';
 import PaymentStats from './_components/PaymentStats';
 import PaymentFilters from './_components/PaymentFilters';
 import PaymentTable from './_components/PaymentTable';
 import InvoiceDrawer from './_components/InvoiceDrawer';
 import PaymentSecurity from './_components/PaymentSecurity';
-import PageHeader from '../_components/PageHeader';
-import { Payment } from '@/store/types/payments.types';
+import DashboardPageHeader from '@/components/DashboardPageHeader';
+import { IPayment } from '@/store/types/payments.types';
 
 const PaymentPage = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { payments, paymentStats, paymentMethods, loading, pagination } = useSelector((state: RootState) => state.payments);
+  const { payments, paymentStats, loading, pagination } = useSelector((state: RootState) => state.payments);
 
   //////////////////////////////////////////////// STATE /////////////////////////////////////////////////
-  const [selectedTransaction, setSelectedTransaction] = useState<Payment | null>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<IPayment | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [filters, setFilters] = useState<PaymentFilters>({ 
+  const [filters, setFilters] = useState({
     dateFrom: undefined,
     dateTo: undefined,
     status: undefined,
@@ -31,14 +31,24 @@ const PaymentPage = () => {
 
   //////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////
   useEffect(() => {
-    dispatch(fetchPayments(filters));
-    dispatch(fetchPaymentStats({}));
-    dispatch(fetchPaymentMethods());
-    dispatch(fetchAvailableGateways());
+    const { page, limit, ...paymentFilters } = filters;
+    // Convert date strings to Date objects if they exist
+    const processedFilters = {
+      ...paymentFilters,
+      dateFrom: paymentFilters.dateFrom ? new Date(paymentFilters.dateFrom) : undefined,
+      dateTo: paymentFilters.dateTo ? new Date(paymentFilters.dateTo) : undefined,
+    };
+
+    dispatch(getPayments({
+      filters: processedFilters,
+      page,
+      limit
+    }));
+    dispatch(getPaymentStats({}));
   }, [dispatch, filters]);
 
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
-  const handleTransactionClick = (transaction: Payment) => {
+  const handleTransactionClick = (transaction: IPayment) => {
     setSelectedTransaction(transaction);
     setIsDrawerOpen(true);
   };
@@ -66,7 +76,7 @@ const PaymentPage = () => {
         transaction={selectedTransaction}
       />
 
-      <PageHeader
+      <DashboardPageHeader
         title="Payment Overview"
         description="View your payment history and statistics."
       />
@@ -79,8 +89,6 @@ const PaymentPage = () => {
       <PaymentFilters
         filters={filters}
         onFiltersChange={handleFiltersChange}
-        paymentMethods={paymentMethods}
-        loading={loading.paymentMethods}
       />
 
       <PaymentTable

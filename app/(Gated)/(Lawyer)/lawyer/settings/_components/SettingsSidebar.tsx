@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { User, Briefcase, CheckCircle, Clock, ExternalLink, Eye, Shield, Bell, CreditCard, MessageSquare, Database } from "lucide-react";
+import { User, Briefcase, CheckCircle, ExternalLink, Eye, Shield, Bell, CreditCard, MessageSquare, Database } from "lucide-react";
 import { ProfileCompletionData } from "@/lib/types/profile.types";
 
 interface SettingsSidebarProps {
@@ -33,7 +33,7 @@ const settingsSections = [
     ]
   },
   {
-    title: 'Services & Availability',
+    title: 'Consultations',
     items: [
       {
         id: 'consultation',
@@ -41,31 +41,24 @@ const settingsSections = [
         description: 'Configure consultation modes and fees',
         icon: Briefcase,
         required: true
-      },
-      {
-        id: 'availability',
-        title: 'Availability',
-        description: 'Set your working hours and schedule',
-        icon: Clock,
-        required: true
-      },
+      }
     ]
   },
   {
     title: 'Account & Security',
     items: [
       {
+        id: 'notifications',
+        title: 'Preferences',
+        description: 'Preferences',
+        icon: Bell,
+        required: false
+      },
+      {
         id: 'security',
         title: 'Security & Privacy',
         description: 'Password, 2FA, and privacy settings',
         icon: Shield,
-        required: false
-      },
-      {
-        id: 'notifications',
-        title: 'Notifications',
-        description: 'Email and push notification preferences',
-        icon: Bell,
         required: false
       },
       {
@@ -114,30 +107,7 @@ const settingsSections = [
 
 export function SettingsSidebar({ activeSection, onSectionChange, completion }: SettingsSidebarProps) {
 
-  const getStatusIcon = (itemId: string) => {
-    if (!completion) return null;
-
-    const sectionMap: Record<string, keyof typeof completion.sectionCompletion> = {
-      'profile': 'personalInfo',
-      'consultation': 'services',
-      'availability': 'services',
-      'verification': 'verification'
-    };
-
-    const completionKey = sectionMap[itemId];
-    if (completionKey) {
-      const sectionCompletion = completion.sectionCompletion[completionKey];
-
-      if (sectionCompletion.completed) {
-        return <CheckCircle className="w-4 h-4 text-primary" />;
-      } else if (sectionCompletion.percentage > 0) {
-        return <Clock className="w-4 h-4 text-amber-600" />;
-      }
-    }
-
-    return null;
-  };
-
+  ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////// 
   const handleItemClick = (item: any) => {
     if (item.isExternal) {
       window.open(item.externalPath, '_blank', 'noopener,noreferrer');
@@ -146,10 +116,11 @@ export function SettingsSidebar({ activeSection, onSectionChange, completion }: 
     }
   };
 
+  ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////// 
   return (
-    <div className="w-full lg:w-64 bg-card border-r border-border h-full">
+    <div className="w-full lg:w-64 bg-card h-full">
       <div className="p-4">
-        <h2 className="text-lg font-semibold text-foreground mb-6">Settings</h2>
+        <h2 className="text-xl font-semibold text-foreground mb-6">Settings</h2>
 
         <nav className="space-y-6">
           {settingsSections.map((section, sectionIndex) => (
@@ -158,10 +129,9 @@ export function SettingsSidebar({ activeSection, onSectionChange, completion }: 
                 {section.title}
               </h3>
 
-              <div className="space-y-0.5">
+              <div className="">
                 {section.items.map((item) => {
                   const isActive = activeSection === item.id;
-                  const statusIcon = getStatusIcon(item.id);
                   const Icon = item.icon;
 
                   return (
@@ -169,10 +139,9 @@ export function SettingsSidebar({ activeSection, onSectionChange, completion }: 
                       key={item.id}
                       onClick={() => handleItemClick(item)}
                       className={cn(
-                        "w-full flex items-center justify-between p-3 rounded-lg text-left transition-all duration-200",
-                        "focus:outline-none focus:ring-2 focus:ring-primary/20",
+                        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-left transition-all duration-200",
                         isActive
-                          ? "bg-primary/10 text-primary border border-primary/20"
+                          ? "pl-6 text-primary"
                           : "text-foreground hover:text-primary"
                       )}
                     >
@@ -190,7 +159,6 @@ export function SettingsSidebar({ activeSection, onSectionChange, completion }: 
                           </div>
                         </div>
                       </div>
-                      {statusIcon}
                     </button>
                   );
                 })}

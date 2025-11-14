@@ -39,13 +39,6 @@ const LawyersDirectory = () => {
   const urlSortBy = searchParams.get("sort") || "relevance";
   const urlOrder = searchParams.get("order") || "desc";
 
-  /////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////
-  const [searchTerm, setSearchTerm] = useState(urlSearch);
-  const [currentPage, setCurrentPage] = useState(urlPage);
-  const [view, setView] = useState<"list" | "grid">(urlView as "list" | "grid");
-  const [selectedFilters, setSelectedFilters] = useState({ specialization: urlSpecialization, language: urlLanguage, availability: urlAvailability, city: urlCity, province: urlProvince, rating: urlRating, fee_range: urlFeeRange, experience_range: urlExperienceRange, sortBy: urlSortBy, order: urlOrder });
-
-  /////////////////////////////////////////////////// STATIC FILTER OPTIONS /////////////////////////////////////////////////////////
   const filterOptions = {
     specialization: Object.values(LawCategory),
     language: Object.values(Languages),
@@ -56,6 +49,12 @@ const LawyersDirectory = () => {
     fee_range: Object.values(LawyerFeeRange).map(fee => ({ label: fee, value: fee })),
     experience_range: Object.values(LawyerExperienceRange).map(experience => ({ label: experience, value: experience }))
   };
+
+  /////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////
+  const [searchTerm, setSearchTerm] = useState(urlSearch);
+  const [currentPage, setCurrentPage] = useState(urlPage);
+  const [view, setView] = useState<"list" | "grid">(urlView as "list" | "grid");
+  const [selectedFilters, setSelectedFilters] = useState({ specialization: urlSpecialization, language: urlLanguage, availability: urlAvailability, city: urlCity, province: urlProvince, rating: urlRating, fee_range: urlFeeRange, experience_range: urlExperienceRange, sortBy: urlSortBy, order: urlOrder });
 
   /////////////////////////////////////////////////// DEBOUNCED VALUES /////////////////////////////////////////////////////////
   const debouncedSearch = useDebounce(searchTerm, 500);
@@ -146,6 +145,16 @@ const LawyersDirectory = () => {
 
     dispatch(getLawyers(params));
   }, [selectedFilters, debouncedSearch, currentPage, dispatch]);
+
+  // Debug: Log lawyers to check structure
+  useEffect(() => {
+    if (lawyers && lawyers.length > 0) {
+      console.log('First lawyer:', lawyers[0]);
+      console.log('Lawyers type:', typeof lawyers[0]);
+      console.log('Has _id?', lawyers[0]?._id);
+      console.log('Has success?', lawyers[0]?.success);
+    }
+  }, [lawyers]);
 
   /////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
 

@@ -9,26 +9,16 @@ import dayGridPlugin from '@fullcalendar/daygrid/index.js';
 import timeGridPlugin from '@fullcalendar/timegrid/index.js';
 import interactionPlugin from '@fullcalendar/interaction/index.js';
 import EventDetailsModal from './_components/EventDetailsModal';
-import PageHeader from '../_components/PageHeader';
+import DashboardPageHeader from '@/components/DashboardPageHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  Plus,
-  Filter,
-  ChevronLeft,
-  ChevronRight,
-  AlertCircle,
-  CheckCircle2,
-  TrendingUp
-} from 'lucide-react';
-import { Consultation } from '@/store/types/api';
+import { CalendarIcon, Clock, Plus, Filter, ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, TrendingUp } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ConsultationMode, ConsultationStatus, ConsultationType } from '@/lib/enums';
+import { ConsultationStatus, ConsultationType } from '@/lib/enums';
 import { enumToLabel } from '@/lib/utils';
+import { IConsultation } from '@/store/types/consultation.types';
 
 export interface CalendarEvent {
   id: string;
@@ -37,16 +27,14 @@ export interface CalendarEvent {
   endTime: string;
   date: string;
   location: string;
-  locationType: 'online' | 'physical';
   type: 'case' | 'consultation' | 'review';
-  mode?: ConsultationMode;
   status?: ConsultationStatus;
   tags: string[];
   notes: string;
   clientName?: string;
   judgeName?: string;
   venue?: string;
-  consultation?: Consultation;
+  consultation?: IConsultation;
 }
 
 export type CalendarView = 'dayGridDay' | 'timeGridWeek' | 'dayGridMonth';
@@ -55,7 +43,7 @@ const Calendar = () => {
   /////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
   const calendarRef = React.useRef<any>(null);
-  
+
   /////////////////////////////////////////////// STATES /////////////////////////////////////////////////////
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -65,7 +53,7 @@ const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
-  
+
   const { consultations } = useSelector((state: RootState) => state.consultation);
 
   /////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////
@@ -96,8 +84,8 @@ const Calendar = () => {
         return true;
       })
       .map(consultation => {
-        const clientName = typeof consultation.clientId === 'object' 
-          ? `${consultation.clientId.firstname} ${consultation.clientId.lastname}`
+        const clientName = typeof consultation?.client === 'object'
+          ? `${consultation?.client.firstname} ${consultation?.client.lastname}`
           : 'Unknown Client';
 
         const startDate = new Date(consultation.scheduledDate);
@@ -110,11 +98,9 @@ const Calendar = () => {
           endTime: endDate.toTimeString().slice(0, 5),
           date: startDate.toISOString().split('T')[0],
           location: consultation.location || consultation.meetingLink || 'Online',
-          locationType: consultation.mode === ConsultationMode.IN_PERSON ? 'physical' as const : 'online' as const,
           type: 'consultation' as const,
-          mode: consultation.mode,
           status: consultation.status,
-          tags: [enumToLabel(consultation.type), enumToLabel(consultation.mode)],
+          tags: [enumToLabel(consultation.type)],
           notes: consultation.description || '',
           clientName,
           consultation
@@ -189,7 +175,6 @@ const Calendar = () => {
       startTime: '09:00',
       endTime: '10:00',
       location: '',
-      locationType: 'online',
       type: 'consultation',
       tags: [],
       notes: ''
@@ -261,7 +246,7 @@ const Calendar = () => {
   return (
     <div className="space-y-6 pb-8">
       {/* Header */}
-      <PageHeader
+      <DashboardPageHeader
         title="Calendar"
         description="Manage your schedule, view upcoming consultations, and organize your appointments efficiently."
         action={
@@ -371,7 +356,7 @@ const Calendar = () => {
             {/* Status Filter */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
+                <Button
                   variant={statusFilter !== 'all' ? 'default' : 'outline'}
                   className="h-9 gap-2"
                 >
@@ -408,7 +393,7 @@ const Calendar = () => {
             {/* Type Filter */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
+                <Button
                   variant={typeFilter !== 'all' ? 'default' : 'outline'}
                   className="h-9 gap-2"
                 >

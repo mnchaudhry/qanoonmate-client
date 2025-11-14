@@ -6,12 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, MapPin, Clock, Shield, MessageCircle, Calendar, DollarSign, CheckCircle } from "lucide-react";
 import { LawyerProfile } from "@/lib/types/profile.types";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useAppSelector } from "@/store/store";
 import { PlaceholderLawyer } from "@/constants/images";
 import { enumToLabel } from "@/lib/utils";
 import { useRouter, useParams } from "next/navigation";
-import { Lawyer } from "@/store/types/lawyer.types";
 
 interface LawyerProfileHeaderProps {
   lawyer: LawyerProfile;
@@ -23,20 +21,15 @@ export function LawyerProfileHeader({ lawyer }: LawyerProfileHeaderProps) {
   const router = useRouter();
   const params = useParams();
   const username = params.username as string;
-  const { user } = useSelector((state: RootState) => state.auth) as { user: Lawyer };
-  const { selectedLawyer } = useSelector((state: RootState) => state.lawyer);
+  console.log('username', username)
+  const { user } = useAppSelector(state => state.auth);
+  const { selectedLawyer } = useAppSelector(state => state.lawyer);
   const isOwnProfile = user?.email === lawyer.personalInfo.email;
 
   ////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////
-  const getLowestPrice = () => {
-    if (!lawyer.services.consultationFees.length) return null;
-    const lowestPrice = Math.min(...lawyer.services.consultationFees.map(fee => fee.price));
-    return lowestPrice;
-  };
-
   const handleSendMessage = () => {
     if (isOwnProfile) return;
-    
+
     // Navigate to messages with the lawyer
     const lawyerId = selectedLawyer?._id;
     if (lawyerId) {
@@ -46,7 +39,7 @@ export function LawyerProfileHeader({ lawyer }: LawyerProfileHeaderProps) {
 
   const handleBookConsultation = () => {
     if (isOwnProfile) return;
-    
+
     // Navigate to booking page
     router.push(`/lawyers/${username}/book`);
   };
@@ -119,7 +112,7 @@ export function LawyerProfileHeader({ lawyer }: LawyerProfileHeaderProps) {
                     {!lawyer.verification.identityVerified && isOwnProfile && (
                       <div className="flex items-center gap-1">
                         <CheckCircle className="w-4 h-4 text-primary" />
-                        <span 
+                        <span
                           className="text-sm text-primary underline cursor-pointer hover:text-primary/80"
                           onClick={handleVerifyIdentity}
                         >
@@ -133,14 +126,12 @@ export function LawyerProfileHeader({ lawyer }: LawyerProfileHeaderProps) {
 
 
                 {/* Pricing Display */}
-                {getLowestPrice() && (
-                  <div className="flex items-center mb-4">
-                    <DollarSign className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-semibold text-primary">
-                      {getLowestPrice()?.toLocaleString()} PKR/hour
-                    </span>
-                  </div>
-                )}
+                <div className="flex items-center mb-4">
+                  <DollarSign className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold text-primary">
+                    {lawyer.services.hourlyRate} PKR/hour
+                  </span>
+                </div>
 
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-4">
                   <div className="flex items-center gap-1.5">
@@ -185,8 +176,8 @@ export function LawyerProfileHeader({ lawyer }: LawyerProfileHeaderProps) {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     onClick={handleSendMessage}
                     disabled={isOwnProfile}
@@ -194,8 +185,8 @@ export function LawyerProfileHeader({ lawyer }: LawyerProfileHeaderProps) {
                     <MessageCircle className="w-3.5 h-3.5 mr-1.5" />
                     Send Message
                   </Button>
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     variant="outline"
                     onClick={handleBookConsultation}
                     disabled={isOwnProfile}

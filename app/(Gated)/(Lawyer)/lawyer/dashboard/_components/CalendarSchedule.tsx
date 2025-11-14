@@ -7,21 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Calendar, Clock, ChevronRight, Video, MapPin, Users, AlertCircle } from "lucide-react"
+import { Calendar, Clock, ChevronRight, AlertCircle } from "lucide-react"
 import { format, isAfter, parseISO, startOfDay } from 'date-fns'
 import Link from "next/link"
-import { Consultation } from "@/store/types/api"
-import { User } from "@/store/types/user.types"
-import { ConsultationStatus, ConsultationMode } from "@/lib/enums"
+import { IUser } from "@/store/types/user.types"
+import { ConsultationStatus } from "@/lib/enums"
+import { IConsultation } from "@/store/types/consultation.types"
 
-const getEventIcon = (mode: ConsultationMode) => {
-  switch (mode) {
-    case ConsultationMode.IN_PERSON: return <Users className="h-4 w-4" />
-    case ConsultationMode.VIDEO_CALL: return <Video className="h-4 w-4" />
-    case ConsultationMode.PHONE_CALL: return <Clock className="h-4 w-4" />
-    default: return <Calendar className="h-4 w-4" />
-  }
-}
 
 const getStatusColor = (status: ConsultationStatus) => {
   switch (status) {
@@ -32,33 +24,31 @@ const getStatusColor = (status: ConsultationStatus) => {
   }
 }
 
-const getClientName = (clientId: User | string): string => {
+const getClientName = (clientId: IUser | string): string => {
   if (typeof clientId === 'string') return 'Client'
   return `${clientId.firstname || ''} ${clientId.lastname || ''}`.trim() || 'Client'
 }
 
 export default function CalendarSchedule() {
   const dispatch = useAppDispatch()
-  const { consultations, isLoading, error } = useAppSelector(state => state.consultation)
+  const { consultations, loading: isLoading, error } = useAppSelector(state => state.consultation)
 
   useEffect(() => {
-    dispatch(getMyConsultations({ 
-      limit: 10
-    }))
+    dispatch(getMyConsultations({ filters: { limit: 10 } }))
   }, [dispatch])
 
   // Filter and sort upcoming events
   const upcomingEvents = useMemo(() => {
     if (!consultations) return []
     const now = startOfDay(new Date())
-    
+
     return consultations
-      .filter((c: Consultation) => {
-        const consultationDate = parseISO(c.scheduledDate)
-        return isAfter(consultationDate, now) && 
-               [ConsultationStatus.SCHEDULED, ConsultationStatus.PENDING, ConsultationStatus.CONFIRMED].includes(c.status)
+      .filter((c: IConsultation) => {
+        const consultationDate = parseISO(c.scheduledDate.toDateString())
+        return isAfter(consultationDate, now) &&
+          [ConsultationStatus.SCHEDULED, ConsultationStatus.PENDING, ConsultationStatus.CONFIRMED].includes(c.status)
       })
-      .sort((a: Consultation, b: Consultation) => 
+      .sort((a: IConsultation, b: IConsultation) =>
         new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime()
       )
       .slice(0, 5)
@@ -111,19 +101,17 @@ export default function CalendarSchedule() {
           <div className="p-8 text-center">
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-sm text-muted-foreground">Failed to load schedule</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="mt-4"
-              onClick={() => dispatch(getMyConsultations({ 
-                limit: 10
-              }))}
+              onClick={() => dispatch(getMyConsultations({ filters: { limit: 10 } }))}
             >
               Try Again
             </Button>
           </div>
         </CardContent>
-      </Card>
+      </Card >
     )
   }
 
@@ -163,10 +151,10 @@ export default function CalendarSchedule() {
       </CardHeader>
       <CardContent className="max-h-[29rem] overflow-y-auto">
         <div className="space-y-4">
-          {upcomingEvents.map((event: Consultation) => {
-            const clientName = getClientName(event.clientId)
-            const consultationDate = parseISO(event.scheduledDate)
-            
+          {upcomingEvents.map((event: IConsultation) => {
+            const clientName = getClientName(event.client)
+            const consultationDate = parseISO(event.scheduledDate.toDateString())
+
             return (
               <Link
                 key={event._id}
@@ -175,35 +163,19 @@ export default function CalendarSchedule() {
               >
                 <div className="flex items-center justify-between p-4 bg-surface rounded-lg hover:bg-surface/80 transition-colors cursor-pointer">
                   <div className="flex items-center space-x-4">
-                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                      {getEventIcon(event.mode)}
-                    </div>
-                    <div>
-                      <h4 className="font-medium text-foreground capitalize">
-                        {event.type.replace('_', ' ')} - {clientName}
-                      </h4>
-                      <p className="text-sm text-muted-foreground">{clientName}</p>
-                      <div className="flex items-center space-x-2 mt-1">
-                        <Clock className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">
-                          {format(consultationDate, 'h:mm a')} ({event.duration} min)
-                        </span>
-                        <span className="text-xs text-muted-foreground">•</span>
-                        <span className="text-xs text-muted-foreground">
-                          {format(consultationDate, 'MMM dd, yyyy')}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-1 mt-1">
-                        <MapPin className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground capitalize">
-                          {event.mode === ConsultationMode.IN_PERSON 
-                            ? event.location || 'Office'
-                            : event.mode === ConsultationMode.VIDEO_CALL
-                            ? 'Online Video'
-                            : 'Phone Call'
-                          }
-                        </span>
-                      </div>
+                    <h4 className="font-medium text-foreground capitalize">
+                      {event.type.replace('_', ' ')} - {clientName}
+                    </h4>
+                    <p className="text-sm text-muted-foreground">{clientName}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <Clock className="h-3 w-3 text-muted-foreground" />
+                      <span className="text-xs text-muted-foreground">
+                        {format(consultationDate, 'h:mm a')} ({event.duration} min)
+                      </span>
+                      <span className="text-xs text-muted-foreground">•</span>
+                      <span className="text-xs text-muted-foreground">
+                        {format(consultationDate, 'MMM dd, yyyy')}
+                      </span>
                     </div>
                   </div>
                   <Badge className={getStatusColor(event.status)}>

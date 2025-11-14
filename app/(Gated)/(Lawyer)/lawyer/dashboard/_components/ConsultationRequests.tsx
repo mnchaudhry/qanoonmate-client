@@ -12,8 +12,8 @@ import { ChevronRight, Clock, CheckCircle, AlertCircle, XCircle } from "lucide-r
 import { ConsultationStatus } from "@/lib/enums"
 import { format, isToday, isTomorrow, isYesterday, parseISO } from 'date-fns'
 import Link from "next/link"
-import { Consultation } from "@/store/types/api"
-import { User } from "@/store/types/user.types"
+import { IUser } from "@/store/types/user.types"
+import { IConsultation } from "@/store/types/consultation.types"
 
 const getStatusColor = (status: ConsultationStatus) => {
   switch (status) {
@@ -49,22 +49,22 @@ const formatDate = (dateString: string) => {
   return format(date, 'MMM dd, yyyy h:mm a')
 }
 
-const getClientName = (clientId: User | string): string => {
+const getClientName = (clientId: IUser | string): string => {
   if (typeof clientId === 'string') return 'Client'
   return `${clientId.firstname || ''} ${clientId.lastname || ''}`.trim() || 'Client'
 }
 
-const getClientAvatar = (clientId: User | string): string | undefined => {
+const getClientAvatar = (clientId: IUser | string): string | undefined => {
   if (typeof clientId === 'string') return undefined
   return clientId.profilePicture
 }
 
 export default function ConsultationRequests() {
   const dispatch = useAppDispatch()
-  const { consultations, isLoading, error } = useAppSelector(state => state.consultation)
+  const { consultations, loading: isLoading, error } = useAppSelector(state => state.consultation)
 
   useEffect(() => {
-    dispatch(getMyConsultations({ limit: 4 }))
+    dispatch(getMyConsultations({ filters: { limit: 4 } }))
   }, [dispatch])
 
   if (isLoading) {
@@ -121,7 +121,7 @@ export default function ConsultationRequests() {
               variant="outline"
               size="sm"
               className="mt-4"
-              onClick={() => dispatch(getMyConsultations({ limit: 4 }))}
+              onClick={() => dispatch(getMyConsultations({ filters: { limit: 4 } }))}
             >
               Try Again
             </Button>
@@ -150,7 +150,7 @@ export default function ConsultationRequests() {
   }
 
   return (
-          <Card className="border-border h-full">
+    <Card className="border-border h-full">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -167,9 +167,9 @@ export default function ConsultationRequests() {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {consultations.slice(0, 4).map((consultation: Consultation) => {
-            const clientName = getClientName(consultation.clientId)
-            const clientAvatar = getClientAvatar(consultation.clientId)
+          {consultations.slice(0, 4).map((consultation: IConsultation) => {
+            const clientName = getClientName(consultation?.client)
+            const clientAvatar = getClientAvatar(consultation?.client)
 
             return (
               <Link
@@ -188,7 +188,7 @@ export default function ConsultationRequests() {
                     <div>
                       <h4 className="font-medium text-foreground">{clientName}</h4>
                       <p className="text-sm text-muted-foreground capitalize">{consultation.type.replace('_', ' ')}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(consultation.scheduledDate)}</p>
+                      <p className="text-xs text-muted-foreground">{formatDate(consultation.scheduledDate?.toDateString())}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
