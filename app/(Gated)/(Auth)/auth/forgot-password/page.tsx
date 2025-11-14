@@ -9,7 +9,6 @@ import { OtpVerificationType, UserRole } from '@/lib/enums';
 import { useStateContext } from '@/context/useStateContext';
 import { AppDispatch } from '@/store/store';
 import { forgetPasswordRequest } from '@/store/reducers/authSlice';
-import AuthFlowGuard from '@/components/auth/AuthFlowGuard';
 
 
 const ForgotPassword: React.FC = () => {

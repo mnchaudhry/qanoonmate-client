@@ -68,7 +68,7 @@ export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalPr
         preLicensedExperience: lawyer.preLicensedYearsOfExperience || 0,
         education: lawyer.education?.map(edu => {
           // Parse education string back to object format
-          const match = edu.match(/(.+?) from (.+?) \((\d+)\)/);
+          const match = edu?.match(/(.+?) from (.+?) \((\d+)\)/);
           if (match) {
             return { degree: match[1], institution: match[2], year: parseInt(match[3]), field: "", honors: "" };
           }

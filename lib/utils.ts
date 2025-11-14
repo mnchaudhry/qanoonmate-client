@@ -194,3 +194,11 @@ export const formatPhoneNumber = (value: string): string => {
   if (digits.length <= 3) return `+92 ${digits}`;
   return `+92 ${digits.slice(0, 3)} ${digits.slice(3, 10)}`;
 };
+
+export const formattedPrice = (price: number) => {
+  return new Intl.NumberFormat("en-PK", {
+    style: "currency",
+    currency: "PKR",
+    minimumFractionDigits: 0,
+  }).format(price);
+}

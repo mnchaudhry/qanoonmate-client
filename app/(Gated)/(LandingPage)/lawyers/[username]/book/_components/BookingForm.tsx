@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { cn, formattedPrice } from "@/lib/utils";
 import { CalendarIcon, FileText, AlertCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AppDispatch, RootState } from "@/store/store";
@@ -63,7 +63,7 @@ export default function BookingForm() {
 
     const parseTimeString = (timeStr: string): Date => {
         // Parse 24-hour format HH:MM
-        const timeMatch = timeStr.trim().match(/^(\d{1,2}):(\d{2})$/);
+        const timeMatch = timeStr.trim()?.match(/^(\d{1,2}):(\d{2})$/);
         if (!timeMatch) return new Date();
 
         const [, hours, minutes] = timeMatch;
@@ -324,16 +324,6 @@ export default function BookingForm() {
     };
 
     ///////////////////////////////////////////////////////// MEMOES ///////////////////////////////////////////////////////////////
-    // Calculate estimated fee (simplified - can be enhanced based on lawyer's settings)
-    const estimatedFee = useMemo(() => {
-        const baseFee = 3000; // Default base fee
-        const typeMultiplier = consultationType === ConsultationType.EMERGENCY ? 1.5 :
-            consultationType === ConsultationType.SPECIALIST ? 1.3 : 1;
-        const durationMultiplier = duration / 60; // 60 min = 1x, 120 min = 2x
-
-        return Math.round(baseFee * typeMultiplier * durationMultiplier);
-    }, [consultationType, duration]);
-
     // Calculate session end time for display
     const sessionEndTime = useMemo(() => {
         if (!startingTime || !duration) return "";
@@ -536,7 +526,7 @@ export default function BookingForm() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-muted-foreground">Consultation Fee</p>
-                                    <p className="text-2xl font-bold text-primary">PKR {estimatedFee.toLocaleString()}</p>
+                                    <p className="text-2xl font-bold text-primary">PKR {formattedPrice(lawyer?.hourlyRate || 0)}</p>
                                     <p className="text-xs text-muted-foreground mt-1">
                                         ({duration} min {consultationTypes.find(t => t.value === consultationType)?.label || 'consultation'})
                                     </p>

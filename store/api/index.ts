@@ -172,8 +172,8 @@ export const markConsultationAsNoShow = ({ id }: ConsultationAPI.UpdateConsultat
 
 // Rescheduling
 export const rescheduleConsultation = ({ id, request }: ConsultationAPI.RescheduleConsultationRequestData) => APIClient.post<ConsultationAPI.RescheduleConsultationResponse>(`/consultation/id/${id}/reschedule`, request);
-export const approveRescheduleRequest = ({ id, userId, updates }: ConsultationAPI.UpdateConsultationRequest) => APIClient.post<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}/reschedule/${userId}/approve`, updates);
-export const rejectRescheduleRequest = ({ id, updates, userId }: ConsultationAPI.UpdateConsultationRequest) => APIClient.post<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}/reschedule/${userId}/reject`, updates);
+export const approveRescheduleRequest = ({ id, updates }: ConsultationAPI.UpdateConsultationRequest) => APIClient.post<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}/reschedule/${id}/approve`, updates);
+export const rejectRescheduleRequest = ({ id, updates }: ConsultationAPI.UpdateConsultationRequest) => APIClient.post<ConsultationAPI.UpdateConsultationResponse>(`/consultation/id/${id}/reschedule/${id}/reject`, updates);
 
 // Cancellation & Rating
 export const cancelConsultation = ({ id, request }: ConsultationAPI.CancelConsultationRequestData) => APIClient.post<ConsultationAPI.CancelConsultationResponse>(`/consultation/id/${id}/cancel`, request);

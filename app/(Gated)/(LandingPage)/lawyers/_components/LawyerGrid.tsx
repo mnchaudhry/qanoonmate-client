@@ -46,17 +46,14 @@ export const LawyerGrid: React.FC<LawyerGridProps> = ({ lawyers, onSpecializatio
 
   const getAvailabilityStatus = (lawyer: ILawyer) => {
     const settings = typeof lawyer.settings === 'object' ? lawyer.settings : null;
-    if (!settings?.availability || settings.availability.length === 0) return "Not Available";
+    if (!settings?.consultation.availabilityRanges) return "Not Available";
 
-    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
-    const todayAvailability = settings.availability.find(a => a.day.toLowerCase() === today);
+    // const today = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    // const todayAvailability = settings.consultation.availabilityRanges
 
-    if (todayAvailability && todayAvailability.isAvailable && todayAvailability.timeSlots.length > 0) {
-      return "Available Today";
-    }
 
     // Check if available on any other day
-    const hasAvailability = settings.availability.some(a => a.isAvailable && a.timeSlots.length > 0);
+    const hasAvailability = settings.consultation.availabilityRanges;
     return hasAvailability ? "Available" : "Not Available";
   };
 
@@ -156,7 +153,7 @@ export const LawyerGrid: React.FC<LawyerGridProps> = ({ lawyers, onSpecializatio
               </div>
               <div className="flex items-center space-x-1">
                 <Calendar className="h-3 w-3" />
-                <span className={`${getAvailabilityStatus(lawyer) === "Available Today"
+                <span className={`${getAvailabilityStatus(lawyer) === "Available"
                   ? "text-green-600"
                   : "text-muted-foreground"
                   }`}>

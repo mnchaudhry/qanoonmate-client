@@ -72,6 +72,9 @@ export interface IConsultation {
     confirmedAt?: Date;
     completedAt?: Date;
 
+    createdAt?: Date;
+    updatedAt?: Date;
+
     // Instance methods
     getEndTime(): Date;
     canBeCancelled(): boolean;
@@ -129,8 +132,6 @@ export type UpdateConsultationRequest = {
         meetingLink?: string;
         phoneNumber?: string;
     };
-    userId: string;
-    userRole: UserRole;
 }
 export type UpdateConsultationResponse = APIResponse<IConsultation>;
 
@@ -140,23 +141,24 @@ export type RescheduleConsultationRequestData = {
         newDate: Date;
         newTimeSlot: string;
         reason: string;
-    }; userId: string; userRole: UserRole;
+    };
 }
 export type RescheduleConsultationResponse = APIResponse<IConsultation>;
 
 // cancelConsultation
 export type CancelConsultationRequestData = {
-    id: string; request: {
+    id: string;
+    request: {
         reason: CancellationReason;
         note?: string;
-    }
-    ; userId: string; userRole: UserRole;
+    };
 }
 export type CancelConsultationResponse = APIResponse<IConsultation>;
 
 // rateConsultation
 export type RateConsultationRequestData = {
-    id: string; request: {
+    id: string;
+    request: {
         rating: number;
         review?: string;
         categories?: {
@@ -165,7 +167,7 @@ export type RateConsultationRequestData = {
             expertise: number;
             value: number;
         };
-    }; userId: string;
+    };
 }
 export type RateConsultationResponse = APIResponse<IConsultation>;
 
@@ -174,7 +176,7 @@ export type AddNoteRequestData = {
     id: string; request: {
         content: string;
         isPrivate: boolean;
-    }; userId: string; userRole: UserRole;
+    };
 }
 export type AddNoteResponse = APIResponse<IConsultation>;
 
@@ -185,12 +187,12 @@ export type UploadDocumentRequestData = {
         url: string;
         fileType: string;
         fileSize: number;
-    }; userId: string; userRole: UserRole;
+    };
 }
 export type UploadDocumentResponse = APIResponse<IConsultation>;
 
 // getConsultationStats
-export type GetConsultationStatsRequest = { userId: string; userRole: UserRole; filters: ConsultationFilters; }
+export type GetConsultationStatsRequest = { filters: ConsultationFilters; }
 export type GetConsultationStatsResponse = APIResponse<IConsultationStats>;
 
 export interface ConsultationFilters {

@@ -4,8 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, CreditCard, Info } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { enumToLabel } from "@/lib/utils";
-import { useMemo } from "react";
+import { enumToLabel, formattedPrice } from "@/lib/utils";
 
 export default function BookingSummary() {
 
@@ -13,18 +12,8 @@ export default function BookingSummary() {
   const { selectedLawyer: lawyer } = useSelector((state: RootState) => state.lawyer);
 
   ///////////////////////////////////////////////////////// COMPUTED VALUES ///////////////////////////////////////////////////////////////
-  // Use actual hourly rate from lawyer profile, default to 3000 if not set
-  const consultationFee = useMemo(() => {
-    return lawyer?.hourlyRate || 3000;
-  }, [lawyer?.hourlyRate]);
 
-  const formattedFee = useMemo(() => {
-    return new Intl.NumberFormat("en-PK", {
-      style: "currency",
-      currency: "PKR",
-      minimumFractionDigits: 0,
-    }).format(consultationFee);
-  }, [consultationFee]);
+
 
   ///////////////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////////////////
   return (
@@ -48,7 +37,7 @@ export default function BookingSummary() {
             <CreditCard className="h-4 w-4 text-primary" />
             <h3 className="font-semibold">Consultation Fee</h3>
           </div>
-          <p className="font-medium text-lg">{formattedFee}</p>
+          <p className="font-medium text-lg">{formattedPrice(lawyer?.hourlyRate || 0)}</p>
           <p className="text-sm text-gray-500 mt-1">
             Due at the time of booking
           </p>

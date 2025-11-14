@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserRole } from '@/lib/enums';
 import ClientSignupForm from './_components/ClientSignupForm';
 import LawyerSignupForm from './_components/LawyerSignupForm';
-import AuthFlowGuard from '@/components/auth/AuthFlowGuard';
 
 const SignUp: React.FC = () => {
 

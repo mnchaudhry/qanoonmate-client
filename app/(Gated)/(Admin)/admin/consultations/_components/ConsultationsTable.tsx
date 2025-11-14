@@ -144,9 +144,9 @@ const ConsultationsTable = ({ consultations, selectedConsultations, handleView, 
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    {getModeIcon(consultation.mode)}
+                    {getModeIcon(consultation.type)}
                     <span className="ml-2 text-sm text-foreground capitalize">
-                      {consultation.mode}
+                      {consultation.type}
                     </span>
                   </div>
                 </td>

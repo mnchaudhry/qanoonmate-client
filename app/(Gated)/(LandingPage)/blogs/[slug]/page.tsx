@@ -8,13 +8,12 @@ import AuthorInfo from "../_components/AuthorInfo";
 import EngagementBar from "../_components/EngagementBar";
 import CommentsSection from "../_components/CommentsSection";
 import Breadcrumb from "@/components/Breadcrumb";
-import { Blog } from "@/store/types/api";
 
 export default function BlogDetailPage() {
 
   const { slug } = useParams();
 
-  const [blog, setBlog] = useState<Blog | null>(null);
+  const [blog, setBlog] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -58,8 +57,8 @@ export default function BlogDetailPage() {
             <div className="text-6xl mb-4">📄</div>
             <h1 className="text-2xl font-bold text-foreground mb-2">Unable to Load Blog</h1>
             <p className="text-muted-foreground mb-6">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
             >
               Try Again
@@ -76,8 +75,8 @@ export default function BlogDetailPage() {
           <div className="text-6xl mb-4">🔍</div>
           <h1 className="text-2xl font-bold text-foreground mb-2">Blog Not Found</h1>
           <p className="text-muted-foreground mb-6">The blog post you&apos;re looking for doesn&apos;t exist or has been removed.</p>
-          <Link 
-            href="/blogs" 
+          <Link
+            href="/blogs"
             className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors inline-block"
           >
             Browse All Blogs

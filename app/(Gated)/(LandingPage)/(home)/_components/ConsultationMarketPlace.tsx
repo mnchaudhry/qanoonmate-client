@@ -34,7 +34,7 @@ const Consultations: React.FC = () => {
     const load = async () => {
       try {
         const { data } = await api.getAllLawyers({ page: 1, limit: 100, accountStatus: AccountStatus.ACTIVE })
-        const list = data.lawyers || []
+        const list = data.data?.lawyers || []
         setAllLawyers(list)
       } finally {
         setIsLoading(false)

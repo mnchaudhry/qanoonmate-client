@@ -1,56 +1,29 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from "@/components/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { AppDispatch, RootState } from "@/store/store";
+import { AppDispatch, RootState, useAppSelector } from "@/store/store";
 import { ChatParticipant, Message } from "@/store/types/api";
 import { AlertCircle, Calendar, CheckCircle, FileText, Link2, NotebookIcon, NotebookPen, Search, Users, ExternalLink, Download, Loader2, } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addNote,
-  cancelConsultation,
-  getConsultationById,
-  rescheduleConsultation,
-} from "@/store/reducers/consultationSlice";
+import { addNote, cancelConsultation, getConsultationById, rescheduleConsultation, } from "@/store/reducers/consultationSlice";
 import { JSX } from "@fullcalendar/core/preact.js";
 import { getRoomFiles, getRoomLinks } from "@/store/reducers/chatSlice";
+import { CancellationReason } from "@/lib/enums";
 
 
 
 const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (show: boolean) => void; }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const {
-    messages,
-    currentRoom,
-    roomFiles,
-    roomLinks,
-    filesLoading,
-    linksLoading,
-  } = useSelector((state: RootState) => state.chat);
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { messages, currentRoom, roomFiles, roomLinks, filesLoading, linksLoading, } = useSelector((state: RootState) => state.chat);
+  const { user } = useAppSelector(state => state.auth);
   const [open, setOpen] = useState<string | null>("timeline");
   const [showConsultationModal, setShowConsultationModal] = useState(false);
   const [showAddParticipant, setShowAddParticipant] = useState(false);
@@ -71,9 +44,7 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
     { value: "technical_issue", label: "Technical Issue" },
     { value: "other", label: "Other" },
   ];
-  const { selectedConsultation, isLoading } = useSelector(
-    (state: RootState) => state.consultation
-  );
+  const { selectedConsultation, loading: isLoading } = useAppSelector(state => state.consultation);
   const noteSaveTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Get current room files and links
@@ -98,7 +69,7 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
       {
         icon: <Calendar className="w-4 h-4" />,
         title: "Consultation Requested",
-        time: c.createdAt,
+        time: new Date(c.createdAt!).toLocaleString(),
       },
       c.status === "scheduled"
         ? {
@@ -196,10 +167,10 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
       await dispatch(
         addNote({
           id: currentRoom.consultation._id,
-          formData: { content: v.trim(), isPrivate: true },
+          request: { content: v.trim(), isPrivate: true },
         })
       );
-      dispatch(getConsultationById(currentRoom.consultation._id));
+      dispatch(getConsultationById({ id: currentRoom.consultation._id }));
     }, 600);
   };
 
@@ -214,7 +185,7 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
 
   useEffect(() => {
     if (currentRoom?.consultation._id)
-      dispatch(getConsultationById(currentRoom.consultation._id));
+      dispatch(getConsultationById({ id: currentRoom.consultation._id }));
   }, [dispatch, currentRoom?.consultation]);
 
   // Profile section
@@ -256,7 +227,7 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
           className="w-full"
           onClick={() => {
             if (currentRoom?.consultation?._id) {
-              dispatch(getConsultationById(currentRoom.consultation._id));
+              dispatch(getConsultationById({ id: currentRoom.consultation._id }));
             }
             setShowConsultationModal(true);
           }}
@@ -400,16 +371,15 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
                       await dispatch(
                         rescheduleConsultation({
                           id,
-                          formData: {
-                            id,
-                            newDate: rescheduleDate,
+                          request: {
+                            newDate: new Date(rescheduleDate),
                             newTimeSlot: rescheduleTimeSlot,
                             reason: rescheduleReason,
                           },
                         })
                       )
                         .unwrap()
-                        .then(() => dispatch(getConsultationById(id)));
+                        .then(() => dispatch(getConsultationById({ id })));
                     }}
                   >
                     {isLoading ? "Rescheduling..." : "Reschedule"}
@@ -457,12 +427,14 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
                       await dispatch(
                         cancelConsultation({
                           id,
-                          reason: cancelReason,
-                          note: cancelNote || undefined,
+                          request: {
+                            reason: CancellationReason.CLIENT_REQUEST,
+                            note: cancelNote || undefined,
+                          },
                         })
                       )
                         .unwrap()
-                        .then(() => dispatch(getConsultationById(id)));
+                        .then(() => dispatch(getConsultationById({ id })));
                     }}
                   >
                     {isLoading ? "Cancelling..." : "Cancel Consultation"}
@@ -712,9 +684,7 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
                 </div>
                 <div>
                   <span className="font-medium">Type:</span>{" "}
-                  {selectedConsultation.type} •{" "}
-                  <span className="font-medium">Mode:</span>{" "}
-                  {ConsultationModeLabels[selectedConsultation.mode]}
+                  {selectedConsultation.type}
                 </div>
                 <div>
                   <span className="font-medium">Scheduled:</span>{" "}
@@ -749,10 +719,10 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
                     </a>
                   </div>
                 )}
-                {selectedConsultation.phoneNumber && (
+                {selectedConsultation.description && (
                   <div>
                     <span className="font-medium">Phone:</span>{" "}
-                    {selectedConsultation.phoneNumber}
+                    {selectedConsultation.description}
                   </div>
                 )}
                 {selectedConsultation.description && (
@@ -779,7 +749,7 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
                 </div>
                 <div>
                   <span className="font-medium">Created:</span>{" "}
-                  {new Date(selectedConsultation.createdAt).toLocaleString()}
+                  {new Date(selectedConsultation.createdAt!).toLocaleString()}
                 </div>
               </div>
             )}
