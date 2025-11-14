@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { cancelConsultation } from "@/store/reducers/consultationSlice";
-import { ConsultationStatus } from "@/lib/enums";
+import { CancellationReason, ConsultationStatus } from "@/lib/enums";
 import { IConsultation } from "@/store/types/consultation.types";
 
 interface StatusAndActionsProps {
@@ -17,6 +17,7 @@ interface StatusAndActionsProps {
 }
 
 export default function StatusAndActions({ consultation }: StatusAndActionsProps) {
+
   const dispatch = useDispatch<AppDispatch>();
   const [cancelReason, setCancelReason] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -72,7 +73,7 @@ export default function StatusAndActions({ consultation }: StatusAndActionsProps
 
     dispatch(cancelConsultation({
       id: consultation._id || "",
-      reason: cancelReason,
+      request: { reason: CancellationReason.CLIENT_REQUEST },
     }));
 
     setIsDialogOpen(false);

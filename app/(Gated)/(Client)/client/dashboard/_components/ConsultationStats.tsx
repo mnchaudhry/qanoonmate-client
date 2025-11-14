@@ -14,7 +14,7 @@ const ConsultationStats = () => {
 
   ///////////////////////////////////////// USE EFFECTS /////////////////////////////////////////
   useEffect(() => {
-    dispatch(getConsultationStats({}));
+    dispatch(getConsultationStats({ filters: {} }));
   }, [dispatch]);
 
   const statItems = [

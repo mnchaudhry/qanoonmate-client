@@ -32,7 +32,7 @@ export default function ConsultationDetailPage() {
     /////////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////////////////////
     useEffect(() => {
         if (id) {
-            dispatch(getConsultationById(id as string));
+            dispatch(getConsultationById({ id: id as string }));
         }
     }, [dispatch, id]);
 

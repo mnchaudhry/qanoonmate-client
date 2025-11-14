@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Calendar, Clock, Tag, XCircle, MessageSquare, RotateCcw, CalendarClock, FileText, Video, CreditCard } from "lucide-react";
 import { ILawyer } from "@/store/types/lawyer.types";
-import { ConsultationStatus, CancellationReason, UserRole } from "@/lib/enums";
+import { ConsultationStatus, CancellationReason } from "@/lib/enums";
 import Link from "next/link";
 import { IConsultation } from "@/store/types/consultation.types";
 import { useDispatch } from "react-redux";
@@ -47,11 +47,9 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
 
   const handleCancel = () => {
     if (confirm("Are you sure you want to cancel this consultation?")) {
-      dispatch(cancelConsultation({ 
-        id: consultation._id, 
-        request: { reason: CancellationReason.CLIENT_REQUEST }, 
-        userId: '', 
-        userRole: UserRole.CLIENT 
+      dispatch(cancelConsultation({
+        id: consultation._id,
+        request: { reason: CancellationReason.CLIENT_REQUEST },
       }));
     }
   };
@@ -186,9 +184,9 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
                 <CalendarClock className="h-4 w-4 mr-1" />
                 Reschedule
               </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 className="text-destructive border-destructive hover:bg-destructive/10 hover:text-destructive"
                 onClick={handleCancel}
               >
