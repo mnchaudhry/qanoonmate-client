@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { ChevronRight, Clock, FileText, MessageSquare, User, Calendar as CalendarIcon, AlertCircle } from "lucide-react"
 import { formatDistanceToNow, parseISO } from 'date-fns'
 import Link from "next/link"
-import { Activity } from "@/store/types/lawyer.types"
+import { ActivityLog as IActivityLog } from "@/store/types/lawyer.types"
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -97,9 +97,9 @@ export default function ActivityLog() {
           <div className="p-8 text-center">
             <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <p className="text-sm text-muted-foreground">Failed to load activity log</p>
-            <Button 
-              variant="outline" 
-              size="sm" 
+            <Button
+              variant="outline"
+              size="sm"
               className="mt-4"
               onClick={() => dispatch(getActivityLog(10))}
             >
@@ -145,7 +145,7 @@ export default function ActivityLog() {
       </CardHeader>
       <CardContent className="max-h-[29rem] overflow-y-auto">
         <div className="space-y-4">
-          {activities.map((activity: Activity, index: number) => {
+          {activities.map((activity: IActivityLog, index: number) => {
             const IconComponent = getIcon(activity.icon)
             const activityContent = (
               <div className="flex items-start space-x-3 p-3 bg-surface rounded-lg hover:bg-surface/80 transition-colors">

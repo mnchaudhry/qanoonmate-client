@@ -6,10 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn, enumToLabel } from "@/lib/utils";
 import { ConsultationStatus } from "@/lib/enums";
-import { Calendar, Clock, User, Eye, FileText, Inbox, AlertCircle } from "lucide-react";
+import { Calendar, Clock, Eye, FileText } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { IConsultation } from "@/store/types/consultation.types";
+import { useAppSelector } from "@/store/store";
 
 const statusConfig: Record<ConsultationStatus, { color: string; icon?: any; label: string }> = {
   [ConsultationStatus.PENDING]: {
@@ -67,57 +68,16 @@ const TableLoadingSkeleton = () => (
   </>
 );
 
-// Empty state component
-const EmptyState = () => (
-  <div className="flex flex-col items-center justify-center py-16 px-4">
-    <div className="rounded-full bg-muted p-6 mb-4">
-      <Inbox className="h-12 w-12 text-muted-foreground" />
-    </div>
-    <h3 className="text-xl font-semibold text-foreground mb-2">No Consultation Requests</h3>
-    <p className="text-muted-foreground text-center max-w-md mb-6">
-      You don&apos;t have any consultation requests yet. When clients book consultations, they&apos;ll appear here.
-    </p>
-    <Button variant="outline" asChild>
-      <Link href="/lawyer/profile">
-        <User className="h-4 w-4 mr-2" />
-        Update Profile Visibility
-      </Link>
-    </Button>
-  </div>
-);
-
-// Error state component
-const ErrorState = ({ onRetry }: { onRetry?: () => void }) => (
-  <div className="flex flex-col items-center justify-center py-16 px-4">
-    <div className="rounded-full bg-destructive/10 p-6 mb-4">
-      <AlertCircle className="h-12 w-12 text-destructive" />
-    </div>
-    <h3 className="text-xl font-semibold text-foreground mb-2">Failed to Load Requests</h3>
-    <p className="text-muted-foreground text-center max-w-md mb-6">
-      We couldn&apos;t load your consultation requests. Please check your connection and try again.
-    </p>
-    {onRetry && (
-      <Button onClick={onRetry} variant="default">
-        Try Again
-      </Button>
-    )}
-  </div>
-);
-
 interface RequestsTableProps {
-  requests: IConsultation[];
-  loading?: boolean;
-  error?: string | null;
   onRetry?: () => void;
 }
 
-export default function ConsultationRequestsTable({
-  requests = [],
-  loading = false,
-  error = null,
-  onRetry
-}: RequestsTableProps) {
+export default function ConsultationRequestsTable({ onRetry }: RequestsTableProps) {
 
+  //////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////// 
+  const { consultations, loading: loading, error } = useAppSelector(state => state.consultation)
+
+  //////////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////// 
   const getClientInfo = (consultation: IConsultation) => {
     if (typeof consultation?.client === 'object') {
       const client = consultation?.client;
@@ -136,26 +96,35 @@ export default function ConsultationRequestsTable({
     };
   };
 
-  const formatDateTime = (date: string) => {
+  const formatDateTime = (date: Date | string) => {
     const d = new Date(date);
     const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
     const timeStr = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     return { date: dateStr, time: timeStr };
   };
 
-  if (error) {
+  //////////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////// 
+  if (!loading && consultations.length === 0) {
     return (
-      <Card className="border-border">
-        <ErrorState onRetry={onRetry} />
-      </Card>
+      <div className="bg-background border !border-border rounded-lg p-10 text-center text-muted-foreground">
+        <div className="text-2xl mb-2">No consultations found</div>
+        <div className="mb-6">Try adjusting your search or filters.</div>
+        <Button variant="outline" size="sm" onClick={onRetry} className="border-border">Reset filters</Button>
+      </div>
     );
   }
 
-  if (!loading && requests.length === 0) {
+  if (error) {
     return (
-      <Card className="border-border">
-        <EmptyState />
-      </Card>
+      <div className="bg-surface border !border-border rounded-lg p-10 text-center text-muted-foreground">
+        <div className="text-2xl mb-2 text-destructive">Failed to Load Consultations</div>
+        <div className="mb-6">{error}</div>
+        {onRetry && (
+          <Button variant="default" size="sm" onClick={onRetry}>
+            Try Again
+          </Button>
+        )}
+      </div>
     );
   }
 
@@ -164,52 +133,52 @@ export default function ConsultationRequestsTable({
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
-            <TableRow className="bg-muted/50 hover:bg-muted/50">
-              <TableHead className="font-semibold">Client</TableHead>
-              <TableHead className="font-semibold">Date & Time</TableHead>
-              <TableHead className="font-semibold">Mode</TableHead>
-              <TableHead className="font-semibold">Status</TableHead>
-              <TableHead className="font-semibold">Fee</TableHead>
-              <TableHead className="font-semibold text-center">Details</TableHead>
-              <TableHead className="font-semibold text-center">Actions</TableHead>
+            <TableRow className="border-b !border-border">
+              <TableHead className="text-left p-4 font-semibold text-foreground">Client</TableHead>
+              <TableHead className="text-left p-4 font-semibold text-foreground">Date & Time</TableHead>
+              <TableHead className="text-left p-4 font-semibold text-foreground">Mode</TableHead>
+              <TableHead className="text-left p-4 font-semibold text-foreground">Status</TableHead>
+              <TableHead className="text-left p-4 font-semibold text-foreground">Fee</TableHead>
+              <TableHead className="text-left p-4 font-semibold text-foreground">Details</TableHead>
+              <TableHead className="text-left p-4 font-semibold text-foreground">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableLoadingSkeleton />
             ) : (
-              requests.map((request) => {
-                const client = getClientInfo(request);
-                const dateTime = formatDateTime(request.scheduledDate);
-                const statusInfo = statusConfig[request.status] || {
+              consultations.map((consultation) => {
+                const client = getClientInfo(consultation);
+                const dateTime = formatDateTime(consultation.scheduledDate);
+                const statusInfo = statusConfig[consultation.status] || {
                   color: "bg-muted text-muted-foreground border-border",
-                  label: enumToLabel(request.status)
+                  label: enumToLabel(consultation.status)
                 };
 
                 return (
-                  <TableRow key={request._id} className="hover:bg-muted/30 transition-colors">
+                  <TableRow key={consultation._id} className="border-b !border-border hover:bg-primary/5 transition-colors">
                     {/* Client Info */}
-                    <TableCell>
+                    <TableCell className="p-4 text-muted-foreground">
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
+                        <Avatar className="h-10 w-10 border border-border">
                           <AvatarImage src={client.avatar} alt={client.name} />
-                          <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                          <AvatarFallback className="bg-primary/10 text-primary font-semibold text-sm">
                             {client.initials}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                          <span className="font-medium text-foreground">{client.name}</span>
+                          <span className="font-medium text-foreground text-sm">{client.name}</span>
                           {client.email && (
-                            <span className="text-xs text-muted-foreground">{client.email}</span>
+                            <span className="text-xs">{client.email}</span>
                           )}
                         </div>
                       </div>
                     </TableCell>
 
                     {/* Date & Time */}
-                    <TableCell>
+                    <TableCell className="p-4 text-muted-foreground">
                       <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2 text-sm">
+                        <div className="flex items-center gap-2 text-sm text-foreground">
                           <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
                           <span className="font-medium">{dateTime.date}</span>
                         </div>
@@ -220,8 +189,15 @@ export default function ConsultationRequestsTable({
                       </div>
                     </TableCell>
 
+                    {/* Mode/Type */}
+                    <TableCell className="p-4 text-muted-foreground">
+                      <Badge variant="outline" className="capitalize border-border">
+                        {enumToLabel(consultation.type)}
+                      </Badge>
+                    </TableCell>
+
                     {/* Status */}
-                    <TableCell>
+                    <TableCell className="p-4 text-muted-foreground">
                       <Badge
                         variant="outline"
                         className={cn("font-medium border", statusInfo.color)}
@@ -231,39 +207,39 @@ export default function ConsultationRequestsTable({
                     </TableCell>
 
                     {/* Fee */}
-                    <TableCell>
-                      <span className="font-semibold text-foreground">
-                        Rs. {request.fee?.toLocaleString() || 'N/A'}
+                    <TableCell className="p-4 text-muted-foreground">
+                      <span className="font-semibold text-foreground text-sm">
+                        Rs. {consultation.fee?.toLocaleString() || 'N/A'}
                       </span>
                     </TableCell>
 
                     {/* Details */}
-                    <TableCell className="text-center">
+                    <TableCell className="text-center py-4">
                       <div className="flex items-center justify-center gap-2">
-                        {request.documents?.length > 0 && (
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        {consultation.documents?.length > 0 && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
                             <FileText className="h-3.5 w-3.5" />
-                            <span>{request.documents.length}</span>
+                            <span>{consultation.documents.length}</span>
                           </div>
                         )}
-                        {request.duration && (
-                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        {consultation.duration && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
                             <Clock className="h-3.5 w-3.5" />
-                            <span>{request.duration}m</span>
+                            <span>{consultation.duration}m</span>
                           </div>
                         )}
                       </div>
                     </TableCell>
 
                     {/* Actions */}
-                    <TableCell className="text-center">
+                    <TableCell className="text-center py-4">
                       <Button
                         variant="outline"
                         size="sm"
                         asChild
-                        className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors"
+                        className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors border-border"
                       >
-                        <Link href={`/lawyer/consultations/${request._id}`}>
+                        <Link href={`/lawyer/consultations/${consultation._id}`}>
                           <Eye className="h-3.5 w-3.5" />
                           View
                         </Link>
@@ -276,15 +252,6 @@ export default function ConsultationRequestsTable({
           </TableBody>
         </Table>
       </div>
-
-      {/* Data volume indicator */}
-      {!loading && requests.length > 0 && (
-        <div className="px-6 py-3 bg-muted/30 border-t border-border">
-          <p className="text-sm text-muted-foreground">
-            Showing <span className="font-semibold text-foreground">{requests.length}</span> consultation{requests.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-      )}
     </Card>
   );
 } 

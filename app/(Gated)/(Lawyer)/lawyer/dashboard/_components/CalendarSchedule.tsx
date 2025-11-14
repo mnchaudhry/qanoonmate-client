@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Calendar, Clock, ChevronRight, MapPin, AlertCircle } from "lucide-react"
+import { Calendar, Clock, ChevronRight, AlertCircle } from "lucide-react"
 import { format, isAfter, parseISO, startOfDay } from 'date-fns'
 import Link from "next/link"
 import { IUser } from "@/store/types/user.types"
@@ -31,12 +31,10 @@ const getClientName = (clientId: IUser | string): string => {
 
 export default function CalendarSchedule() {
   const dispatch = useAppDispatch()
-  const { consultations, isLoading, error } = useAppSelector(state => state.consultation)
+  const { consultations, loading: isLoading, error } = useAppSelector(state => state.consultation)
 
   useEffect(() => {
-    dispatch(getMyConsultations({
-      limit: 10
-    }))
+    dispatch(getMyConsultations({ filters: { limit: 10 } }))
   }, [dispatch])
 
   // Filter and sort upcoming events
@@ -46,7 +44,7 @@ export default function CalendarSchedule() {
 
     return consultations
       .filter((c: IConsultation) => {
-        const consultationDate = parseISO(c.scheduledDate)
+        const consultationDate = parseISO(c.scheduledDate.toDateString())
         return isAfter(consultationDate, now) &&
           [ConsultationStatus.SCHEDULED, ConsultationStatus.PENDING, ConsultationStatus.CONFIRMED].includes(c.status)
       })
@@ -107,15 +105,13 @@ export default function CalendarSchedule() {
               variant="outline"
               size="sm"
               className="mt-4"
-              onClick={() => dispatch(getMyConsultations({
-                limit: 10
-              }))}
+              onClick={() => dispatch(getMyConsultations({ filters: { limit: 10 } }))}
             >
               Try Again
             </Button>
           </div>
         </CardContent>
-      </Card>
+      </Card >
     )
   }
 
@@ -157,7 +153,7 @@ export default function CalendarSchedule() {
         <div className="space-y-4">
           {upcomingEvents.map((event: IConsultation) => {
             const clientName = getClientName(event.client)
-            const consultationDate = parseISO(event.scheduledDate!)
+            const consultationDate = parseISO(event.scheduledDate.toDateString())
 
             return (
               <Link

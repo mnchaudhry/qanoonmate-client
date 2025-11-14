@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { Filter, X, Calendar } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { X } from 'lucide-react';
 import SearchBar from "@/components/SearchBar";
 import { ConsultationStatus, ConsultationType } from "@/lib/enums";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -72,114 +72,53 @@ export default function ConsultationRequestsFilters({ onFilterChange }: { onFilt
         </div>
 
         {/* Filter Controls */}
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="flex-1 flex items-end gap-2 flex-wrap">
           {/* Status Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant={status !== "All" ? "default" : "outline"}
-                className="h-10 gap-2"
-              >
-                <Filter className="h-4 w-4" />
-                <span>Status</span>
-                {status !== "All" && (
-                  <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                    1
-                  </Badge>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-[160px] h-10 border-border">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
               {statusOptions.map(opt => (
-                <DropdownMenuItem
-                  key={opt}
-                  onClick={() => setStatus(opt)}
-                  className={status === opt ? 'bg-primary/10 font-semibold' : ''}
-                >
-                  <span className="flex-1">{enumToLabel(opt)}</span>
-                  {status === opt && <span className="text-primary">✓</span>}
-                </DropdownMenuItem>
+                <SelectItem key={opt} value={opt}>
+                  {enumToLabel(opt)}
+                </SelectItem>
               ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </SelectContent>
+          </Select>
 
           {/* Type Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant={type !== "All" ? "default" : "outline"}
-                className="h-10 gap-2"
-              >
-                <span>Type</span>
-                {type !== "All" && (
-                  <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                    1
-                  </Badge>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+          <Select value={type} onValueChange={setType}>
+            <SelectTrigger className="w-[160px] h-10 border-border">
+              <SelectValue placeholder="Type" />
+            </SelectTrigger>
+            <SelectContent>
               {typeOptions.map(opt => (
-                <DropdownMenuItem
-                  key={opt}
-                  onClick={() => setType(opt)}
-                  className={type === opt ? 'bg-primary/10 font-semibold' : ''}
-                >
-                  <span className="flex-1">{enumToLabel(opt)}</span>
-                  {type === opt && <span className="text-primary">✓</span>}
-                </DropdownMenuItem>
+                <SelectItem key={opt} value={opt}>
+                  {enumToLabel(opt)}
+                </SelectItem>
               ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </SelectContent>
+          </Select>
 
           {/* Date Range Filter */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant={(dateRange.start || dateRange.end) ? "default" : "outline"}
-                className="h-10 gap-2"
-              >
-                <Calendar className="h-4 w-4" />
-                <span>Date</span>
-                {(dateRange.start || dateRange.end) && (
-                  <Badge variant="secondary" className="ml-1 h-5 w-5 rounded-full p-0 flex items-center justify-center">
-                    1
-                  </Badge>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-72 p-4">
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">From Date</label>
-                  <input
-                    type="date"
-                    value={dateRange.start}
-                    onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                    className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-foreground">To Date</label>
-                  <input
-                    type="date"
-                    value={dateRange.end}
-                    onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                    className="w-full px-3 py-2 border border-border rounded-md bg-background text-foreground"
-                  />
-                </div>
-                <DropdownMenuSeparator />
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => setDateRange({ start: "", end: "" })}
-                >
-                  Clear Dates
-                </Button>
-              </div>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="flex items-center gap-2">
+            <input
+              type="date"
+              value={dateRange.start}
+              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+              placeholder="From Date"
+              className="h-10 px-3 py-2 border border-border rounded-md bg-background text-foreground text-sm w-[140px]"
+            />
+            <span className="text-muted-foreground text-sm">to</span>
+            <input
+              type="date"
+              value={dateRange.end}
+              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+              placeholder="To Date"
+              className="h-10 px-3 py-2 border border-border rounded-md bg-background text-foreground text-sm w-[140px]"
+            />
+          </div>
 
           {/* Clear All Filters */}
           {hasActiveFilters && (

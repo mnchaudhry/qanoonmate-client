@@ -7,16 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { 
-  Edit, 
-  Trash2, 
-  Calendar, 
-  Save, 
-  X, 
-  MapPin, 
-  Clock, 
-  Tag 
-} from 'lucide-react';
+import { Edit, Trash2, Calendar, Save, X, Clock, Tag } from 'lucide-react';
 import { CalendarEvent } from '../page';
 
 interface Props {
@@ -129,8 +120,8 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
                 </div>
                 <div>
                   <Label htmlFor="type">Event Type</Label>
-                  <Select 
-                    value={formData.type} 
+                  <Select
+                    value={formData.type}
                     onValueChange={(value) => handleInputChange('type', value)}
                   >
                     <SelectTrigger className="border-secondary-200">

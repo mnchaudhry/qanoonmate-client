@@ -61,10 +61,10 @@ const getClientAvatar = (clientId: IUser | string): string | undefined => {
 
 export default function ConsultationRequests() {
   const dispatch = useAppDispatch()
-  const { consultations, isLoading, error } = useAppSelector(state => state.consultation)
+  const { consultations, loading: isLoading, error } = useAppSelector(state => state.consultation)
 
   useEffect(() => {
-    dispatch(getMyConsultations({ limit: 4 }))
+    dispatch(getMyConsultations({ filters: { limit: 4 } }))
   }, [dispatch])
 
   if (isLoading) {
@@ -121,7 +121,7 @@ export default function ConsultationRequests() {
               variant="outline"
               size="sm"
               className="mt-4"
-              onClick={() => dispatch(getMyConsultations({ limit: 4 }))}
+              onClick={() => dispatch(getMyConsultations({ filters: { limit: 4 } }))}
             >
               Try Again
             </Button>
@@ -150,7 +150,7 @@ export default function ConsultationRequests() {
   }
 
   return (
-          <Card className="border-border h-full">
+    <Card className="border-border h-full">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -188,7 +188,7 @@ export default function ConsultationRequests() {
                     <div>
                       <h4 className="font-medium text-foreground">{clientName}</h4>
                       <p className="text-sm text-muted-foreground capitalize">{consultation.type.replace('_', ' ')}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(consultation.scheduledDate)}</p>
+                      <p className="text-xs text-muted-foreground">{formatDate(consultation.scheduledDate?.toDateString())}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3">
