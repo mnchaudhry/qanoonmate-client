@@ -107,7 +107,18 @@ export type GetMyClientsResponse = APIResponse<{ clients: IClient[]; meta: Pagin
 
 // getDashboardStats
 export type GetDashboardStatsRequest = { lawyerId: string; }
-export type GetDashboardStatsResponse = APIResponse<{ [key: string]: any; }>
+export type GetDashboardStatsResponse = APIResponse<{
+  totalClients: number;
+  activeClients: number;
+  newClientsThisWeek: number;
+  monthlyEarnings: number;
+  earningsChange: string;
+  lastMonthEarnings: number;
+  pendingRequests: number;
+  newRequestsToday: number;
+  averageRating: number;
+  totalReviews: number;
+}>
 
 // getActivityLog
 export type GetActivityLogRequest = { lawyerId: string; limit: number; }

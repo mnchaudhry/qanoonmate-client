@@ -8,20 +8,12 @@ import type * as ConsultationApi from '../types/consultation.types';
 interface ConsultationState {
     consultations: ConsultationApi.IConsultation[];
     selectedConsultation: ConsultationApi.IConsultation | null;
-    isLoading: boolean;
+    loading: boolean;
     error: string | null;
     totalCount: number;
     currentPage: number;
     totalPages: number;
-    consultationStats: {
-        total: number;
-        pending: number;
-        scheduled: number;
-        completed: number;
-        cancelled: number;
-        revenue: number;
-        averageRating: number;
-    };
+    consultationStats: ConsultationApi.IConsultationStats
 }
 
 // ==================== ASYNC THUNKS ====================
@@ -358,7 +350,7 @@ export const getConsultationStats = createAsyncThunk<ConsultationApi.GetConsulta
 const initialState: ConsultationState = {
     consultations: [],
     selectedConsultation: null,
-    isLoading: false,
+    loading: false,
     error: null,
     totalCount: 0,
     currentPage: 1,
@@ -387,25 +379,25 @@ const consultationSlice = createSlice({
         builder
             // Create Consultation
             .addCase(bookConsultation.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
                 state.error = null;
             })
             .addCase(bookConsultation.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations.push(action.payload.data!);
             })
             .addCase(bookConsultation.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Get All Consultations
             .addCase(getAllConsultations.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
                 state.error = null;
             })
             .addCase(getAllConsultations.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = action.payload.data?.data || [];
                 if (action.payload.meta) {
                     state.totalCount = action.payload.meta?.totalCount || 0;
@@ -414,17 +406,18 @@ const consultationSlice = createSlice({
                 }
             })
             .addCase(getAllConsultations.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Get My Consultations
             .addCase(getMyConsultations.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
                 state.error = null;
             })
             .addCase(getMyConsultations.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
+                console.log('consultations action', action.payload)
                 state.consultations = action.payload.data?.data || [];
                 if (action.payload.data?.meta) {
                     state.totalCount = action.payload.data.meta.totalCount || 0;
@@ -433,78 +426,78 @@ const consultationSlice = createSlice({
                 }
             })
             .addCase(getMyConsultations.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Get Consultation By ID
             .addCase(getConsultationById.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
                 state.error = null;
             })
             .addCase(getConsultationById.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.selectedConsultation = action.payload.data!;
             })
             .addCase(getConsultationById.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Update Consultation
             .addCase(updateConsultation.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
                 state.error = null;
             })
             .addCase(updateConsultation.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(updateConsultation.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
 
             .addCase(rescheduleConsultation.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
                 state.error = null;
             })
             .addCase(rescheduleConsultation.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(rescheduleConsultation.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Cancel Consultation
             .addCase(cancelConsultation.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
                 state.error = null;
             })
             .addCase(cancelConsultation.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(cancelConsultation.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Get Consultations (Admin)
             .addCase(getConsultations.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(getConsultations.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = action.payload.data?.data || [];
                 if (action.payload.meta) {
                     state.totalCount = action.payload.meta?.totalCount || 0;
@@ -514,155 +507,155 @@ const consultationSlice = createSlice({
                 state.error = null;
             })
             .addCase(getConsultations.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Confirm Consultation
             .addCase(confirmConsultation.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(confirmConsultation.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(confirmConsultation.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Start Consultation
             .addCase(startConsultation.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(startConsultation.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(startConsultation.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Complete Consultation
             .addCase(completeConsultation.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(completeConsultation.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(completeConsultation.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Mark As No Show
             .addCase(markAsNoShow.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(markAsNoShow.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(markAsNoShow.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Add Note
             .addCase(addNote.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(addNote.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(addNote.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Upload Document
             .addCase(uploadDocument.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(uploadDocument.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(uploadDocument.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Approve Reschedule Request
             .addCase(approveRescheduleRequest.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(approveRescheduleRequest.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(approveRescheduleRequest.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Reject Reschedule Request
             .addCase(rejectRescheduleRequest.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(rejectRescheduleRequest.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(rejectRescheduleRequest.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Rate Consultation
             .addCase(rateConsultation.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(rateConsultation.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultations = state.consultations.map((c) =>
                     c._id === action.payload.data?._id ? action.payload.data : c
                 );
             })
             .addCase(rateConsultation.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 
             // Get Consultation Stats
             .addCase(getConsultationStats.pending, (state) => {
-                state.isLoading = true;
+                state.loading = true;
             })
             .addCase(getConsultationStats.fulfilled, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.consultationStats = action.payload.data || initialState.consultationStats;
             })
             .addCase(getConsultationStats.rejected, (state, action) => {
-                state.isLoading = false;
+                state.loading = false;
                 state.error = action.payload as string;
             })
 

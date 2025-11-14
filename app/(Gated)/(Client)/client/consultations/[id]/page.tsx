@@ -22,7 +22,7 @@ export default function ConsultationDetailPage() {
     /////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////////////////
     const { id } = useParams();
     const dispatch = useDispatch<AppDispatch>();
-    const { selectedConsultation, isLoading, error } = useSelector(
+    const { selectedConsultation, loading: isLoading, error } = useSelector(
         (state: RootState) => state.consultation
     );
 

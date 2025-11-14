@@ -19,7 +19,7 @@ import { IConsultation } from "@/store/types/consultation.types";
 export default function ConsultationFeedbackPage() {
   const params = useParams();
   const router = useRouter();
-  const { consultations, isLoading, error } = useSelector((state: RootState) => state.consultation);
+  const { consultations, loading: isLoading, error } = useSelector((state: RootState) => state.consultation);
   const [consultation, setConsultation] = useState<IConsultation | null>(null);
 
   // Feedback state

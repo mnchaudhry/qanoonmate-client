@@ -16,7 +16,7 @@ const UpcomingConsultations = () => {
 
   /////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
-  const { consultations, isLoading, error } = useSelector((state: RootState) => state.consultation)
+  const { consultations, loading: isLoading, error } = useSelector((state: RootState) => state.consultation)
 
   /////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////
   useEffect(() => {

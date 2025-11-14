@@ -107,15 +107,17 @@ export interface PaymentGatewayResponse {
 export interface PaymentFilters {
   status?: PaymentStatus[];
   paymentType?: PaymentTypeEnum[];
-  paymentMethod?: PaymentMethod[];
   currency?: Currency[];
   userId?: string;
   consultationId?: string;
-  dateFrom?: Date;
-  dateTo?: Date;
+  dateFrom?: Date | string;
+  dateTo?: Date | string;
   amountMin?: number;
   amountMax?: number;
   gateway?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
 }
 
 

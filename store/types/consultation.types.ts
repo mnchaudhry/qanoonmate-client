@@ -78,6 +78,15 @@ export interface IConsultation {
     canBeRescheduled(): boolean;
 }
 
+export interface IConsultationStats {
+    total: number;
+    pending: number;
+    scheduled: number;
+    completed: number;
+    cancelled: number;
+    revenue: number;
+    averageRating: number;
+};
 
 //////////////////////////////////////////////////////// REQUEST/RESPONSE TYPES //////////////////////////////////////////////////////// 
 // bookConsultation
@@ -99,11 +108,7 @@ export type BookConsultationRequest = {
 export type BookConsultationResponse = APIResponse<IConsultation>;
 
 // getConsultations
-export type GetConsultationsRequest = {
-    filters: ConsultationFilters;
-    currentPage?: number; limit?:
-    number;
-}
+export type GetConsultationsRequest = { filters: ConsultationFilters; currentPage?: number; limit?: number; }
 export type GetConsultationsResponse = APIResponse<{ data: IConsultation[]; meta: PaginationMeta; message: string; }>
 
 // getConsultationById
@@ -186,15 +191,7 @@ export type UploadDocumentResponse = APIResponse<IConsultation>;
 
 // getConsultationStats
 export type GetConsultationStatsRequest = { userId: string; userRole: UserRole; filters: ConsultationFilters; }
-export type GetConsultationStatsResponse = APIResponse<{
-    total: number;
-    pending: number;
-    scheduled: number;
-    completed: number;
-    cancelled: number;
-    revenue: number;
-    averageRating: number;
-}>;
+export type GetConsultationStatsResponse = APIResponse<IConsultationStats>;
 
 export interface ConsultationFilters {
     status?: ConsultationStatus[];

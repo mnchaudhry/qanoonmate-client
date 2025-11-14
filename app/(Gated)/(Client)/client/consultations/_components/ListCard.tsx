@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { Calendar, Clock, MapPin, Tag, CreditCard } from "lucide-react";
+import { Calendar, Clock, MapPin, Tag, CreditCard, Video, FileText, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,9 +11,9 @@ import { cancelConsultation } from "@/store/reducers/consultationSlice";
 import { ILawyer } from "@/store/types/lawyer.types";
 import { CancellationReason, ConsultationStatus, UserRole } from "@/lib/enums";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Hint from "@/components/Hint";
 import Link from "next/link";
 import { IConsultation } from "@/store/types/consultation.types";
+import { Separator } from "@/components/ui/separator";
 
 interface ConsultationCardProps {
   consultation: IConsultation;
@@ -58,87 +58,199 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
 
   /////////////////////////////////////////////// RETURN ///////////////////////////////////////////////
   return (
-    <Card className="mb-6 border !border-border bg-background rounded-xl shadow-sm transition-transform duration-150 hover:shadow-lg hover:-translate-y-1">
-      <CardContent className="p-5 space-y-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-[72px] w-[72px]">
-              <AvatarImage src={(consultation?.lawyer as ILawyer)?.profilePicture} />
-              <AvatarFallback className="uppercase text-xl">
-                {(consultation?.lawyer as ILawyer)?.firstname?.[0] || "L"}
-                {(consultation?.lawyer as ILawyer)?.lastname?.[0] || "L"}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <div className="text-lg font-semibold text-foreground capitalize">
-                {(consultation?.lawyer as ILawyer)?.firstname} {(consultation?.lawyer as ILawyer)?.lastname}
-              </div>
-              <div className="flex gap-2 mt-1">
-                <Hint label="Specialization">
-                  <Tag className="h-4 w-4 text-primary cursor-pointer" />
-                </Hint>
-                <span className="text-xs text-muted-foreground">
-                  {(consultation?.lawyer as ILawyer)?.specializations?.[0] || "General Law"}
-                </span>
-                <Hint label="City">
-                  <MapPin className="h-4 w-4 text-primary cursor-pointer" />
-                </Hint>
-                <span className="text-xs text-muted-foreground">
-                  {(consultation?.lawyer as ILawyer)?.location?.city || "Not specified"}
-                </span>
+    <Card className="border border-border bg-background rounded-lg shadow-sm hover:shadow-md transition-all duration-200">
+      <CardContent className="p-6">
+        {/* Header Section - Lawyer Info & Status */}
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <div className="flex items-start gap-4 flex-1">
+            <Link href={`/lawyers/${(consultation?.lawyer as ILawyer)?._id}`}>
+              <Avatar className="h-16 w-16 border-2 border-primary/10">
+                <AvatarImage src={(consultation?.lawyer as ILawyer)?.profilePicture} />
+                <AvatarFallback className="uppercase text-lg bg-primary/5 text-primary">
+                  {(consultation?.lawyer as ILawyer)?.firstname?.[0] || "L"}
+                  {(consultation?.lawyer as ILawyer)?.lastname?.[0] || ""}
+                </AvatarFallback>
+              </Avatar>
+            </Link>
+            <div className="flex-1">
+              <Link href={`/lawyers/${(consultation?.lawyer as ILawyer)?._id}`}>
+                <h3 className="text-lg font-semibold text-foreground capitalize hover:text-primary transition-colors">
+                  {(consultation?.lawyer as ILawyer)?.firstname} {(consultation?.lawyer as ILawyer)?.lastname}
+                </h3>
+              </Link>
+              <div className="flex flex-wrap items-center gap-3 mt-1 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <Tag className="h-4 w-4 text-primary" />
+                  <span>{(consultation?.lawyer as ILawyer)?.specializations?.[0] || "General Law"}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <MapPin className="h-4 w-4 text-primary" />
+                  <span>{(consultation?.lawyer as ILawyer)?.location?.city || "Not specified"}</span>
+                </div>
               </div>
             </div>
           </div>
           <div className="flex flex-col items-end gap-2">
             {getStatusBadge()}
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Hint label="Date">
-                <Calendar className="h-4 w-4" />
-              </Hint>
-              {consultation.scheduledDate ? format(new Date(consultation.scheduledDate), "dd MMM yyyy") : "Date"}
-              <Hint label="Time">
-                <Clock className="h-4 w-4 ml-2" />
-              </Hint>
-              {consultation.scheduledTime || "Time"}
-              <Hint label="Fee">
-                <CreditCard className="h-4 w-4 ml-2" />
-              </Hint>
-              {/* PKR {consultation.fee?.toLocaleString() || (consultation?.lawyer as Lawyer)?.fee?.toLocaleString() || "-"} */}
+          </div>
+        </div>
+
+        <Separator className="my-4" />
+
+        {/* Consultation Details Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-primary/10">
+              <Calendar className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Date</p>
+              <p className="text-sm font-medium">
+                {consultation.scheduledDate ? format(new Date(consultation.scheduledDate), "dd MMM yyyy") : "Not set"}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-primary/10">
+              <Clock className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Time</p>
+              <p className="text-sm font-medium">{consultation.scheduledTime || "Not set"}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-primary/10">
+              <Clock className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Duration</p>
+              <p className="text-sm font-medium">{consultation.duration || 60} mins</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-primary/10">
+              <CreditCard className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-xs text-muted-foreground">Fee</p>
+              <p className="text-sm font-medium">PKR {consultation.fee?.toLocaleString() || "N/A"}</p>
             </div>
           </div>
         </div>
-        {/* Case Description */}
-        {consultation.description && (
-          <div className="text-sm text-foreground/90 mt-2">
-            {consultation.description.length > 120
-              ? `${consultation.description.slice(0, 120)}...`
-              : consultation.description}
+
+        {/* Meeting Type */}
+        {consultation.type && (
+          <div className="mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-secondary text-secondary-foreground text-sm">
+              {consultation.meetingLink ? (
+                <>
+                  <Video className="h-4 w-4" />
+                  <span>Online Consultation</span>
+                </>
+              ) : (
+                <>
+                  <MapPin className="h-4 w-4" />
+                  <span>In-Person Consultation</span>
+                </>
+              )}
+            </div>
           </div>
         )}
-        {/* Case Brief */}
-        {consultation.notes?.[0] && (
-          <div className="text-muted-foreground text-sm italic truncate max-w-full">
-            {`"${consultation.notes?.[0]}"`}
+
+        {/* Case Description */}
+        {consultation.description && (
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-foreground mb-2">Case Description</h4>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {consultation.description.length > 200
+                ? `${consultation.description.slice(0, 200)}...`
+                : consultation.description}
+            </p>
+          </div>
+        )}
+
+        {/* Additional Info */}
+        {(consultation.documents?.length > 0 || consultation.notes?.length > 0) && (
+          <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+            {consultation.documents?.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                <FileText className="h-4 w-4" />
+                <span>{consultation.documents.length} document{consultation.documents.length !== 1 ? 's' : ''}</span>
+              </div>
+            )}
+            {consultation.notes?.length > 0 && (
+              <div className="flex items-center gap-1.5">
+                <MessageSquare className="h-4 w-4" />
+                <span>{consultation.notes.length} note{consultation.notes.length !== 1 ? 's' : ''}</span>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
-      <CardFooter className="flex gap-2 pt-2">
+
+      <CardFooter className="flex flex-wrap gap-2 px-6 py-4 bg-muted/30 border-t border-border">
         {consultation.status === ConsultationStatus.PENDING && (
-          <Button size="sm" variant="outline"><Link href={"/client/messages"}>Chat with Lawyer</Link></Button>
+          <>
+            <Button size="sm" variant="default" asChild>
+              <Link href={"/client/messages"}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Chat with Lawyer
+              </Link>
+            </Button>
+            <Button size="sm" variant="outline">
+              View Details
+            </Button>
+          </>
         )}
         {consultation.status === ConsultationStatus.SCHEDULED && (
           <>
-            <Button variant="outline" size="sm">Reschedule</Button>
-            <Button variant="outline" size="sm" className="text-destructive border-destructive hover:bg-destructive/10" onClick={handleCancel}>
+            <Button size="sm" variant="default">
+              View Details
+            </Button>
+            <Button variant="outline" size="sm">
+              Reschedule
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-destructive border-destructive hover:bg-destructive/10 hover:text-destructive" 
+              onClick={handleCancel}
+            >
               Cancel
             </Button>
           </>
         )}
+        {consultation.status === ConsultationStatus.IN_PROGRESS && (
+          <Button size="sm" variant="default" asChild>
+            <Link href={consultation.meetingLink || "#"}>
+              <Video className="h-4 w-4 mr-2" />
+              Join Meeting
+            </Link>
+          </Button>
+        )}
         {consultation.status === ConsultationStatus.CANCELLED && (
-          <Button size="sm">Rebook</Button>
+          <>
+            <Button size="sm" variant="default">
+              Rebook
+            </Button>
+            <Button size="sm" variant="outline">
+              View Details
+            </Button>
+          </>
         )}
         {consultation.status === ConsultationStatus.COMPLETED && (
-          <Button variant="outline" size="sm">View Summary</Button>
+          <>
+            <Button size="sm" variant="default">
+              View Summary
+            </Button>
+            <Button variant="outline" size="sm">
+              Leave Review
+            </Button>
+          </>
         )}
       </CardFooter>
     </Card>

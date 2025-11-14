@@ -10,7 +10,7 @@ interface ConsultationListProps {
 }
 
 export default function ConsultationList({ view }: ConsultationListProps) {
-  const { consultations, isLoading } = useSelector((state: RootState) => state.consultation);
+  const { consultations, loading: isLoading } = useSelector((state: RootState) => state.consultation);
 
   // Show loading state
   if (isLoading) {
@@ -38,7 +38,7 @@ export default function ConsultationList({ view }: ConsultationListProps) {
 
   if (view === 'grid') {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
         {consultations.map((consultation) => (
           <ConsultationCardGrid key={consultation._id} consultation={consultation} />
         ))}

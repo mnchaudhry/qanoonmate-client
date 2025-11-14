@@ -14,7 +14,7 @@ interface LawyerState {
     meta: PaginationMeta;
     clients: IClient[];
     logs?: any[];
-    dashboardStats: LawyerAPI.GetDashboardStatsResponse | null;
+    dashboardStats: LawyerAPI.GetDashboardStatsResponse['data'] | null;
     statsLoading: boolean;
     statsError: string | null;
     activities: LawyerAPI.ActivityLog[];
@@ -314,7 +314,7 @@ const lawyerSlice = createSlice({
             })
             .addCase(getDashboardStats.fulfilled, (state, action) => {
                 state.statsLoading = false;
-                state.dashboardStats = action.payload;
+                state.dashboardStats = action.payload.data;
                 state.statsError = null;
             })
             .addCase(getDashboardStats.rejected, (state, action) => {
