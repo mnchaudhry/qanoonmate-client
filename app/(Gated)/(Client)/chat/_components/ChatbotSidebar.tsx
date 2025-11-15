@@ -1,32 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Logo from "@/components/Logo";
 import { AIChatSession } from "@/store/types/api";
-import {
-  deleteSession,
-  getMyChatSessions,
-  newChat,
-  renameSession,
-  setCurrentSession,
-  setCurrentSessionId,
-  setChatMode,
-  ChatMode,
-} from "@/store/reducers/aiSessionSlice";
+import { deleteSession, getMyChatSessions, newChat, renameSession, setCurrentSession, setCurrentSessionId, setChatMode, ChatMode, } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
 import ModeSelector from "./ModeSelector";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  MoreVertical,
-  Settings,
-  Plus,
-  ChevronLeft,
-  Search,
-} from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
+import { MoreVertical, Settings, Plus, ChevronLeft, Search, } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import AlertModal from "@/components/alert-modal";
@@ -228,124 +208,124 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
               <div className="flex-1 space-y-4">
                 {loading.fetch
                   ? Array.from({ length: 5 }).map((_, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3 rounded-xl bg-accent/30 animate-pulse mb-2 border border-border/50 shadow-sm"
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className="h-4 bg-muted-foreground/20 rounded w-3/4"></span>
-                          <div className="w-5 h-5 bg-muted-foreground/20 rounded-full"></div>
-                        </div>
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl bg-accent/30 animate-pulse mb-2 border border-border/50 shadow-sm"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="h-4 bg-muted-foreground/20 rounded w-3/4"></span>
+                        <div className="w-5 h-5 bg-muted-foreground/20 rounded-full"></div>
                       </div>
-                    ))
+                    </div>
+                  ))
                   : sessions
-                      .filter((section) =>
-                        section.items.some((session) =>
-                          session.title
-                            .toLowerCase()
-                            .includes(searchTerm.toLowerCase())
-                        )
+                    .filter((section) =>
+                      section.items.some((session) =>
+                        session.title
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
                       )
-                      .map((section, index) => (
-                        <div
-                          key={index}
-                          className="animate-in fade-in slide-in-from-left-2"
-                          style={{ animationDelay: `${index * 50}ms` }}
-                        >
-                          <h2 className="mb-2 text-foreground text-xs font-medium uppercase tracking-wider px-3 flex items-center gap-2">
-                            <div className="w-[3px] h-4 bg-primary rounded-full"></div>
-                            {section.section}
-                          </h2>
-                          {section.items
-                            .filter((session) =>
-                              session.title
-                                .toLowerCase()
-                                .includes(searchTerm.toLowerCase())
-                            )
-                            .map((session, i) => (
-                              <div
-                                key={i}
-                                onClick={() => onChatSelect(session)}
-                                className={cn(
-                                  "group p-3 py-2 rounded-xl cursor-pointer text-sm flex justify-between items-center transition-all duration-200 active:scale-[0.98]",
-                                  String(sessionId) == String(session._id)
-                                    ? "bg-primary/10 text-primary border border-primary/30 shadow-md hover:shadow-lg"
-                                    : "hover:bg-secondary hover:shadow-sm"
-                                )}
-                              >
-                                {renaming === session._id ? (
-                                  <input
-                                    autoFocus
-                                    defaultValue={session.title}
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter") {
-                                        onRename(
-                                          session._id,
-                                          (e.target as HTMLInputElement).value
-                                        );
-                                      }
-                                    }}
-                                    onBlur={(e) =>
+                    )
+                    .map((section, index) => (
+                      <div
+                        key={index}
+                        className="animate-in fade-in slide-in-from-left-2"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <h2 className="mb-2 text-foreground text-xs font-medium uppercase tracking-wider px-3 flex items-center gap-2">
+                          <div className="w-[3px] h-4 bg-primary rounded-full"></div>
+                          {section.section}
+                        </h2>
+                        {section.items
+                          .filter((session) =>
+                            session.title
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                          )
+                          .map((session, i) => (
+                            <div
+                              key={i}
+                              onClick={() => onChatSelect(session)}
+                              className={cn(
+                                "group p-3 py-2 rounded-xl cursor-pointer text-sm flex justify-between items-center transition-all duration-200 active:scale-[0.98]",
+                                String(sessionId) == String(session._id)
+                                  ? "bg-primary/10 text-primary border border-primary/30 shadow-md hover:shadow-lg"
+                                  : "hover:bg-secondary hover:shadow-sm"
+                              )}
+                            >
+                              {renaming === session._id ? (
+                                <input
+                                  autoFocus
+                                  defaultValue={session.title}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
                                       onRename(
                                         session._id,
                                         (e.target as HTMLInputElement).value
-                                      )
+                                      );
                                     }
-                                    className={cn(
-                                      "w-full bg-background border border-border px-3 py-1.5 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all",
-                                      loading.rename
-                                        ? "animate-pulse cursor-not-allowed opacity-50"
-                                        : ""
-                                    )}
-                                    disabled={loading.rename}
-                                  />
-                                ) : (
-                                  <>
-                                    <span className="text-muted-foreground truncate font-medium group-hover:text-primary transition-colors">
-                                      {session.title}
-                                    </span>
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button
-                                          variant="ghost"
-                                          size="icon"
-                                          className="w-7 h-7 hover:bg-accent/80 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
-                                          <MoreVertical className="w-3.5 h-3.5" />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent
-                                        align="end"
-                                        className="w-40"
+                                  }}
+                                  onBlur={(e) =>
+                                    onRename(
+                                      session._id,
+                                      (e.target as HTMLInputElement).value
+                                    )
+                                  }
+                                  className={cn(
+                                    "w-full bg-background border border-border px-3 py-1.5 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all",
+                                    loading.rename
+                                      ? "animate-pulse cursor-not-allowed opacity-50"
+                                      : ""
+                                  )}
+                                  disabled={loading.rename}
+                                />
+                              ) : (
+                                <>
+                                  <span className="text-muted-foreground truncate font-medium group-hover:text-primary transition-colors">
+                                    {session.title}
+                                  </span>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="w-7 h-7 hover:bg-accent/80 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"
+                                        onClick={(e) => e.stopPropagation()}
                                       >
-                                        <DropdownMenuItem
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setRenaming(session._id);
-                                          }}
-                                          className="cursor-pointer"
-                                        >
-                                          Rename
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setSessionToDelete(session);
-                                            setOpenDeleteModal(true);
-                                          }}
-                                          className="cursor-pointer text-destructive focus:text-destructive"
-                                        >
-                                          Delete
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  </>
-                                )}
-                              </div>
-                            ))}
-                        </div>
-                      ))}
+                                        <MoreVertical className="w-3.5 h-3.5" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent
+                                      align="end"
+                                      className="w-40"
+                                    >
+                                      <DropdownMenuItem
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setRenaming(session._id);
+                                        }}
+                                        className="cursor-pointer"
+                                      >
+                                        Rename
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSessionToDelete(session);
+                                          setOpenDeleteModal(true);
+                                        }}
+                                        className="cursor-pointer text-destructive focus:text-destructive"
+                                      >
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+                    ))}
               </div>
             </div>
 

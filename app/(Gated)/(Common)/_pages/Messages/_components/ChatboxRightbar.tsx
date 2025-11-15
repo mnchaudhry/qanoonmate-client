@@ -260,12 +260,12 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
   return (
     <aside
       className={cn(
-        "relative w-full h-full flex-col z-50 animate-slide-in-right p-4",
+        "relative w-full h-full flex-col z-50 animate-slide-in-right overflow-y-auto custom-scrollbar",
         showRightbar ? "flex" : "hidden"
       )}
     >
       {/* Top Profile Block */}
-      <div className="sticky top-0 z-20 px-4 pb-5 flex flex-col items-center gap-3 bg-surface/30 backdrop-blur-sm rounded-2xl mb-4">
+      <div className="sticky top-0 z-20 px-4 pb-5 pt-4 flex flex-col items-center gap-3 bg-surface/30 backdrop-blur-sm rounded-2xl mx-4 mt-4 mb-4">
         <div className="pt-6">
           <Avatar className="w-20 h-20 shadow-md">
             <AvatarImage src={profile?.profilePicture} alt={profile?.firstname} />
@@ -307,7 +307,7 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
         collapsible
         value={open || undefined}
         onValueChange={handleAccordionChange}
-        className="flex-1 overflow-y-auto space-y-2 custom-scrollbar"
+        className="space-y-2 px-4 pb-4"
       >
         {/* Search Chat */}
         <AccordionItem value="search" className="rounded-xl bg-background backdrop-blur-sm overflow-hidden border-0">

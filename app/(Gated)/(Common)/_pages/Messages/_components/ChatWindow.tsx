@@ -41,7 +41,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
   //////////////////////////////////////////////// STATES /////////////////////////////////////////////////
   const [messageInput, setMessageInput] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showRightbar, setShowRightbar] = useState(true);
 
   //////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////
@@ -226,7 +225,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
   // Get messages for this specific room
   const roomMessages = currentRoom ? messages[currentRoom._id] || [] : [];
   const messageGroups = groupMessagesByDate(roomMessages);
-  console.log("messageGroups", messageGroups, roomMessages, messages);
 
   // Get typing indicator text
   const getTypingIndicator = () => {
@@ -313,8 +311,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
                       )}
                       {/* Message bubble */}
                       <div className={`max-w-xs lg:max-w-md transition-all duration-200 ${isUser ? "order-first" : ""}`}>
-                      <div
-                        className={`px-3.5 py-2.5 rounded-2xl shadow-sm transition-all duration-200
+                        <div
+                          className={`px-3.5 py-2.5 rounded-2xl shadow-sm transition-all duration-200
                         ${isUser
                               ? "bg-primary text-primary-foreground"
                               : "bg-surface/60 text-foreground"
@@ -398,9 +396,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
                             {isUser && (
                               <>
                                 {message.readBy.some(
-                                  (p) =>
-                                    p._id !== user?._id &&
-                                    p._id === otherUser?._id
+                                  (p) => p._id !== user?._id && p._id === otherUser?._id
                                 ) ? (
                                   <CheckCircle className="w-3 h-3 text-primary-foreground/80" />
                                 ) : (
@@ -427,7 +423,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
           selectedFile={selectedFile}
           removeFile={removeFile}
           handleFileSelect={handleFileSelect}
-          setShowEmojiPicker={setShowEmojiPicker}
           inputRef={inputRef}
           messageInput={messageInput}
           handleInputChange={handleInputChange}
@@ -437,7 +432,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
         />
       </div>
 
-      <div className={cn("bg-accent/30 backdrop-blur-sm h-full transition-all duration-300 rounded-2xl overflow-hidden", showRightbar ? "w-72" : "w-0")}>
+      <div className={cn("bg-accent/30 backdrop-blur-sm h-full transition-all duration-300 rounded-2xl overflow-hidden", showRightbar ? "w-80" : "w-0")}>
         <ChatboxRightbar
           showRightbar={showRightbar}
           setShowSidebar={setShowRightbar}
