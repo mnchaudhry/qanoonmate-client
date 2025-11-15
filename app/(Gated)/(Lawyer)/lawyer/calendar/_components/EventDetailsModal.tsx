@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,8 +8,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Edit, Trash2, Calendar, Save, X, Clock, Tag } from 'lucide-react';
+import { Edit, Trash2, Calendar, Save, X, Clock, Tag, User, MapPin, Video, Phone, CheckCircle, XCircle, PlayCircle, AlertTriangle } from 'lucide-react';
 import { CalendarEvent } from '../page';
+import { ConsultationStatus } from '@/lib/enums';
+import { enumToLabel } from '@/lib/utils';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface Props {
   event: CalendarEvent | null;
@@ -19,7 +23,9 @@ interface Props {
 }
 
 const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) => {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [formData, setFormData] = useState<Partial<CalendarEvent>>({
     title: '',
     date: '',
@@ -92,6 +98,170 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
       default:
         return 'bg-primary-100 text-primary-800';
     }
+  };
+
+  const getStatusBadge = (status?: ConsultationStatus) => {
+    if (!status) return null;
+    
+    const statusConfig = {
+      [ConsultationStatus.PENDING]: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
+      [ConsultationStatus.SCHEDULED]: { color: 'bg-blue-100 text-blue-800', icon: Calendar },
+      [ConsultationStatus.CONFIRMED]: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
+      [ConsultationStatus.IN_PROGRESS]: { color: 'bg-purple-100 text-purple-800', icon: PlayCircle },
+      [ConsultationStatus.COMPLETED]: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
+      [ConsultationStatus.CANCELLED]: { color: 'bg-red-100 text-red-800', icon: XCircle },
+      [ConsultationStatus.NO_SHOW]: { color: 'bg-orange-100 text-orange-800', icon: AlertTriangle },
+    };
+
+    const config = statusConfig[status];
+    const Icon = config?.icon || Clock;
+
+    return (
+      <Badge className={`${config?.color} gap-1`}>
+        <Icon className="w-3 h-3" />
+        {enumToLabel(status)}
+      </Badge>
+    );
+  };
+
+  const handleQuickAction = async (action: 'confirm' | 'start' | 'complete' | 'cancel' | 'join') => {
+    setIsProcessing(true);
+    try {
+      const consultationId = event?.consultation?._id;
+      
+      switch (action) {
+        case 'confirm':
+          // TODO: Dispatch confirm consultation action
+          console.log('Confirming consultation:', consultationId);
+          break;
+        case 'start':
+          // TODO: Dispatch start consultation action
+          console.log('Starting consultation:', consultationId);
+          break;
+        case 'complete':
+          // TODO: Dispatch complete consultation action
+          console.log('Completing consultation:', consultationId);
+          break;
+        case 'cancel':
+          if (confirm('Are you sure you want to cancel this consultation?')) {
+            // TODO: Dispatch cancel consultation action
+            console.log('Cancelling consultation:', consultationId);
+          }
+          break;
+        case 'join':
+          if (event?.consultation?.meetingLink) {
+            window.open(event.consultation.meetingLink, '_blank');
+          }
+          break;
+      }
+      onClose();
+    } catch (error) {
+      console.error('Action failed:', error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const getQuickActions = () => {
+    const status = event?.status;
+    const consultation = event?.consultation;
+    
+    if (!status || !consultation) return null;
+
+    const actions = [];
+
+    if (status === ConsultationStatus.PENDING || status === ConsultationStatus.SCHEDULED) {
+      actions.push(
+        <Button
+          key="confirm"
+          onClick={() => handleQuickAction('confirm')}
+          disabled={isProcessing}
+          className="bg-green-600 hover:bg-green-700 text-white gap-2"
+        >
+          <CheckCircle className="w-4 h-4" />
+          Confirm
+        </Button>
+      );
+    }
+
+    if (status === ConsultationStatus.CONFIRMED) {
+      const consultationTime = new Date(consultation.scheduledDate);
+      const now = new Date();
+      const timeDiff = (consultationTime.getTime() - now.getTime()) / (1000 * 60);
+
+      if (timeDiff <= 15 && timeDiff >= -30) {
+        actions.push(
+          <Button
+            key="start"
+            onClick={() => handleQuickAction('start')}
+            disabled={isProcessing}
+            className="bg-purple-600 hover:bg-purple-700 text-white gap-2"
+          >
+            <PlayCircle className="w-4 h-4" />
+            Start
+          </Button>
+        );
+
+        if (consultation.meetingLink) {
+          actions.push(
+            <Button
+              key="join"
+              onClick={() => handleQuickAction('join')}
+              disabled={isProcessing}
+              className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+            >
+              <Video className="w-4 h-4" />
+              Join Meeting
+            </Button>
+          );
+        }
+      }
+    }
+
+    if (status === ConsultationStatus.IN_PROGRESS) {
+      actions.push(
+        <Button
+          key="complete"
+          onClick={() => handleQuickAction('complete')}
+          disabled={isProcessing}
+          className="bg-green-600 hover:bg-green-700 text-white gap-2"
+        >
+          <CheckCircle className="w-4 h-4" />
+          Mark Complete
+        </Button>
+      );
+
+      if (consultation.meetingLink) {
+        actions.push(
+          <Button
+            key="join"
+            onClick={() => handleQuickAction('join')}
+            disabled={isProcessing}
+            className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
+          >
+            <Video className="w-4 h-4" />
+            Rejoin Meeting
+          </Button>
+        );
+      }
+    }
+
+    if ([ConsultationStatus.PENDING, ConsultationStatus.SCHEDULED, ConsultationStatus.CONFIRMED].includes(status)) {
+      actions.push(
+        <Button
+          key="cancel"
+          onClick={() => handleQuickAction('cancel')}
+          disabled={isProcessing}
+          variant="destructive"
+          className="gap-2"
+        >
+          <XCircle className="w-4 h-4" />
+          Cancel
+        </Button>
+      );
+    }
+
+    return actions.length > 0 ? actions : null;
   };
 
   return (
@@ -237,79 +407,177 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
           ) : (
             // View Mode
             <div className="space-y-4">
-              <Card className="border-primary-200">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-semibold text-primary-900">
-                      {formData.title}
-                    </h3>
-                    <Badge className={getTypeColor(formData.type || 'consultation')}>
-                      {formData.type}
-                    </Badge>
+              {/* Status Alert for upcoming consultations */}
+              {event?.status && [ConsultationStatus.CONFIRMED].includes(event.status) && (
+                <Alert className="border-blue-200 bg-blue-50">
+                  <Clock className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-800">
+                    This consultation is confirmed. Make sure to join on time.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <Card className="border-border">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-xl font-semibold text-foreground">
+                          {formData.title}
+                        </h3>
+                        {getStatusBadge(event?.status)}
+                      </div>
+                      <Badge className={getTypeColor(formData.type || 'consultation')}>
+                        {formData.type}
+                      </Badge>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-secondary-600" />
-                      <span className="text-sm text-secondary-700">
-                        {formData.date && new Date(formData.date).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-secondary-600" />
-                      <span className="text-sm text-secondary-700">
-                        {formData.startTime && formatTime(formData.startTime)} – {formData.endTime && formatTime(formData.endTime)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {formData.tags && formData.tags.length > 0 && (
-                    <div className="flex items-center gap-2 mb-4">
-                      <Tag className="w-4 h-4 text-secondary-600" />
-                      <div className="flex flex-wrap gap-1">
-                        {formData.tags.map((tag, index) => (
-                          <Badge key={index} variant="secondary">
-                            {tag}
-                          </Badge>
-                        ))}
+                  <div className="space-y-3">
+                    {/* Date and Time */}
+                    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                      <Calendar className="w-5 h-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {formData.date && new Date(formData.date).toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {formData.startTime && formatTime(formData.startTime)} – {formData.endTime && formatTime(formData.endTime)}
+                        </p>
                       </div>
                     </div>
-                  )}
 
-                  {formData.notes && (
-                    <div className="mt-4 p-3 bg-secondary-50 rounded-lg">
-                      <p className="text-sm text-secondary-700">{formData.notes}</p>
+                    {/* Client Information */}
+                    {formData.clientName && (
+                      <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                        <User className="w-5 h-5 text-primary" />
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-foreground">{formData.clientName}</p>
+                          <p className="text-xs text-muted-foreground">Client</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Location/Meeting Link */}
+                    <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
+                      {event?.consultation?.meetingLink ? (
+                        <>
+                          <Video className="w-5 h-5 text-primary" />
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-foreground">Online Meeting</p>
+                            <a 
+                              href={event.consultation.meetingLink} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-xs text-primary hover:underline"
+                            >
+                              {event.consultation.meetingLink}
+                            </a>
+                          </div>
+                        </>
+                      ) : event?.consultation?.location ? (
+                        <>
+                          <MapPin className="w-5 h-5 text-primary" />
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-foreground">In-Person</p>
+                            <p className="text-xs text-muted-foreground">{event.consultation.location}</p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <MapPin className="w-5 h-5 text-primary" />
+                          <p className="text-sm text-muted-foreground">Location not specified</p>
+                        </>
+                      )}
                     </div>
-                  )}
+
+                    {/* Tags */}
+                    {formData.tags && formData.tags.length > 0 && (
+                      <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
+                        <Tag className="w-5 h-5 text-primary mt-0.5" />
+                        <div className="flex flex-wrap gap-2">
+                          {formData.tags.map((tag, index) => (
+                            <Badge key={index} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Notes */}
+                    {formData.notes && (
+                      <div className="p-3 bg-muted rounded-lg">
+                        <p className="text-sm font-medium text-foreground mb-1">Notes</p>
+                        <p className="text-sm text-muted-foreground">{formData.notes}</p>
+                      </div>
+                    )}
+
+                    {/* Consultation Details */}
+                    {event?.consultation && (
+                      <div className="pt-3 border-t border-border">
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <p className="text-muted-foreground">Duration</p>
+                            <p className="font-medium text-foreground">{event.consultation.duration} minutes</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground">Fee</p>
+                            <p className="font-medium text-foreground">
+                              PKR {event.consultation.totalAmount?.toLocaleString() || 'N/A'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
 
-              <div className="flex justify-end gap-2">
-                <Button
-                  variant="outline"
-                  onClick={() => setIsEditing(true)}
-                  className="border-primary-200 text-primary-700 hover:bg-primary-50"
-                >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
+              {/* Quick Actions */}
+              {getQuickActions() && (
+                <div className="flex flex-wrap gap-2 p-4 bg-muted rounded-lg">
+                  <p className="w-full text-sm font-medium text-foreground mb-2">Quick Actions</p>
+                  {getQuickActions()}
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex justify-between gap-2">
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsEditing(true)}
+                    className="gap-2"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Edit
+                  </Button>
+                  {event?.consultation && (
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push(`/lawyer/consultations/${event.consultation?._id}`)}
+                      className="gap-2"
+                    >
+                      View Details
+                    </Button>
+                  )}
+                </div>
                 {event && (
                   <Button
                     variant="outline"
                     onClick={handleDelete}
-                    className="border-accent-200 text-accent-700 hover:bg-accent-50"
+                    className="gap-2 text-destructive hover:bg-destructive/10"
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
+                    <Trash2 className="w-4 h-4" />
                     Delete
                   </Button>
                 )}
-                <Button
-                  variant="outline"
-                  className="border-secondary-200 text-secondary-700 hover:bg-secondary-50"
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Reschedule
-                </Button>
               </div>
             </div>
           )}

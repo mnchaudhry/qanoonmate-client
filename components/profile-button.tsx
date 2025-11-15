@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { LayoutDashboard, LogOut, User } from "lucide-react";
+import { LayoutDashboard, LogOut, Settings, User } from "lucide-react";
 import { useSelector, useDispatch } from 'react-redux'
 import { AppDispatch, RootState } from '@/store/store'
 import Link from "next/link";
@@ -46,6 +46,12 @@ const ProfileButton = () => {
     else return "/client/dashboard";
   }
 
+  const getSettingsLink = () => {
+    if (user?.role === UserRole.LAWYER) return "/lawyer/settings";
+    else if (user?.role === UserRole.ADMIN) return "/admin/settings";
+    else return "/client/settings";
+  }
+
   //////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
     <div className="flex items-center gap-1" >
@@ -85,12 +91,12 @@ const ProfileButton = () => {
               </DropdownMenuItem>
             )
           }
-          {/* <DropdownMenuItem asChild>
-          <Link href={getSettingsLink()} className="flex items-center gap-x-2" >
-            <Settings className="h-4 w-4" />
-            <span>Settings</span>
-          </Link>
-        </DropdownMenuItem> */}
+          <DropdownMenuItem asChild>
+            <Link href={getSettingsLink()} className="flex items-center gap-x-2" >
+              <Settings className="h-4 w-4" />
+              <span>Settings</span>
+            </Link>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-x-2">
             <LogOut className="h-4 w-4" />
             <span>Log out</span>

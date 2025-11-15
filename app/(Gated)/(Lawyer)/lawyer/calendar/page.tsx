@@ -9,6 +9,7 @@ import dayGridPlugin from '@fullcalendar/daygrid/index.js';
 import timeGridPlugin from '@fullcalendar/timegrid/index.js';
 import interactionPlugin from '@fullcalendar/interaction/index.js';
 import EventDetailsModal from './_components/EventDetailsModal';
+import AgendaView from './_components/AgendaView';
 import DashboardPageHeader from '@/components/DashboardPageHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -37,7 +38,7 @@ export interface CalendarEvent {
   consultation?: IConsultation;
 }
 
-export type CalendarView = 'dayGridDay' | 'timeGridWeek' | 'dayGridMonth';
+export type CalendarView = 'timeGridDay' | 'timeGridWeek' | 'dayGridMonth';
 
 const Calendar = () => {
   /////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////
@@ -53,6 +54,8 @@ const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [showAgendaView, setShowAgendaView] = useState(false);
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 
   const { consultations } = useSelector((state: RootState) => state.consultation);
 
@@ -108,20 +111,6 @@ const Calendar = () => {
       });
   }, [consultations, statusFilter, typeFilter]);
 
-  // Map events to FullCalendar format
-  const fullCalendarEvents = useMemo(() => {
-    return events.map(e => ({
-      id: e.id,
-      title: e.title,
-      start: `${e.date}T${e.startTime}`,
-      end: `${e.date}T${e.endTime}`,
-      extendedProps: e,
-      backgroundColor: getEventColor(e.status || ConsultationStatus.SCHEDULED),
-      borderColor: getEventBorderColor(e.status || ConsultationStatus.SCHEDULED),
-      textColor: '#1a1a1a',
-    }));
-  }, [events]);
-
   const getEventColor = (status: ConsultationStatus) => {
     switch (status) {
       case ConsultationStatus.PENDING:
@@ -160,12 +149,26 @@ const Calendar = () => {
     }
   };
 
+  // Map events to FullCalendar format
+  const fullCalendarEvents = useMemo(() => {
+    return events.map(e => ({
+      id: e.id,
+      title: e.title,
+      start: `${e.date}T${e.startTime}`,
+      end: `${e.date}T${e.endTime}`,
+      extendedProps: e,
+      backgroundColor: getEventColor(e.status || ConsultationStatus.SCHEDULED),
+      borderColor: getEventBorderColor(e.status || ConsultationStatus.SCHEDULED),
+      textColor: '#1a1a1a',
+    }));
+  }, [events]);
+
   const handleEventClick = (info: any) => {
     setSelectedEvent(info.event.extendedProps as CalendarEvent);
     setIsModalOpen(true);
   };
 
-  const handleDateSelect = (selectInfo: any) => {
+  const handleDateSelect = useCallback((selectInfo: any) => {
     // Open modal to add new event
     const selectedDate = selectInfo.startStr.split('T')[0];
     setSelectedEvent({
@@ -180,7 +183,7 @@ const Calendar = () => {
       notes: ''
     });
     setIsModalOpen(true);
-  };
+  }, []);
 
   const handleSaveEvent = (event: CalendarEvent) => {
     // TODO: Implement save to backend
@@ -194,15 +197,68 @@ const Calendar = () => {
     setIsModalOpen(false);
   };
 
-  const handleViewChange = (view: CalendarView) => {
+  // Detect overlapping events
+  const checkEventConflict = useCallback((newStartTime: Date, eventId: string): boolean => {
+    const newEndTime = new Date(newStartTime);
+    newEndTime.setHours(newEndTime.getHours() + 1); // Assume 1 hour duration
+
+    return events.some(event => {
+      if (event.id === eventId) return false; // Skip the event being moved
+      
+      const eventStart = new Date(`${event.date}T${event.startTime}`);
+      const eventEnd = new Date(`${event.date}T${event.endTime}`);
+
+      // Check if times overlap
+      return (newStartTime < eventEnd && newEndTime > eventStart);
+    });
+  }, [events]);
+
+  // Event drag and drop handler
+  const handleEventDrop = useCallback(async (info: any) => {
+    const { event } = info;
+    const eventData = event.extendedProps as CalendarEvent;
+    const newStart = new Date(event.start);
+    const newDate = newStart.toISOString().split('T')[0];
+    const newTime = newStart.toTimeString().slice(0, 5);
+
+    // Check for conflicts
+    const hasConflict = checkEventConflict(newStart, eventData.id);
+    
+    if (hasConflict) {
+      if (!confirm('This time slot conflicts with another event. Continue anyway?')) {
+        info.revert();
+        return;
+      }
+    }
+
+    try {
+      // TODO: Call API to reschedule consultation
+      console.log('Rescheduling event:', {
+        id: eventData.id,
+        newDate,
+        newTime,
+        consultation: eventData.consultation
+      });
+      
+      // For now, just update local state
+      // In production, dispatch update consultation action
+      // await dispatch(rescheduleConsultation({ id: eventData.consultation?._id, scheduledDate: newStart.toISOString() })).unwrap();
+      
+    } catch (error) {
+      console.error('Failed to reschedule:', error);
+      info.revert();
+    }
+  }, [checkEventConflict]);
+
+  const handleViewChange = useCallback((view: CalendarView) => {
     setCurrentView(view);
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       calendarApi.changeView(view);
     }
-  };
+  }, []);
 
-  const handleNavigation = (direction: 'prev' | 'next' | 'today') => {
+  const handleNavigation = useCallback((direction: 'prev' | 'next' | 'today') => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       if (direction === 'prev') calendarApi.prev();
@@ -210,7 +266,7 @@ const Calendar = () => {
       else calendarApi.today();
       setCurrentDate(calendarApi.getDate());
     }
-  };
+  }, []);
 
   const handleClearFilters = () => {
     setStatusFilter('all');
@@ -218,6 +274,65 @@ const Calendar = () => {
   };
 
   const hasActiveFilters = statusFilter !== 'all' || typeFilter !== 'all';
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      // Only handle shortcuts when modal is closed and not typing in input
+      if (isModalOpen || event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (event.key.toLowerCase()) {
+        case 'arrowleft':
+          if (!showAgendaView) {
+            event.preventDefault();
+            handleNavigation('prev');
+          }
+          break;
+        case 'arrowright':
+          if (!showAgendaView) {
+            event.preventDefault();
+            handleNavigation('next');
+          }
+          break;
+        case 't':
+          event.preventDefault();
+          handleNavigation('today');
+          break;
+        case 'm':
+          event.preventDefault();
+          setShowAgendaView(false);
+          handleViewChange('dayGridMonth');
+          break;
+        case 'w':
+          event.preventDefault();
+          setShowAgendaView(false);
+          handleViewChange('timeGridWeek');
+          break;
+        case 'd':
+          event.preventDefault();
+          setShowAgendaView(false);
+          handleViewChange('timeGridDay');
+          break;
+        case 'a':
+          event.preventDefault();
+          setShowAgendaView(true);
+          break;
+        case 'n':
+          event.preventDefault();
+          handleDateSelect({ startStr: new Date().toISOString() });
+          break;
+        case '?':
+          event.preventDefault();
+          setShowShortcutsHelp(prev => !prev);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [isModalOpen, showAgendaView, handleNavigation, handleViewChange, handleDateSelect]);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -347,7 +462,10 @@ const Calendar = () => {
               <ChevronRight className="h-4 w-4" />
             </Button>
             <h3 className="text-lg font-semibold ml-2">
-              {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              {currentView === 'timeGridDay' 
+                ? currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+                : currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+              }
             </h3>
           </div>
 
@@ -429,28 +547,45 @@ const Calendar = () => {
             {/* View Toggle */}
             <div className="flex items-center gap-1 border border-border rounded-md p-1">
               <Button
-                variant={currentView === 'dayGridMonth' ? 'default' : 'ghost'}
+                variant={!showAgendaView && currentView === 'dayGridMonth' ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => handleViewChange('dayGridMonth')}
+                onClick={() => {
+                  setShowAgendaView(false);
+                  handleViewChange('dayGridMonth');
+                }}
                 className="h-7 px-3 text-xs"
               >
                 Month
               </Button>
               <Button
-                variant={currentView === 'timeGridWeek' ? 'default' : 'ghost'}
+                variant={!showAgendaView && currentView === 'timeGridWeek' ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => handleViewChange('timeGridWeek')}
+                onClick={() => {
+                  setShowAgendaView(false);
+                  handleViewChange('timeGridWeek');
+                }}
                 className="h-7 px-3 text-xs"
               >
                 Week
               </Button>
               <Button
-                variant={currentView === 'dayGridDay' ? 'default' : 'ghost'}
+                variant={!showAgendaView && currentView === 'timeGridDay' ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => handleViewChange('dayGridDay')}
+                onClick={() => {
+                  setShowAgendaView(false);
+                  handleViewChange('timeGridDay');
+                }}
                 className="h-7 px-3 text-xs"
               >
                 Day
+              </Button>
+              <Button
+                variant={showAgendaView ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setShowAgendaView(true)}
+                className="h-7 px-3 text-xs"
+              >
+                Agenda
               </Button>
             </div>
 
@@ -487,16 +622,26 @@ const Calendar = () => {
         )}
       </div>
 
-      {/* Calendar */}
-      <Card className="border-border overflow-hidden">
-        {isLoading ? (
+      {/* Calendar or Agenda View */}
+      {isLoading ? (
+        <Card className="border-border">
           <div className="flex items-center justify-center py-32">
             <div className="flex flex-col items-center gap-4">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
               <p className="text-muted-foreground">Loading calendar...</p>
             </div>
           </div>
-        ) : (
+        </Card>
+      ) : showAgendaView ? (
+        <AgendaView 
+          events={events} 
+          onEventClick={(event) => {
+            setSelectedEvent(event);
+            setIsModalOpen(true);
+          }}
+        />
+      ) : (
+        <Card className="border-border overflow-hidden">
           <div className="p-4 calendar-container">
             <FullCalendar
               ref={calendarRef}
@@ -509,6 +654,8 @@ const Calendar = () => {
               events={fullCalendarEvents}
               eventClick={handleEventClick}
               select={handleDateSelect}
+              eventDrop={handleEventDrop}
+              eventResize={handleEventDrop}
               dayMaxEvents={3}
               eventDisplay="block"
               nowIndicator={true}
@@ -529,31 +676,75 @@ const Calendar = () => {
               }}
             />
           </div>
-        )}
-      </Card>
+        </Card>
+      )}
 
-      {/* Legend */}
-      <Card className="border-border p-4">
-        <h4 className="text-sm font-semibold mb-3">Event Status Legend</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.PENDING) }} />
-            <span className="text-sm text-muted-foreground">Pending</span>
+      {/* Legend and Shortcuts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="border-border p-4">
+          <h4 className="text-sm font-semibold mb-3">Event Status Legend</h4>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.PENDING) }} />
+              <span className="text-sm text-muted-foreground">Pending</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.SCHEDULED) }} />
+              <span className="text-sm text-muted-foreground">Scheduled</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.IN_PROGRESS) }} />
+              <span className="text-sm text-muted-foreground">In Progress</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.COMPLETED) }} />
+              <span className="text-sm text-muted-foreground">Completed</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.SCHEDULED) }} />
-            <span className="text-sm text-muted-foreground">Scheduled</span>
+        </Card>
+
+        <Card className="border-border p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-semibold">Keyboard Shortcuts</h4>
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setShowShortcutsHelp(!showShortcutsHelp)}
+              className="h-6 text-xs"
+            >
+              {showShortcutsHelp ? 'Hide' : 'Show'}
+            </Button>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.IN_PROGRESS) }} />
-            <span className="text-sm text-muted-foreground">In Progress</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.COMPLETED) }} />
-            <span className="text-sm text-muted-foreground">Completed</span>
-          </div>
-        </div>
-      </Card>
+          {showShortcutsHelp && (
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Navigate</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">← →</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Today</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">T</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Month / Week / Day</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">M / W / D</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Agenda View</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">A</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">New Event</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">N</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Toggle Help</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">?</kbd>
+              </div>
+            </div>
+          )}
+        </Card>
+      </div>
 
       {/* Event Details Modal */}
       {isModalOpen && (
