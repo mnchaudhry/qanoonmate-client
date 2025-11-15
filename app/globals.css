@@ -176,6 +176,19 @@ section {
   .font-body {
     font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   }
+
+  .animate-shimmer {
+    animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
 }
 
 @layer base {

@@ -181,6 +181,7 @@ export const rateConsultation = ({ id, request }: ConsultationAPI.RateConsultati
 
 // Notes & Documents
 export const addNote = ({ id, request }: ConsultationAPI.AddNoteRequestData) => APIClient.post<ConsultationAPI.AddNoteResponse>(`/consultation/id/${id}/notes`, request);
+export const deleteNote = ({ id, noteId }: ConsultationAPI.DeleteNoteRequestData) => APIClient.delete<ConsultationAPI.DeleteNoteResponse>(`/consultation/id/${id}/notes/${noteId}`);
 export const uploadDocument = ({ id, request }: ConsultationAPI.UploadDocumentRequestData) => APIClient.post<ConsultationAPI.UploadDocumentResponse>(`/consultation/id/${id}/documents`, request);
 
 ////////////////////////////////////////////////////////// SUMMARY ////////////////////////////////////////////////////////////

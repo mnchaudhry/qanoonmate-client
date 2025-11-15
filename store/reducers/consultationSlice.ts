@@ -254,6 +254,24 @@ export const addNote = createAsyncThunk<ConsultationApi.AddNoteResponse, Consult
     }
 });
 
+export const deleteNote = createAsyncThunk<ConsultationApi.DeleteNoteResponse, ConsultationApi.DeleteNoteRequestData>('consultation/deleteNote', async (formData, { rejectWithValue }) => {
+    try {
+        const { data } = await api.deleteNote(formData);
+        if (data?.success) {
+            toast.success(data?.message);
+            return data;
+        }
+        else {
+            toast.error(data?.message);
+            return rejectWithValue(data?.message);
+        }
+    } catch (error) {
+        const message = getErrorMessage(error, "");
+        toast.error(message);
+        return rejectWithValue(message);
+    }
+});
+
 export const uploadDocument = createAsyncThunk<ConsultationApi.UploadDocumentResponse, ConsultationApi.UploadDocumentRequestData>('consultation/uploadDocument', async (formData, { rejectWithValue }) => {
     try {
         const { data } = await api.uploadDocument(formData);
@@ -582,6 +600,24 @@ const consultationSlice = createSlice({
                 );
             })
             .addCase(addNote.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            })
+
+            // Delete Note
+            .addCase(deleteNote.pending, (state) => {
+                state.loading = true;
+            })
+            .addCase(deleteNote.fulfilled, (state, action) => {
+                state.loading = false;
+                state.consultations = state.consultations.map((c) =>
+                    c._id === action.payload.data?._id ? action.payload.data : c
+                );
+                if (state.selectedConsultation?._id === action.payload.data?._id && action.payload.data) {
+                    state.selectedConsultation = action.payload.data;
+                }
+            })
+            .addCase(deleteNote.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload as string;
             })

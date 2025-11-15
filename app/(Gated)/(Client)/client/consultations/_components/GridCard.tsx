@@ -164,7 +164,7 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
         {consultation.status === ConsultationStatus.PENDING && (
           <>
             <Button size="sm" className="w-full" variant="default" asChild>
-              <Link href={"/client/messages"}>
+              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Chat with Lawyer
               </Link>
@@ -178,6 +178,12 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
           <>
             <Button size="sm" className="w-full" variant="default">
               View Details
+            </Button>
+            <Button size="sm" className="w-full" variant="outline" asChild>
+              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Chat with Lawyer
+              </Link>
             </Button>
             <div className="grid grid-cols-2 gap-2 w-full">
               <Button size="sm" variant="outline">
@@ -197,12 +203,20 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
           </>
         )}
         {consultation.status === ConsultationStatus.IN_PROGRESS && (
-          <Button size="sm" className="w-full" variant="default" asChild>
-            <Link href={consultation.meetingLink || "#"}>
-              <Video className="h-4 w-4 mr-2" />
-              Join Meeting
-            </Link>
-          </Button>
+          <>
+            <Button size="sm" className="w-full" variant="default" asChild>
+              <Link href={consultation.meetingLink || "#"}>
+                <Video className="h-4 w-4 mr-2" />
+                Join Meeting
+              </Link>
+            </Button>
+            <Button size="sm" className="w-full" variant="outline" asChild>
+              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Chat with Lawyer
+              </Link>
+            </Button>
+          </>
         )}
         {consultation.status === ConsultationStatus.CANCELLED && (
           <>
@@ -212,6 +226,12 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
             </Button>
             <Button size="sm" className="w-full" variant="outline">
               View Details
+            </Button>
+            <Button size="sm" className="w-full" variant="outline" asChild>
+              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Chat with Lawyer
+              </Link>
             </Button>
           </>
         )}
@@ -223,6 +243,12 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
             </Button>
             <Button size="sm" className="w-full" variant="outline">
               Leave Review
+            </Button>
+            <Button size="sm" className="w-full" variant="outline" asChild>
+              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Chat with Lawyer
+              </Link>
             </Button>
           </>
         )}

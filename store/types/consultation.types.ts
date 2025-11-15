@@ -180,6 +180,10 @@ export type AddNoteRequestData = {
 }
 export type AddNoteResponse = APIResponse<IConsultation>;
 
+// deleteNote
+export type DeleteNoteRequestData = { id: string; noteId: string; }
+export type DeleteNoteResponse = APIResponse<IConsultation>;
+
 // uploadDocument
 export type UploadDocumentRequestData = {
     id: string; request: {

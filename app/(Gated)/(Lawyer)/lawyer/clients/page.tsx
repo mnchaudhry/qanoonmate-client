@@ -7,9 +7,9 @@ import { getMyClients } from '@/store/reducers/lawyerSlice';
 import ClientsHeader from './_components/ClientsHeader';
 import ClientsTable, { Client } from './_components/ClientsTable';
 import { Pagination } from '@/components/ui/pagination';
-import { Card } from '@/components/ui/card';
 import { Users, UserCheck, UserX, TrendingUp } from 'lucide-react';
 import DashboardPageHeader from '@/components/DashboardPageHeader';
+import { StatCard } from '@/components/StatCard';
 
 const PAGE_SIZE = 9;
 const FILTERS = ['All', 'Active', 'Inactive'];
@@ -105,6 +105,9 @@ const MyClients = () => {
     } else if (action === 'remove') {
       // TODO: Implement remove client functionality
       console.log('Remove client:', client);
+    } else if (action === 'viewDocuments') {
+      // TODO: Navigate to client documents
+      console.log('View documents:', client);
     }
   };
 
@@ -138,53 +141,34 @@ const MyClients = () => {
       {/* Stats Cards */}
       {!isLoading && !error && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Total Clients</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.total}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Users className="h-6 w-6 text-primary" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Active Clients</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.active}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
-                <UserCheck className="h-6 w-6 text-green-600 dark:text-green-500" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Inactive Clients</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.inactive}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-gray-500/10 flex items-center justify-center">
-                <UserX className="h-6 w-6 text-gray-600 dark:text-gray-500" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">New This Month</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.thisMonth}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-500" />
-              </div>
-            </div>
-          </Card>
+          <StatCard
+            title="Total Clients"
+            value={stats.total}
+            icon={Users}
+            iconBg="bg-primary/10"
+            iconColor="text-primary"
+          />
+          <StatCard
+            title="Active Clients"
+            value={stats.active}
+            icon={UserCheck}
+            iconBg="bg-green-500/10"
+            iconColor="text-green-600 dark:text-green-500"
+          />
+          <StatCard
+            title="Inactive Clients"
+            value={stats.inactive}
+            icon={UserX}
+            iconBg="bg-gray-500/10"
+            iconColor="text-gray-600 dark:text-gray-500"
+          />
+          <StatCard
+            title="New This Month"
+            value={stats.thisMonth}
+            icon={TrendingUp}
+            iconBg="bg-blue-500/10"
+            iconColor="text-blue-600 dark:text-blue-500"
+          />
         </div>
       )}
 

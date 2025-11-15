@@ -208,6 +208,12 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
             <Button size="sm" variant="default" className="h-8">
               View Details
             </Button>
+            <Button size="sm" variant="outline" asChild className="h-8">
+              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+                <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+                Chat with Lawyer
+              </Link>
+            </Button>
             <Button variant="outline" size="sm" className="h-8">
               Reschedule
             </Button>
@@ -222,12 +228,20 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
           </>
         )}
         {consultation.status === ConsultationStatus.IN_PROGRESS && (
-          <Button size="sm" variant="default" asChild className="h-8">
-            <Link href={consultation.meetingLink || "#"}>
-              <Video className="h-3.5 w-3.5 mr-1.5" />
-              Join Meeting
-            </Link>
-          </Button>
+          <>
+            <Button size="sm" variant="default" asChild className="h-8">
+              <Link href={consultation.meetingLink || "#"}>
+                <Video className="h-3.5 w-3.5 mr-1.5" />
+                Join Meeting
+              </Link>
+            </Button>
+            <Button size="sm" variant="outline" asChild className="h-8">
+              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+                <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+                Chat with Lawyer
+              </Link>
+            </Button>
+          </>
         )}
         {consultation.status === ConsultationStatus.CANCELLED && (
           <>
@@ -236,6 +250,12 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
             </Button>
             <Button size="sm" variant="outline" className="h-8">
               View Details
+            </Button>
+            <Button size="sm" variant="outline" asChild className="h-8">
+              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+                <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+                Chat with Lawyer
+              </Link>
             </Button>
           </>
         )}
@@ -246,6 +266,12 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
             </Button>
             <Button variant="outline" size="sm" className="h-8">
               Leave Review
+            </Button>
+            <Button size="sm" variant="outline" asChild className="h-8">
+              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+                <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+                Chat with Lawyer
+              </Link>
             </Button>
           </>
         )}

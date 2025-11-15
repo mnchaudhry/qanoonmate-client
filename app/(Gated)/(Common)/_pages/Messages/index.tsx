@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { getMessages, getUserChatRooms, sendFileMessage, } from "@/store/reducers/chatSlice";
 import { useSocketContext } from "@/context/useSocketContext";
+import { cn } from "@/lib/utils";
 import MessagesHeader from "./_components/MessagesHeader";
 import ConversationList from "./_components/ConversationList";
 import ChatWindow from "./_components/ChatWindow";
@@ -21,6 +22,12 @@ const MessagesPage = () => {
 
   //////////////////////////////////////////////// STATES /////////////////////////////////////////////////
   const [searchQuery, setSearchQuery] = useState("");
+  const [leftSidebarWidth, setLeftSidebarWidth] = useState(320); // 320px = w-80
+  const [isResizingLeft, setIsResizingLeft] = useState(false);
+
+  // Width constraints
+  const MIN_LEFT_WIDTH = 280;
+  const MAX_LEFT_WIDTH = 480;
 
   //////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////
   useEffect(() => {
@@ -63,6 +70,36 @@ const MessagesPage = () => {
   }, [rooms, defaultSocket.socket]);
 
   //////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////
+  const handleMouseDownLeft = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizingLeft(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isResizingLeft) {
+        const newWidth = e.clientX;
+        if (newWidth >= MIN_LEFT_WIDTH && newWidth <= MAX_LEFT_WIDTH) {
+          setLeftSidebarWidth(newWidth);
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizingLeft(false);
+    };
+
+    if (isResizingLeft) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizingLeft]);
+
   const handleSendMessage = (content: string) => {
     if (!currentRoom || !user?._id) return;
 
@@ -127,15 +164,26 @@ const MessagesPage = () => {
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
-    <div className="flex h-[calc(100vh-90px)] gap-3 p-4 bg-gradient-to-br from-background via-surface/20 to-background">
+    <div className={cn("flex h-[calc(100vh-90px)] gap-4 bg-background", isResizingLeft && "select-none cursor-ew-resize")}>
       {/* Sidebar */}
-      <aside className="w-80 flex flex-col bg-background border !border-border rounded-2xl overflow-hidden shadow-lg">
+      <aside 
+        className="flex flex-col bg-accent/30 border border-accent backdrop-blur-sm rounded-2xl overflow-hidden relative"
+        style={{ width: `${leftSidebarWidth}px` }}
+      >
         <MessagesHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
         />
         <div className="flex-1 min-h-0 overflow-y-auto">
           <ConversationList searchQuery={searchQuery} />
+        </div>
+        
+        {/* Resize Handle */}
+        <div
+          className="absolute top-0 right-0 w-1.5 h-full cursor-ew-resize hover:bg-primary/30 active:bg-primary/50 transition-colors group"
+          onMouseDown={handleMouseDownLeft}
+        >
+          <div className="absolute right-0.5 top-1/2 -translate-y-1/2 w-0.5 h-16 bg-border group-hover:bg-primary group-active:bg-primary transition-all rounded-full" />
         </div>
       </aside>
       {/* Main Chat Area */}
@@ -146,7 +194,7 @@ const MessagesPage = () => {
             onSendFile={handleSendFile}
           />
         ) : (
-          <div className="flex-1 rounded-2xl overflow-hidden shadow-lg">
+          <div className="flex-1 rounded-2xl overflow-hidden">
             <EmptyState />
           </div>
         )}

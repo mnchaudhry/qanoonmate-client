@@ -6,6 +6,7 @@ import { AIChatSession } from "@/store/types/api"
 import { logout } from "@/store/reducers/authSlice"
 import { AppDispatch } from "@/store/store"
 import localStorageManager from "@/utils/localStorage"
+import { format, isToday, isTomorrow, isYesterday, parseISO } from 'date-fns'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -165,6 +166,7 @@ export const formatFileType = (fileType: string): string => {
 };
 
 export const enumToLabel = (enumValue: string) => {
+  if (!enumValue) return '';
   return enumValue.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
 }
 
@@ -201,4 +203,19 @@ export const formattedPrice = (price: number) => {
     currency: "PKR",
     minimumFractionDigits: 0,
   }).format(price);
+}
+
+export const formatConsultationDate = (dateString: string | Date) => {
+  if (dateString instanceof Date) {
+    dateString = dateString.toISOString()
+  }
+  const date = parseISO(dateString)
+  if (isToday(date)) {
+    return `Today ${format(date, 'h:mm a')}`
+  } else if (isTomorrow(date)) {
+    return `Tomorrow ${format(date, 'h:mm a')}`
+  } else if (isYesterday(date)) {
+    return `Yesterday ${format(date, 'h:mm a')}`
+  }
+  return format(date, 'MMM dd, yyyy h:mm a')
 }

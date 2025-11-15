@@ -94,7 +94,12 @@ export const socketEvents = {
     },
     regenerateResponse: (
       socket: any,
-      data: { sessionId: string; userMessageId: string; history: any[] }
+      data: {
+        sessionId: string;
+        userMessageId: string;
+        history: any[];
+        mode: "chat" | "summarizer" | "drafting";
+      }
     ) => {
       if (socket) {
         socket.emit("regenerate_response", data);

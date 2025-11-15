@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Logo from "@/components/Logo";
 import { AIChatSession } from "@/store/types/api";
-import { deleteSession, getMyChatSessions, newChat, renameSession, setCurrentSession, setCurrentSessionId, } from "@/store/reducers/aiSessionSlice";
+import { deleteSession, getMyChatSessions, newChat, renameSession, setCurrentSession, setCurrentSessionId, setChatMode, ChatMode, } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
+import ModeSelector from "./ModeSelector";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Settings, Plus, ChevronLeft, Search, } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,23 +19,37 @@ interface ChatSidebarProps {
   setSidebarOpen?: (open: boolean) => void;
 }
 
-const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenProp, setSidebarOpen: setSidebarOpenProp, }: ChatSidebarProps) => {
-
+const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
+  sidebarOpen: sidebarOpenProp,
+  setSidebarOpen: setSidebarOpenProp,
+}: ChatSidebarProps) => {
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { sidebarSessions: sessions, currentSessionId: sessionId } = useSelector((state: RootState) => state.aiSession);
+  const {
+    sidebarSessions: sessions,
+    currentSessionId: sessionId,
+    chatMode,
+  } = useSelector((state: RootState) => state.aiSession);
   const router = useRouter();
   const searchParams = useSearchParams();
   const paramSessionId = searchParams.get("id");
 
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
-  const [loading, setLoading] = useState<{ fetch: boolean; rename: boolean; delete: boolean; }>({ fetch: false, rename: false, delete: false });
+  const [loading, setLoading] = useState<{
+    fetch: boolean;
+    rename: boolean;
+    delete: boolean;
+  }>({ fetch: false, rename: false, delete: false });
   const [renaming, setRenaming] = useState<string>("");
-  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(null);
+  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(
+    null
+  );
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(sidebarOpenProp ?? true);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(
+    sidebarOpenProp ?? true
+  );
 
   ///////////////////////////////////////////////////////////// USE EFFECTS //////////////////////////////////////////////////////////////////////
   // keep internal state in sync with controlled prop if provided
@@ -96,6 +111,13 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenPr
       .finally(() => setLoading((pre) => ({ ...pre, delete: false })));
   };
 
+  const handleModeChange = (mode: ChatMode) => {
+    dispatch(setChatMode(mode));
+    toast.success(
+      `Switched to ${mode.charAt(0).toUpperCase() + mode.slice(1)} mode`
+    );
+  };
+
   ///////////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////////////
   return (
     <>
@@ -133,7 +155,6 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenPr
               : "flex flex-col items-center justify-center pt-4 pb-2 px-0"
           )}
         >
-
           {sidebarOpen ? (
             <div className="flex-1 flex justify-center items-center">
               <Logo size="md" type="green" />
@@ -147,7 +168,11 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenPr
 
         {/* Render */}
         {sidebarOpen ? (
-          <div className={cn("transition-all px-4 flex flex-col justify-between h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent")}>
+          <div
+            className={cn(
+              "transition-all px-4 flex flex-col justify-between h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+            )}
+          >
             <div className="flex flex-col gap-4 pb-4">
               {/* Search Bar and New Session Button */}
               <div className="flex flex-col gap-2 sticky top-0 z-10 bg-surface/95 backdrop-blur-sm pb-4">
@@ -169,6 +194,14 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenPr
                   <Search size={18} className="text-primary" />
                   <span>Global Search</span>
                 </Button>
+              </div>
+
+              {/* Mode Selector */}
+              <div className="pb-4">
+                <ModeSelector
+                  currentMode={chatMode}
+                  onModeChange={handleModeChange}
+                />
               </div>
 
               {/* Chat Sessions */}
@@ -194,7 +227,11 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenPr
                       )
                     )
                     .map((section, index) => (
-                      <div key={index} className="animate-in fade-in slide-in-from-left-2" style={{ animationDelay: `${index * 50}ms` }}>
+                      <div
+                        key={index}
+                        className="animate-in fade-in slide-in-from-left-2"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
                         <h2 className="mb-2 text-foreground text-xs font-medium uppercase tracking-wider px-3 flex items-center gap-2">
                           <div className="w-[3px] h-4 bg-primary rounded-full"></div>
                           {section.section}
@@ -258,7 +295,10 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenPr
                                         <MoreVertical className="w-3.5 h-3.5" />
                                       </Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-40">
+                                    <DropdownMenuContent
+                                      align="end"
+                                      className="w-40"
+                                    >
                                       <DropdownMenuItem
                                         onClick={(e) => {
                                           e.stopPropagation();
@@ -292,13 +332,19 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenPr
             <div className="mt-auto pt-2 sticky bottom-0 pb-2 bg-surface/95 backdrop-blur-sm">
               <div className="px-4 py-3 flex items-center gap-3 hover:bg-accent/50 cursor-pointer rounded-lg transition-all duration-200 hover:shadow-sm group">
                 <Settings className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors group-hover:rotate-45 duration-300" />
-                <span className="text-sm font-medium group-hover:text-primary transition-colors">Settings</span>
+                <span className="text-sm font-medium group-hover:text-primary transition-colors">
+                  Settings
+                </span>
               </div>
             </div>
           </div>
         ) : (
           // Mini sidebar: logo and icons in vertical orientation
-          <div className={cn("transition-all flex flex-col items-center justify-between h-full pb-4 overflow-y-auto")}>
+          <div
+            className={cn(
+              "transition-all flex flex-col items-center justify-between h-full pb-4 overflow-y-auto"
+            )}
+          >
             <div className="flex flex-col items-center gap-2 flex-1">
               <Button
                 size="icon"
@@ -316,6 +362,15 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenPr
               >
                 <Plus className="w-4 h-4" />
               </Button>
+
+              {/* Mode Selector - Collapsed */}
+              <div className="pt-4 border-t border-border/50 mt-2 w-full flex flex-col items-center">
+                <ModeSelector
+                  currentMode={chatMode}
+                  onModeChange={handleModeChange}
+                  collapsed
+                />
+              </div>
             </div>
             <div className="mb-2">
               <Button
@@ -378,6 +433,14 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenPr
               </Button>
             </div>
 
+            {/* Mode Selector - Mobile */}
+            <div className="pb-2">
+              <ModeSelector
+                currentMode={chatMode}
+                onModeChange={handleModeChange}
+              />
+            </div>
+
             {/* Sessions list (simplified reuse) */}
             <div className="flex-1 space-y-4">
               {sessions
@@ -389,7 +452,11 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenPr
                   )
                 )
                 .map((section, index) => (
-                  <div key={index} className="space-y-2 animate-in fade-in slide-in-from-left-2" style={{ animationDelay: `${index * 50}ms` }}>
+                  <div
+                    key={index}
+                    className="space-y-2 animate-in fade-in slide-in-from-left-2"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
                     <h2 className="text-muted-foreground text-xs font-semibold mb-2 uppercase tracking-wide flex items-center gap-2 px-2">
                       <div className="w-1 h-3 bg-primary rounded-full"></div>
                       {section.section}

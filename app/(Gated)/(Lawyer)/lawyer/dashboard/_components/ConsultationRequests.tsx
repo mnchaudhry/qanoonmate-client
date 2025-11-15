@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "@/store/store"
 import { getMyConsultations } from "@/store/reducers/consultationSlice"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,12 +8,13 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ChevronRight, Clock, CheckCircle, AlertCircle, XCircle } from "lucide-react"
+import { ChevronRight, Clock, CheckCircle, AlertCircle, XCircle, Play, Check, Eye, Video } from "lucide-react"
 import { ConsultationStatus } from "@/lib/enums"
-import { format, isToday, isTomorrow, isYesterday, parseISO } from 'date-fns'
 import Link from "next/link"
 import { IUser } from "@/store/types/user.types"
 import { IConsultation } from "@/store/types/consultation.types"
+import { formatConsultationDate } from "@/lib/utils"
+import { useRouter } from "next/navigation"
 
 const getStatusColor = (status: ConsultationStatus) => {
   switch (status) {
@@ -37,18 +38,6 @@ const getStatusIcon = (status: ConsultationStatus) => {
   }
 }
 
-const formatDate = (dateString: string) => {
-  const date = parseISO(dateString)
-  if (isToday(date)) {
-    return `Today ${format(date, 'h:mm a')}`
-  } else if (isTomorrow(date)) {
-    return `Tomorrow ${format(date, 'h:mm a')}`
-  } else if (isYesterday(date)) {
-    return `Yesterday ${format(date, 'h:mm a')}`
-  }
-  return format(date, 'MMM dd, yyyy h:mm a')
-}
-
 const getClientName = (clientId: IUser | string): string => {
   if (typeof clientId === 'string') return 'Client'
   return `${clientId.firstname || ''} ${clientId.lastname || ''}`.trim() || 'Client'
@@ -60,13 +49,154 @@ const getClientAvatar = (clientId: IUser | string): string | undefined => {
 }
 
 export default function ConsultationRequests() {
-  const dispatch = useAppDispatch()
-  const { consultations, loading: isLoading, error } = useAppSelector(state => state.consultation)
 
+  ////////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
+  const dispatch = useAppDispatch()
+  const router = useRouter()
+  const { consultations, loading: isLoading, error } = useAppSelector(state => state.consultation)
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
+
+  ////////////////////////////////////////////////////// EFFECTS ////////////////////////////////////////////////////
   useEffect(() => {
     dispatch(getMyConsultations({ filters: { limit: 4 } }))
   }, [dispatch])
 
+  ////////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
+  const handleAction = async (e: React.MouseEvent, consultationId: string, action: string) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setActionLoading(consultationId)
+
+    try {
+      // Navigate to appropriate page based on action
+      switch (action) {
+        case 'start':
+          router.push(`/lawyer/consultations/${consultationId}?action=start`)
+          break
+        case 'complete':
+          router.push(`/lawyer/consultations/${consultationId}?action=complete`)
+          break
+        case 'confirm':
+          router.push(`/lawyer/consultations/${consultationId}?action=confirm`)
+          break
+        case 'join':
+          router.push(`/lawyer/consultations/${consultationId}/meeting`)
+          break
+        case 'view':
+          router.push(`/lawyer/consultations/${consultationId}`)
+          break
+      }
+    } catch (error) {
+      console.error('Action error:', error)
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const getActionButtons = (consultation: IConsultation) => {
+    const buttons = []
+
+    switch (consultation.status) {
+      case ConsultationStatus.PENDING:
+        buttons.push(
+          <Button
+            key="confirm"
+            size="sm"
+            variant="default"
+            className="h-8 px-3"
+            onClick={(e) => handleAction(e, consultation._id, 'confirm')}
+            disabled={actionLoading === consultation._id}
+          >
+            <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
+            Confirm
+          </Button>
+        )
+        break
+
+      case ConsultationStatus.SCHEDULED:
+        buttons.push(
+          <Button
+            key="start"
+            size="sm"
+            variant="default"
+            className="h-8 px-3"
+            onClick={(e) => handleAction(e, consultation._id, 'start')}
+            disabled={actionLoading === consultation._id}
+          >
+            <Play className="h-3.5 w-3.5 mr-1.5" />
+            Start
+          </Button>
+        )
+        if (consultation.meetingLink) {
+          buttons.push(
+            <Button
+              key="join"
+              size="sm"
+              variant="outline"
+              className="h-8 px-3"
+              onClick={(e) => handleAction(e, consultation._id, 'join')}
+              disabled={actionLoading === consultation._id}
+            >
+              <Video className="h-3.5 w-3.5 mr-1.5" />
+              Join
+            </Button>
+          )
+        }
+        break
+
+      case ConsultationStatus.IN_PROGRESS:
+        buttons.push(
+          <Button
+            key="complete"
+            size="sm"
+            variant="default"
+            className="h-8 px-3 bg-emerald-600 hover:bg-emerald-700"
+            onClick={(e) => handleAction(e, consultation._id, 'complete')}
+            disabled={actionLoading === consultation._id}
+          >
+            <Check className="h-3.5 w-3.5 mr-1.5" />
+            Complete
+          </Button>
+        )
+        if (consultation.meetingLink) {
+          buttons.push(
+            <Button
+              key="join"
+              size="sm"
+              variant="outline"
+              className="h-8 px-3"
+              onClick={(e) => handleAction(e, consultation._id, 'join')}
+              disabled={actionLoading === consultation._id}
+            >
+              <Video className="h-3.5 w-3.5 mr-1.5" />
+              Rejoin
+            </Button>
+          )
+        }
+        break
+
+      case ConsultationStatus.COMPLETED:
+      case ConsultationStatus.CANCELLED:
+        buttons.push(
+          <Button
+            key="view"
+            size="sm"
+            variant="outline"
+            className="h-8 px-3"
+            onClick={(e) => handleAction(e, consultation._id, 'view')}
+            disabled={actionLoading === consultation._id}
+          >
+            <Eye className="h-3.5 w-3.5 mr-1.5" />
+            View
+          </Button>
+        )
+        break
+    }
+
+    return buttons
+  }
+
+  ////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   if (isLoading) {
     return (
       <Card className="border-border h-full">
@@ -170,36 +300,48 @@ export default function ConsultationRequests() {
           {consultations.slice(0, 4).map((consultation: IConsultation) => {
             const clientName = getClientName(consultation?.client)
             const clientAvatar = getClientAvatar(consultation?.client)
+            const actionButtons = getActionButtons(consultation)
 
             return (
-              <Link
+              <div
                 key={consultation._id}
-                href={`/lawyer/consultations/${consultation._id}`}
-                className="block"
+                className="flex items-center justify-between p-4 bg-surface rounded-lg hover:bg-surface/80 transition-colors"
               >
-                <div className="flex items-center justify-between p-4 bg-surface rounded-lg hover:bg-surface/80 transition-colors cursor-pointer">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={clientAvatar} alt={clientName} />
-                      <AvatarFallback className="bg-primary/10 text-primary">
-                        {clientName.split(' ').map((n: string) => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h4 className="font-medium text-foreground">{clientName}</h4>
-                      <p className="text-sm text-muted-foreground capitalize">{consultation.type.replace('_', ' ')}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(consultation.scheduledDate?.toDateString())}</p>
-                    </div>
+                <Link
+                  href={`/lawyer/consultations/${consultation._id}`}
+                  className="flex items-center space-x-4 flex-1 min-w-0"
+                >
+                  <Avatar className="h-10 w-10 flex-shrink-0">
+                    <AvatarImage src={clientAvatar} alt={clientName} />
+                    <AvatarFallback className="bg-primary/10 text-primary">
+                      {clientName.split(' ').map((n: string) => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-foreground truncate">{clientName}</h4>
+                    <p className="text-sm text-muted-foreground capitalize truncate">{consultation.type.replace('_', ' ')}</p>
+                    <p className="text-xs text-muted-foreground">{formatConsultationDate(consultation.scheduledDate)}</p>
                   </div>
-                  <div className="flex items-center space-x-3">
-                    <Badge className={getStatusColor(consultation.status)}>
-                      {getStatusIcon(consultation.status)}
-                      <span className="ml-1 capitalize">{consultation.status.replace('_', ' ')}</span>
-                    </Badge>
-                    <span className="text-sm font-medium text-foreground">PKR {consultation.fee.toLocaleString()}</span>
+                </Link>
+
+                <div className="flex items-center space-x-3 flex-shrink-0 ml-4">
+                  <div className="flex flex-col items-end space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Badge className={`${getStatusColor(consultation.status)} whitespace-nowrap`}>
+                        {getStatusIcon(consultation.status)}
+                        <span className="ml-1 capitalize">{consultation.status.replace('_', ' ')}</span>
+                      </Badge>
+                      <span className="text-sm font-medium text-foreground whitespace-nowrap">PKR {consultation.fee.toLocaleString()}</span>
+                    </div>
+
+                    {actionButtons.length > 0 && (
+                      <div className="flex items-center gap-2">
+                        {actionButtons}
+                      </div>
+                    )}
                   </div>
                 </div>
-              </Link>
+              </div>
             )
           })}
         </div>
