@@ -21,7 +21,7 @@ export default function FiltersAndSearch({ searchQuery, setSearchQuery, statusFi
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
-    <div className="flex flex-col md:flex-row justify-between gap-4 mt-6 mb-4">
+    <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
       {/* Search */}
       <SearchBar
         value={searchQuery}

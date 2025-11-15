@@ -20,6 +20,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ConsultationStatus, ConsultationType } from '@/lib/enums';
 import { enumToLabel } from '@/lib/utils';
 import { IConsultation } from '@/store/types/consultation.types';
+import { StatCard } from '@/components/StatCard';
 
 export interface CalendarEvent {
   id: string;
@@ -375,53 +376,34 @@ const Calendar = () => {
       {/* Stats Cards */}
       {!isLoading && !error && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Total Events</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.total}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <CalendarIcon className="h-6 w-6 text-primary" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Today</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.today}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-blue-600 dark:text-blue-500" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">This Week</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.thisWeek}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-purple-600 dark:text-purple-500" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Upcoming</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.upcoming}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
-                <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-500" />
-              </div>
-            </div>
-          </Card>
+          <StatCard
+            title="Total Events"
+            value={stats.total}
+            icon={CalendarIcon}
+            iconBg="bg-primary/10"
+            iconColor="text-primary"
+          />
+          <StatCard
+            title="Today"
+            value={stats.today}
+            icon={Clock}
+            iconBg="bg-blue-500/10"
+            iconColor="text-blue-600 dark:text-blue-500"
+          />
+          <StatCard
+            title="This Week"
+            value={stats.thisWeek}
+            icon={TrendingUp}
+            iconBg="bg-purple-500/10"
+            iconColor="text-purple-600 dark:text-purple-500"
+          />
+          <StatCard
+            title="Upcoming"
+            value={stats.upcoming}
+            icon={CheckCircle2}
+            iconBg="bg-green-500/10"
+            iconColor="text-green-600 dark:text-green-500"
+          />
         </div>
       )}
 

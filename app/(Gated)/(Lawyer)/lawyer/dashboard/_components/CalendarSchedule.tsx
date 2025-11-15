@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Calendar, Clock, ChevronRight, AlertCircle } from "lucide-react"
-import { format, isAfter, parseISO, startOfDay } from 'date-fns'
+import { format, isAfter, startOfDay } from 'date-fns'
 import Link from "next/link"
 import { IUser } from "@/store/types/user.types"
 import { ConsultationStatus } from "@/lib/enums"
 import { IConsultation } from "@/store/types/consultation.types"
-
+import { formatConsultationDate } from "@/lib/utils"
 
 const getStatusColor = (status: ConsultationStatus) => {
   switch (status) {
@@ -30,30 +30,32 @@ const getClientName = (clientId: IUser | string): string => {
 }
 
 export default function CalendarSchedule() {
+
+  ////////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
   const dispatch = useAppDispatch()
   const { consultations, loading: isLoading, error } = useAppSelector(state => state.consultation)
 
+  ////////////////////////////////////////////////////// EFFECTS ////////////////////////////////////////////////////
   useEffect(() => {
     dispatch(getMyConsultations({ filters: { limit: 10 } }))
   }, [dispatch])
 
-  // Filter and sort upcoming events
+  ////////////////////////////////////////////////////// MEMOES ////////////////////////////////////////////////////
   const upcomingEvents = useMemo(() => {
     if (!consultations) return []
     const now = startOfDay(new Date())
 
     return consultations
       .filter((c: IConsultation) => {
-        const consultationDate = parseISO(c.scheduledDate.toDateString())
+        const consultationDate = formatConsultationDate(c.scheduledDate)
         return isAfter(consultationDate, now) &&
           [ConsultationStatus.SCHEDULED, ConsultationStatus.PENDING, ConsultationStatus.CONFIRMED].includes(c.status)
       })
-      .sort((a: IConsultation, b: IConsultation) =>
-        new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime()
-      )
+      .sort((a: IConsultation, b: IConsultation) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime())
       .slice(0, 5)
   }, [consultations])
 
+  ////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   if (isLoading) {
     return (
       <Card className="border-border">
@@ -153,7 +155,7 @@ export default function CalendarSchedule() {
         <div className="space-y-4">
           {upcomingEvents.map((event: IConsultation) => {
             const clientName = getClientName(event.client)
-            const consultationDate = parseISO(event.scheduledDate.toDateString())
+            const consultationDate = formatConsultationDate(event.scheduledDate)
 
             return (
               <Link

@@ -93,20 +93,37 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
 
   /////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
   const handleSearchMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
     const searchValue = e.target.value;
     setFindMessage(searchValue);
 
-    const words = searchValue.split(" ").filter(Boolean);
-    console.log("words", words);
-    setFilteredMessages(
-      messages[currentRoom!._id].filter((mess) => {
-        return words.some((word) =>
-          mess.content.toLowerCase()?.includes(word.toLowerCase())
-        );
-      }) || []
-    );
-    console.log("filtered messages", filteredMessages);
+    if (!searchValue.trim() || !currentRoom?._id) {
+      setFilteredMessages([]);
+      return;
+    }
+
+    const words = searchValue.toLowerCase().split(" ").filter(Boolean);
+    const roomMessages = messages[currentRoom._id] || [];
+    
+    const filtered = roomMessages.filter((mess) => {
+      return words.some((word) =>
+        mess.content.toLowerCase()?.includes(word)
+      );
+    });
+    
+    setFilteredMessages(filtered);
+  };
+
+  const handleMessageClick = (messageId: string) => {
+    // Find the message element and scroll to it
+    const messageElement = document.querySelector(`[data-message-id="${messageId}"]`);
+    if (messageElement) {
+      messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Highlight the message temporarily
+      messageElement.classList.add('bg-primary/20');
+      setTimeout(() => {
+        messageElement.classList.remove('bg-primary/20');
+      }, 2000);
+    }
   };
 
   // Accordion open logic
@@ -120,6 +137,24 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
       dispatch(getRoomLinks(currentRoom._id));
     }
   }, [currentRoom?._id, dispatch]);
+
+  // Refresh files and links when messages change (new file uploaded)
+  useEffect(() => {
+    if (currentRoom?._id && messages[currentRoom._id]) {
+      const roomMessages = messages[currentRoom._id];
+      const lastMessage = roomMessages[roomMessages.length - 1];
+      
+      // If last message is a file, refresh the files list
+      if (lastMessage?.type === 'FILE') {
+        dispatch(getRoomFiles(currentRoom._id));
+      }
+      
+      // If last message contains links, refresh the links list
+      if (lastMessage?.links && lastMessage.links.length > 0) {
+        dispatch(getRoomLinks(currentRoom._id));
+      }
+    }
+  }, [messages, currentRoom?._id, dispatch]);
 
   const handleDownloadFile = (url: string, name: string) => {
     const link = document.createElement("a");
@@ -256,29 +291,52 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
                 placeholder="Search messages..."
                 className="mb-2"
               />
-              <div className="flex flex-col gap-2 max-h-48 overflow-y-auto">
-                {/* search results */}
-                {filteredMessages.map((mess, index) => {
+              <div className="flex flex-col gap-2 max-h-48 overflow-y-auto custom-scrollbar">
+                {findMessage && filteredMessages.length === 0 && (
+                  <div className="text-sm text-muted-foreground text-center py-4">
+                    No messages found matching "{findMessage}"
+                  </div>
+                )}
+                {filteredMessages.map((mess) => {
+                  const searchTerm = findMessage.toLowerCase();
+                  const content = mess.content;
+                  const lowerContent = content.toLowerCase();
+                  const index = lowerContent.indexOf(searchTerm);
+                  
+                  // Highlight the search term
+                  const beforeMatch = content.substring(0, index);
+                  const match = content.substring(index, index + searchTerm.length);
+                  const afterMatch = content.substring(index + searchTerm.length);
+                  
                   return (
                     <div
-                      key={index}
+                      key={mess._id}
                       className="p-2.5 rounded-lg bg-surface/50 cursor-pointer hover:bg-surface/70 transition-colors"
+                      onClick={() => handleMessageClick(mess._id)}
                     >
-                      {mess.content}
-                      <div className="text-xs text-muted-foreground">
-                        {mess.sender.firstname} •{" "}
+                      <div className="text-sm">
+                        {index >= 0 ? (
+                          <>
+                            {beforeMatch}
+                            <span className="bg-primary/30 font-medium">{match}</span>
+                            {afterMatch}
+                          </>
+                        ) : (
+                          content
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        <span className="capitalize">{mess.sender.firstname}</span> •{" "}
                         {new Date(mess.timestamp).toLocaleDateString("en-US", {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "long",
+                          month: "short",
                           day: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
                         })}
                       </div>
                     </div>
                   );
                 })}
-                {/* <div className="p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted">How do I file a case? <span className="text-xs text-muted-foreground ml-2">10:01 AM</span></div>
-                                <div className="p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted">Please see attached contract. <span className="text-xs text-muted-foreground ml-2">Yesterday</span></div> */}
               </div>
             </div>
           </AccordionContent>
@@ -369,10 +427,28 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
                         })
                       )
                         .unwrap()
-                        .then(() => dispatch(getConsultationById({ id })));
+                        .then(() => {
+                          dispatch(getConsultationById({ id }));
+                          // Clear form
+                          setRescheduleDate('');
+                          setRescheduleTimeSlot('');
+                          setRescheduleReason('');
+                          // Show success message
+                          alert('Reschedule request submitted successfully!');
+                        })
+                        .catch((err) => {
+                          alert(`Failed to reschedule: ${err.message || 'Unknown error'}`);
+                        });
                     }}
                   >
-                    {isLoading ? "Rescheduling..." : "Reschedule"}
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Rescheduling...
+                      </>
+                    ) : (
+                      "Request Reschedule"
+                    )}
                   </Button>
                 </div>
               </div>

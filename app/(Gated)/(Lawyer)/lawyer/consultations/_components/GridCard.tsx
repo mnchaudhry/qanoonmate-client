@@ -202,28 +202,36 @@ const ConsultationGridCard = ({ consultation }: ConsultationCardGridProps) => {
         </Button>
 
         {consultation.status === ConsultationStatus.PENDING && (
-          <div className="grid grid-cols-2 gap-2 w-full">
-            <Button size="sm" variant="outline">
-              <CheckCircle className="h-4 w-4 mr-1" />
-              Accept
+          <>
+            <div className="grid grid-cols-2 gap-2 w-full">
+              <Button size="sm" variant="outline">
+                <CheckCircle className="h-4 w-4 mr-1" />
+                Accept
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="text-destructive border-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                <XCircle className="h-4 w-4 mr-1" />
+                Decline
+              </Button>
+            </div>
+            <Button size="sm" variant="outline" className="w-full" asChild>
+              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+                <MessageSquare className="h-4 w-4 mr-1" />
+                Chat with Client
+              </Link>
             </Button>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="text-destructive border-destructive hover:bg-destructive/10 hover:text-destructive"
-            >
-              <XCircle className="h-4 w-4 mr-1" />
-              Decline
-            </Button>
-          </div>
+          </>
         )}
 
-        {consultation.status === ConsultationStatus.SCHEDULED && (
+        {(consultation.status === ConsultationStatus.SCHEDULED || consultation.status === ConsultationStatus.CONFIRMED) && (
           <div className="grid grid-cols-2 gap-2 w-full">
             <Button size="sm" variant="outline" asChild>
-              <Link href={"/lawyer/messages"}>
+              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
                 <MessageSquare className="h-4 w-4 mr-1" />
-                Message
+                Chat
               </Link>
             </Button>
             <Button size="sm" variant="outline">
@@ -233,19 +241,35 @@ const ConsultationGridCard = ({ consultation }: ConsultationCardGridProps) => {
         )}
 
         {consultation.status === ConsultationStatus.IN_PROGRESS && (
-          <Button size="sm" className="w-full" variant="default" asChild>
-            <Link href={consultation.meetingLink || "#"}>
-              <Video className="h-4 w-4 mr-2" />
-              Join Meeting
-            </Link>
-          </Button>
+          <>
+            <Button size="sm" className="w-full" variant="default" asChild>
+              <Link href={consultation.meetingLink || "#"}>
+                <Video className="h-4 w-4 mr-2" />
+                Join Meeting
+              </Link>
+            </Button>
+            <Button size="sm" variant="outline" className="w-full" asChild>
+              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Chat with Client
+              </Link>
+            </Button>
+          </>
         )}
 
         {consultation.status === ConsultationStatus.COMPLETED && (
-          <Button size="sm" className="w-full" variant="outline">
-            <FileText className="h-4 w-4 mr-2" />
-            Add Notes
-          </Button>
+          <>
+            <Button size="sm" className="w-full" variant="outline">
+              <FileText className="h-4 w-4 mr-2" />
+              Add Notes
+            </Button>
+            <Button size="sm" variant="outline" className="w-full" asChild>
+              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Chat with Client
+              </Link>
+            </Button>
+          </>
         )}
       </CardFooter>
     </Card>

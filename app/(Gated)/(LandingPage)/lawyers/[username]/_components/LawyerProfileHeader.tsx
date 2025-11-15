@@ -86,8 +86,8 @@ export function LawyerProfileHeader({ lawyer }: LawyerProfileHeaderProps) {
     <Card className="mb-6">
       <CardContent className="p-6">
         <div className="flex flex-col lg:flex-row gap-6">
-          <div className="flex-shrink-0 flex justify-center lg:justify-start">
-            <div className="relative w-24 h-24">
+          <div className="flex-shrink-0 flex flex-col justify-center lg:justify-start gap-2 ">
+            <div className="relative w-32 h-32">
               <Avatar className="w-full h-full border-2 border-border shadow-sm relative ">
                 <AvatarImage src={lawyer.personalInfo.profilePicture || PlaceholderLawyer} alt="Profile" />
                 <AvatarFallback className="capitalize text-lg bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
@@ -98,6 +98,9 @@ export function LawyerProfileHeader({ lawyer }: LawyerProfileHeaderProps) {
                 <div className="relative w-4 h-4 bg-primary border-2 border-background rounded-full"></div>
               </div>
             </div>
+            <span className="text-sm text-primary underline cursor-pointer hover:text-primary/80">
+              Update Profile Photo
+            </span>
           </div>
 
           <div className="flex-1">

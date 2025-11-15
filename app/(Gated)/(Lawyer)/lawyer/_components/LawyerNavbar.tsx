@@ -41,7 +41,10 @@ export default function LawyerNavbar() {
     return (
         <nav className="w-full h-20 bg-neutral text-neutral-foreground">
             <div className="h-full w-full flex items-center justify-between px-4 mx-auto md:px-6">
-                <Logo size="md" />
+                <div className="flex items-center justify-start gap-1">
+                    <Logo size="md" />
+                    <span className="text-sm text-primary px-1 py-0.5 border-2 border-primary rounded-xl ">Lawyer View</span>
+                </div>
 
                 <ul className="hidden md:flex items-center space-x-6">
                     <NavigationMenu>
