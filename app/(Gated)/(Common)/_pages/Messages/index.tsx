@@ -127,9 +127,9 @@ const MessagesPage = () => {
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
-    <div className="flex h-[calc(100vh-90px)] gap-3 p-4 bg-gradient-to-br from-background via-surface/20 to-background">
+    <div className="flex h-[calc(100vh-90px)] gap-4 bg-background">
       {/* Sidebar */}
-      <aside className="w-80 flex flex-col bg-background border !border-border rounded-2xl overflow-hidden shadow-lg">
+      <aside className="w-80 flex flex-col bg-surface/30 backdrop-blur-sm rounded-2xl overflow-hidden">
         <MessagesHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -146,7 +146,7 @@ const MessagesPage = () => {
             onSendFile={handleSendFile}
           />
         ) : (
-          <div className="flex-1 rounded-2xl overflow-hidden shadow-lg">
+          <div className="flex-1 rounded-2xl overflow-hidden">
             <EmptyState />
           </div>
         )}

@@ -20,10 +20,14 @@ import { CancellationReason } from "@/lib/enums";
 
 
 
-const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (show: boolean) => void; }) => {
+const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (show: boolean) => void; }) => {
+
+  /////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
   const { messages, currentRoom, roomFiles, roomLinks, filesLoading, linksLoading, } = useSelector((state: RootState) => state.chat);
   const { user } = useAppSelector(state => state.auth);
+
+  /////////////////////////////////////////////// STATES /////////////////////////////////////////////////
   const [open, setOpen] = useState<string | null>("timeline");
   const [showConsultationModal, setShowConsultationModal] = useState(false);
   const [showAddParticipant, setShowAddParticipant] = useState(false);
@@ -36,7 +40,6 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
   const [findMessage, setFindMessage] = useState("");
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
 
-  // Cancellation reasons enum
   const cancellationReasons = [
     { value: "client_request", label: "Client Request" },
     { value: "lawyer_unavailable", label: "Lawyer Unavailable" },
@@ -47,21 +50,11 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
   const { selectedConsultation, loading: isLoading } = useAppSelector(state => state.consultation);
   const noteSaveTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  // Get current room files and links
-  const currentRoomFiles = currentRoom?._id
-    ? roomFiles[currentRoom._id] || []
-    : [];
-  const currentRoomLinks = currentRoom?._id
-    ? roomLinks[currentRoom._id] || []
-    : [];
-  const isFilesLoading = currentRoom?._id
-    ? filesLoading[currentRoom._id] || false
-    : false;
-  const isLinksLoading = currentRoom?._id
-    ? linksLoading[currentRoom._id] || false
-    : false;
+  const currentRoomFiles = currentRoom?._id ? roomFiles[currentRoom._id] || [] : [];
+  const currentRoomLinks = currentRoom?._id ? roomLinks[currentRoom._id] || [] : [];
+  const isFilesLoading = currentRoom?._id ? filesLoading[currentRoom._id] || false : false;
+  const isLinksLoading = currentRoom?._id ? linksLoading[currentRoom._id] || false : false;
 
-  // derive a small activity timeline
   const timeline = (() => {
     const c = selectedConsultation;
     if (!c) return [];
@@ -98,7 +91,7 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
     return items;
   })();
 
-  // Handle Search
+  /////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
   const handleSearchMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const searchValue = e.target.value;
@@ -194,37 +187,40 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
   );
   const status = "Ongoing"; // Placeholder
 
+  /////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
     <aside
       className={cn(
-        "relative w-full h-full flex-col z-50 shadow-xl animate-slide-in-right p-4",
+        "relative w-full h-full flex-col z-50 animate-slide-in-right p-4",
         showRightbar ? "flex" : "hidden"
       )}
     >
       {/* Top Profile Block */}
-      <div className="sticky top-0 z-20 px-6 pb-4 flex flex-col items-center gap-3">
-        <Avatar className="w-20 h-20 shadow">
-          <AvatarImage src={profile?.profilePicture} alt={profile?.firstname} />
-          <AvatarFallback className="text-2xl">
-            {profile?.firstname[0].toUpperCase()}
-            {profile?.lastname[0].toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
+      <div className="sticky top-0 z-20 px-4 pb-5 flex flex-col items-center gap-3 bg-surface/30 backdrop-blur-sm rounded-2xl mb-4">
+        <div className="pt-6">
+          <Avatar className="w-20 h-20 shadow-md">
+            <AvatarImage src={profile?.profilePicture} alt={profile?.firstname} />
+            <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+              {profile?.firstname[0].toUpperCase()}
+              {profile?.lastname[0].toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </div>
         <div className="text-lg font-semibold text-foreground capitalize">
           {profile?.firstname} {profile?.lastname}
         </div>
         <div className="flex items-center gap-2">
           <Badge
             variant="outline"
-            className="text-xs px-2 py-0.5 border-green-500 text-green-700"
+            className="text-xs px-3 py-1 border-green-500/50 text-green-600 bg-green-500/10"
           >
             {status}
           </Badge>
         </div>
         <Button
           size="sm"
-          variant="link"
-          className="w-full"
+          variant="ghost"
+          className="w-full hover:bg-accent/50"
           onClick={() => {
             if (currentRoom?.consultation?._id) {
               dispatch(getConsultationById({ id: currentRoom.consultation._id }));
@@ -242,17 +238,17 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
         collapsible
         value={open || undefined}
         onValueChange={handleAccordionChange}
-        className="flex-1 overflow-y-auto py-2 space-y-2 custom-scrollbar"
+        className="flex-1 overflow-y-auto space-y-2 custom-scrollbar"
       >
         {/* Search Chat */}
-        <AccordionItem value="search" className="rounded-lg shadow bg-muted">
-          <AccordionTrigger className="px-4 py-3 flex items-center gap-2 hover:no-underline">
+        <AccordionItem value="search" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <Search className="w-4 h-4 text-primary" />
-              <span className="font-medium">Search</span>
+              <span className="font-medium text-sm">Search</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className={"px-4 transition-all duration-300"}>
+          <AccordionContent className="px-4 pb-4 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
             <div className="py-2">
               <Input
                 value={findMessage}
@@ -266,7 +262,7 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
                   return (
                     <div
                       key={index}
-                      className="p-2 rounded bg-muted/50 cursor-pointer hover:bg-muted"
+                      className="p-2.5 rounded-lg bg-surface/50 cursor-pointer hover:bg-surface/70 transition-colors"
                     >
                       {mess.content}
                       <div className="text-xs text-muted-foreground">
@@ -289,25 +285,25 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
         </AccordionItem>
 
         {/* Activity Timeline */}
-        <AccordionItem value="timeline" className="rounded-lg shadow bg-muted">
-          <AccordionTrigger className="px-4 py-3 flex items-center gap-2 hover:no-underline ">
+        <AccordionItem value="timeline" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <Calendar className="w-4 h-4 text-primary" />
-              <span className="font-medium">Activity Timeline</span>
+              <span className="font-medium text-sm">Activity Timeline</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className={"px-4 transition-all duration-300"}>
+          <AccordionContent className="px-4 pb-4 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
             <div className="flex flex-col gap-4 py-2 ">
               {/* {mockTimeline.map((e, i) => (
-                                <div key={i} className="flex items-center gap-3">
-                                    {e.icon}
-                                    <div>
-                                        <div className="text-sm font-medium">{e.title}</div>
-                                        <div className="text-xs text-muted-foreground">{e.time}</div>
-                                    </div>
-                                    {e.action && <div className="ml-auto">{e.action}</div>}
-                                </div>
-                            ))} */}
+                    <div key={i} className="flex items-center gap-3">
+                        {e.icon}
+                        <div>
+                            <div className="text-sm font-medium">{e.title}</div>
+                            <div className="text-xs text-muted-foreground">{e.time}</div>
+                        </div>
+                        {e.action && <div className="ml-auto">{e.action}</div>}
+                    </div>
+                ))} */}
               {timeline.map((e: any, i) => (
                 <div key={i} className="flex items-center gap-3">
                   {e.icon}
@@ -322,14 +318,14 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
         </AccordionItem>
 
         {/* Reschedule & Cancel */}
-        <AccordionItem value="manage" className="rounded-lg shadow bg-muted">
-          <AccordionTrigger className="px-4 py-3 flex items-center gap-2 hover:no-underline ">
+        <AccordionItem value="manage" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <Calendar className="w-4 h-4 text-primary" />
-              <span className="font-medium">Reschedule & Cancel</span>
+              <span className="font-medium text-sm">Reschedule & Cancel</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className={"px-4 transition-all duration-300"}>
+          <AccordionContent className="px-4 pb-4 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
             <div className="flex flex-col gap-4 py-2">
               <div className="space-y-2">
                 <div className="text-sm font-medium">
@@ -357,13 +353,7 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
                   <Button
                     size="sm"
                     className="w-full"
-                    disabled={
-                      isLoading ||
-                      !currentRoom?.consultation?._id ||
-                      !rescheduleDate ||
-                      !rescheduleTimeSlot ||
-                      !rescheduleReason
-                    }
+                    disabled={isLoading || !currentRoom?.consultation?._id || !rescheduleDate || !rescheduleTimeSlot || !rescheduleReason}
                     onClick={async (e: FormEvent) => {
                       e.preventDefault();
                       if (!currentRoom?.consultation?._id) return;
@@ -414,12 +404,7 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
                     size="sm"
                     variant="destructive"
                     className="w-full"
-                    disabled={
-                      isLoading ||
-                      !currentRoom?.consultation?._id ||
-                      !cancelReason ||
-                      !cancelNote
-                    }
+                    disabled={isLoading || !currentRoom?.consultation?._id || !cancelReason || !cancelNote}
                     onClick={async (e: FormEvent) => {
                       e.preventDefault();
                       if (!currentRoom?.consultation?._id) return;
@@ -446,14 +431,14 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
         </AccordionItem>
 
         {/* Participants */}
-        <AccordionItem value="people" className="rounded-lg shadow bg-muted">
-          <AccordionTrigger className="px-4 py-3 flex items-center gap-2 hover:no-underline">
+        <AccordionItem value="people" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <Users className="w-4 h-4 text-primary" />
-              <span className="font-medium">People</span>
+              <span className="font-medium text-sm">People</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className={"px-4 transition-all duration-300"}>
+          <AccordionContent className="px-4 pb-4 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
             <div className="flex flex-wrap gap-3 py-2">
               {currentRoom?.participants?.map((p) => (
                 <div key={p._id} className="flex items-center gap-2">
@@ -480,20 +465,20 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
               ))}
             </div>
             {/* <Button size="sm" variant="outline" className="mt-3 w-full" onClick={() => setShowAddParticipant(true)}>
-                            <Plus className="w-4 h-4 mr-1" /> Add Participant
-                        </Button> */}
+                    <Plus className="w-4 h-4 mr-1" /> Add Participant
+                </Button> */}
           </AccordionContent>
         </AccordionItem>
 
         {/* Files & Links */}
-        <AccordionItem value="files" className="rounded-lg shadow bg-muted">
-          <AccordionTrigger className="px-4 py-3 flex items-center gap-2 hover:no-underline">
+        <AccordionItem value="files" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <FileText className="w-4 h-4 text-primary" />
-              <span className="font-medium">Files & Links</span>
+              <span className="font-medium text-sm">Files & Links</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className={"px-4 transition-all duration-300"}>
+          <AccordionContent className="px-4 pb-4 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
             <Tabs defaultValue="files" className="w-full">
               <TabsList className="mb-2 w-full">
                 <TabsTrigger value="files" className="w-full">
@@ -519,14 +504,11 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
                     currentRoomFiles.map((file) => (
                       <div
                         key={file.messageId}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-background border border-border hover:border-primary transition-colors"
+                        className="flex items-center gap-2 p-3 rounded-lg bg-surface/50 hover:bg-surface/70 transition-colors"
                       >
                         {getFileIcon(file.fileType)}
                         <div className="flex-1 min-w-0">
-                          <div
-                            className="text-sm font-medium truncate"
-                            title={file.fileName}
-                          >
+                          <div className="text-sm font-medium truncate" title={file.fileName}>
                             {file.fileName}
                           </div>
                           <div className="text-xs text-muted-foreground">
@@ -578,10 +560,10 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
                     </div>
                   )}
                   {!isLinksLoading &&
-                    currentRoomLinks.map((link) => (
+                    currentRoomLinks.map((link: any) => (
                       <div
                         key={`${link.messageId}-${link.url}`}
-                        className="flex items-center gap-2 p-3 rounded-lg bg-background border border-border hover:border-primary transition-colors"
+                        className="flex items-center gap-2 p-3 rounded-lg bg-surface/50 hover:bg-surface/70 transition-colors"
                       >
                         <Link2 className="w-4 h-4 text-primary flex-shrink-0" />
                         <div className="flex-1 min-w-0">
@@ -620,19 +602,19 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
         </AccordionItem>
 
         {/* My Notes */}
-        <AccordionItem value="notes" className="rounded-lg shadow bg-muted">
-          <AccordionTrigger className="px-4 py-3 flex items-center gap-2 hover:no-underline">
+        <AccordionItem value="notes" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <NotebookPen className="w-4 h-4 text-primary" />
-              <span className="font-medium">My Notes</span>
+              <span className="font-medium text-sm">My Notes</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className={"px-4 transition-all duration-300"}>
+          <AccordionContent className="px-4 pb-4 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
             <div className="py-2">
               {(selectedConsultation?.notes || []).map((n: any) => (
                 <div
                   key={n.id}
-                  className="flex items-center gap-2 p-2 rounded bg-muted/50"
+                  className="flex items-center gap-2 p-2.5 rounded-lg bg-surface/50 mb-2"
                 >
                   <NotebookIcon className="w-4 h-4 text-primary" />
                   <div className="flex-1">
@@ -773,4 +755,4 @@ const Rightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSidebar: (s
   );
 };
 
-export default Rightbar;
+export default ChatboxRightbar;

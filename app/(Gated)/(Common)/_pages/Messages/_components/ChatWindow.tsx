@@ -1,20 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import {
-  Paperclip,
-  Send,
-  FileText,
-  Check,
-  CheckCircle,
-  Gavel,
-  X,
-  Smile,
-  PanelRightOpen,
-  PanelRightClose,
-  Download,
-  ExternalLink,
-  File,
-  Image as ImageIcon,
-} from "lucide-react";
+import { FileText, Check, CheckCircle, Gavel, PanelRightOpen, PanelRightClose, Download, ExternalLink, File, ImageIcon, } from "lucide-react";
 import { format, isToday, isYesterday } from "date-fns";
 import { Message } from "@/store/types/api";
 import { useSelector, useDispatch } from "react-redux";
@@ -23,10 +8,11 @@ import { setCurrentUserTyping } from "@/store/reducers/chatSlice";
 import { socketEvents } from "@/store/socket/events";
 import { useSocketContext } from "@/context/useSocketContext";
 import { cn } from "@/lib/utils";
-import Rightbar from "./Rightbar";
+import ChatboxRightbar from "./ChatboxRightbar";
 import { Button } from "@/components/ui/button";
 import { setUnreadCount } from "@/store/reducers/chatSlice";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import ChatInput from "./ChatInput";
 
 interface ChatWindowProps {
   onSendMessage: (message: string) => void;
@@ -34,32 +20,13 @@ interface ChatWindowProps {
 }
 
 const TYPING_DELAY = 2000; // ms
-const EMOJIS = [
-  "😀",
-  "😂",
-  "😊",
-  "👍",
-  "🙏",
-  "🎉",
-  "❤️",
-  "😎",
-  "😢",
-  "⚖️",
-  "📄",
-  "🤝",
-];
 
-const ChatWindow: React.FC<ChatWindowProps> = ({
-  onSendMessage,
-  onSendFile,
-}) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) => {
   //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>(null);
-  const { messages, currentRoom, roomStates } = useSelector(
-    (state: RootState) => state.chat
-  );
+  const { messages, currentRoom, roomStates } = useSelector((state: RootState) => state.chat);
   const { user } = useSelector((state: RootState) => state.auth);
   const { defaultSocket } = useSocketContext();
   const dispatch = useDispatch();
@@ -67,13 +34,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   const currentRoomState = currentRoom ? roomStates[currentRoom._id] : null;
   const onlineUsers = currentRoomState?.onlineUsers || [];
-  const isOtherUserOnline = otherUser
-    ? onlineUsers?.includes(otherUser._id)
-    : false;
+  const isOtherUserOnline = otherUser ? onlineUsers?.includes(otherUser._id) : false;
   const isTyping = currentRoomState?.isTyping || false;
-  const otherTypingUsers = currentRoomState?.typingUsers.filter(
-    (userId) => userId !== user?._id
-  );
+  const otherTypingUsers = currentRoomState?.typingUsers.filter((userId) => userId !== user?._id);
 
   //////////////////////////////////////////////// STATES /////////////////////////////////////////////////
   const [messageInput, setMessageInput] = useState("");
@@ -143,7 +106,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         setSelectedFile(null);
       }
       setMessageInput("");
-      setShowEmojiPicker(false);
       inputRef.current?.focus();
       onStopTyping();
     }
@@ -210,12 +172,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     setSelectedFile(null);
   };
 
-  const handleEmojiSelect = (emoji: string) => {
-    setMessageInput((prev) => prev + emoji);
-    setShowEmojiPicker(false);
-    inputRef.current?.focus();
-  };
-
   const formatMessageDate = (date: Date) => {
     if (isToday(date)) {
       return "Today";
@@ -258,14 +214,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
-    <div className="flex w-full h-full space-x-3">
-      <div className="flex-1 relative flex flex-col h-full border !border-border rounded-xl overflow-hidden bg-background shadow-sm">
+    <div className="flex w-full h-full space-x-4">
+      <div className="flex-1 relative flex flex-col h-full overflow-hidden bg-surface/30 backdrop-blur-sm rounded-2xl">
         {/* Chat Header */}
-        <div className="px-5 py-4 border-b !border-border bg-surface/50 backdrop-blur-sm">
+        <div className="px-6 py-4 bg-background/60 backdrop-blur-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative">
-                <Avatar className="w-11 h-11 border-2 !border-border shadow-sm">
+                <Avatar className="w-11 h-11 shadow-sm">
                   <AvatarImage src={otherUser?.profilePicture}></AvatarImage>
                   <AvatarFallback className="capitalize text-base bg-primary/10 text-primary font-semibold">
                     {otherUser?.firstname
@@ -307,7 +263,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 onClick={() => setShowRightbar((pre) => !pre)}
                 variant="ghost"
                 size="icon"
-                className="hover:bg-accent"
+                className="hover:bg-accent rounded-xl"
               >
                 {showRightbar ? (
                   <PanelRightClose
@@ -326,7 +282,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
 
         {/* Messages Area */}
-        <div className="relative flex-1 overflow-y-auto px-5 py-6 space-y-8 min-h-0 z-10 bg-gradient-to-b from-surface/20 to-transparent">
+        <div className="relative flex-1 overflow-y-auto px-6 py-6 space-y-8 min-h-0 z-10">
           {messageGroups.length === 0 ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
@@ -353,12 +309,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
               <div key={groupIndex} className="space-y-3">
                 {/* Date Divider */}
                 <div className="flex items-center gap-3 my-4">
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-surface px-3 py-1.5 rounded-full border !border-border shadow-sm">
+                  <div className="flex-1 h-px bg-border/40" />
+                  <span className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-surface/50 px-3 py-1.5 rounded-full shadow-sm">
                     <Gavel className="w-3 h-3 text-primary" />
                     {formatMessageDate(group.date)}
                   </span>
-                  <div className="flex-1 h-px bg-border" />
+                  <div className="flex-1 h-px bg-border/40" />
                 </div>
                 {/* Messages */}
                 {group.messages.map((message, messageIndex) => {
@@ -366,9 +322,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                   return (
                     <div
                       key={messageIndex}
-                      className={`flex gap-2.5 items-start ${
-                        isUser ? "justify-end" : "justify-start"
-                      }`}
+                      className={`flex gap-2.5 items-start ${isUser ? "justify-end" : "justify-start"}`}
                     >
                       {/* Avatar for other user */}
                       {!isUser && (
@@ -388,17 +342,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                       )}
                       {/* Message bubble */}
                       <div
-                        className={`max-w-xs lg:max-w-md transition-all duration-200 ${
-                          isUser ? "order-first" : ""
-                        }`}
+                        className={`max-w-xs lg:max-w-md transition-all duration-200 ${isUser ? "order-first" : ""
+                          }`}
                       >
-                        <div
-                          className={`px-3.5 py-2.5 rounded-2xl shadow-sm transition-all duration-200 hover:shadow-md
-                        ${
-                          isUser
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-surface text-foreground border !border-border"
-                        }
+                      <div
+                        className={`px-3.5 py-2.5 rounded-2xl shadow-sm transition-all duration-200
+                        ${isUser
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-surface/60 text-foreground"
+                            }
                         ${isUser ? "rounded-br-md" : "rounded-bl-md"}`}
                           tabIndex={0}
                         >
@@ -409,7 +361,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                           ) : message.type === "FILE" &&
                             message.fileAttachment ? (
                             <div className="flex flex-col gap-2.5 min-w-[220px] max-w-[320px]">
-                              <div className="flex items-center gap-3 p-3 rounded-xl bg-background/10 border !border-border/20 hover:bg-background/20 transition-colors">
+                              <div className="flex items-center gap-3 p-3 rounded-xl bg-background/30 hover:bg-background/40 transition-colors">
                                 <div className="flex-shrink-0">
                                   {getFileIcon(message.fileAttachment.fileType)}
                                 </div>
@@ -503,105 +455,20 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         </div>
 
         {/* Message Input */}
-        <div className="relative z-20 border-t !border-border px-5 py-4 bg-surface/50 backdrop-blur-sm">
-          {/* File preview */}
-          {selectedFile && (
-            <div className="flex items-center gap-3 mb-3 p-3 bg-background border !border-border rounded-xl shadow-sm animate-fade-in">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <FileText className="w-5 h-5 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{selectedFile.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {(selectedFile.size / 1024).toFixed(1)} KB
-                </p>
-              </div>
-              <button
-                onClick={removeFile}
-                className="p-1.5 rounded-lg hover:bg-destructive/10 text-destructive transition-colors"
-                title="Remove file"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          )}
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <input
-                type="file"
-                id="file-upload"
-                className="hidden"
-                onChange={handleFileSelect}
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-              />
-              <button
-                onClick={() => document.getElementById("file-upload")?.click()}
-                className="p-2.5 text-muted-foreground hover:text-primary rounded-xl hover:bg-accent transition-all active:scale-95"
-                title="Attach file"
-              >
-                <Paperclip className="w-5 h-5" />
-              </button>
-            </div>
-            {/* Emoji picker */}
-            <div className="relative">
-              <button
-                onClick={() => setShowEmojiPicker((v) => !v)}
-                className={`p-2.5 text-muted-foreground hover:text-primary rounded-xl hover:bg-accent transition-all active:scale-95 ${
-                  showEmojiPicker ? "bg-accent text-primary" : ""
-                }`}
-                title="Add emoji"
-                type="button"
-              >
-                <Smile className="w-5 h-5" />
-              </button>
-              {showEmojiPicker && (
-                <div className="absolute bottom-14 left-0 z-30 bg-background border !border-border rounded-2xl shadow-2xl p-3 flex flex-wrap gap-1.5 w-64 animate-fade-in">
-                  {EMOJIS.map((emoji) => (
-                    <button
-                      key={emoji}
-                      className="text-2xl p-2 rounded-lg hover:bg-accent/80 focus:bg-accent transition-all active:scale-95"
-                      onClick={() => handleEmojiSelect(emoji)}
-                      type="button"
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div className="flex-1 flex items-center gap-2">
-              <input
-                ref={inputRef}
-                type="text"
-                placeholder="Type a message..."
-                value={messageInput}
-                onChange={handleInputChange}
-                onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
-                className="flex-1 px-4 py-2.5 border !border-border rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-background transition-all placeholder:text-muted-foreground"
-                aria-label="Type a message"
-              />
-              <button
-                onClick={handleSendMessage}
-                disabled={!messageInput.trim() && !selectedFile}
-                className="p-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all active:scale-95 focus:ring-2 focus:ring-primary/50 shadow-sm"
-                title="Send message"
-                type="button"
-                aria-label="Send message"
-              >
-                <Send className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
+        <ChatInput
+          selectedFile={selectedFile}
+          removeFile={removeFile}
+          handleFileSelect={handleFileSelect}
+          setShowEmojiPicker={setShowEmojiPicker}
+          inputRef={inputRef}
+          messageInput={messageInput}
+          handleInputChange={handleInputChange}
+          handleSendMessage={handleSendMessage}
+        />
       </div>
 
-      <div
-        className={cn(
-          "bg-muted/50 h-full transition-all duration-300 rounded-lg border !border-border",
-          showRightbar ? "w-72" : "w-0"
-        )}
-      >
-        <Rightbar
+      <div className={cn("bg-surface/30 backdrop-blur-sm h-full transition-all duration-300 rounded-2xl overflow-hidden", showRightbar ? "w-72" : "w-0")}>
+        <ChatboxRightbar
           showRightbar={showRightbar}
           setShowSidebar={setShowRightbar}
         />

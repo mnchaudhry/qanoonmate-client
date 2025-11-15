@@ -1,5 +1,5 @@
 import React from "react";
-import { Search, MessageCircle } from "lucide-react";
+import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 interface MessagesHeaderProps {
@@ -11,16 +11,10 @@ const MessagesHeader: React.FC<MessagesHeaderProps> = ({ searchQuery, onSearchCh
 
 
     return (
-        <div className="w-full space-y-4 px-3 py-4 border-b !border-border bg-surface/30">
+        <div className="w-full space-y-4 px-4 py-5">
 
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <MessageCircle className="w-5 h-5 text-primary" />
-                </div>
-                <div>
-                    <h1 className="text-2xl font-semibold text-foreground">Messages</h1>
-                    <p className="text-xs text-muted-foreground">Secure legal consultations</p>
-                </div>
+                <h1 className="text-2xl font-semibold text-foreground">Messages</h1>
             </div>
 
             <div className="relative">
@@ -30,7 +24,7 @@ const MessagesHeader: React.FC<MessagesHeaderProps> = ({ searchQuery, onSearchCh
                     placeholder="Search conversations..."
                     value={searchQuery}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    className="pl-9 pr-4 h-10 bg-background border-border"
+                    className="pl-9 pr-4 h-10 bg-background/50 rounded-xl border-0 focus-visible:ring-1 focus-visible:ring-primary/20"
                 />
             </div>
 
