@@ -50,6 +50,7 @@ const ChatInput: React.FC<Props> = memo(
       isLoading,
       messages,
       currentSessionId: sessionId,
+      chatMode,
     } = useSelector((state: RootState) => state.aiSession);
     const {
       defaultSocket: { socket, isAuthenticated },
@@ -87,7 +88,7 @@ const ChatInput: React.FC<Props> = memo(
           const userId = user?._id || getOrCreateAnonymousUserId();
 
           // emit start_chat event
-          socketEvents.model.startChat(socket, { userId });
+          socketEvents.model.startChat(socket, { userId, mode: chatMode });
 
           const onSessionStarted = (data: { sessionId: string }) => {
             // Update the route with the session ID as a query parameter without reloading the page
@@ -101,6 +102,7 @@ const ChatInput: React.FC<Props> = memo(
               sessionId: data.sessionId,
               history: history,
               newMessage: input,
+              mode: chatMode,
             });
 
             // Remove this one-time listener
@@ -117,6 +119,7 @@ const ChatInput: React.FC<Props> = memo(
             sessionId: sessionId,
             history: history,
             newMessage: input,
+            mode: chatMode,
           });
         }
 
@@ -131,6 +134,7 @@ const ChatInput: React.FC<Props> = memo(
       sessionId,
       dispatch,
       user,
+      chatMode,
     ]);
 
     ///////////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////////////
@@ -184,7 +188,7 @@ const ChatInput: React.FC<Props> = memo(
         const userId = user?._id || getOrCreateAnonymousUserId();
 
         // emit start_chat event
-        socketEvents.model.startChat(socket, { userId });
+        socketEvents.model.startChat(socket, { userId, mode: chatMode });
 
         const onSessionStarted = (data: { sessionId: string }) => {
           // Update the route with the session ID as a query parameter without reloading the page
@@ -198,6 +202,7 @@ const ChatInput: React.FC<Props> = memo(
             sessionId: data.sessionId,
             history: history,
             newMessage: input,
+            mode: chatMode,
           });
 
           // Remove this one-time listener
@@ -214,6 +219,7 @@ const ChatInput: React.FC<Props> = memo(
           sessionId: sessionId,
           history: history,
           newMessage: input,
+          mode: chatMode,
         });
       }
 
