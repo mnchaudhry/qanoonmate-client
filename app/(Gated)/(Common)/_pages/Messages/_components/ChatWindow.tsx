@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { FileText, Check, CheckCircle, Gavel, PanelRightOpen, PanelRightClose, Download, ExternalLink, File, ImageIcon, } from "lucide-react";
+import { FileText, Check, CheckCircle, Gavel, Download, ExternalLink, File, ImageIcon } from "lucide-react";
 import { format, isToday, isYesterday } from "date-fns";
 import { Message } from "@/store/types/api";
 import { useSelector, useDispatch } from "react-redux";
@@ -9,10 +9,10 @@ import { socketEvents } from "@/store/socket/events";
 import { useSocketContext } from "@/context/useSocketContext";
 import { cn } from "@/lib/utils";
 import ChatboxRightbar from "./ChatboxRightbar";
-import { Button } from "@/components/ui/button";
 import { setUnreadCount } from "@/store/reducers/chatSlice";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import ChatInput from "./ChatInput";
+import ChatHeader from "./ChatHeader";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ChatWindowProps {
   onSendMessage: (message: string) => void;
@@ -172,6 +172,32 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
     setSelectedFile(null);
   };
 
+  const handleEmojiSelect = (emoji: string) => {
+    setMessageInput((prev) => prev + emoji);
+    inputRef.current?.focus();
+  };
+
+  const handleAIAssist = async () => {
+    if (!messageInput.trim()) {
+      // If no text, suggest AI-generated message starters
+      const suggestions = [
+        "Thank you for reaching out. ",
+        "I appreciate your patience. ",
+        "I'd be happy to help with that. ",
+        "Let me look into this for you. "
+      ];
+      const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+      setMessageInput(randomSuggestion);
+    } else {
+      // TODO: Integrate with AI service to improve/format text
+      // For now, just capitalize and add punctuation if missing
+      const improved = messageInput.charAt(0).toUpperCase() + messageInput.slice(1);
+      const endsWithPunctuation = /[.!?]$/.test(improved);
+      setMessageInput(endsWithPunctuation ? improved : improved + ".");
+    }
+    inputRef.current?.focus();
+  };
+
   const formatMessageDate = (date: Date) => {
     if (isToday(date)) {
       return "Today";
@@ -217,69 +243,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
     <div className="flex w-full h-full space-x-4">
       <div className="flex-1 relative flex flex-col h-full overflow-hidden bg-surface/30 backdrop-blur-sm rounded-2xl">
         {/* Chat Header */}
-        <div className="px-6 py-4 bg-background/60 backdrop-blur-sm">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Avatar className="w-11 h-11 shadow-sm">
-                  <AvatarImage src={otherUser?.profilePicture}></AvatarImage>
-                  <AvatarFallback className="capitalize text-base bg-primary/10 text-primary font-semibold">
-                    {otherUser?.firstname
-                      .split(" ")
-                      .map((name) => name[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
-                {/* Online indicator */}
-                {isOtherUserOnline && (
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-background shadow-sm"></div>
-                )}
-              </div>
-              <div>
-                <h3 className="capitalize font-semibold text-foreground text-base">
-                  {otherUser?.firstname + " " + otherUser?.lastname}
-                </h3>
-                {getTypingIndicator() ? (
-                  <p className="text-xs text-primary font-medium flex items-center gap-1">
-                    <span className="w-1 h-1 bg-primary rounded-full animate-pulse"></span>
-                    {getTypingIndicator()}
-                  </p>
-                ) : (
-                  <p className="text-xs text-muted-foreground">
-                    {isOtherUserOnline ? (
-                      <span className="flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                        Online
-                      </span>
-                    ) : (
-                      'Offline'
-                    )}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                onClick={() => setShowRightbar((pre) => !pre)}
-                variant="ghost"
-                size="icon"
-                className="hover:bg-accent rounded-xl"
-              >
-                {showRightbar ? (
-                  <PanelRightClose
-                    size={20}
-                    className="text-muted-foreground"
-                  />
-                ) : (
-                  <PanelRightOpen
-                    size={20}
-                    className="text-muted-foreground"
-                  />
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <ChatHeader
+          otherUser={otherUser}
+          isOtherUserOnline={isOtherUserOnline}
+          typingIndicator={getTypingIndicator()}
+          consultation={currentRoom?.consultation}
+          showRightbar={showRightbar}
+          onToggleRightbar={() => setShowRightbar((pre) => !pre)}
+        />
 
         {/* Messages Area */}
         <div className="relative flex-1 overflow-y-auto px-6 py-6 space-y-8 min-h-0 z-10">
@@ -341,10 +312,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
                         </div>
                       )}
                       {/* Message bubble */}
-                      <div
-                        className={`max-w-xs lg:max-w-md transition-all duration-200 ${isUser ? "order-first" : ""
-                          }`}
-                      >
+                      <div className={`max-w-xs lg:max-w-md transition-all duration-200 ${isUser ? "order-first" : ""}`}>
                       <div
                         className={`px-3.5 py-2.5 rounded-2xl shadow-sm transition-all duration-200
                         ${isUser
@@ -464,10 +432,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
           messageInput={messageInput}
           handleInputChange={handleInputChange}
           handleSendMessage={handleSendMessage}
+          onEmojiSelect={handleEmojiSelect}
+          onAIAssist={handleAIAssist}
         />
       </div>
 
-      <div className={cn("bg-surface/30 backdrop-blur-sm h-full transition-all duration-300 rounded-2xl overflow-hidden", showRightbar ? "w-72" : "w-0")}>
+      <div className={cn("bg-accent/30 backdrop-blur-sm h-full transition-all duration-300 rounded-2xl overflow-hidden", showRightbar ? "w-72" : "w-0")}>
         <ChatboxRightbar
           showRightbar={showRightbar}
           setShowSidebar={setShowRightbar}

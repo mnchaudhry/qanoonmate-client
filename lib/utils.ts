@@ -166,6 +166,7 @@ export const formatFileType = (fileType: string): string => {
 };
 
 export const enumToLabel = (enumValue: string) => {
+  if (!enumValue) return '';
   return enumValue.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
 }
 

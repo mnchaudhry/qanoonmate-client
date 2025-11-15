@@ -129,7 +129,7 @@ const MessagesPage = () => {
   return (
     <div className="flex h-[calc(100vh-90px)] gap-4 bg-background">
       {/* Sidebar */}
-      <aside className="w-80 flex flex-col bg-surface/30 backdrop-blur-sm rounded-2xl overflow-hidden">
+      <aside className="w-80 flex flex-col bg-accent/30 border border-accent backdrop-blur-sm rounded-2xl overflow-hidden">
         <MessagesHeader
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}

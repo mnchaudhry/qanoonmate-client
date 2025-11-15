@@ -241,8 +241,8 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
         className="flex-1 overflow-y-auto space-y-2 custom-scrollbar"
       >
         {/* Search Chat */}
-        <AccordionItem value="search" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
-          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
+        <AccordionItem value="search" className="rounded-xl bg-background backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-background/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <Search className="w-4 h-4 text-primary" />
               <span className="font-medium text-sm">Search</span>
@@ -285,8 +285,8 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
         </AccordionItem>
 
         {/* Activity Timeline */}
-        <AccordionItem value="timeline" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
-          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
+        <AccordionItem value="timeline" className="rounded-xl bg-background backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-background/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <Calendar className="w-4 h-4 text-primary" />
               <span className="font-medium text-sm">Activity Timeline</span>
@@ -318,8 +318,8 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
         </AccordionItem>
 
         {/* Reschedule & Cancel */}
-        <AccordionItem value="manage" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
-          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
+        <AccordionItem value="manage" className="rounded-xl bg-background backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-background/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <Calendar className="w-4 h-4 text-primary" />
               <span className="font-medium text-sm">Reschedule & Cancel</span>
@@ -431,8 +431,8 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
         </AccordionItem>
 
         {/* Participants */}
-        <AccordionItem value="people" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
-          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
+        <AccordionItem value="people" className="rounded-xl bg-background backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-background/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <Users className="w-4 h-4 text-primary" />
               <span className="font-medium text-sm">People</span>
@@ -471,8 +471,8 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
         </AccordionItem>
 
         {/* Files & Links */}
-        <AccordionItem value="files" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
-          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
+        <AccordionItem value="files" className="rounded-xl bg-background backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-background/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <FileText className="w-4 h-4 text-primary" />
               <span className="font-medium text-sm">Files & Links</span>
@@ -602,8 +602,8 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
         </AccordionItem>
 
         {/* My Notes */}
-        <AccordionItem value="notes" className="rounded-xl bg-surface/30 backdrop-blur-sm overflow-hidden border-0">
-          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-accent/30 transition-colors">
+        <AccordionItem value="notes" className="rounded-xl bg-background backdrop-blur-sm overflow-hidden border-0">
+          <AccordionTrigger className="px-4 py-3.5 flex items-center gap-2 hover:no-underline hover:bg-background/30 transition-colors">
             <div className="flex justify-start items-center gap-2 w-full">
               <NotebookPen className="w-4 h-4 text-primary" />
               <span className="font-medium text-sm">My Notes</span>
