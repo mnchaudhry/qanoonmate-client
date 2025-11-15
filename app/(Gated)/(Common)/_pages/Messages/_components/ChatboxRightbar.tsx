@@ -10,10 +10,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { AppDispatch, RootState, useAppSelector } from "@/store/store";
 import { ChatParticipant, Message } from "@/store/types/api";
-import { AlertCircle, Calendar, CheckCircle, FileText, Link2, NotebookIcon, NotebookPen, Search, Users, ExternalLink, Download, Loader2, } from "lucide-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { AlertCircle, Calendar, CheckCircle, FileText, Link2, NotebookIcon, NotebookPen, Search, Users, ExternalLink, Download, Loader2, X, } from "lucide-react";
+import { FormEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addNote, cancelConsultation, getConsultationById, rescheduleConsultation, } from "@/store/reducers/consultationSlice";
+import { addNote, cancelConsultation, deleteNote, getConsultationById, rescheduleConsultation, } from "@/store/reducers/consultationSlice";
 import { JSX } from "@fullcalendar/core/preact.js";
 import { getRoomFiles, getRoomLinks } from "@/store/reducers/chatSlice";
 import { CancellationReason } from "@/lib/enums";
@@ -39,6 +39,8 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
   const [cancelNote, setCancelNote] = useState<string>("");
   const [findMessage, setFindMessage] = useState("");
   const [filteredMessages, setFilteredMessages] = useState<Message[]>([]);
+  const [noteSaving, setNoteSaving] = useState(false);
+  const [noteSaved, setNoteSaved] = useState(false);
 
   const cancellationReasons = [
     { value: "client_request", label: "Client Request" },
@@ -48,7 +50,6 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
     { value: "other", label: "Other" },
   ];
   const { selectedConsultation, loading: isLoading } = useAppSelector(state => state.consultation);
-  const noteSaveTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const currentRoomFiles = currentRoom?._id ? roomFiles[currentRoom._id] || [] : [];
   const currentRoomLinks = currentRoom?._id ? roomLinks[currentRoom._id] || [] : [];
@@ -186,30 +187,63 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
     return <FileText className="w-4 h-4 text-gray-500" />;
   };
 
-  // Notepad auto-save debounce
-  const handleNoteChange = (v: string) => {
-    setNote(v);
-    if (noteSaveTimeout.current) clearTimeout(noteSaveTimeout.current);
-    noteSaveTimeout.current = setTimeout(async () => {
-      if (!currentRoom?.consultation?._id || !v.trim()) return;
+  // Notepad - no auto-save, manual save button instead
+  const handleSaveNote = async () => {
+    if (!currentRoom?.consultation?._id || !note.trim()) return;
+    
+    setNoteSaving(true);
+    try {
       await dispatch(
         addNote({
           id: currentRoom.consultation._id,
-          request: { content: v.trim(), isPrivate: true },
+          request: { content: note.trim(), isPrivate: true },
         })
-      );
+      ).unwrap();
+      
       dispatch(getConsultationById({ id: currentRoom.consultation._id }));
-    }, 600);
+      setNoteSaved(true);
+      setNoteSaving(false);
+      setNote(""); // Clear draft after saving
+      
+      // Hide saved indicator after 2 seconds
+      setTimeout(() => setNoteSaved(false), 2000);
+    } catch (err) {
+      setNoteSaving(false);
+      console.error('Failed to save note:', err);
+    }
   };
 
+  const handleDeleteNote = async (noteId: string) => {
+    if (!currentRoom?.consultation?._id) return;
+    
+    const confirmed = confirm('Are you sure you want to delete this note?');
+    if (!confirmed) return;
+    
+    try {
+      await dispatch(
+        deleteNote({
+          id: currentRoom.consultation._id,
+          noteId,
+        })
+      ).unwrap();
+      
+      dispatch(getConsultationById({ id: currentRoom.consultation._id }));
+    } catch (err) {
+      console.error('Failed to delete note:', err);
+    }
+  };
+
+  // Load draft note from localStorage
   useEffect(() => {
-    const latest =
-      (selectedConsultation?.notes || [])
-        .slice()
-        .reverse()
-        .find((n: any) => n?.isPrivate) || null;
-    setNote(latest?.content || "");
-  }, [selectedConsultation?._id, selectedConsultation?.notes]);
+    if (currentRoom?.consultation?._id) {
+      const savedDraft = localStorage.getItem(`note-draft-${currentRoom.consultation._id}`);
+      if (savedDraft) {
+        setNote(savedDraft);
+      } else {
+        setNote("");
+      }
+    }
+  }, [currentRoom?.consultation?._id]);
 
   useEffect(() => {
     if (currentRoom?.consultation._id)
@@ -294,7 +328,7 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
               <div className="flex flex-col gap-2 max-h-48 overflow-y-auto custom-scrollbar">
                 {findMessage && filteredMessages.length === 0 && (
                   <div className="text-sm text-muted-foreground text-center py-4">
-                    No messages found matching "{findMessage}"
+                    No messages found matching &quot;{findMessage}&quot;
                   </div>
                 )}
                 {filteredMessages.map((mess) => {
@@ -484,6 +518,11 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
                     onClick={async (e: FormEvent) => {
                       e.preventDefault();
                       if (!currentRoom?.consultation?._id) return;
+                      
+                      // Confirm before canceling
+                      const confirmed = confirm('Are you sure you want to cancel this consultation? This action cannot be undone.');
+                      if (!confirmed) return;
+                      
                       const id = currentRoom.consultation._id;
                       await dispatch(
                         cancelConsultation({
@@ -495,10 +534,30 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
                         })
                       )
                         .unwrap()
-                        .then(() => dispatch(getConsultationById({ id })));
+                        .then(() => {
+                          dispatch(getConsultationById({ id }));
+                          // Clear form
+                          setCancelReason('');
+                          setCancelNote('');
+                          // Show success message
+                          alert('Consultation cancelled successfully.');
+                        })
+                        .catch((err) => {
+                          alert(`Failed to cancel: ${err.message || 'Unknown error'}`);
+                        });
                     }}
                   >
-                    {isLoading ? "Cancelling..." : "Cancel Consultation"}
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Canceling...
+                      </>
+                    ) : (
+                      <>
+                        <X className="w-4 h-4 mr-2" />
+                        Cancel Consultation
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
@@ -686,35 +745,81 @@ const ChatboxRightbar = ({ showRightbar, }: { showRightbar: boolean; setShowSide
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
-            <div className="py-2">
-              {(selectedConsultation?.notes || []).map((n: any) => (
-                <div
-                  key={n.id}
-                  className="flex items-center gap-2 p-2.5 rounded-lg bg-surface/50 mb-2"
-                >
-                  <NotebookIcon className="w-4 h-4 text-primary" />
-                  <div className="flex-1">
-                    <div className="text-sm font-medium">{n.content}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {n.createdBy} •{" "}
-                      {new Date(n.createdAt).toLocaleDateString("en-US", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+            <div className="py-2 space-y-3">
+              {/* Saved notes list */}
+              {(selectedConsultation?.notes || [])
+                .filter((n: any) => n.isPrivate)
+                .map((n: any) => (
+                  <div
+                    key={n.id}
+                    className="flex items-start gap-2 p-3 rounded-lg bg-surface/50 border border-border"
+                  >
+                    <NotebookIcon className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium whitespace-pre-wrap break-words">{n.content}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {n.createdBy} •{" "}
+                        {new Date(n.createdAt).toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </div>
                     </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7 w-7 p-0 flex-shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => handleDeleteNote(n.id)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+
+              {/* Note input area */}
+              <div className="space-y-2">
+                <Textarea
+                  value={note}
+                  onChange={(e) => {
+                    const newValue = e.target.value;
+                    setNote(newValue);
+                    // Save draft to localStorage
+                    if (currentRoom?.consultation?._id) {
+                      localStorage.setItem(`note-draft-${currentRoom.consultation._id}`, newValue);
+                    }
+                  }}
+                  placeholder="Write your notes here..."
+                  className="resize-none min-h-[120px] w-full"
+                />
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-muted-foreground">
+                    Notes are private to you
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {noteSaved && !noteSaving && (
+                      <span className="text-xs text-primary flex items-center gap-1">
+                        <CheckCircle className="w-3 h-3" />
+                        Saved
+                      </span>
+                    )}
+                    <Button
+                      size="sm"
+                      onClick={handleSaveNote}
+                      disabled={noteSaving || !note.trim()}
+                      className="h-8"
+                    >
+                      {noteSaving ? (
+                        <>
+                          <Loader2 className="w-3 h-3 mr-1.5 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        "Save Note"
+                      )}
+                    </Button>
                   </div>
                 </div>
-              ))}
-              <Textarea
-                value={note}
-                onChange={(e) => handleNoteChange(e.target.value)}
-                placeholder="Write your notes here..."
-                className="resize-none min-h-[160px] w-full focus:outline-none "
-              />
-              <div className="text-xs text-muted-foreground mt-1">
-                Notes are private and auto-saved.
               </div>
             </div>
           </AccordionContent>
