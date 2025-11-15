@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Edit, Trash2, Calendar, Save, X, Clock, Tag, User, MapPin, Video, Phone, CheckCircle, XCircle, PlayCircle, AlertTriangle } from 'lucide-react';
+import { Edit, Trash2, Calendar, Save, X, Clock, Tag, User, MapPin, Video, CheckCircle, XCircle, PlayCircle, AlertTriangle } from 'lucide-react';
 import { CalendarEvent } from '../page';
 import { ConsultationStatus } from '@/lib/enums';
 import { enumToLabel } from '@/lib/utils';
@@ -102,8 +102,8 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
 
   const getStatusBadge = (status?: ConsultationStatus) => {
     if (!status) return null;
-    
-    const statusConfig = {
+
+    const statusConfig: Partial<Record<ConsultationStatus, { color: string; icon: any }>> = {
       [ConsultationStatus.PENDING]: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
       [ConsultationStatus.SCHEDULED]: { color: 'bg-blue-100 text-blue-800', icon: Calendar },
       [ConsultationStatus.CONFIRMED]: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
@@ -113,11 +113,12 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
       [ConsultationStatus.NO_SHOW]: { color: 'bg-orange-100 text-orange-800', icon: AlertTriangle },
     };
 
-    const config = statusConfig[status];
-    const Icon = config?.icon || Clock;
+    // Safe lookup with fallback in case the enum has additional values (e.g. rescheduled)
+    const config = statusConfig[status] ?? { color: 'bg-primary-100 text-primary-800', icon: Clock };
+    const Icon = config.icon || Clock;
 
     return (
-      <Badge className={`${config?.color} gap-1`}>
+      <Badge className={`${config.color} gap-1`}>
         <Icon className="w-3 h-3" />
         {enumToLabel(status)}
       </Badge>
@@ -128,7 +129,7 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
     setIsProcessing(true);
     try {
       const consultationId = event?.consultation?._id;
-      
+
       switch (action) {
         case 'confirm':
           // TODO: Dispatch confirm consultation action
@@ -165,7 +166,7 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
   const getQuickActions = () => {
     const status = event?.status;
     const consultation = event?.consultation;
-    
+
     if (!status || !consultation) return null;
 
     const actions = [];
@@ -439,11 +440,11 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
                       <Calendar className="w-5 h-5 text-primary" />
                       <div>
                         <p className="text-sm font-medium text-foreground">
-                          {formData.date && new Date(formData.date).toLocaleDateString('en-US', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'long', 
-                            day: 'numeric' 
+                          {formData.date && new Date(formData.date).toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
                           })}
                         </p>
                         <p className="text-sm text-muted-foreground">
@@ -470,9 +471,9 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
                           <Video className="w-5 h-5 text-primary" />
                           <div className="flex-1">
                             <p className="text-sm font-medium text-foreground">Online Meeting</p>
-                            <a 
-                              href={event.consultation.meetingLink} 
-                              target="_blank" 
+                            <a
+                              href={event.consultation.meetingLink}
+                              target="_blank"
                               rel="noopener noreferrer"
                               className="text-xs text-primary hover:underline"
                             >
@@ -529,7 +530,7 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
                           <div>
                             <p className="text-muted-foreground">Fee</p>
                             <p className="font-medium text-foreground">
-                              PKR {event.consultation.totalAmount?.toLocaleString() || 'N/A'}
+                              PKR {event.consultation.fee?.toLocaleString() || 'N/A'}
                             </p>
                           </div>
                         </div>

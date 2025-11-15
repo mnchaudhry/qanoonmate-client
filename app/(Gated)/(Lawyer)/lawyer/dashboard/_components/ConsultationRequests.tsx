@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Skeleton } from "@/components/ui/skeleton"
-import { ChevronRight, Clock, CheckCircle, AlertCircle, XCircle, Play, Check, X, Eye, Video } from "lucide-react"
+import { ChevronRight, Clock, CheckCircle, AlertCircle, XCircle, Play, Check, Eye, Video } from "lucide-react"
 import { ConsultationStatus } from "@/lib/enums"
 import Link from "next/link"
 import { IUser } from "@/store/types/user.types"
@@ -55,7 +55,7 @@ export default function ConsultationRequests() {
   const router = useRouter()
   const { consultations, loading: isLoading, error } = useAppSelector(state => state.consultation)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
-  
+
   ////////////////////////////////////////////////////// EFFECTS ////////////////////////////////////////////////////
   useEffect(() => {
     dispatch(getMyConsultations({ filters: { limit: 4 } }))
@@ -66,10 +66,10 @@ export default function ConsultationRequests() {
     e.preventDefault()
     e.stopPropagation()
     setActionLoading(consultationId)
-    
+
     try {
       // Navigate to appropriate page based on action
-      switch(action) {
+      switch (action) {
         case 'start':
           router.push(`/lawyer/consultations/${consultationId}?action=start`)
           break
@@ -95,8 +95,8 @@ export default function ConsultationRequests() {
 
   const getActionButtons = (consultation: IConsultation) => {
     const buttons = []
-    
-    switch(consultation.status) {
+
+    switch (consultation.status) {
       case ConsultationStatus.PENDING:
         buttons.push(
           <Button
@@ -112,7 +112,7 @@ export default function ConsultationRequests() {
           </Button>
         )
         break
-        
+
       case ConsultationStatus.SCHEDULED:
         buttons.push(
           <Button
@@ -143,7 +143,7 @@ export default function ConsultationRequests() {
           )
         }
         break
-        
+
       case ConsultationStatus.IN_PROGRESS:
         buttons.push(
           <Button
@@ -174,7 +174,7 @@ export default function ConsultationRequests() {
           )
         }
         break
-        
+
       case ConsultationStatus.COMPLETED:
       case ConsultationStatus.CANCELLED:
         buttons.push(
@@ -192,10 +192,10 @@ export default function ConsultationRequests() {
         )
         break
     }
-    
+
     return buttons
   }
-  
+
   ////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   if (isLoading) {
     return (
@@ -323,7 +323,7 @@ export default function ConsultationRequests() {
                     <p className="text-xs text-muted-foreground">{formatConsultationDate(consultation.scheduledDate)}</p>
                   </div>
                 </Link>
-                
+
                 <div className="flex items-center space-x-3 flex-shrink-0 ml-4">
                   <div className="flex flex-col items-end space-y-2">
                     <div className="flex items-center space-x-2">
@@ -333,7 +333,7 @@ export default function ConsultationRequests() {
                       </Badge>
                       <span className="text-sm font-medium text-foreground whitespace-nowrap">PKR {consultation.fee.toLocaleString()}</span>
                     </div>
-                    
+
                     {actionButtons.length > 0 && (
                       <div className="flex items-center gap-2">
                         {actionButtons}

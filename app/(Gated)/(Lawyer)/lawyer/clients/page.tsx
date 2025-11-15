@@ -7,7 +7,6 @@ import { getMyClients } from '@/store/reducers/lawyerSlice';
 import ClientsHeader from './_components/ClientsHeader';
 import ClientsTable, { Client } from './_components/ClientsTable';
 import { Pagination } from '@/components/ui/pagination';
-import { Card } from '@/components/ui/card';
 import { Users, UserCheck, UserX, TrendingUp } from 'lucide-react';
 import DashboardPageHeader from '@/components/DashboardPageHeader';
 import { StatCard } from '@/components/StatCard';
@@ -106,6 +105,9 @@ const MyClients = () => {
     } else if (action === 'remove') {
       // TODO: Implement remove client functionality
       console.log('Remove client:', client);
+    } else if (action === 'viewDocuments') {
+      // TODO: Navigate to client documents
+      console.log('View documents:', client);
     }
   };
 
