@@ -107,6 +107,37 @@ export const bulkMarkAsRead = createAsyncThunk<string[], string[]>('notification
 }
 );
 
+export const markAllAsRead = createAsyncThunk<void, void>('notification/markAllAsRead', async (_, { rejectWithValue }) => {
+    try {
+        await api.markAllAsRead();
+        toast.success('All marked as read');
+    } catch (e: any) {
+        toast.error(e.message);
+        return rejectWithValue(e.message);
+    }
+});
+
+export const bulkDeleteNotifications = createAsyncThunk<string[], string[]>('notification/bulkDelete', async (ids, { rejectWithValue }) => {
+    try {
+        await api.bulkDelete(ids);
+        toast.success('Notifications deleted');
+        return ids;
+    } catch (e: any) {
+        toast.error(e.message);
+        return rejectWithValue(e.message);
+    }
+});
+
+export const clearAllNotifications = createAsyncThunk<void, void>('notification/clearAll', async (_, { rejectWithValue }) => {
+    try {
+        await api.clearAllNotifications();
+        toast.success('All notifications cleared');
+    } catch (e: any) {
+        toast.error(e.message);
+        return rejectWithValue(e.message);
+    }
+});
+
 const notificationSlice = createSlice({
     name: 'notification',
     initialState,
@@ -198,6 +229,19 @@ const notificationSlice = createSlice({
                         if (n && !n.isRead) { n.isRead = true; s.unreadCount = Math.max(0, s.unreadCount - 1); }
                     });
                 }
+            })
+            .addCase(markAllAsRead.fulfilled, (s) => {
+                s.notifications.forEach(n => { n.isRead = true; });
+                s.unreadCount = 0;
+            })
+            .addCase(bulkDeleteNotifications.fulfilled, (s, a) => {
+                if (a.payload) {
+                    s.notifications = s.notifications.filter(n => !a.payload.includes(n._id));
+                }
+            })
+            .addCase(clearAllNotifications.fulfilled, (s) => {
+                s.notifications = [];
+                s.unreadCount = 0;
             });
     },
 });

@@ -983,6 +983,18 @@ export interface BulkMarkAsReadResponse {
   data: { count: number };
   message: string;
 }
+export interface MarkAllAsReadResponse {
+  data: { count: number };
+  message: string;
+}
+export interface BulkDeleteResponse {
+  data: { count: number };
+  message: string;
+}
+export interface ClearAllNotificationsResponse {
+  data: { count: number };
+  message: string;
+}
 export interface GetUnreadCountResponse {
   data: { count: number };
   message: string;

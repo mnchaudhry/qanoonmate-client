@@ -13,6 +13,7 @@ import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMe
 import { ReleaseChannel, UserRole } from '@/lib/enums';
 import { Menu, X, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
+import NotificationDropdown from '@/components/NotificationDropdown';
 
 const LandingPageNavbar: React.FC = () => {
 
@@ -142,9 +143,10 @@ const LandingPageNavbar: React.FC = () => {
 
             {/* Profile/Sign-In/Sign-Up buttons */}
             {isAuthenticated ? (
-              <>
+              <div className='flex gap-2' >
+                <NotificationDropdown viewAllLink={`/${user?.role}/notifications`} />
                 <ProfileButton />
-              </>
+              </div>
             ) : (
               <div className="flex gap-3 ml-4">
                 <Button

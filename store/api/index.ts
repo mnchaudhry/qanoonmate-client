@@ -247,7 +247,10 @@ export const createNotification = (data: API.CreateNotificationRequest) => APICl
 export const markAsRead = (id: string) => APIClient.patch<API.MarkAsReadResponse>(`/notification/${id}/read`);
 export const markAsUnread = (id: string) => APIClient.patch<API.MarkAsUnreadResponse>(`/notification/${id}/unread`);
 export const deleteNotification = (id: string) => APIClient.delete<API.DeleteNotificationResponse>(`/notification/${id}`);
-export const bulkMarkAsRead = (ids: string[]) => APIClient.post<API.BulkMarkAsReadResponse>("/notification/bulk-read", { ids, });
+export const bulkMarkAsRead = (ids: string[]) => APIClient.post<API.BulkMarkAsReadResponse>("/notification/bulk-read", { ids });
+export const markAllAsRead = () => APIClient.patch<API.MarkAllAsReadResponse>("/notification/mark-all-read");
+export const bulkDelete = (ids: string[]) => APIClient.post<API.BulkDeleteResponse>("/notification/bulk-delete", { ids });
+export const clearAllNotifications = () => APIClient.delete<API.ClearAllNotificationsResponse>("/notification/clear-all");
 export const getUnreadCount = () => APIClient.get<API.GetUnreadCountResponse>("/notification/unread-count");
 
 ////////////////////////////////////////////////////////// DOCUMENTS ////////////////////////////////////////////////////////////

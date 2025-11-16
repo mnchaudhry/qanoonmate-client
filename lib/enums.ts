@@ -271,11 +271,13 @@ export enum NotificationType {
   SYSTEM = 'system',
   CHAT = 'chat',
   CONSULTATION = 'consultation',
+  CONSULTATION_REMINDER_24H = 'consultation_reminder_24h',
+  CONSULTATION_REMINDER_1H = 'consultation_reminder_1h',
+  CONSULTATION_REMINDER_15M = 'consultation_reminder_15m',
   PAYMENT = 'payment',
   REMINDER = 'reminder',
   CUSTOM = 'custom',
 }
-
 export enum NotificationContextType {
   CHAT = 'chat',
   CONSULTATION = 'consultation',

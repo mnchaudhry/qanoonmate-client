@@ -1,15 +1,14 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { usePathname } from 'next/navigation';
-import { Bell, Search } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Search } from "lucide-react";
 import { NavigationMenu, NavigationMenuList, NavigationMenuItem, navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
-import { Badge } from '@/components/ui/badge';
 import Logo from '@/components/Logo';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import ProfileButton from '@/components/profile-button';
 import QCBalance from '@/components/QCBalance';
+import NotificationDropdown from '@/components/NotificationDropdown';
 
 interface ClientNavbarProps {
   children?: React.ReactNode;
@@ -68,19 +67,7 @@ const ClientNavbar: React.FC<ClientNavbarProps> = ({ }) => {
               <Search className="h-5 w-5" />
             </Button>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative hover:bg-muted">
-                  <Bell className="h-5 w-5" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs bg-red-500 text-white">
-                    5
-                  </Badge>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                {/* Static notifications UI omitted for brevity */}
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <NotificationDropdown viewAllLink="/client/notifications" />
 
             <ProfileButton />
           </div>
