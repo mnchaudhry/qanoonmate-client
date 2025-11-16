@@ -238,7 +238,7 @@ export default function ConsultationListCard({ consultation }: ConsultationCardP
               Decline
             </Button>
             <Button size="sm" variant="outline" asChild className="h-8">
-              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+              <Link href={`/lawyer/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Chat with Client
               </Link>
@@ -249,7 +249,7 @@ export default function ConsultationListCard({ consultation }: ConsultationCardP
         {(consultation.status === ConsultationStatus.SCHEDULED || consultation.status === ConsultationStatus.CONFIRMED) && (
           <>
             <Button size="sm" variant="outline" asChild className="h-8">
-              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+              <Link href={`/lawyer/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Chat with Client
               </Link>
@@ -269,7 +269,7 @@ export default function ConsultationListCard({ consultation }: ConsultationCardP
               </Link>
             </Button>
             <Button size="sm" variant="outline" asChild className="h-8">
-              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+              <Link href={`/lawyer/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Chat with Client
               </Link>
@@ -284,7 +284,7 @@ export default function ConsultationListCard({ consultation }: ConsultationCardP
               Add Notes
             </Button>
             <Button size="sm" variant="outline" asChild className="h-8">
-              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+              <Link href={`/lawyer/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Chat with Client
               </Link>
