@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { User, Briefcase, CheckCircle, ExternalLink, Eye, Shield, Bell, CreditCard, MessageSquare, Database } from "lucide-react";
+import { User, Briefcase, CheckCircle, ExternalLink, Shield, Bell, CreditCard, MessageSquare, Database } from "lucide-react";
 import { ProfileCompletionData } from "@/lib/types/profile.types";
 
 interface SettingsSidebarProps {
@@ -48,6 +48,13 @@ const settingsSections = [
     title: 'Account & Security',
     items: [
       {
+        id: 'credentials',
+        title: 'Credentials',
+        description: 'Manage your login credentials',
+        icon: CheckCircle,
+        required: false
+      },
+      {
         id: 'notifications',
         title: 'Preferences',
         description: 'Preferences',
@@ -81,13 +88,6 @@ const settingsSections = [
     title: 'Preferences',
     items: [
       {
-        id: 'visibility',
-        title: 'Profile Visibility',
-        description: 'Control who can see your profile',
-        icon: Eye,
-        required: false
-      },
-      {
         id: 'communication',
         title: 'Communication Preferences',
         description: 'Set your communication settings',
@@ -120,7 +120,7 @@ export function SettingsSidebar({ activeSection, onSectionChange, completion }: 
   return (
     <div className="w-full lg:w-64 bg-card h-full">
       <div className="p-4">
-        <h2 className="text-xl font-semibold text-foreground mb-6">Settings</h2>
+        <h2 className="text-2xl font-semibold text-foreground mb-6">Settings</h2>
 
         <nav className="space-y-6">
           {settingsSections.map((section, sectionIndex) => (

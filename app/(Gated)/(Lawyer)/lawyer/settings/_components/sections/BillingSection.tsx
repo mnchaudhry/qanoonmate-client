@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { CreditCard, Plus, Trash2, Download, Calendar, DollarSign, Eye, EyeOff } from "lucide-react";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
 import { SubsectionHeader } from "./SubsectionHeader";
+import { SectionHeader } from "./SectionHeader";
 
 interface BillingSectionProps {
   profile: LawyerProfile;
@@ -29,15 +30,10 @@ const BILLING_HISTORY = [
 ];
 
 export function BillingSection({ }: BillingSectionProps) {
+
+  ///////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
   const [form, setForm] = useState({
-    billingAddress: {
-      company: '',
-      address: '',
-      city: '',
-      state: '',
-      zipCode: '',
-      country: 'Pakistan',
-    },
+    billingAddress: { company: '', address: '', city: '', state: '', zipCode: '', country: 'Pakistan', },
     taxId: '',
     invoiceEmail: '',
   });
@@ -47,6 +43,7 @@ export function BillingSection({ }: BillingSectionProps) {
   const [loading, setLoading] = useState(false);
   const [showTaxId, setShowTaxId] = useState(false);
 
+  ///////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
   const setField = (field: string, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
@@ -54,10 +51,7 @@ export function BillingSection({ }: BillingSectionProps) {
   const setBillingField = (field: string, value: string) => {
     setForm(prev => ({
       ...prev,
-      billingAddress: {
-        ...prev.billingAddress,
-        [field]: value
-      }
+      billingAddress: { ...prev.billingAddress, [field]: value }
     }));
   };
 
@@ -108,223 +102,222 @@ export function BillingSection({ }: BillingSectionProps) {
     }
   };
 
+  ///////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-          <CreditCard className="h-4 w-4 text-primary" />
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold text-foreground">Billing & Payments</h2>
-          <p className="text-sm text-muted-foreground mt-1">Manage your billing information and payment methods</p>
-        </div>
-      </div>
+
+      <SectionHeader
+        title="Billing Settings"
+        description="Update your billing details and preferences"
+        icon={<CreditCard className="h-4 w-4 text-primary" />}
+      />
 
       <div className="space-y-6">
         {/* Payment Methods */}
         <Card>
           <CardHeader className="pb-4">
-            <SubsectionHeader 
+            <SubsectionHeader
               title="Payment Methods"
               description="Manage your payment methods"
             />
           </CardHeader>
-          <CardContent className="space-y-4">{paymentMethods.map((method) => (
-                  <div key={method.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{getPaymentMethodIcon(method.type)}</span>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-medium text-foreground capitalize">
-                            {method.type} •••• {method.last4}
-                          </h4>
-                          {method.isDefault && (
-                            <Badge variant="outline" className="text-xs">Default</Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-muted-foreground">Expires {method.expiry}</p>
-                      </div>
-                    </div>
+          <CardContent className="space-y-4">
+            {paymentMethods.map((method) => (
+              <div key={method.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{getPaymentMethodIcon(method.type)}</span>
+                  <div>
                     <div className="flex items-center gap-2">
-                      {!method.isDefault && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleSetDefaultPaymentMethod(method.id)}
-                        >
-                          Set Default
-                        </Button>
+                      <h4 className="font-medium text-foreground capitalize">
+                        {method.type} •••• {method.last4}
+                      </h4>
+                      {method.isDefault && (
+                        <Badge variant="outline" className="text-xs">Default</Badge>
                       )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleRemovePaymentMethod(method.id)}
-                        className="text-destructive hover:text-destructive"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
                     </div>
+                    <p className="text-sm text-muted-foreground">Expires {method.expiry}</p>
                   </div>
-                ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  {!method.isDefault && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSetDefaultPaymentMethod(method.id)}
+                    >
+                      Set Default
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRemovePaymentMethod(method.id)}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
 
-                <Button
-                  onClick={handleAddPaymentMethod}
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Payment Method
-                </Button>
+            <Button
+              onClick={handleAddPaymentMethod}
+              variant="outline"
+              size="sm"
+              className="w-full"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Payment Method
+            </Button>
           </CardContent>
         </Card>
 
         {/* Billing Information */}
         <Card>
           <CardHeader className="pb-4">
-            <SubsectionHeader 
+            <SubsectionHeader
               title="Billing Information"
               description="Update your billing details"
             />
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">{/* prettier-ignore */}
-                  <Label htmlFor="company">Company Name</Label>
-                  <Input
-                    id="company"
-                    value={form.billingAddress.company}
-                    onChange={(e) => setBillingField('company', e.target.value)}
-                    placeholder="Enter company name"
-                  />
-                </div>
+              <Label htmlFor="company">Company Name</Label>
+              <Input
+                id="company"
+                value={form.billingAddress.company}
+                onChange={(e) => setBillingField('company', e.target.value)}
+                placeholder="Enter company name"
+              />
+            </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="address">Billing Address</Label>
-                  <Input
-                    id="address"
-                    value={form.billingAddress.address}
-                    onChange={(e) => setBillingField('address', e.target.value)}
-                    placeholder="Enter billing address"
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="address">Billing Address</Label>
+              <Input
+                id="address"
+                value={form.billingAddress.address}
+                onChange={(e) => setBillingField('address', e.target.value)}
+                placeholder="Enter billing address"
+              />
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      value={form.billingAddress.city}
-                      onChange={(e) => setBillingField('city', e.target.value)}
-                      placeholder="Enter city"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="state">State/Province</Label>
-                    <Input
-                      id="state"
-                      value={form.billingAddress.state}
-                      onChange={(e) => setBillingField('state', e.target.value)}
-                      placeholder="Enter state"
-                    />
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="city">City</Label>
+                <Input
+                  id="city"
+                  value={form.billingAddress.city}
+                  onChange={(e) => setBillingField('city', e.target.value)}
+                  placeholder="Enter city"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="state">State/Province</Label>
+                <Input
+                  id="state"
+                  value={form.billingAddress.state}
+                  onChange={(e) => setBillingField('state', e.target.value)}
+                  placeholder="Enter state"
+                />
+              </div>
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="zipCode">ZIP/Postal Code</Label>
-                    <Input
-                      id="zipCode"
-                      value={form.billingAddress.zipCode}
-                      onChange={(e) => setBillingField('zipCode', e.target.value)}
-                      placeholder="Enter ZIP code"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="country">Country</Label>
-                    <Select value={form.billingAddress.country} onValueChange={(value) => setBillingField('country', value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Pakistan">Pakistan</SelectItem>
-                        <SelectItem value="India">India</SelectItem>
-                        <SelectItem value="Bangladesh">Bangladesh</SelectItem>
-                        <SelectItem value="United States">United States</SelectItem>
-                        <SelectItem value="United Kingdom">United Kingdom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="zipCode">ZIP/Postal Code</Label>
+                <Input
+                  id="zipCode"
+                  value={form.billingAddress.zipCode}
+                  onChange={(e) => setBillingField('zipCode', e.target.value)}
+                  placeholder="Enter ZIP code"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="country">Country</Label>
+                <Select value={form.billingAddress.country} onValueChange={(value) => setBillingField('country', value)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Pakistan">Pakistan</SelectItem>
+                    <SelectItem value="India">India</SelectItem>
+                    <SelectItem value="Bangladesh">Bangladesh</SelectItem>
+                    <SelectItem value="United States">United States</SelectItem>
+                    <SelectItem value="United Kingdom">United Kingdom</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="taxId">Tax ID / NTN</Label>
-                  <div className="relative">
-                    <Input
-                      id="taxId"
-                      type={showTaxId ? "text" : "password"}
-                      value={form.taxId}
-                      onChange={(e) => setField('taxId', e.target.value)}
-                      placeholder="Enter tax ID"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
-                      onClick={() => setShowTaxId(!showTaxId)}
-                    >
-                      {showTaxId ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </Button>
-                  </div>
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="taxId">Tax ID / NTN</Label>
+              <div className="relative">
+                <Input
+                  id="taxId"
+                  type={showTaxId ? "text" : "password"}
+                  value={form.taxId}
+                  onChange={(e) => setField('taxId', e.target.value)}
+                  placeholder="Enter tax ID"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                  onClick={() => setShowTaxId(!showTaxId)}
+                >
+                  {showTaxId ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="invoiceEmail">Invoice Email</Label>
-                  <Input
-                    id="invoiceEmail"
-                    type="email"
-                    value={form.invoiceEmail}
-                    onChange={(e) => setField('invoiceEmail', e.target.value)}
-                    placeholder="Enter email for invoices"
-                  />
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="invoiceEmail">Invoice Email</Label>
+              <Input
+                id="invoiceEmail"
+                type="email"
+                value={form.invoiceEmail}
+                onChange={(e) => setField('invoiceEmail', e.target.value)}
+                placeholder="Enter email for invoices"
+              />
+            </div>
           </CardContent>
         </Card>
 
         {/* Billing History */}
         <Card>
           <CardHeader className="pb-4">
-            <SubsectionHeader 
+            <SubsectionHeader
               title="Billing History"
               description="View your transaction history"
             />
           </CardHeader>
           <CardContent className="space-y-3">
             {billingHistory.map((invoice) => (
-                  <div key={invoice.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                        <DollarSign className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-foreground">{invoice.description}</h4>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-3 h-3 text-muted-foreground" />
-                          <p className="text-sm text-muted-foreground">{invoice.date}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-medium text-foreground">${invoice.amount}</span>
-                      <Badge className={getStatusColor(invoice.status)}>
-                        {invoice.status}
-                      </Badge>
-                      <Button variant="ghost" size="sm">
-                        <Download className="w-4 h-4" />
-                      </Button>
+              <div key={invoice.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-foreground">{invoice.description}</h4>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="w-3 h-3 text-muted-foreground" />
+                      <p className="text-sm text-muted-foreground">{invoice.date}</p>
                     </div>
                   </div>
-                ))}
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="font-medium text-foreground">${invoice.amount}</span>
+                  <Badge className={getStatusColor(invoice.status)}>
+                    {invoice.status}
+                  </Badge>
+                  <Button variant="ghost" size="sm">
+                    <Download className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
 

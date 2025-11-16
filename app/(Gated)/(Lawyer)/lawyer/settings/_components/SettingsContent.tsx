@@ -7,7 +7,6 @@ import { ILawyer } from "@/store/types/lawyer.types";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
 import { calculateProfileCompletion } from "@/lib/utils/profileCompletion";
 
-// Import section components
 import { PersonalInfoSection } from "./sections/PersonalInfoSection";
 import { ProfessionalOverviewSection } from "./sections/ProfessionalOverviewSection";
 import { LegalExpertiseSection } from "./sections/LegalExpertiseSection";
@@ -18,8 +17,10 @@ import { PreferencesSection } from "./sections/PreferencesSection";
 import { BillingSection } from "./sections/BillingSection";
 import { VerificationSection } from "./sections/VerificationSection";
 import { ProfileSettings } from "./sections/ProfileSettings";
+import { CommunicationSection } from "./sections/CommunicationSection";
+import { DataPrivacySection } from "./sections/DataPrivacySection";
 import { PlaceholderSection } from "./sections/PlaceholderSection";
-import { Award, DollarSign, Eye, MessageSquare, Database } from "lucide-react";
+import { Award, DollarSign } from "lucide-react";
 import { PakistanProvinces } from "@/lib/enums";
 import { LawCategory } from "@/lib/enums";
 import { PakistanCities } from "@/lib/enums";
@@ -138,6 +139,7 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
     }
   }, [lawyer]);
 
+  ///////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////
   const handleProfileUpdate = (updatedProfile: Partial<LawyerProfile>) => {
     if (lawyerProfile) {
       const newProfile = { ...lawyerProfile, ...updatedProfile };
@@ -147,7 +149,7 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
     }
   };
 
-  ///////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////// STATE RENDER //////////////////////////////////////////////////////////////
   if (loading || !lawyerProfile || !completion) {
     return (
       <div className="p-6">
@@ -163,6 +165,7 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
     );
   }
 
+  ///////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////
   const renderSection = () => {
     const commonProps = {
       profile: lawyerProfile,
@@ -209,33 +212,10 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
         return <BillingSection {...commonProps} />;
       case 'verification':
         return <VerificationSection {...commonProps} />;
-      case 'visibility':
-        return (
-          <PlaceholderSection
-            {...commonProps}
-            title="Profile Visibility"
-            description="Control who can see your profile and what information is visible."
-            icon={Eye}
-          />
-        );
       case 'communication':
-        return (
-          <PlaceholderSection
-            {...commonProps}
-            title="Communication Preferences"
-            description="Set your communication preferences and response settings."
-            icon={MessageSquare}
-          />
-        );
+        return <CommunicationSection {...commonProps} />;
       case 'data':
-        return (
-          <PlaceholderSection
-            {...commonProps}
-            title="Data & Privacy"
-            description="Manage your data privacy settings and download your information."
-            icon={Database}
-          />
-        );
+        return <DataPrivacySection {...commonProps} />;
       default:
         return (
           <div className="p-6">

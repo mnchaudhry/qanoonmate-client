@@ -18,28 +18,14 @@ interface SecuritySectionProps {
 }
 
 export function SecuritySection({ }: SecuritySectionProps) {
-    const [form, setForm] = useState({
-        twoFactorEnabled: false,
-        emailNotifications: true,
-        smsNotifications: false,
-        loginAlerts: true,
-        dataSharing: false,
-    });
 
-    const [passwordForm, setPasswordForm] = useState({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-    });
-
-    const [showPasswords, setShowPasswords] = useState({
-        current: false,
-        new: false,
-        confirm: false,
-    });
-
+    ///////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////
+    const [form, setForm] = useState({ twoFactorEnabled: false, emailNotifications: true, smsNotifications: false, loginAlerts: true, dataSharing: false, });
+    const [passwordForm, setPasswordForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "", });
+    const [showPasswords, setShowPasswords] = useState({ current: false, new: false, confirm: false, });
     const [loading, setLoading] = useState(false);
 
+    ///////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////
     const setField = (field: string, value: any) => {
         setForm(prev => ({ ...prev, [field]: value }));
     };
@@ -107,6 +93,7 @@ export function SecuritySection({ }: SecuritySectionProps) {
     const securityLevel = getSecurityLevel(securityScore);
     const SecurityIcon = securityLevel.icon;
 
+    ///////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////
     return (
         <div className="space-y-6">
             <div className="flex items-center gap-3">
@@ -123,7 +110,7 @@ export function SecuritySection({ }: SecuritySectionProps) {
                 {/* Security Overview */}
                 <Card>
                     <CardHeader className="pb-4">
-                        <SubsectionHeader 
+                        <SubsectionHeader
                             title="Security Overview"
                             description="Monitor your account security status"
                         />
@@ -144,7 +131,7 @@ export function SecuritySection({ }: SecuritySectionProps) {
                         <div className="w-full bg-muted rounded-full h-2">
                             <div
                                 className={`h-2 rounded-full transition-all ${securityScore >= 80 ? 'bg-green-500' :
-                                        securityScore >= 60 ? 'bg-amber-500' : 'bg-red-500'
+                                    securityScore >= 60 ? 'bg-amber-500' : 'bg-red-500'
                                     }`}
                                 style={{ width: `${securityScore}%` }}
                             />
@@ -155,12 +142,12 @@ export function SecuritySection({ }: SecuritySectionProps) {
                 {/* Password Management */}
                 <Card>
                     <CardHeader className="pb-4">
-                        <SubsectionHeader 
+                        <SubsectionHeader
                             title="Password Management"
                             description="Update your account password"
                         />
                     </CardHeader>
-                                        <CardContent className="space-y-4">
+                    <CardContent className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="currentPassword">Current Password</Label>
                             <div className="relative">
@@ -242,7 +229,7 @@ export function SecuritySection({ }: SecuritySectionProps) {
                 {/* Two-Factor Authentication */}
                 <Card>
                     <CardHeader className="pb-4">
-                        <SubsectionHeader 
+                        <SubsectionHeader
                             title="Two-Factor Authentication"
                             description="Add an extra layer of security to your account"
                         />
@@ -274,7 +261,7 @@ export function SecuritySection({ }: SecuritySectionProps) {
                 {/* Privacy Settings */}
                 <Card>
                     <CardHeader className="pb-4">
-                        <SubsectionHeader 
+                        <SubsectionHeader
                             title="Privacy Settings"
                             description="Control your privacy and notification preferences"
                         />

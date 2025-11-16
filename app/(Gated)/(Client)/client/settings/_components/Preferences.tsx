@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@/store/store'
 import { UserTheme } from '@/lib/enums'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { SubsectionHeader } from './sections/SubsectionHeader'
 
 const Preferences = () => {
 
@@ -79,14 +80,26 @@ const Preferences = () => {
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
     <div className="space-y-6">
-      {/* Appearance Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            <Palette className="h-5 w-5 text-primary" />
-            Appearance & Display
-          </CardTitle>
-        </CardHeader>
+      {/* Section Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+          <Bell className="h-4 w-4 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Preferences</h2>
+          <p className="text-sm text-muted-foreground mt-1">Manage your notification preferences and display settings</p>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        {/* Appearance Settings */}
+        <Card>
+          <CardHeader className="pb-4">
+            <SubsectionHeader
+              title="Appearance & Display"
+              description="Customize your interface theme and display preferences"
+            />
+          </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
@@ -160,14 +173,14 @@ const Preferences = () => {
         </CardContent>
       </Card>
 
-      {/* Notification Preferences */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
-            <Bell className="h-5 w-5 text-primary" />
-            Notification Preferences
-          </CardTitle>
-        </CardHeader>
+        {/* Notification Preferences */}
+        <Card>
+          <CardHeader className="pb-4">
+            <SubsectionHeader
+              title="Notification Preferences"
+              description="Control how you receive notifications"
+            />
+          </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
@@ -229,14 +242,15 @@ const Preferences = () => {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-200">
-            <Button onClick={handleSubmit} className="bg-primary hover:bg-primary/90" disabled={loading}>
+          <div className="pt-4 border-t border-muted">
+            <Button onClick={handleSubmit} disabled={loading} size="lg">
               <Bell className="h-4 w-4 mr-2" />
-              {loading ? 'Updating...' : 'Update Preferences'}
+              {loading ? 'Updating...' : 'Save Changes'}
             </Button>
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   )
 }

@@ -1,14 +1,15 @@
 "use client"
 
 import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Upload, Check } from 'lucide-react'
+import { FileText, Upload, Check, CheckCircle } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@/store/store'
 import { updateClientSettings } from '@/store/reducers/clientSettingsSlice'
+import { SubsectionHeader } from './sections/SubsectionHeader'
 
 const Verifications = () => {
 
@@ -78,13 +79,26 @@ const Verifications = () => {
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-xl ">
-          <FileText className="h-5 w-5 text-primary" />
-          Identity Verification
-        </CardTitle>
-      </CardHeader>
+    <div className="space-y-6">
+      {/* Section Header */}
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+          <CheckCircle className="h-4 w-4 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-lg font-semibold text-foreground">Identity Verification</h2>
+          <p className="text-sm text-muted-foreground mt-1">Upload your identity documents for account verification</p>
+        </div>
+      </div>
+
+      <div className="space-y-6">
+        <Card>
+          <CardHeader className="pb-4">
+            <SubsectionHeader
+              title="Document Upload"
+              description="Upload your CNIC or identity documents"
+            />
+          </CardHeader>
       <CardContent className="space-y-6">
         <p className="text-sm text-muted-foreground">
           Upload your identity documents for verification.
@@ -132,14 +146,16 @@ const Verifications = () => {
           />
         </div>
 
-        <div className="flex justify-end">
-          <Button onClick={handleSubmit} className="bg-primary hover:bg-primary/90" disabled={loading} >
+        <div className="flex justify-end pt-4">
+          <Button onClick={handleSubmit} disabled={loading} size="lg">
             <Upload className="h-4 w-4 mr-2" />
-            Submit Verification
+            {loading ? 'Submitting...' : 'Submit Verification'}
           </Button>
         </div>
       </CardContent>
     </Card>
+    </div>
+  </div>
   )
 }
 

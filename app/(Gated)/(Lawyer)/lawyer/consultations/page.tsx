@@ -90,18 +90,6 @@ const ConsultationRequests = () => {
         fetchData();
     }, [fetchData]);
 
-    // Calculate tab counts
-    const tabCounts = useMemo(() => {
-        return {
-            all: consultations.length,
-            pending: consultations.filter(c => c.status === ConsultationStatus.PENDING).length,
-            scheduled: consultations.filter(c => c.status === ConsultationStatus.SCHEDULED || c.status === ConsultationStatus.CONFIRMED).length,
-            in_progress: consultations.filter(c => c.status === ConsultationStatus.IN_PROGRESS).length,
-            completed: consultations.filter(c => c.status === ConsultationStatus.COMPLETED).length,
-            cancelled: consultations.filter(c => c.status === ConsultationStatus.CANCELLED || c.status === ConsultationStatus.NO_SHOW).length,
-        };
-    }, [consultations]);
-
     // Handle tab change
     const handleTabChange = useCallback((value: string) => {
         setActiveTab(value);
@@ -119,6 +107,19 @@ const ConsultationRequests = () => {
             setFilters(prev => ({ ...prev, status: value }));
         }
     }, []);
+
+    ///////////////////////////////////////////// MEMOES ///////////////////////////////////////////// 
+    const tabCounts = useMemo(() => {
+        return {
+            all: consultations.length,
+            pending: consultations.filter(c => c.status === ConsultationStatus.PENDING).length,
+            scheduled: consultations.filter(c => c.status === ConsultationStatus.SCHEDULED || c.status === ConsultationStatus.CONFIRMED).length,
+            in_progress: consultations.filter(c => c.status === ConsultationStatus.IN_PROGRESS).length,
+            completed: consultations.filter(c => c.status === ConsultationStatus.COMPLETED).length,
+            cancelled: consultations.filter(c => c.status === ConsultationStatus.CANCELLED || c.status === ConsultationStatus.NO_SHOW).length,
+        };
+    }, [consultations]);
+
 
     ///////////////////////////////////////////// EFFECTS ///////////////////////////////////////////// 
     useEffect(() => {

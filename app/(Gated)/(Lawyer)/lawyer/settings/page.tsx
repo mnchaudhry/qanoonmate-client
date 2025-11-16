@@ -39,6 +39,7 @@ export default function LawyerSettings() {
     }
   }, [lawyer]);
 
+  ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////// 
   const handleSectionChange = (section: string) => {
     setActiveSection(section);
     router.push(`/lawyer/settings?section=${section}`, { scroll: false });
@@ -47,7 +48,7 @@ export default function LawyerSettings() {
   ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////// 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 pb-8 pt-2">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Mobile Sidebar */}
           <MobileSettingsSidebar
@@ -67,9 +68,7 @@ export default function LawyerSettings() {
 
           {/* Content */}
           <div className="flex-1">
-            <SettingsContent
-              activeSection={activeSection}
-            />
+            <SettingsContent activeSection={activeSection} />
           </div>
         </div>
       </div>

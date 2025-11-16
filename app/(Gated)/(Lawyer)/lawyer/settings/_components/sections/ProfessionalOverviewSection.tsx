@@ -17,6 +17,8 @@ interface ProfessionalOverviewSectionProps {
 }
 
 export function ProfessionalOverviewSection({ profile, completion, onUpdate }: ProfessionalOverviewSectionProps) {
+
+  ///////////////////////////////////////////////////////// STATES //////////////////////////////////////////////////////////////
   const [form, setForm] = useState({
     title: profile.professionalOverview.title,
     bio: profile.professionalOverview.bio,
@@ -27,6 +29,12 @@ export function ProfessionalOverviewSection({ profile, completion, onUpdate }: P
 
   const [loading, setLoading] = useState(false);
 
+  ///////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////
+  const sectionCompletion = completion.sectionCompletion.professionalOverview;
+  const bioLength = form.bio.length;
+  const isBioValid = bioLength >= 50;
+
+  ///////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////
   const setField = (field: string, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
@@ -57,10 +65,8 @@ export function ProfessionalOverviewSection({ profile, completion, onUpdate }: P
     }
   };
 
-  const sectionCompletion = completion.sectionCompletion.professionalOverview;
-  const bioLength = form.bio.length;
-  const isBioValid = bioLength >= 50;
 
+  ///////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////
   return (
     <div className="p-6">
       <div className="mb-6">
@@ -68,8 +74,8 @@ export function ProfessionalOverviewSection({ profile, completion, onUpdate }: P
           <Briefcase className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold text-gray-900">Professional Overview</h1>
           <div className={`px-2 py-1 rounded-full text-xs font-medium ${sectionCompletion.completed
-              ? 'bg-green-100 text-green-800'
-              : 'bg-amber-100 text-amber-800'
+            ? 'bg-green-100 text-green-800'
+            : 'bg-amber-100 text-amber-800'
             }`}>
             {sectionCompletion.percentage}% Complete
           </div>

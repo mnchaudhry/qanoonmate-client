@@ -19,6 +19,8 @@ interface CredentialsSectionProps {
 }
 
 export function CredentialsSection({ profile, completion, onUpdate }: CredentialsSectionProps) {
+
+  ///////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
   const [form, setForm] = useState({
     education: profile.credentials.education,
     barCouncil: profile.credentials.barCouncil,
@@ -29,16 +31,8 @@ export function CredentialsSection({ profile, completion, onUpdate }: Credential
     preLicensedExperience: profile.credentials.preLicensedExperience,
     workHistory: profile.credentials.workHistory,
   });
-
   const [loading, setLoading] = useState(false);
-  const [newEducation, setNewEducation] = useState<EducationEntry>({
-    degree: '',
-    institution: '',
-    year: new Date().getFullYear(),
-    field: '',
-    honors: ''
-  });
-
+  const [newEducation, setNewEducation] = useState<EducationEntry>({ degree: '', institution: '', year: new Date().getFullYear(), field: '', honors: '' });
   const [newWorkExperience, setNewWorkExperience] = useState<WorkExperience>({
     position: '',
     organization: '',
@@ -48,6 +42,7 @@ export function CredentialsSection({ profile, completion, onUpdate }: Credential
     achievements: []
   });
 
+  ///////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
   const setField = (field: string, value: any) => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
@@ -117,10 +112,10 @@ export function CredentialsSection({ profile, completion, onUpdate }: Credential
       };
 
       onUpdate(updatedProfile);
-      
+
       // TODO: Call API to save changes
       // await dispatch(updateMeLawyer(updatedProfile));
-      
+
     } catch (error) {
       console.error('Error saving credentials:', error);
     } finally {
@@ -130,17 +125,17 @@ export function CredentialsSection({ profile, completion, onUpdate }: Credential
 
   const sectionCompletion = completion.sectionCompletion.credentials;
 
+  ///////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////
   return (
     <div className="p-6">
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
           <GraduationCap className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold text-gray-900">Credentials & Experience</h1>
-          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-            sectionCompletion.completed 
-              ? 'bg-green-100 text-green-800' 
+          <div className={`px-2 py-1 rounded-full text-xs font-medium ${sectionCompletion.completed
+              ? 'bg-green-100 text-green-800'
               : 'bg-amber-100 text-amber-800'
-          }`}>
+            }`}>
             {sectionCompletion.percentage}% Complete
           </div>
         </div>
@@ -408,8 +403,8 @@ export function CredentialsSection({ profile, completion, onUpdate }: Credential
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button 
-            onClick={handleSave} 
+          <Button
+            onClick={handleSave}
             disabled={loading || !form.barCouncil || !form.licenseNumber}
             className="bg-primary hover:bg-primary/90"
           >
