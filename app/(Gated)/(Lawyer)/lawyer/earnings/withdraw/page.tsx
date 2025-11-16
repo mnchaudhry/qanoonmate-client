@@ -12,6 +12,8 @@ import DashboardPageHeader from '@/components/DashboardPageHeader';
 import { toast } from 'sonner';
 
 const WithdrawPaymentsPage = () => {
+
+    //////////////////////////////////////////////// STATES //////////////////////////////////////////////////
     const [withdrawAmount, setWithdrawAmount] = useState('');
 
     // Mock data - replace with actual Redux state
@@ -55,6 +57,7 @@ const WithdrawPaymentsPage = () => {
         },
     ];
 
+    //////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////
     const handleWithdrawalRequest = () => {
         const amount = parseFloat(withdrawAmount);
 
@@ -97,6 +100,7 @@ const WithdrawPaymentsPage = () => {
         );
     };
 
+    //////////////////////////////////////////////// RENDER //////////////////////////////////////////////////
     return (
         <div className="space-y-6">
             <DashboardPageHeader

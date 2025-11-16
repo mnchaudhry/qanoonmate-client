@@ -1,4 +1,4 @@
-import { Currency, PaymentMethod, PaymentStatus, PaymentTypeEnum, UserRole } from "@/lib/enums";
+import { Currency, PaymentMethod, PaymentStatus, PaymentType, UserRole } from "@/lib/enums";
 import { APIResponse, PaginationMeta } from "./api";
 
 export interface IPayment extends Document {
@@ -14,7 +14,7 @@ export interface IPayment extends Document {
   // Payment Details
   amount: number;
   currency: Currency;
-  paymentType: PaymentTypeEnum;
+  paymentType: PaymentType;
   paymentMethod: PaymentMethod;
   status: PaymentStatus;
 
@@ -106,7 +106,7 @@ export interface PaymentGatewayResponse {
 // Filter Types
 export interface PaymentFilters {
   status?: PaymentStatus[];
-  paymentType?: PaymentTypeEnum[];
+  paymentType?: PaymentType[];
   currency?: Currency[];
   userId?: string;
   consultationId?: string;

@@ -375,7 +375,7 @@ export enum QCServiceType {
 }
 
 // Payment Type Enum
-export enum PaymentTypeEnum {
+export enum PaymentType {
   CONSULTATION = 'consultation',
   SUBSCRIPTION = 'subscription',
   DOCUMENT_GENERATION = 'document_generation',

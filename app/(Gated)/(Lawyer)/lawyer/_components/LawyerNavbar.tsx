@@ -85,7 +85,7 @@ export default function LawyerNavbar() {
                                                 </button>
                                                 
                                                 {openSubmenu === item.label && (
-                                                    <div className="absolute top-full left-0 mt-1 w-[240px] rounded-md border border-border bg-popover text-popover-foreground shadow-lg z-50 animate-in fade-in-0 zoom-in-95">
+                                                    <div className="absolute top-full left-0 w-[240px] rounded-md border border-border bg-popover text-popover-foreground shadow-lg z-50 animate-in fade-in-0 zoom-in-95">
                                                         <ul className="p-2 space-y-1">
                                                             {item.submenu.map((subItem, subIndex) => (
                                                                 <li key={subIndex}>
