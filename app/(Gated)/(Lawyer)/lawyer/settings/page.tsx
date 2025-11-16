@@ -67,9 +67,7 @@ export default function LawyerSettings() {
 
           {/* Content */}
           <div className="flex-1">
-            <SettingsContent
-              activeSection={activeSection}
-            />
+            <SettingsContent activeSection={activeSection} />
           </div>
         </div>
       </div>
