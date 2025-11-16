@@ -48,6 +48,13 @@ const settingsSections = [
     title: 'Account & Security',
     items: [
       {
+        id: 'credentials',
+        title: 'Credentials',
+        description: 'Manage your login credentials',
+        icon: CheckCircle,
+        required: false
+      },
+      {
         id: 'notifications',
         title: 'Preferences',
         description: 'Preferences',
