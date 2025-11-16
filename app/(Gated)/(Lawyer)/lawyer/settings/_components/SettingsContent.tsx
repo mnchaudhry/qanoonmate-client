@@ -17,8 +17,10 @@ import { PreferencesSection } from "./sections/PreferencesSection";
 import { BillingSection } from "./sections/BillingSection";
 import { VerificationSection } from "./sections/VerificationSection";
 import { ProfileSettings } from "./sections/ProfileSettings";
+import { CommunicationSection } from "./sections/CommunicationSection";
+import { DataPrivacySection } from "./sections/DataPrivacySection";
 import { PlaceholderSection } from "./sections/PlaceholderSection";
-import { Award, DollarSign, MessageSquare, Database } from "lucide-react";
+import { Award, DollarSign } from "lucide-react";
 import { PakistanProvinces } from "@/lib/enums";
 import { LawCategory } from "@/lib/enums";
 import { PakistanCities } from "@/lib/enums";
@@ -211,23 +213,9 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
       case 'verification':
         return <VerificationSection {...commonProps} />;
       case 'communication':
-        return (
-          <PlaceholderSection
-            {...commonProps}
-            title="Communication Preferences"
-            description="Set your communication preferences and response settings."
-            icon={MessageSquare}
-          />
-        );
+        return <CommunicationSection {...commonProps} />;
       case 'data':
-        return (
-          <PlaceholderSection
-            {...commonProps}
-            title="Data & Privacy"
-            description="Manage your data privacy settings and download your information."
-            icon={Database}
-          />
-        );
+        return <DataPrivacySection {...commonProps} />;
       default:
         return (
           <div className="p-6">
