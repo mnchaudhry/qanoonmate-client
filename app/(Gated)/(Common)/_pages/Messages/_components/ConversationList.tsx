@@ -110,7 +110,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery, onRoom
                     src={lawyer.profilePicture}
                     alt={lawyer.firstname + " " + lawyer.lastname}
                     fill
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-full "
                   />
                 ) : (
                   <span className="text-sm font-bold text-muted-foreground">

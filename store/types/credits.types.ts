@@ -87,10 +87,6 @@ export type GetQCPackagesResponse = APIResponse<IQCPackage[]>;
 export type GetQCServiceRatesRequest = void;
 export type GetQCServiceRatesResponse = APIResponse<IQCServiceRate[]>;
 
-// getQCServicePricing
-export type GetQCServicePricingRequest = void;
-export type GetQCServicePricingResponse = APIResponse<QCServicePricing[]>;
-
 // getQCBalance
 export type GetQCBalanceRequest = void;
 export type GetQCBalanceResponse = APIResponse<{ balance: number; currency: string; }>;

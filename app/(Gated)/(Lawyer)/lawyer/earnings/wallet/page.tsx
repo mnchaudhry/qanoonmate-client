@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
 import { getQCBalance, getQCPackages, getQCTransactionHistory, purchaseQC } from '@/store/reducers/creditSlice';
@@ -20,8 +20,11 @@ const LawyerWalletPage = () => {
 
     //////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////
     const dispatch = useDispatch<AppDispatch>();
-    const { balance, packages, transactionHistory, loading } = useSelector((state: RootState) => state.credits);
+    const { balance, packages, transactionHistory } = useSelector((state: RootState) => state.credits);
     const { requireAuth, showSignInModal, modalConfig, handleSignInSuccess, handleSignInCancel } = useAuthGuard();
+
+    //////////////////////////////////////////////// STATES //////////////////////////////////////////////
+    const [loading, setLoading] = useState({ purchase: false, transactions: false });
 
     //////////////////////////////////////////////// EFFECTS //////////////////////////////////////////////////
     useEffect(() => {
@@ -34,11 +37,15 @@ const LawyerWalletPage = () => {
     const handlePurchase = async (pkg: IQCPackage) => {
         requireAuth(async () => {
             try {
-                const result = await dispatch(purchaseQC({ planId: pkg.id })).unwrap();
-                toast.success('Payment initiated successfully!');
-                if (result?.data?.paymentUrl) {
-                    window.location.href = result.data.paymentUrl;
-                }
+                setLoading(prev => ({ ...prev, purchase: true }));
+                await dispatch(purchaseQC({ planId: pkg.id })).unwrap()
+                    .then((result) => {
+                        toast.success('Payment initiated successfully!');
+                        if (result?.data?.paymentUrl) {
+                            window.location.href = result.data.paymentUrl;
+                        }
+                    })
+                    .finally(() => setLoading(pre => ({ ...pre, purchase: false })))
             } catch (error: any) {
                 toast.error(error || 'Failed to initiate payment');
             }

@@ -128,7 +128,6 @@ export const deductQC = createAsyncThunk<DeductQCResponse, DeductQCRequest>('cre
   try {
     const { data } = await creditsAPI.deductQC(input);
     if (data.success) {
-      toast.success(data.message)
       return data;
     }
     else {
