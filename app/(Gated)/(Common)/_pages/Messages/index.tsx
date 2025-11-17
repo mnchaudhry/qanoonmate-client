@@ -3,8 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
-import { getMessages, getUserChatRooms, sendFileMessage, } from "@/store/reducers/chatSlice";
+import { getMessages, getUserChatRooms, sendFileMessage, setCurrentRoom } from "@/store/reducers/chatSlice";
 import { useSocketContext } from "@/context/useSocketContext";
+import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import MessagesHeader from "./_components/MessagesHeader";
 import ConversationList from "./_components/ConversationList";
@@ -16,6 +17,8 @@ import toast from "react-hot-toast";
 const MessagesPage = () => {
   //////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { currentRoom, rooms, messages } = useSelector((state: RootState) => state.chat);
   const { user } = useSelector((state: RootState) => state.auth);
   const { defaultSocket } = useSocketContext();
@@ -33,6 +36,42 @@ const MessagesPage = () => {
   useEffect(() => {
     dispatch(getUserChatRooms());
   }, [dispatch]);
+
+  // Restore selected chat from URL query parameter
+  useEffect(() => {
+    const roomId = searchParams.get('roomId');
+    const consultationId = searchParams.get('consultationId');
+    
+    if (rooms.length > 0) {
+      // First priority: find by roomId
+      if (roomId) {
+        // Only set if it's different from current room
+        if (!currentRoom || currentRoom._id !== roomId) {
+          const room = rooms.find(r => r._id === roomId);
+          if (room) {
+            dispatch(setCurrentRoom(room));
+          }
+        }
+        return;
+      }
+      
+      // Second priority: find by consultationId
+      if (consultationId) {
+        const room = rooms.find(r => {
+          const consultation = r.consultation;
+          return typeof consultation === 'object' ? consultation._id === consultationId : consultation === consultationId;
+        });
+        if (room) {
+          // Only set if it's different from current room
+          if (!currentRoom || currentRoom._id !== room._id) {
+            dispatch(setCurrentRoom(room));
+            // Update URL to use roomId instead
+            router.replace(`?roomId=${room._id}`, { scroll: false });
+          }
+        }
+      }
+    }
+  }, [searchParams, rooms, currentRoom, dispatch, router]);
 
   // Load messages for all rooms, not just the selected one
   useEffect(() => {
@@ -175,7 +214,9 @@ const MessagesPage = () => {
           onSearchChange={setSearchQuery}
         />
         <div className="flex-1 min-h-0 overflow-y-auto">
-          <ConversationList searchQuery={searchQuery} />
+          <ConversationList searchQuery={searchQuery} onRoomSelect={(roomId) => {
+            router.push(`?roomId=${roomId}`, { scroll: false });
+          }} />
         </div>
         
         {/* Resize Handle */}

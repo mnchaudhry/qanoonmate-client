@@ -56,7 +56,6 @@ export const getPayments = createAsyncThunk<GetPaymentsResponse, GetPaymentsRequ
   try {
     const { data } = await api.getPayments(input);
     if (data.success) {
-      toast.success(data.message);
       return data;
     }
     else {
@@ -74,7 +73,6 @@ export const getPaymentById = createAsyncThunk<GetPaymentByIdResponse, GetPaymen
   try {
     const { data } = await api.getPaymentById(input);
     if (data.success) {
-      toast.success(data.message);
       return data;
     }
     else {
@@ -92,7 +90,6 @@ export const getPaymentStats = createAsyncThunk<GetPaymentStatsResponse, GetPaym
   try {
     const { data } = await api.getPaymentStats(input);
     if (data.success) {
-      toast.success(data.message);
       return data;
     }
     else {

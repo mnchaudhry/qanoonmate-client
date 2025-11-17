@@ -164,7 +164,7 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
         {consultation.status === ConsultationStatus.PENDING && (
           <>
             <Button size="sm" className="w-full" variant="default" asChild>
-              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+              <Link href={`/client/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Chat with Lawyer
               </Link>
@@ -180,7 +180,7 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
               View Details
             </Button>
             <Button size="sm" className="w-full" variant="outline" asChild>
-              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+              <Link href={`/client/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Chat with Lawyer
               </Link>
@@ -211,7 +211,7 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
               </Link>
             </Button>
             <Button size="sm" className="w-full" variant="outline" asChild>
-              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+              <Link href={`/client/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Chat with Lawyer
               </Link>
@@ -228,7 +228,7 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
               View Details
             </Button>
             <Button size="sm" className="w-full" variant="outline" asChild>
-              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+              <Link href={`/client/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Chat with Lawyer
               </Link>
@@ -245,7 +245,7 @@ const ConsultationCardGrid = ({ consultation }: ConsultationCardGridProps) => {
               Leave Review
             </Button>
             <Button size="sm" className="w-full" variant="outline" asChild>
-              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+              <Link href={`/client/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Chat with Lawyer
               </Link>

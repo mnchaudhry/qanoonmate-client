@@ -11,9 +11,10 @@ import { setSelectedConsultation } from "@/store/reducers/consultationSlice";
 
 interface ConversationListProps {
   searchQuery: string;
+  onRoomSelect?: (roomId: string) => void;
 }
 
-const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
+const ConversationList: React.FC<ConversationListProps> = ({ searchQuery, onRoomSelect }) => {
 
   //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
 
       if (reconnected) {
         dispatch(setCurrentRoom(room));
+        onRoomSelect?.(room._id);
       } else {
         toast.error("Unable to connect to chat server. Please refresh the page.");
       }
@@ -41,7 +43,8 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
     }
 
     dispatch(setCurrentRoom(room));
-    dispatch(setSelectedConsultation(room.consultation))
+    dispatch(setSelectedConsultation(room.consultation));
+    onRoomSelect?.(room._id);
   };
 
   // Filter conversations based on search query

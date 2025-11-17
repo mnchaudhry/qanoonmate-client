@@ -1,8 +1,9 @@
 "use client";
 
 import React from 'react';
-import { Bell, Menu, Search } from 'lucide-react';
+import { Menu, Search } from 'lucide-react';
 import ProfileButton from '@/components/profile-button';
+import NotificationDropdown from '@/components/NotificationDropdown';
 
 const AdminNavbar = () => {
 
@@ -38,12 +39,7 @@ const AdminNavbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="relative flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground">
-              <Bell className="h-4 w-4" />
-              <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-destructive">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-destructive opacity-75"></span>
-              </span>
-            </button>
+            <NotificationDropdown viewAllLink="/admin/notifications" />
 
             <ProfileButton />
           </div>

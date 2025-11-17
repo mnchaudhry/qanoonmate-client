@@ -193,7 +193,7 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
         {consultation.status === ConsultationStatus.PENDING && (
           <>
             <Button size="sm" variant="default" asChild className="h-8">
-              <Link href={"/client/messages"}>
+              <Link href={`/client/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Chat with Lawyer
               </Link>
@@ -209,7 +209,7 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
               View Details
             </Button>
             <Button size="sm" variant="outline" asChild className="h-8">
-              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+              <Link href={`/client/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Chat with Lawyer
               </Link>
@@ -236,7 +236,7 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
               </Link>
             </Button>
             <Button size="sm" variant="outline" asChild className="h-8">
-              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+              <Link href={`/client/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Chat with Lawyer
               </Link>
@@ -252,7 +252,7 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
               View Details
             </Button>
             <Button size="sm" variant="outline" asChild className="h-8">
-              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+              <Link href={`/client/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Chat with Lawyer
               </Link>
@@ -268,7 +268,7 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
               Leave Review
             </Button>
             <Button size="sm" variant="outline" asChild className="h-8">
-              <Link href={`/client/chat?userId=${typeof consultation?.lawyer === 'object' ? (consultation?.lawyer as ILawyer)?._id : ''}`}>
+              <Link href={`/client/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
                 Chat with Lawyer
               </Link>

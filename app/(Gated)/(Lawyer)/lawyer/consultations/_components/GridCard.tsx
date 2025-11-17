@@ -218,7 +218,7 @@ const ConsultationGridCard = ({ consultation }: ConsultationCardGridProps) => {
               </Button>
             </div>
             <Button size="sm" variant="outline" className="w-full" asChild>
-              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+              <Link href={`/lawyer/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-4 w-4 mr-1" />
                 Chat with Client
               </Link>
@@ -229,7 +229,7 @@ const ConsultationGridCard = ({ consultation }: ConsultationCardGridProps) => {
         {(consultation.status === ConsultationStatus.SCHEDULED || consultation.status === ConsultationStatus.CONFIRMED) && (
           <div className="grid grid-cols-2 gap-2 w-full">
             <Button size="sm" variant="outline" asChild>
-              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+              <Link href={`/lawyer/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-4 w-4 mr-1" />
                 Chat
               </Link>
@@ -249,7 +249,7 @@ const ConsultationGridCard = ({ consultation }: ConsultationCardGridProps) => {
               </Link>
             </Button>
             <Button size="sm" variant="outline" className="w-full" asChild>
-              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+              <Link href={`/lawyer/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Chat with Client
               </Link>
@@ -264,7 +264,7 @@ const ConsultationGridCard = ({ consultation }: ConsultationCardGridProps) => {
               Add Notes
             </Button>
             <Button size="sm" variant="outline" className="w-full" asChild>
-              <Link href={`/lawyer/chat?userId=${typeof consultation?.client === 'object' ? (consultation?.client as IClient)?._id : ''}`}>
+              <Link href={`/lawyer/messages?consultationId=${consultation._id}`}>
                 <MessageSquare className="h-4 w-4 mr-2" />
                 Chat with Client
               </Link>

@@ -17,16 +17,20 @@ import { TransactionItem } from '@/app/(Gated)/(Client)/client/wallet/_component
 import { EmptyTransactions } from '@/app/(Gated)/(Client)/client/wallet/_components/EmptyTransactions';
 
 const LawyerWalletPage = () => {
+
+    //////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////
     const dispatch = useDispatch<AppDispatch>();
     const { balance, packages, transactionHistory, loading } = useSelector((state: RootState) => state.credits);
     const { requireAuth, showSignInModal, modalConfig, handleSignInSuccess, handleSignInCancel } = useAuthGuard();
 
+    //////////////////////////////////////////////// EFFECTS //////////////////////////////////////////////////
     useEffect(() => {
         dispatch(getQCBalance());
         dispatch(getQCPackages());
         dispatch(getQCTransactionHistory({ limit: 10 }));
     }, [dispatch]);
 
+    //////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////
     const handlePurchase = async (pkg: IQCPackage) => {
         requireAuth(async () => {
             try {
@@ -63,6 +67,7 @@ const LawyerWalletPage = () => {
         return { totalPurchased, totalUsed };
     }, [transactionHistory]);
 
+    //////////////////////////////////////////////// RENDER //////////////////////////////////////////////////
     return (
         <div className="space-y-6">
             <DashboardPageHeader
