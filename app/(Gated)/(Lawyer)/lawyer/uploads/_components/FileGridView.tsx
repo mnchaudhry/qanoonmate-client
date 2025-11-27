@@ -27,6 +27,8 @@ interface FileGridViewProps {
   selectedFile: FileItem | null;
   formatFileSize: (bytes: number) => string;
   onDelete?: (file: FileItem) => void;
+  onDownload?: (file: FileItem) => void;
+  onShare?: (file: FileItem) => void;
   selectedFiles?: Set<string>;
   onSelectFile?: (fileId: string) => void;
   onSelectAll?: () => void;
@@ -39,6 +41,8 @@ const FileGridView: React.FC<FileGridViewProps> = ({
   selectedFile,
   formatFileSize,
   onDelete,
+  onDownload,
+  onShare,
   selectedFiles = new Set(),
   onSelectFile,
   onSelectAll,
@@ -134,10 +138,14 @@ const FileGridView: React.FC<FileGridViewProps> = ({
         onFileSelect(file);
         break;
       case "download":
-        console.log("Download file:", file.name);
+        if (onDownload) {
+          onDownload(file);
+        }
         break;
       case "share":
-        console.log("Share file:", file.name);
+        if (onShare) {
+          onShare(file);
+        }
         break;
       case "edit":
         if (onEditMetadata) {

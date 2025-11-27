@@ -1,13 +1,9 @@
 import {
-  ConsultationStatus,
-  ConsultationType,
   UserRole,
   NotificationDeliveryChannel,
   NotificationType,
   NotificationContextType,
 } from "@/lib/enums";
-import { IUser } from "./user.types";
-import { ILawyer } from "./lawyer.types";
 import { IConsultation } from "./consultation.types";
 
 export interface APIResponse<T = any> {

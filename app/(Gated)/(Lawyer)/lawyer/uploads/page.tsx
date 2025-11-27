@@ -467,13 +467,33 @@ const FileManager = () => {
 
   const handleDownload = async (file: FileItem) => {
     try {
-      if (file.fileUrl) {
-        // Open file URL in new tab for download
-        window.open(file.fileUrl, "_blank");
-        toast.success("Download started");
-      } else {
-        toast.error("File URL not available");
+      if (file.type === "folder") {
+        toast("Folder download not yet implemented");
+        return;
       }
+
+      if (!file.fileUrl) {
+        toast.error("File URL not available");
+        return;
+      }
+
+      const loadingToast = toast.loading("Starting download...");
+
+      // Fetch the file and create a blob
+      const response = await fetch(file.fileUrl);
+      if (!response.ok) throw new Error("Download failed");
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success("Download completed", { id: loadingToast });
     } catch (error) {
       console.error("Failed to download file:", error);
       toast.error("Failed to download file");
@@ -605,13 +625,41 @@ const FileManager = () => {
       return;
     }
 
-    filesToDownload.forEach((file) => {
-      if (file.fileUrl) {
-        window.open(file.fileUrl, "_blank");
-      }
-    });
+    const loadingToast = toast.loading(
+      `Starting download of ${filesToDownload.length} file(s)...`
+    );
 
-    toast.success(`Downloading ${filesToDownload.length} file(s)`);
+    // Download files sequentially with a small delay
+    for (let i = 0; i < filesToDownload.length; i++) {
+      const file = filesToDownload[i];
+      if (file.fileUrl) {
+        try {
+          const response = await fetch(file.fileUrl);
+          if (!response.ok) throw new Error("Download failed");
+
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = file.name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+
+          // Small delay between downloads to avoid browser blocking
+          if (i < filesToDownload.length - 1) {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+          }
+        } catch (error) {
+          console.error("Failed to download:", file.name, error);
+        }
+      }
+    }
+
+    toast.success(`Downloaded ${filesToDownload.length} file(s)`, {
+      id: loadingToast,
+    });
   };
 
   // Metadata Editing
@@ -811,6 +859,8 @@ const FileManager = () => {
                 selectedFile={selectedFile}
                 formatFileSize={formatFileSize}
                 onDelete={handleDeleteFile}
+                onDownload={handleDownload}
+                onShare={handleShare}
                 selectedFiles={selectedFiles}
                 onSelectFile={handleSelectFile}
                 onSelectAll={handleSelectAll}
@@ -826,6 +876,8 @@ const FileManager = () => {
                 onSort={handleSort}
                 formatFileSize={formatFileSize}
                 onDelete={handleDeleteFile}
+                onDownload={handleDownload}
+                onShare={handleShare}
                 selectedFiles={selectedFiles}
                 onSelectFile={handleSelectFile}
                 onSelectAll={handleSelectAll}
