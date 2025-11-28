@@ -113,7 +113,7 @@ const ConsultationRequests = () => {
         return {
             all: consultations.length,
             pending: consultations.filter(c => c.status === ConsultationStatus.PENDING).length,
-            scheduled: consultations.filter(c => c.status === ConsultationStatus.SCHEDULED || c.status === ConsultationStatus.CONFIRMED).length,
+            scheduled: consultations.filter(c => c.status === ConsultationStatus.SCHEDULED).length,
             in_progress: consultations.filter(c => c.status === ConsultationStatus.IN_PROGRESS).length,
             completed: consultations.filter(c => c.status === ConsultationStatus.COMPLETED).length,
             cancelled: consultations.filter(c => c.status === ConsultationStatus.CANCELLED || c.status === ConsultationStatus.NO_SHOW).length,

@@ -184,6 +184,7 @@ export const confirmConsultation = createAsyncThunk<ConsultationApi.UpdateConsul
 export const startConsultation = createAsyncThunk<ConsultationApi.UpdateConsultationResponse, ConsultationApi.UpdateConsultationRequest>('consultation/startConsultation', async (formData, { rejectWithValue }) => {
     try {
         const { data } = await api.startConsultation(formData);
+        console.log('datads', data)
         if (data?.success) {
             toast.success(data?.message);
             return data;

@@ -26,10 +26,6 @@ const statusConfig: Record<ConsultationStatus, { color: string; label: string }>
     label: "Pending Review"
   },
   [ConsultationStatus.SCHEDULED]: {
-    color: "bg-blue-50 text-blue-700 border-blue-200",
-    label: "Scheduled"
-  },
-  [ConsultationStatus.CONFIRMED]: {
     color: "bg-teal-50 text-teal-700 border-teal-200",
     label: "Confirmed"
   },
@@ -96,10 +92,10 @@ export default function ConsultationHeader({
   const formattedTime = consultation.scheduledTime || "Time not set";
 
   const showConfirmButton = consultation.status === ConsultationStatus.PENDING || consultation.status === ConsultationStatus.SCHEDULED;
-  const showStartButton = consultation.status === ConsultationStatus.CONFIRMED;
+  const showStartButton = consultation.status === ConsultationStatus.SCHEDULED;
   const showCompleteButton = consultation.status === ConsultationStatus.IN_PROGRESS;
-  const showCancelButton = [ConsultationStatus.PENDING, ConsultationStatus.SCHEDULED, ConsultationStatus.CONFIRMED].includes(consultation.status);
-  const showRescheduleButton = [ConsultationStatus.SCHEDULED, ConsultationStatus.CONFIRMED].includes(consultation.status);
+  const showCancelButton = [ConsultationStatus.PENDING, ConsultationStatus.SCHEDULED].includes(consultation.status);
+  const showRescheduleButton = [ConsultationStatus.SCHEDULED].includes(consultation.status);
 
   return (
     <Card className="border-border">

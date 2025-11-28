@@ -45,10 +45,6 @@ const statusConfig: Record<ConsultationStatus, { color: string; label: string }>
   [ConsultationStatus.IN_PROGRESS]: {
     color: "bg-purple-100 text-purple-800 border-purple-200",
     label: "In Progress"
-  },
-  [ConsultationStatus.CONFIRMED]: {
-    color: "bg-teal-100 text-teal-800 border-teal-200",
-    label: "Confirmed"
   }
 };
 
@@ -246,7 +242,7 @@ export default function ConsultationListCard({ consultation }: ConsultationCardP
           </>
         )}
 
-        {(consultation.status === ConsultationStatus.SCHEDULED || consultation.status === ConsultationStatus.CONFIRMED) && (
+        {(consultation.status === ConsultationStatus.SCHEDULED) && (
           <>
             <Button size="sm" variant="outline" asChild className="h-8">
               <Link href={`/lawyer/messages?consultationId=${consultation._id}`}>

@@ -69,7 +69,7 @@ const ConsultationsPage = () => {
   const handleConfirm = async (id: string) => {
     setActionLoading(true)
     try {
-      await dispatch(confirmConsultation({ id, updates: { status: ConsultationStatus.CONFIRMED }, })).unwrap()
+      await dispatch(confirmConsultation({ id, updates: { status: ConsultationStatus.SCHEDULED }, })).unwrap()
       refreshConsultations()
       if (selectedConsultation && selectedConsultation._id === id) {
         setViewModalOpen(false)

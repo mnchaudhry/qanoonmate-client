@@ -46,10 +46,7 @@ export default function ConsultationDetailPage() {
     setActionLoading(true);
     try {
       await dispatch(
-        confirmConsultation({
-          id: consultationId,
-          updates: { status: ConsultationStatus.CONFIRMED }
-        })
+        confirmConsultation({ id: consultationId, updates: { status: ConsultationStatus.SCHEDULED } })
       ).unwrap();
       toast.success("Consultation confirmed successfully");
       dispatch(getConsultationById({ id: consultationId }));

@@ -41,10 +41,6 @@ const statusConfig: Record<ConsultationStatus, { color: string; icon?: any; labe
     color: "bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-950 dark:text-purple-400 dark:border-purple-800",
     label: "In Progress"
   },
-  [ConsultationStatus.CONFIRMED]: {
-    color: "bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-950 dark:text-teal-400 dark:border-teal-800",
-    label: "Confirmed"
-  }
 };
 
 // Loading skeleton component
