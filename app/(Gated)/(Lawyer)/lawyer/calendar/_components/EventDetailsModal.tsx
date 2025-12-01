@@ -106,7 +106,6 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
     const statusConfig: Partial<Record<ConsultationStatus, { color: string; icon: any }>> = {
       [ConsultationStatus.PENDING]: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
       [ConsultationStatus.SCHEDULED]: { color: 'bg-blue-100 text-blue-800', icon: Calendar },
-      [ConsultationStatus.CONFIRMED]: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
       [ConsultationStatus.IN_PROGRESS]: { color: 'bg-purple-100 text-purple-800', icon: PlayCircle },
       [ConsultationStatus.COMPLETED]: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
       [ConsultationStatus.CANCELLED]: { color: 'bg-red-100 text-red-800', icon: XCircle },
@@ -171,7 +170,7 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
 
     const actions = [];
 
-    if (status === ConsultationStatus.PENDING || status === ConsultationStatus.SCHEDULED) {
+    if (status === ConsultationStatus.PENDING) {
       actions.push(
         <Button
           key="confirm"
@@ -185,7 +184,7 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
       );
     }
 
-    if (status === ConsultationStatus.CONFIRMED) {
+    if (status === ConsultationStatus.SCHEDULED) {
       const consultationTime = new Date(consultation.scheduledDate);
       const now = new Date();
       const timeDiff = (consultationTime.getTime() - now.getTime()) / (1000 * 60);
@@ -247,7 +246,7 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
       }
     }
 
-    if ([ConsultationStatus.PENDING, ConsultationStatus.SCHEDULED, ConsultationStatus.CONFIRMED].includes(status)) {
+    if ([ConsultationStatus.PENDING, ConsultationStatus.SCHEDULED].includes(status)) {
       actions.push(
         <Button
           key="cancel"
@@ -409,7 +408,7 @@ const EventDetailsModal = ({ event, isOpen, onClose, onSave, onDelete }: Props) 
             // View Mode
             <div className="space-y-4">
               {/* Status Alert for upcoming consultations */}
-              {event?.status && [ConsultationStatus.CONFIRMED].includes(event.status) && (
+              {event?.status && [ConsultationStatus.SCHEDULED].includes(event.status) && (
                 <Alert className="border-blue-200 bg-blue-50">
                   <Clock className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-blue-800">

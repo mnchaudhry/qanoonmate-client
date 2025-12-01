@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
 import { getQCBalance, getQCPackages, getQCTransactionHistory, purchaseQC } from '@/store/reducers/creditSlice';
@@ -20,8 +20,11 @@ const WalletPage = () => {
 
   //////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
-  const { balance, packages, transactionHistory, loading } = useSelector((state: RootState) => state.credits);
+  const { balance, packages, transactionHistory } = useSelector((state: RootState) => state.credits);
   const { requireAuth, showSignInModal, modalConfig, handleSignInSuccess, handleSignInCancel } = useAuthGuard();
+
+  //////////////////////////////////////////////// STATES //////////////////////////////////////////////
+  const [loading, setLoading] = useState({ purchase: false, transactions: false });
 
   //////////////////////////////////////////////// EFFECTS ////////////////////////////////////////////
   useEffect(() => {
@@ -34,11 +37,15 @@ const WalletPage = () => {
   const handlePurchase = async (pkg: IQCPackage) => {
     requireAuth(async () => {
       try {
-        const result = await dispatch(purchaseQC({ planId: pkg.id })).unwrap();
-        toast.success('Payment initiated successfully!');
-        if (result?.data?.paymentUrl) {
-          window.location.href = result.data.paymentUrl;
-        }
+        setLoading(prev => ({ ...prev, purchase: true }));
+        await dispatch(purchaseQC({ planId: pkg.id })).unwrap()
+          .then((result) => {
+            toast.success('Payment initiated successfully!');
+            if (result?.data?.paymentUrl) {
+              window.location.href = result.data.paymentUrl;
+            }
+          })
+          .finally(() => setLoading(prev => ({ ...prev, purchase: false })))
       } catch (error: any) {
         toast.error(error || 'Failed to initiate payment');
       }
@@ -59,11 +66,11 @@ const WalletPage = () => {
     const totalPurchased = transactionHistory?.transactions
       .filter(t => t.type === 'purchase')
       .reduce((sum, t) => sum + t.qcAmount, 0) || 0;
-    
+
     const totalUsed = Math.abs(transactionHistory?.transactions
       .filter(t => t.type === 'deduction')
       .reduce((sum, t) => sum + t.qcAmount, 0) || 0);
-    
+
     return { totalPurchased, totalUsed };
   }, [transactionHistory]);
 
@@ -77,11 +84,11 @@ const WalletPage = () => {
 
       {/* Balance and Quick Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <BalanceCard 
-          balance={balance?.balance || 0} 
-          formatAmount={formatAmount} 
+        <BalanceCard
+          balance={balance?.balance || 0}
+          formatAmount={formatAmount}
         />
-        <QuickStats 
+        <QuickStats
           totalPurchased={stats.totalPurchased}
           totalUsed={stats.totalUsed}
         />

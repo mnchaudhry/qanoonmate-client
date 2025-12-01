@@ -117,7 +117,6 @@ const Calendar = () => {
       case ConsultationStatus.PENDING:
         return '#fef3c7'; // yellow-100
       case ConsultationStatus.SCHEDULED:
-      case ConsultationStatus.CONFIRMED:
         return '#dbeafe'; // blue-100
       case ConsultationStatus.IN_PROGRESS:
         return '#e9d5ff'; // purple-100
@@ -136,7 +135,6 @@ const Calendar = () => {
       case ConsultationStatus.PENDING:
         return '#fbbf24'; // yellow-400
       case ConsultationStatus.SCHEDULED:
-      case ConsultationStatus.CONFIRMED:
         return '#60a5fa'; // blue-400
       case ConsultationStatus.IN_PROGRESS:
         return '#c084fc'; // purple-400
@@ -205,7 +203,7 @@ const Calendar = () => {
 
     return events.some(event => {
       if (event.id === eventId) return false; // Skip the event being moved
-      
+
       const eventStart = new Date(`${event.date}T${event.startTime}`);
       const eventEnd = new Date(`${event.date}T${event.endTime}`);
 
@@ -224,7 +222,7 @@ const Calendar = () => {
 
     // Check for conflicts
     const hasConflict = checkEventConflict(newStart, eventData.id);
-    
+
     if (hasConflict) {
       if (!confirm('This time slot conflicts with another event. Continue anyway?')) {
         info.revert();
@@ -240,11 +238,11 @@ const Calendar = () => {
         newTime,
         consultation: eventData.consultation
       });
-      
+
       // For now, just update local state
       // In production, dispatch update consultation action
       // await dispatch(rescheduleConsultation({ id: eventData.consultation?._id, scheduledDate: newStart.toISOString() })).unwrap();
-      
+
     } catch (error) {
       console.error('Failed to reschedule:', error);
       info.revert();
@@ -353,7 +351,7 @@ const Calendar = () => {
       }).length,
       upcoming: events.filter(e => {
         const eventDate = new Date(e.date);
-        return eventDate > today && (e.status === ConsultationStatus.SCHEDULED || e.status === ConsultationStatus.CONFIRMED);
+        return eventDate > today && (e.status === ConsultationStatus.SCHEDULED);
       }).length,
     };
   }, [events]);
@@ -444,7 +442,7 @@ const Calendar = () => {
               <ChevronRight className="h-4 w-4" />
             </Button>
             <h3 className="text-lg font-semibold ml-2">
-              {currentView === 'timeGridDay' 
+              {currentView === 'timeGridDay'
                 ? currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
                 : currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
               }
@@ -615,8 +613,8 @@ const Calendar = () => {
           </div>
         </Card>
       ) : showAgendaView ? (
-        <AgendaView 
-          events={events} 
+        <AgendaView
+          events={events}
           onEventClick={(event) => {
             setSelectedEvent(event);
             setIsModalOpen(true);
@@ -688,8 +686,8 @@ const Calendar = () => {
         <Card className="border-border p-4">
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-sm font-semibold">Keyboard Shortcuts</h4>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={() => setShowShortcutsHelp(!showShortcutsHelp)}
               className="h-6 text-xs"

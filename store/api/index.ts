@@ -305,7 +305,6 @@ export const deleteNewsletterSubscriber = (id: string) => APIClient.delete<API.D
 ////////////////////////////////////////////////////////// CREDITS ////////////////////////////////////////////////////////////
 export const getQCPackages = () => APIClient.get<CreditsAPI.GetQCPackagesResponse>("/credits/packages");
 export const getQCServiceRates = () => APIClient.get<CreditsAPI.GetQCServiceRatesResponse>("/credits/rates");
-export const getQCServicePricing = () => APIClient.get<CreditsAPI.GetQCServicePricingResponse>("/credits/service-pricing");
 export const getQCBalance = () => APIClient.get<CreditsAPI.GetQCBalanceResponse>("/credits/balance");
 export const purchaseQC = (data: CreditsAPI.PurchaseQCRequest) => APIClient.post<CreditsAPI.PurchaseQCResponse>("/credits/purchase", data);
 export const deductQC = (data: CreditsAPI.DeductQCRequest) => APIClient.post<CreditsAPI.DeductQCResponse>("/credits/deduct", data);

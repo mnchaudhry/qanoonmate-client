@@ -18,8 +18,7 @@ import { formatConsultationDate } from "@/lib/utils"
 const getStatusColor = (status: ConsultationStatus) => {
   switch (status) {
     case ConsultationStatus.SCHEDULED: return "bg-emerald-50 text-emerald-700 border-emerald-200"
-    case ConsultationStatus.CONFIRMED: return "bg-primary/10 text-primary border-primary/20"
-    case ConsultationStatus.PENDING: return "bg-amber-50 text-amber-700 border-amber-200"
+     case ConsultationStatus.PENDING: return "bg-amber-50 text-amber-700 border-amber-200"
     default: return "bg-muted text-muted-foreground !border-border"
   }
 }
@@ -49,7 +48,7 @@ export default function CalendarSchedule() {
       .filter((c: IConsultation) => {
         const consultationDate = formatConsultationDate(c.scheduledDate)
         return isAfter(consultationDate, now) &&
-          [ConsultationStatus.SCHEDULED, ConsultationStatus.PENDING, ConsultationStatus.CONFIRMED].includes(c.status)
+          [ConsultationStatus.SCHEDULED, ConsultationStatus.PENDING].includes(c.status)
       })
       .sort((a: IConsultation, b: IConsultation) => new Date(a.scheduledDate).getTime() - new Date(b.scheduledDate).getTime())
       .slice(0, 5)

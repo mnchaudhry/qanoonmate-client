@@ -19,37 +19,22 @@ interface ChatSidebarProps {
   setSidebarOpen?: (open: boolean) => void;
 }
 
-const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
-  sidebarOpen: sidebarOpenProp,
-  setSidebarOpen: setSidebarOpenProp,
-}: ChatSidebarProps) => {
+const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenProp, setSidebarOpen: setSidebarOpenProp, }: ChatSidebarProps) => {
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
-  const {
-    sidebarSessions: sessions,
-    currentSessionId: sessionId,
-    chatMode,
-  } = useSelector((state: RootState) => state.aiSession);
+  const { sidebarSessions: sessions, currentSessionId: sessionId, chatMode, } = useSelector((state: RootState) => state.aiSession);
   const router = useRouter();
   const searchParams = useSearchParams();
   const paramSessionId = searchParams.get("id");
 
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
-  const [loading, setLoading] = useState<{
-    fetch: boolean;
-    rename: boolean;
-    delete: boolean;
-  }>({ fetch: false, rename: false, delete: false });
+  const [loading, setLoading] = useState<{ fetch: boolean; rename: boolean; delete: boolean; }>({ fetch: false, rename: false, delete: false });
   const [renaming, setRenaming] = useState<string>("");
-  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(
-    null
-  );
+  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(
-    sidebarOpenProp ?? true
-  );
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(sidebarOpenProp ?? true);
 
   ///////////////////////////////////////////////////////////// USE EFFECTS //////////////////////////////////////////////////////////////////////
   // keep internal state in sync with controlled prop if provided

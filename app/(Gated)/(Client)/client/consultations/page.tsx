@@ -32,7 +32,7 @@ export default function ConsultationsPage() {
         if (searchQuery) params.search = searchQuery;
         if (statusFilter !== "all") params.status = statusFilter;
         if (sortBy) params.sort = sortBy;
-        
+
         dispatch(getMyConsultations(params));
     }, [dispatch, searchQuery, statusFilter, sortBy, currentPage]);
 
@@ -42,7 +42,7 @@ export default function ConsultationsPage() {
         return {
             all: consultations?.length || 0,
             pending: consultations?.filter(c => c.status === ConsultationStatus.PENDING).length || 0,
-            scheduled: consultations?.filter(c => c.status === ConsultationStatus.SCHEDULED || c.status === ConsultationStatus.CONFIRMED).length || 0,
+            scheduled: consultations?.filter(c => c.status === ConsultationStatus.SCHEDULED).length || 0,
             in_progress: consultations?.filter(c => c.status === ConsultationStatus.IN_PROGRESS).length || 0,
             completed: consultations?.filter(c => c.status === ConsultationStatus.COMPLETED).length || 0,
             cancelled: consultations?.filter(c => c.status === ConsultationStatus.CANCELLED || c.status === ConsultationStatus.NO_SHOW).length || 0,
@@ -69,7 +69,7 @@ export default function ConsultationsPage() {
         if (searchQuery) params.search = searchQuery;
         if (statusFilter !== "all") params.status = statusFilter;
         if (sortBy) params.sort = sortBy;
-        
+
         dispatch(getMyConsultations(params));
     };
 

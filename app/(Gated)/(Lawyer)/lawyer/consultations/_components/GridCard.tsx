@@ -46,10 +46,6 @@ const statusConfig: Record<ConsultationStatus, { color: string; label: string }>
     color: "bg-purple-100 text-purple-800 border-purple-200",
     label: "In Progress"
   },
-  [ConsultationStatus.CONFIRMED]: {
-    color: "bg-teal-100 text-teal-800 border-teal-200",
-    label: "Confirmed"
-  }
 };
 
 const ConsultationGridCard = ({ consultation }: ConsultationCardGridProps) => {
@@ -208,9 +204,9 @@ const ConsultationGridCard = ({ consultation }: ConsultationCardGridProps) => {
                 <CheckCircle className="h-4 w-4 mr-1" />
                 Accept
               </Button>
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 className="text-destructive border-destructive hover:bg-destructive/10 hover:text-destructive"
               >
                 <XCircle className="h-4 w-4 mr-1" />
@@ -226,7 +222,7 @@ const ConsultationGridCard = ({ consultation }: ConsultationCardGridProps) => {
           </>
         )}
 
-        {(consultation.status === ConsultationStatus.SCHEDULED || consultation.status === ConsultationStatus.CONFIRMED) && (
+        {(consultation.status === ConsultationStatus.SCHEDULED) && (
           <div className="grid grid-cols-2 gap-2 w-full">
             <Button size="sm" variant="outline" asChild>
               <Link href={`/lawyer/messages?consultationId=${consultation._id}`}>

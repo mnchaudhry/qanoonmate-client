@@ -142,7 +142,7 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
                     {payment.paymentMethod}
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                    {formatDate(payment.createdAt?.toDateString() || '')}
+                    {formatDate(new Date(payment.createdAt!)?.toDateString() || '')}
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                     {formatCurrency(payment.amount)}

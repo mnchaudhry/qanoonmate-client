@@ -41,7 +41,7 @@ const MessagesPage = () => {
   useEffect(() => {
     const roomId = searchParams.get('roomId');
     const consultationId = searchParams.get('consultationId');
-    
+
     if (rooms.length > 0) {
       // First priority: find by roomId
       if (roomId) {
@@ -54,7 +54,7 @@ const MessagesPage = () => {
         }
         return;
       }
-      
+
       // Second priority: find by consultationId
       if (consultationId) {
         const room = rooms.find(r => {
@@ -108,7 +108,6 @@ const MessagesPage = () => {
     };
   }, [rooms, defaultSocket.socket]);
 
-  //////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////
   const handleMouseDownLeft = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsResizingLeft(true);
@@ -139,6 +138,7 @@ const MessagesPage = () => {
     };
   }, [isResizingLeft]);
 
+  //////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////
   const handleSendMessage = (content: string) => {
     if (!currentRoom || !user?._id) return;
 
@@ -205,27 +205,20 @@ const MessagesPage = () => {
   return (
     <div className={cn("flex h-[calc(100vh-90px)] gap-4 bg-background", isResizingLeft && "select-none cursor-ew-resize")}>
       {/* Sidebar */}
-      <aside 
-        className="flex flex-col bg-accent/30 border border-accent backdrop-blur-sm rounded-2xl overflow-hidden relative"
+      <aside
         style={{ width: `${leftSidebarWidth}px` }}
+        className="flex flex-col bg-accent/30 border border-accent backdrop-blur-sm rounded-2xl overflow-hidden relative"
       >
-        <MessagesHeader
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
+        <MessagesHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         <div className="flex-1 min-h-0 overflow-y-auto">
-          <ConversationList searchQuery={searchQuery} onRoomSelect={(roomId) => {
-            router.push(`?roomId=${roomId}`, { scroll: false });
-          }} />
+          <ConversationList searchQuery={searchQuery} onRoomSelect={(roomId) => router.push(`?roomId=${roomId}`, { scroll: false })} />
         </div>
-        
+
         {/* Resize Handle */}
-        <div
-          className="absolute top-0 right-0 w-1.5 h-full cursor-ew-resize hover:bg-primary/30 active:bg-primary/50 transition-colors group"
-          onMouseDown={handleMouseDownLeft}
-        >
+        <div onMouseDown={handleMouseDownLeft} className="absolute top-0 right-0 w-1.5 h-full cursor-ew-resize hover:bg-primary/30 active:bg-primary/50 transition-colors group">
           <div className="absolute right-0.5 top-1/2 -translate-y-1/2 w-0.5 h-16 bg-border group-hover:bg-primary group-active:bg-primary transition-all rounded-full" />
         </div>
+
       </aside>
       {/* Main Chat Area */}
       <main className="flex-1 flex flex-col min-h-0">

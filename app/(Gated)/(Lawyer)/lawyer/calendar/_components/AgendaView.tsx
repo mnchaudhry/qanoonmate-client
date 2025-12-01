@@ -27,7 +27,6 @@ const AgendaView = ({ events, onEventClick }: Props) => {
         const icons: Record<ConsultationStatus, typeof Clock> = {
             [ConsultationStatus.PENDING]: Clock,
             [ConsultationStatus.SCHEDULED]: Calendar,
-            [ConsultationStatus.CONFIRMED]: CheckCircle,
             [ConsultationStatus.IN_PROGRESS]: PlayCircle,
             [ConsultationStatus.COMPLETED]: CheckCircle,
             [ConsultationStatus.CANCELLED]: XCircle,
@@ -44,7 +43,6 @@ const AgendaView = ({ events, onEventClick }: Props) => {
         const colors: Record<ConsultationStatus, string> = {
             [ConsultationStatus.PENDING]: 'bg-yellow-100 text-yellow-800',
             [ConsultationStatus.SCHEDULED]: 'bg-blue-100 text-blue-800',
-            [ConsultationStatus.CONFIRMED]: 'bg-green-100 text-green-800',
             [ConsultationStatus.IN_PROGRESS]: 'bg-purple-100 text-purple-800',
             [ConsultationStatus.COMPLETED]: 'bg-green-100 text-green-800',
             [ConsultationStatus.CANCELLED]: 'bg-red-100 text-red-800',
@@ -209,7 +207,7 @@ const AgendaView = ({ events, onEventClick }: Props) => {
 
                                                 {/* Quick Action */}
                                                 <div className="shrink-0">
-                                                    {event.status === ConsultationStatus.CONFIRMED && (
+                                                    {event.status === ConsultationStatus.SCHEDULED && (
                                                         <Button
                                                             size="sm"
                                                             className="gap-2"

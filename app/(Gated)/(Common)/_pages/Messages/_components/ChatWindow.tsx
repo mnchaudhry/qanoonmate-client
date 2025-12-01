@@ -443,3 +443,4 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ onSendMessage, onSendFile, }) =
 };
 
 export default ChatWindow;
+ 

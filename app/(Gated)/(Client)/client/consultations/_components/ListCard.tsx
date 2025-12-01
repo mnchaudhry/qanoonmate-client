@@ -39,8 +39,6 @@ export default function ConsultationCard({ consultation }: ConsultationCardProps
         return <Badge variant="outline" className="bg-yellow-100 text-yellow-800 border-yellow-200">Rescheduled</Badge>;
       case ConsultationStatus.PENDING:
         return <Badge variant="outline" className="bg-gray-100 text-gray-800 border-gray-200">Pending</Badge>;
-      case ConsultationStatus.CONFIRMED:
-        return <Badge variant="outline" className="bg-green-100 text-green-800 border-green-200">Confirmed</Badge>;
       case ConsultationStatus.IN_PROGRESS:
         return <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200">In Progress</Badge>;
       case ConsultationStatus.NO_SHOW:
