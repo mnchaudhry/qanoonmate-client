@@ -1,6 +1,9 @@
-import { ConsultationStatus, ConsultationType, UserRole, NotificationDeliveryChannel, NotificationType, NotificationContextType, } from "@/lib/enums";
-import { IUser } from "./user.types";
-import { ILawyer } from "./lawyer.types";
+import {
+  UserRole,
+  NotificationDeliveryChannel,
+  NotificationType,
+  NotificationContextType,
+} from "@/lib/enums";
 import { IConsultation } from "./consultation.types";
 
 export interface APIResponse<T = any> {
@@ -363,8 +366,8 @@ export type CreateUserResponse = APIResponse<Admin>;
 export interface AIChatSession {
   _id: string;
   user:
-  | string
-  | { _id: string; firstname: string; lastname: string; email: string };
+    | string
+    | { _id: string; firstname: string; lastname: string; email: string };
   title: string;
   createdAt?: string;
   updatedAt?: string;
@@ -728,11 +731,11 @@ export interface LegalGuide {
   category: string;
   urduTranslation?: GuideTranslation;
   status?:
-  | "draft"
-  | "pending_review"
-  | "approved"
-  | "needs_revision"
-  | "archived";
+    | "draft"
+    | "pending_review"
+    | "approved"
+    | "needs_revision"
+    | "archived";
   isApproved?: boolean;
   verifiedBy?: string | null;
   version?: string;
@@ -824,7 +827,6 @@ export type ChatMessageRequest = {
   newMessage: string;
 };
 export type ChatMessageResponse = APIResponse<AIMessage>;
-
 
 // ================= SUMMARIZER =================
 
@@ -1027,6 +1029,7 @@ export interface DocumentMetadata {
 export interface DocumentCreateInput {
   uploadedBy: UploadedBy;
   consultationId?: string | null;
+  directoryId?: string | null;
   title: string;
   description?: string;
   tags?: string[];
