@@ -30,10 +30,10 @@ class LocalStorageManager {
     // Check if localStorage is available   
     private checkAvailability(): boolean {
         // Only check in browser environment
-        if (typeof window === 'undefined') {
+        if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
             return false;
         }
-        
+
         try {
             const test = '__localStorage_test__';
             localStorage.setItem(test, test);
