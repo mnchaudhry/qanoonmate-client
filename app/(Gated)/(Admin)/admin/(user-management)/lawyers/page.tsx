@@ -140,7 +140,7 @@ const AdminLawyers = () => {
         return
       }
       const header = lines[0].split(',').map(h => h.trim().toLowerCase())
-      console.log('header', header)
+
       const required = ['firstname', 'lastname', 'email', 'username', 'phone', 'password', 'releaseChannel']
       const missing = required.filter(c => !header.includes(c))
       if (missing.length) {
