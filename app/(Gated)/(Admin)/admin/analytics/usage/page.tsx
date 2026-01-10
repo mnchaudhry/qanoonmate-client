@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { APIClient } from '@/store/api/axios';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StatCard, StatCardSkeleton } from '@/components/StatCard';
+import { BarChart3 } from 'lucide-react';
 
 const PlatformUsageAnalyticsPage = () => {
   const [loading, setLoading] = useState(true);
@@ -30,17 +32,19 @@ const PlatformUsageAnalyticsPage = () => {
 
       <div className="grid md:grid-cols-3 gap-4">
         {loading ? (
-          <Skeleton className="col-span-3" />
+          <>  
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </>
         ) : (
           data && data.byType.map((m) => (
-            <Card key={m.type} className="border-border">
-              <CardHeader>
-                <CardTitle className="text-foreground text-base">{m.type}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-foreground">{m.count}</div>
-              </CardContent>
-            </Card>
+            <StatCard
+              key={m.type}
+              title={m.type}
+              value={m.count}
+              icon={BarChart3}
+            />
           ))
         )}
       </div>

@@ -16,18 +16,9 @@ interface Props {
   isLoading: boolean;
 }
 
-export default function ChatControls({
-  handleLanguageToggle,
-  selectedLanguage,
-  fileInputRef,
-  handleFileUpload,
-  // handleVoiceToggle,
-  isConnected,
-  isStreaming,
-  isLoading,
-}: Props) {
+export default function ChatControls({ handleLanguageToggle, selectedLanguage, fileInputRef, handleFileUpload, isConnected, isStreaming, isLoading, }: Props) {
   return (
-    <div className="flex justify-between items-center w-full pt-2 border-t border-border/50">
+    <div className="flex justify-between items-center w-full">
       <div className="flex items-center gap-2">
         {/* Language Toggle */}
         <Tooltip>
@@ -37,7 +28,7 @@ export default function ChatControls({
               variant="ghost"
               size="sm"
               onClick={handleLanguageToggle}
-              className="h-9 w-9 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
+              className="h-9 w-9 p-0 hover:bg-accent transition-all duration-200 hover:scale-105"
               disabled={isStreaming}
             >
               <Globe className="w-4 h-4" />
@@ -58,7 +49,7 @@ export default function ChatControls({
               variant="ghost"
               size="sm"
               onClick={() => fileInputRef.current?.click()}
-              className="h-9 w-9 p-0 hover:bg-accent rounded-full transition-all duration-200 hover:scale-105"
+              className="h-9 w-9 p-0 hover:bg-accent transition-all duration-200 hover:scale-105"
               disabled={isStreaming}
             >
               <Upload className="w-4 h-4" />
@@ -77,31 +68,6 @@ export default function ChatControls({
           className="hidden"
         />
 
-        {/* Voice Input */}
-        {/* <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleVoiceToggle}
-              className={cn(
-                "h-9 w-9 p-0",
-                isVoiceRecording &&
-                  "bg-destructive/10 text-destructive hover:bg-destructive/20"
-              )}
-            >
-              {isVoiceRecording ? (
-                <MicOff className="w-4 h-4" />
-              ) : (
-                <Mic className="w-4 h-4" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{isVoiceRecording ? "Stop recording" : "Start voice input"}</p>
-          </TooltipContent>
-        </Tooltip> */}
       </div>
 
       {/* Send Button */}
@@ -111,16 +77,15 @@ export default function ChatControls({
             size="sm"
             type="submit"
             disabled={!isConnected || isLoading}
-            className={`h-10 w-10 p-0 rounded-full transition-all duration-200 hover:scale-105 ${
-              isStreaming
-                ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg"
-                : "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg"
-            }`}
+            className={`group h-10 w-10 p-0 rounded-xl transition-all duration-200 hover:shadow-lg hover:scale-105 ${isStreaming
+              ? "bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+              : "bg-surface hover:bg-primary text-primary-foreground"
+              }`}
           >
             {isStreaming ? (
               <StopCircle className="w-4 h-4" />
             ) : (
-              <Send className="w-4 h-4" />
+              <Send className="w-4 h-4 text-primary group-hover:text-surface" />
             )}
           </Button>
         </TooltipTrigger>

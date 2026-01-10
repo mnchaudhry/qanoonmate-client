@@ -1,16 +1,10 @@
 import {
-  ConsultationMode,
-  ConsultationStatus,
-  ConsultationType,
   UserRole,
-  PaymentMethod,
-  Currency,
   NotificationDeliveryChannel,
   NotificationType,
   NotificationContextType,
 } from "@/lib/enums";
-import { User } from "./user.types";
-import { Lawyer } from "./lawyer.types";
+import { IConsultation } from "./consultation.types";
 
 export interface APIResponse<T = any> {
   data?: T;
@@ -180,286 +174,11 @@ export interface Act {
   updatedAt: string;
 }
 
-// ================= CONSULTATION =================
-
-// POST /book
-export interface BookConsultationRequest {
-  lawyerId: string;
-  type: ConsultationType;
-  mode: ConsultationMode;
-  scheduledDate: string;
-  duration: number;
-  description: string;
-  clientNotes?: string;
-  location?: string;
-}
-export type BookConsultationResponse = APIResponse<Consultation>;
-
-// GET / (consultations)
-export interface GetConsultationsRequest {
-  status?: ConsultationStatus;
-  type?: ConsultationType;
-  mode?: ConsultationMode;
-  dateFrom?: string;
-  dateTo?: string;
-  lawyerId?: string;
-  clientId?: string;
-  page?: number;
-  limit?: number;
-}
-export type GetConsultationsResponse = APIResponse<Consultation[]>;
-
-// GET /my-consultations
-export type GetMyConsultationsResponse = APIResponse<Consultation[]>;
-
-// GET /stats/overview
-export interface GetConsultationStatsRequest {
-  dateFrom?: string;
-  dateTo?: string;
-}
-export type GetConsultationStatsResponse = APIResponse<ConsultationStats>;
-
-// GET /:id
-export interface GetConsultationByIdRequest {
-  id: string;
-}
-export type GetConsultationByIdResponse = APIResponse<Consultation>;
-
-// PUT /:id
-export interface UpdateConsultationRequest {
-  id: string;
-  status?: ConsultationStatus;
-  scheduledDate?: string;
-  duration?: number;
-  fee?: number;
-  description?: string;
-  lawyerNotes?: string;
-  location?: string;
-  meetingLink?: string;
-  phoneNumber?: string;
-}
-export type UpdateConsultationResponse = APIResponse<Consultation>;
-
-// POST /:id/confirm, /:id/start, /:id/complete, /:id/no-show
-export interface ConsultationLifecycleRequest {
-  id: string;
-  meetingLink?: string;
-  phoneNumber?: string;
-  lawyerNotes?: string;
-}
-export type ConsultationLifecycleResponse = APIResponse<Consultation>;
-
-// POST /:id/reschedule
-export interface RescheduleConsultationRequest {
-  id: string;
-  newDate: string;
-  newTimeSlot: string;
-  reason: string;
-}
-export type RescheduleConsultationResponse = APIResponse<Consultation>;
-
-// POST /:id/reschedule/:requestId/approve, /reject
-export interface RescheduleRequestActionRequest {
-  responseMessage?: string;
-}
-export type RescheduleRequestActionResponse = APIResponse<Consultation>;
-
-// POST /:id/cancel
-export interface CancelConsultationRequest {
-  id: string;
-  reason: string;
-  note?: string;
-}
-export type CancelConsultationResponse = APIResponse<Consultation>;
-
-// POST /:id/rate
-export interface RateConsultationRequest {
-  id: string;
-  rating: number;
-  review?: string;
-  categories?: {
-    professionalism?: number;
-    communication?: number;
-    expertise?: number;
-    value?: number;
-  };
-}
-export type RateConsultationResponse = APIResponse<Consultation>;
-
-// POST /:id/notes
-export interface AddNoteRequest {
-  // id: string;
-  content: string;
-  isPrivate: boolean;
-}
-export type AddNoteResponse = APIResponse<Consultation>;
-
-// POST /:id/documents
-export interface UploadConsultationDocumentRequest {
-  id: string;
-  name: string;
-  url: string;
-  fileType: string;
-  fileSize: number;
-}
-export type UploadConsultationDocumentResponse = APIResponse<Consultation>;
-
-export interface Consultation {
-  _id: string;
-  clientId: User | string;
-  lawyerId: Lawyer | string;
-  type: ConsultationType;
-  mode: ConsultationMode;
-  status: ConsultationStatus;
-  scheduledDate: string;
-  duration: number;
-  fee: number;
-  paymentStatus: string;
-  location?: string;
-  meetingLink?: string;
-  phoneNumber?: string;
-  description: string;
-  clientNotes?: string;
-  lawyerNotes?: string;
-  documents: any[];
-  notes: any[];
-  rating?: any;
-  rescheduleRequests: any[];
-  originalDate?: string;
-  cancellationReason?: string;
-  cancellationNote?: string;
-  cancelledBy?: string;
-  cancelledAt?: string;
-  isFollowUp: boolean;
-  parentConsultationId?: string;
-  followUpDate?: string;
-  createdAt: string;
-  updatedAt: string;
-  confirmedAt?: string;
-  completedAt?: string;
-}
-
-export interface ConsultationStats {
-  total: number;
-  pending: number;
-  scheduled: number;
-  completed: number;
-  cancelled: number;
-  revenue: number;
-  averageRating: number;
-}
-
-export interface SubmitFeedbackRequest {
-  feedback: string;
-  rating: number;
-}
-export type SubmitFeedbackResponse = APIResponse<Consultation>;
-
 export interface PaginationMeta {
   currentPage: number;
   limit: number;
   totalCount: number;
   totalPages: number;
-}
-
-// ================= BLOGS =================
-
-// GET /get-blogs
-export interface GetBlogsRequest {
-  page?: number;
-  limit?: number;
-  category?: string;
-  author?: string;
-  status?: "draft" | "published" | "archived";
-  tag?: string;
-}
-export type GetBlogsResponse = APIResponse<Blog[]>;
-
-// GET /get-blog/:idOrSlug
-export interface GetBlogRequest {
-  idOrSlug: string;
-}
-export type GetBlogResponse = APIResponse<Blog>;
-
-// POST /create-blog
-export interface CreateBlogRequest {
-  title: string;
-  slug: string;
-  content: string;
-  excerpt: string;
-  category: string;
-  tags?: string[];
-  featuredImage?: string;
-  status?: "draft" | "published" | "archived";
-  readingTime: number;
-}
-export type CreateBlogResponse = APIResponse<Blog>;
-
-// PUT /update-blog/:id
-export interface UpdateBlogRequest {
-  id: string;
-  title?: string;
-  slug?: string;
-  content?: string;
-  excerpt?: string;
-  category?: string;
-  tags?: string[];
-  featuredImage?: string;
-  status?: "draft" | "published" | "archived";
-  readingTime?: number;
-}
-export type UpdateBlogResponse = APIResponse<Blog>;
-
-// DELETE /delete-blog/:id
-export interface DeleteBlogRequest {
-  id: string;
-}
-export type DeleteBlogResponse = APIResponse<null>;
-
-// POST /add-comment/:id
-export interface AddCommentRequest {
-  id: string;
-  content: string;
-}
-export type AddCommentResponse = APIResponse<Blog>;
-
-// POST /like-blog/:id
-export interface LikeBlogRequest {
-  id: string;
-}
-export type LikeBlogResponse = APIResponse<{ likes: number }>;
-
-// POST /upload-featured-image
-export interface UploadFeaturedImageRequest {
-  image: File;
-}
-export type UploadFeaturedImageResponse = APIResponse<{ url: string }>;
-
-// Blog model (shared)
-export interface Blog {
-  _id: string;
-  title: string;
-  slug: string;
-  content: string;
-  excerpt: string;
-  author: any;
-  category: string;
-  tags: string[];
-  featuredImage?: string;
-  status: string;
-  readingTime: number;
-  views: number;
-  likes: number;
-  comments: BlogComment[];
-  isPublished: boolean;
-  publishedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-export interface BlogComment {
-  user: any;
-  content: string;
-  createdAt: string;
 }
 
 // ================= DRAFTS =================
@@ -717,7 +436,7 @@ export interface ChatParticipant {
 export interface ChatRoom {
   _id: string;
   participants: ChatParticipant[];
-  consultation: Consultation;
+  consultation: IConsultation;
   messages: string[];
   lastMessage?: Message;
   lastMessageAt?: string;
@@ -1109,147 +828,6 @@ export type ChatMessageRequest = {
 };
 export type ChatMessageResponse = APIResponse<AIMessage>;
 
-// ================= PAYMENT =================
-
-export type PaymentStatus =
-  | "pending"
-  | "processing"
-  | "completed"
-  | "failed"
-  | "cancelled"
-  | "refunded"
-  | "partial_refund"
-  | "expired";
-
-export type PaymentType =
-  | "consultation"
-  | "subscription"
-  | "document_generation"
-  | "premium_features"
-  | "refund";
-
-export interface Payment {
-  paymentId: string;
-  externalPaymentId?: string;
-  userId: string;
-  userType: UserRole;
-  amount: number;
-  currency: Currency;
-  paymentType: PaymentType;
-  paymentMethod: PaymentMethod;
-  status: PaymentStatus;
-  consultationId?: string;
-  subscriptionId?: string;
-  refundForPaymentId?: string;
-  gateway: string;
-  gatewayResponse?: {
-    success: boolean;
-    transactionId?: string;
-    errorCode?: string;
-    errorMessage?: string;
-    rawResponse?: any;
-  };
-  billingDetails: {
-    name: string;
-    email: string;
-    phone?: string;
-    address?: {
-      line1?: string;
-      line2?: string;
-      city?: string;
-      state?: string;
-      postalCode?: string;
-      country?: string;
-    };
-  };
-  description: string;
-  metadata?: Record<string, any>;
-  paidAt?: string;
-  failedAt?: string;
-  cancelledAt?: string;
-  refundedAt?: string;
-  expiresAt?: string;
-  statusHistory: Array<{
-    status: PaymentStatus;
-    timestamp: string;
-    reason?: string;
-    updatedBy?: string;
-  }>;
-  ipAddress?: string;
-  userAgent?: string;
-  retryCount: number;
-  lastRetryAt?: string;
-  maxRetries: number;
-}
-
-export interface CreatePaymentRequest {
-  amount: number;
-  currency: Currency;
-  paymentType: PaymentType;
-  paymentMethod: PaymentMethod;
-  consultationId?: string;
-  subscriptionId?: string;
-  description: string;
-  billingDetails: {
-    name: string;
-    email: string;
-    phone?: string;
-    address?: {
-      line1?: string;
-      line2?: string;
-      city?: string;
-      state?: string;
-      postalCode?: string;
-      country?: string;
-    };
-  };
-  metadata?: Record<string, any>;
-}
-export type CreatePaymentResponse = APIResponse<Payment>;
-
-export interface ProcessPaymentRequest {
-  paymentId: string;
-  paymentMethod: PaymentMethod;
-  gateway: string;
-  metadata?: Record<string, any>;
-}
-export type ProcessPaymentResponse = APIResponse<Payment>;
-
-export interface RefundPaymentRequest {
-  paymentId: string;
-  amount: number;
-  reason?: string;
-}
-export type RefundPaymentResponse = APIResponse<Payment>;
-
-export interface GetPaymentByIdRequest {
-  paymentId: string;
-}
-export type GetPaymentByIdResponse = APIResponse<Payment>;
-
-export interface GetPaymentsRequest {
-  status?: PaymentStatus;
-  paymentType?: PaymentType;
-  paymentMethod?: PaymentMethod;
-  currency?: Currency;
-  consultationId?: string;
-  subscriptionId?: string;
-  dateFrom?: string;
-  dateTo?: string;
-  amountMin?: number;
-  amountMax?: number;
-  gateway?: string;
-  page?: number;
-  limit?: number;
-}
-export type GetPaymentsResponse = APIResponse<Payment[]>;
-
-export interface GetPaymentStatsRequest {
-  dateFrom?: string;
-  dateTo?: string;
-}
-export type GetPaymentStatsResponse = APIResponse<any>;
-
 // ================= SUMMARIZER =================
 
 export interface SummaryMetadata {
@@ -1407,6 +985,18 @@ export interface BulkMarkAsReadResponse {
   data: { count: number };
   message: string;
 }
+export interface MarkAllAsReadResponse {
+  data: { count: number };
+  message: string;
+}
+export interface BulkDeleteResponse {
+  data: { count: number };
+  message: string;
+}
+export interface ClearAllNotificationsResponse {
+  data: { count: number };
+  message: string;
+}
 export interface GetUnreadCountResponse {
   data: { count: number };
   message: string;
@@ -1439,6 +1029,7 @@ export interface DocumentMetadata {
 export interface DocumentCreateInput {
   uploadedBy: UploadedBy;
   consultationId?: string | null;
+  directoryId?: string | null;
   title: string;
   description?: string;
   tags?: string[];

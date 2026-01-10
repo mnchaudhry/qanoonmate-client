@@ -109,8 +109,8 @@ export default function CalendarLogsPanel() {
                     <User className="h-4 w-4 text-primary" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-foreground text-sm">{consultation.client}</h4>
-                    <p className="text-xs text-muted-foreground">{consultation.lawyer}</p>
+                    <h4 className="font-medium text-foreground text-sm">{consultation?.client}</h4>
+                    <p className="text-xs text-muted-foreground">{consultation?.lawyer}</p>
                     <p className="text-xs text-muted-foreground">{consultation.type}</p>
                   </div>
                 </div>

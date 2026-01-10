@@ -11,14 +11,14 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Consultation } from '@/store/types/api'
-import { Lawyer } from '@/store/types/lawyer.types'
-import { User } from '@/store/types/user.types'
+import { ILawyer } from '@/store/types/lawyer.types'
+import { IUser } from '@/store/types/user.types'
+import { IConsultation } from '@/store/types/consultation.types'
 
 interface ViewConsultationModalProps {
   open: boolean;
   onClose: () => void;
-  consultation: Consultation | null;
+  consultation: IConsultation | null;
   onConfirm?: (id: string) => void;
   onStart?: (id: string, formData: any) => void;
   onComplete?: (id: string, formData: any) => void;
@@ -217,16 +217,16 @@ const ViewConsultationModal: React.FC<ViewConsultationModalProps> = ({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <UserIcon className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation.clientId as User)?.firstname} {(consultation.clientId as User)?.lastname}</span>
+                <span>{(consultation?.client as IUser)?.firstname} {(consultation?.client as IUser)?.lastname}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation.clientId as User)?.email}</span>
+                <span>{(consultation?.client as IUser)?.email}</span>
               </div>
-              {(consultation.clientId as User)?.phone && (
+              {(consultation?.client as IUser)?.phone && (
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{(consultation.clientId as User)?.phone}</span>
+                  <span>{(consultation?.client as IUser)?.phone}</span>
                 </div>
               )}
             </div>
@@ -241,22 +241,22 @@ const ViewConsultationModal: React.FC<ViewConsultationModalProps> = ({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <UserIcon className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation.lawyerId as Lawyer)?.firstname} {(consultation.lawyerId as Lawyer)?.lastname}</span>
+                <span>{(consultation?.lawyer as ILawyer)?.firstname} {(consultation?.lawyer as ILawyer)?.lastname}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{(consultation.lawyerId as Lawyer)?.email}</span>
+                <span>{(consultation?.lawyer as ILawyer)?.email}</span>
               </div>
-              {(consultation.lawyerId as Lawyer)?.phone && (
+              {(consultation?.lawyer as ILawyer)?.phone && (
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{(consultation.lawyerId as Lawyer)?.phone}</span>
+                  <span>{(consultation?.lawyer as ILawyer)?.phone}</span>
                 </div>
               )}
-              {(consultation.lawyerId as Lawyer)?.specializations && (
+              {(consultation?.lawyer as ILawyer)?.specializations && (
                 <div className="flex items-center gap-2">
                   <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  <span>{(consultation.lawyerId as Lawyer)?.specializations?.join(', ')}</span>
+                  <span>{(consultation?.lawyer as ILawyer)?.specializations?.join(', ')}</span>
                 </div>
               )}
             </div>
@@ -290,7 +290,7 @@ const ViewConsultationModal: React.FC<ViewConsultationModalProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <Video className="h-4 w-4 text-muted-foreground" />
-                <span className="capitalize">{consultation.mode}</span>
+                <span className="capitalize">{consultation.type}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Briefcase className="h-4 w-4 text-muted-foreground" />
@@ -332,13 +332,6 @@ const ViewConsultationModal: React.FC<ViewConsultationModalProps> = ({
               {consultation.notes && (
                 <div className="bg-green-50 p-4 rounded-lg">
                   <h4 className="font-medium text-green-900 mb-2">Client Feedback</h4>
-                  <p className="text-sm text-green-800">{consultation.notes}</p>
-                  {consultation.rating && (
-                    <div className="mt-2">
-                      <span className="text-sm font-medium">Rating: </span>
-                      <span className="text-sm">{consultation.rating}/5 ⭐</span>
-                    </div>
-                  )}
                 </div>
               )}
             </div>

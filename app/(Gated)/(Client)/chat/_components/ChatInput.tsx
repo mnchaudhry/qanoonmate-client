@@ -1,6 +1,6 @@
 import { useSocketContext } from "@/context/useSocketContext";
 import { cn } from "@/lib/utils";
-import { newChat, setIsStreaming } from "@/store/reducers/aiSessionSlice";
+import { setIsStreaming } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import React, {
   Dispatch,
@@ -13,33 +13,36 @@ import React, {
 } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-// import { AIMessage } from "@/store/types/api";
 import { socketEvents } from "@/store/socket/events";
 import { extractTextFromPDF } from "@/utils/extractFromPdf";
 import { AgentInputItem, assistant, user as userRes } from "@openai/agents";
-// import { jsPDF } from "jspdf";
-import { useRouter } from "next/navigation";
 import ChatControls from "./ChatControls";
+import { getOrCreateAnonymousUserId } from "@/utils/anonymousUser";
+import { File, X } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   isConnected: boolean;
   textSize: number;
+  uploadedFiles: File[];
   setUploadedFiles: Dispatch<SetStateAction<File[]>>;
   textareaRef: RefObject<HTMLTextAreaElement | null>;
   fileInputRef: RefObject<HTMLInputElement | null>;
-  setShowContextPanel: any;
+  isNewSession: boolean;
   initialMessage?: string | null;
 }
 
 const ChatInput: React.FC<Props> = memo(
   ({
+    uploadedFiles,
     isConnected,
     textSize,
     textareaRef,
     fileInputRef,
     setUploadedFiles,
-    setShowContextPanel,
     initialMessage,
+    isNewSession,
   }) => {
     ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
     const {
@@ -47,53 +50,109 @@ const ChatInput: React.FC<Props> = memo(
       isLoading,
       messages,
       currentSessionId: sessionId,
+      chatMode,
     } = useSelector((state: RootState) => state.aiSession);
     const {
-      defaultSocket: { socket },
+      defaultSocket: { socket, isAuthenticated },
     } = useSocketContext();
     const dispatch = useDispatch<AppDispatch>();
     const { user } = useSelector((state: RootState) => state.auth);
-    const router = useRouter();
 
-  // ---------------------------------------------------------------------
-  //                                States
-  // const [isVoiceRecording, _setIsVoiceRecording] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState<
-    "english" | "urdu"
-  >("english");
-  const [inputValue, setInputValue] = useState("");
-  const [extractedText, setExtractedText] = useState("");
+    ///////////////////////////////////////////////////////////// STATES //////////////////////////////////////////////////////////////////////
+    // const [isVoiceRecording, _setIsVoiceRecording] = useState(false);
+    const [selectedLanguage, setSelectedLanguage] = useState<
+      "english" | "urdu"
+    >("english");
+    const [inputValue, setInputValue] = useState("");
+    const [extractedText, setExtractedText] = useState("");
+    const [pendingMessage, setPendingMessage] = useState<{
+      input: string;
+      history: AgentInputItem[];
+    } | null>(null);
 
-  // Set initial message from URL parameter
-  useEffect(() => {
-    if (initialMessage && !inputValue) {
-      setInputValue(decodeURIComponent(initialMessage));
-    }
-  }, [initialMessage, inputValue]);
+    ///////////////////////////////////////////////////////////// EFFECTS //////////////////////////////////////////////////////////////////////
+    // Set initial message from URL parameter
+    useEffect(() => {
+      if (initialMessage && !inputValue) {
+        setInputValue(decodeURIComponent(initialMessage));
+      }
+    }, [initialMessage, inputValue]);
 
-  // ----------------------------------------------------
-  //                              functions
-  const onSendMessage = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    // Handle pending message after authentication
+    useEffect(() => {
+      if (pendingMessage && socket && isConnected && isAuthenticated) {
+        const { input, history } = pendingMessage;
 
-    if (inputValue.trim() === "" || !socket || !isConnected || isLoading)
-      return;
+        if (!sessionId) {
+          // Get user ID for starting chat
+          const userId = user?._id || getOrCreateAnonymousUserId();
 
-    // for aborting
-    if (isStreaming) {
-      socket.emit("abort_chat");
-      return;
-    }
+          // emit start_chat event
+          socketEvents.model.startChat(socket, { userId, mode: chatMode });
 
-    // if no sign in
-    if (!user?._id) {
-      router.push("/auth/sign-in");
-      dispatch(newChat());
-      return;
-    }
+          const onSessionStarted = (data: { sessionId: string }) => {
+            // Update the route with the session ID as a query parameter without reloading the page
+            const url = new URL(window.location.href);
+            url.searchParams.set("id", data.sessionId);
+            window.history.pushState({}, "", url.toString());
 
-    // if everything is ok move on
-    dispatch(setIsStreaming(true));
+            // Now we have sessionId, send the message
+            dispatch(setIsStreaming(true));
+            socketEvents.model.chatMessage(socket, {
+              sessionId: data.sessionId,
+              history: history,
+              newMessage: input,
+              mode: chatMode,
+            });
+
+            // Remove this one-time listener
+            socket.off("model:session-started", onSessionStarted);
+          };
+
+          // if any existing listener
+          socket.off("model:session-started", onSessionStarted);
+          socket.once("model:session-started", onSessionStarted);
+        } else {
+          // we already have a session, send message directly
+          dispatch(setIsStreaming(true));
+          socketEvents.model.chatMessage(socket, {
+            sessionId: sessionId,
+            history: history,
+            newMessage: input,
+            mode: chatMode,
+          });
+        }
+
+        // Clear pending message
+        setPendingMessage(null);
+      }
+    }, [
+      pendingMessage,
+      socket,
+      isConnected,
+      isAuthenticated,
+      sessionId,
+      dispatch,
+      user,
+      chatMode,
+    ]);
+
+    ///////////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////////////
+    const onSendMessage = async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      const input =
+        inputValue.trim() || textareaRef.current?.value.trim() || "";
+      if (input === "" || !socket || !isConnected || isLoading) return;
+
+      // for aborting
+      if (isStreaming) {
+        socket.emit("abort_chat");
+        return;
+      }
+
+      // if everything is ok move on
+      dispatch(setIsStreaming(true));
 
       // building history
       const history: AgentInputItem[] = messages.map((message) => {
@@ -108,15 +167,28 @@ const ChatInput: React.FC<Props> = memo(
             : `Answer only in ${selectedLanguage}`
         )
       );
-      history.push(userRes(inputValue.trim()));
+      history.push(userRes(input));
+
+      // Check if authenticated before sending
+      if (!isAuthenticated) {
+        console.log(
+          "Socket not authenticated yet, waiting for authentication..."
+        );
+        setPendingMessage({ input, history });
+
+        // Reset input immediately
+        setInputValue("");
+        setExtractedText("");
+        setUploadedFiles([]);
+        return;
+      }
 
       if (!sessionId) {
-        // Using a test user ID (replace with actual authentication)
-        const userId = user._id; // Replace with actual user ID
-        if (!userId) return; // safety
+        // Get user ID for starting chat
+        const userId = user?._id || getOrCreateAnonymousUserId();
 
-      // emit start_chat event
-      socketEvents.model.startChat(socket, { userId });
+        // emit start_chat event
+        socketEvents.model.startChat(socket, { userId, mode: chatMode });
 
         const onSessionStarted = (data: { sessionId: string }) => {
           // Update the route with the session ID as a query parameter without reloading the page
@@ -129,12 +201,13 @@ const ChatInput: React.FC<Props> = memo(
           socketEvents.model.chatMessage(socket, {
             sessionId: data.sessionId,
             history: history,
-            newMessage: inputValue.trim(),
+            newMessage: input,
+            mode: chatMode,
           });
 
-        // Remove this one-time listener
-        socket.off("model:session-started", onSessionStarted);
-      };
+          // Remove this one-time listener
+          socket.off("model:session-started", onSessionStarted);
+        };
 
         // if any existing listener
         socket.off("model:session-started", onSessionStarted);
@@ -145,34 +218,35 @@ const ChatInput: React.FC<Props> = memo(
         socketEvents.model.chatMessage(socket, {
           sessionId: sessionId,
           history: history,
-          newMessage: inputValue,
+          newMessage: input,
+          mode: chatMode,
         });
       }
 
-    // reset everything
-    setInputValue("");
-    setExtractedText("");
-    setExtractedText("");
-    setUploadedFiles([]);
-    // setShowContextPanel(true);
-  };
+      // reset everything
+      setInputValue("");
+      setExtractedText("");
+      setExtractedText("");
+      setUploadedFiles([]);
+      // setShowContextPanel(true);
+    };
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const files = Array.from(event.target.files || []);
-    setUploadedFiles((pre) => [...pre, ...files]);
-    toast.success(`${files.length} file(s) uploaded`);
+    const handleFileUpload = async (
+      event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+      const files = Array.from(event.target.files || []);
+      setUploadedFiles((pre) => [...pre, ...files]);
+      toast.success(`${files.length} file(s) uploaded`);
 
-    let allText = "";
-    for (const file of files) {
-      if (file.type === "application/pdf") {
-        console.log("Pdf file here");
-        allText += await extractTextFromPDF(file);
+      let allText = "";
+      for (const file of files) {
+        if (file.type === "application/pdf") {
+          console.log("Pdf file here");
+          allText += await extractTextFromPDF(file);
+        }
       }
-    }
-    setExtractedText(allText);
-  };
+      setExtractedText(allText);
+    };
 
     const handleLanguageToggle = () => {
       setSelectedLanguage((prev) => (prev === "english" ? "urdu" : "english"));
@@ -183,23 +257,54 @@ const ChatInput: React.FC<Props> = memo(
       );
     };
 
-  // const handleVoiceToggle = () => {
-  //   setIsVoiceRecording(!isVoiceRecording);
-  //   toast.success(
-  //     isVoiceRecording ? "Voice recording stopped" : "Voice recording started"
-  //   );
-  // };
-
     ///////////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////////////
     return (
-      <div className="w-full flex flex-col justify-center items-center">
-        {/* Input Container */}
-        <form
-          onSubmit={onSendMessage}
-          className="flex flex-col items-center w-full p-3 bg-neutral border-2 border-border rounded-2xl shadow-lg hover:shadow-xl focus-within:border-primary/50 transition-all duration-200"
-        >
-          {/* Textarea */}
-          <div className="flex-1 relative w-full">
+      <div className="">
+        {/* File Upload Area */}
+        {uploadedFiles.length > 0 && (
+          <div className="w-full mb-3 p-3 bg-primary/5 rounded-xl border border-primary/20 shadow-sm animate-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center gap-2 text-sm font-medium text-primary mb-2">
+              <File className="w-4 h-4" />
+              <span>Uploaded Files ({uploadedFiles.length}):</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {uploadedFiles.map((file, index) => (
+                <div key={index} className="relative group">
+                  <Badge
+                    variant="secondary"
+                    className="text-xs pr-8 py-1.5 bg-background/80 hover:bg-background transition-colors"
+                  >
+                    {file.name}
+                  </Badge>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="absolute -top-1 -right-1 h-5 w-5 p-0 rounded-full bg-destructive/10 hover:bg-destructive/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() =>
+                      setUploadedFiles(
+                        uploadedFiles.filter((fileObj) => {
+                          return (
+                            fileObj.name !== file.name &&
+                            fileObj.size !== file.size
+                          );
+                        })
+                      )
+                    }
+                  >
+                    <X className="w-3 h-3 text-destructive" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="w-full flex flex-col justify-center items-center">
+          <form
+            onSubmit={onSendMessage}
+            className="flex flex-col items-center w-full p-2 bg-neutral border-1 border-border rounded-2xl shadow focus-within:border-primary/50 transition-all duration-200"
+          >
+            {/* Textarea */}
             <textarea
               ref={textareaRef}
               placeholder={
@@ -213,7 +318,7 @@ const ChatInput: React.FC<Props> = memo(
               onChange={(e) => setInputValue(e.target.value)}
               disabled={!isConnected}
               className={cn(
-                "w-full min-h-[40px] max-h-[200px] resize-none border-0 shadow-none bg-transparent placeholder:text-muted-foreground",
+                "p-0! w-full min-h-[40px] max-h-[200px] resize-none border-0 shadow-none bg-transparent placeholder:text-muted-foreground",
                 "focus:outline-none focus:ring-0 focus:border-0 outline-none ring-0 transition-all duration-200",
                 "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
@@ -231,24 +336,28 @@ const ChatInput: React.FC<Props> = memo(
                 }
               }}
             />
-          </div>
 
-          {/* Controls Row */}
-          <ChatControls
-            handleFileUpload={handleFileUpload}
-            handleLanguageToggle={handleLanguageToggle}
-            selectedLanguage={selectedLanguage}
-            isStreaming={isStreaming}
-            isConnected={isConnected}
-            isLoading={isLoading}
-            fileInputRef={fileInputRef}
-          />
-        </form>
-        <div className="text-xs text-muted-foreground text-center w-full mt-3 flex items-center justify-center gap-1">
-          <span className="opacity-70">⚠️</span>
-          <span>
-            QanoonMate can make mistakes. Please verify important information.
-          </span>
+            {/* Controls Row */}
+            <ChatControls
+              handleFileUpload={handleFileUpload}
+              handleLanguageToggle={handleLanguageToggle}
+              selectedLanguage={selectedLanguage}
+              isStreaming={isStreaming}
+              isConnected={isConnected}
+              isLoading={isLoading}
+              fileInputRef={fileInputRef}
+            />
+          </form>
+
+          {!isNewSession && (
+            <div className="text-xs text-muted-foreground text-center w-full mt-2 flex items-center justify-center gap-1">
+              <span className="opacity-70">⚠️</span>
+              <span>
+                QanoonMate can make mistakes. Please verify important
+                information.
+              </span>
+            </div>
+          )}
         </div>
       </div>
     );

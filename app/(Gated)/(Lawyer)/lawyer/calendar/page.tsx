@@ -9,26 +9,18 @@ import dayGridPlugin from '@fullcalendar/daygrid/index.js';
 import timeGridPlugin from '@fullcalendar/timegrid/index.js';
 import interactionPlugin from '@fullcalendar/interaction/index.js';
 import EventDetailsModal from './_components/EventDetailsModal';
-import PageHeader from '../_components/PageHeader';
+import AgendaView from './_components/AgendaView';
+import DashboardPageHeader from '@/components/DashboardPageHeader';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { 
-  Calendar as CalendarIcon, 
-  Clock, 
-  Plus,
-  Filter,
-  ChevronLeft,
-  ChevronRight,
-  AlertCircle,
-  CheckCircle2,
-  TrendingUp
-} from 'lucide-react';
-import { Consultation } from '@/store/types/api';
+import { CalendarIcon, Clock, Plus, Filter, ChevronLeft, ChevronRight, AlertCircle, CheckCircle2, TrendingUp } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { ConsultationMode, ConsultationStatus, ConsultationType } from '@/lib/enums';
+import { ConsultationStatus, ConsultationType } from '@/lib/enums';
 import { enumToLabel } from '@/lib/utils';
+import { IConsultation } from '@/store/types/consultation.types';
+import { StatCard } from '@/components/StatCard';
 
 export interface CalendarEvent {
   id: string;
@@ -37,25 +29,23 @@ export interface CalendarEvent {
   endTime: string;
   date: string;
   location: string;
-  locationType: 'online' | 'physical';
   type: 'case' | 'consultation' | 'review';
-  mode?: ConsultationMode;
   status?: ConsultationStatus;
   tags: string[];
   notes: string;
   clientName?: string;
   judgeName?: string;
   venue?: string;
-  consultation?: Consultation;
+  consultation?: IConsultation;
 }
 
-export type CalendarView = 'dayGridDay' | 'timeGridWeek' | 'dayGridMonth';
+export type CalendarView = 'timeGridDay' | 'timeGridWeek' | 'dayGridMonth';
 
 const Calendar = () => {
   /////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
   const calendarRef = React.useRef<any>(null);
-  
+
   /////////////////////////////////////////////// STATES /////////////////////////////////////////////////////
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -65,7 +55,9 @@ const Calendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
-  
+  const [showAgendaView, setShowAgendaView] = useState(false);
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+
   const { consultations } = useSelector((state: RootState) => state.consultation);
 
   /////////////////////////////////////////////// USE EFFECTS /////////////////////////////////////////////////////
@@ -96,8 +88,8 @@ const Calendar = () => {
         return true;
       })
       .map(consultation => {
-        const clientName = typeof consultation.clientId === 'object' 
-          ? `${consultation.clientId.firstname} ${consultation.clientId.lastname}`
+        const clientName = typeof consultation?.client === 'object'
+          ? `${consultation?.client.firstname} ${consultation?.client.lastname}`
           : 'Unknown Client';
 
         const startDate = new Date(consultation.scheduledDate);
@@ -110,11 +102,9 @@ const Calendar = () => {
           endTime: endDate.toTimeString().slice(0, 5),
           date: startDate.toISOString().split('T')[0],
           location: consultation.location || consultation.meetingLink || 'Online',
-          locationType: consultation.mode === ConsultationMode.IN_PERSON ? 'physical' as const : 'online' as const,
           type: 'consultation' as const,
-          mode: consultation.mode,
           status: consultation.status,
-          tags: [enumToLabel(consultation.type), enumToLabel(consultation.mode)],
+          tags: [enumToLabel(consultation.type)],
           notes: consultation.description || '',
           clientName,
           consultation
@@ -122,26 +112,11 @@ const Calendar = () => {
       });
   }, [consultations, statusFilter, typeFilter]);
 
-  // Map events to FullCalendar format
-  const fullCalendarEvents = useMemo(() => {
-    return events.map(e => ({
-      id: e.id,
-      title: e.title,
-      start: `${e.date}T${e.startTime}`,
-      end: `${e.date}T${e.endTime}`,
-      extendedProps: e,
-      backgroundColor: getEventColor(e.status || ConsultationStatus.SCHEDULED),
-      borderColor: getEventBorderColor(e.status || ConsultationStatus.SCHEDULED),
-      textColor: '#1a1a1a',
-    }));
-  }, [events]);
-
   const getEventColor = (status: ConsultationStatus) => {
     switch (status) {
       case ConsultationStatus.PENDING:
         return '#fef3c7'; // yellow-100
       case ConsultationStatus.SCHEDULED:
-      case ConsultationStatus.CONFIRMED:
         return '#dbeafe'; // blue-100
       case ConsultationStatus.IN_PROGRESS:
         return '#e9d5ff'; // purple-100
@@ -160,7 +135,6 @@ const Calendar = () => {
       case ConsultationStatus.PENDING:
         return '#fbbf24'; // yellow-400
       case ConsultationStatus.SCHEDULED:
-      case ConsultationStatus.CONFIRMED:
         return '#60a5fa'; // blue-400
       case ConsultationStatus.IN_PROGRESS:
         return '#c084fc'; // purple-400
@@ -174,12 +148,26 @@ const Calendar = () => {
     }
   };
 
+  // Map events to FullCalendar format
+  const fullCalendarEvents = useMemo(() => {
+    return events.map(e => ({
+      id: e.id,
+      title: e.title,
+      start: `${e.date}T${e.startTime}`,
+      end: `${e.date}T${e.endTime}`,
+      extendedProps: e,
+      backgroundColor: getEventColor(e.status || ConsultationStatus.SCHEDULED),
+      borderColor: getEventBorderColor(e.status || ConsultationStatus.SCHEDULED),
+      textColor: '#1a1a1a',
+    }));
+  }, [events]);
+
   const handleEventClick = (info: any) => {
     setSelectedEvent(info.event.extendedProps as CalendarEvent);
     setIsModalOpen(true);
   };
 
-  const handleDateSelect = (selectInfo: any) => {
+  const handleDateSelect = useCallback((selectInfo: any) => {
     // Open modal to add new event
     const selectedDate = selectInfo.startStr.split('T')[0];
     setSelectedEvent({
@@ -189,13 +177,12 @@ const Calendar = () => {
       startTime: '09:00',
       endTime: '10:00',
       location: '',
-      locationType: 'online',
       type: 'consultation',
       tags: [],
       notes: ''
     });
     setIsModalOpen(true);
-  };
+  }, []);
 
   const handleSaveEvent = (event: CalendarEvent) => {
     // TODO: Implement save to backend
@@ -209,15 +196,68 @@ const Calendar = () => {
     setIsModalOpen(false);
   };
 
-  const handleViewChange = (view: CalendarView) => {
+  // Detect overlapping events
+  const checkEventConflict = useCallback((newStartTime: Date, eventId: string): boolean => {
+    const newEndTime = new Date(newStartTime);
+    newEndTime.setHours(newEndTime.getHours() + 1); // Assume 1 hour duration
+
+    return events.some(event => {
+      if (event.id === eventId) return false; // Skip the event being moved
+
+      const eventStart = new Date(`${event.date}T${event.startTime}`);
+      const eventEnd = new Date(`${event.date}T${event.endTime}`);
+
+      // Check if times overlap
+      return (newStartTime < eventEnd && newEndTime > eventStart);
+    });
+  }, [events]);
+
+  // Event drag and drop handler
+  const handleEventDrop = useCallback(async (info: any) => {
+    const { event } = info;
+    const eventData = event.extendedProps as CalendarEvent;
+    const newStart = new Date(event.start);
+    const newDate = newStart.toISOString().split('T')[0];
+    const newTime = newStart.toTimeString().slice(0, 5);
+
+    // Check for conflicts
+    const hasConflict = checkEventConflict(newStart, eventData.id);
+
+    if (hasConflict) {
+      if (!confirm('This time slot conflicts with another event. Continue anyway?')) {
+        info.revert();
+        return;
+      }
+    }
+
+    try {
+      // TODO: Call API to reschedule consultation
+      console.log('Rescheduling event:', {
+        id: eventData.id,
+        newDate,
+        newTime,
+        consultation: eventData.consultation
+      });
+
+      // For now, just update local state
+      // In production, dispatch update consultation action
+      // await dispatch(rescheduleConsultation({ id: eventData.consultation?._id, scheduledDate: newStart.toISOString() })).unwrap();
+
+    } catch (error) {
+      console.error('Failed to reschedule:', error);
+      info.revert();
+    }
+  }, [checkEventConflict]);
+
+  const handleViewChange = useCallback((view: CalendarView) => {
     setCurrentView(view);
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       calendarApi.changeView(view);
     }
-  };
+  }, []);
 
-  const handleNavigation = (direction: 'prev' | 'next' | 'today') => {
+  const handleNavigation = useCallback((direction: 'prev' | 'next' | 'today') => {
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       if (direction === 'prev') calendarApi.prev();
@@ -225,7 +265,7 @@ const Calendar = () => {
       else calendarApi.today();
       setCurrentDate(calendarApi.getDate());
     }
-  };
+  }, []);
 
   const handleClearFilters = () => {
     setStatusFilter('all');
@@ -233,6 +273,65 @@ const Calendar = () => {
   };
 
   const hasActiveFilters = statusFilter !== 'all' || typeFilter !== 'all';
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      // Only handle shortcuts when modal is closed and not typing in input
+      if (isModalOpen || event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (event.key.toLowerCase()) {
+        case 'arrowleft':
+          if (!showAgendaView) {
+            event.preventDefault();
+            handleNavigation('prev');
+          }
+          break;
+        case 'arrowright':
+          if (!showAgendaView) {
+            event.preventDefault();
+            handleNavigation('next');
+          }
+          break;
+        case 't':
+          event.preventDefault();
+          handleNavigation('today');
+          break;
+        case 'm':
+          event.preventDefault();
+          setShowAgendaView(false);
+          handleViewChange('dayGridMonth');
+          break;
+        case 'w':
+          event.preventDefault();
+          setShowAgendaView(false);
+          handleViewChange('timeGridWeek');
+          break;
+        case 'd':
+          event.preventDefault();
+          setShowAgendaView(false);
+          handleViewChange('timeGridDay');
+          break;
+        case 'a':
+          event.preventDefault();
+          setShowAgendaView(true);
+          break;
+        case 'n':
+          event.preventDefault();
+          handleDateSelect({ startStr: new Date().toISOString() });
+          break;
+        case '?':
+          event.preventDefault();
+          setShowShortcutsHelp(prev => !prev);
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [isModalOpen, showAgendaView, handleNavigation, handleViewChange, handleDateSelect]);
 
   // Calculate stats
   const stats = useMemo(() => {
@@ -252,7 +351,7 @@ const Calendar = () => {
       }).length,
       upcoming: events.filter(e => {
         const eventDate = new Date(e.date);
-        return eventDate > today && (e.status === ConsultationStatus.SCHEDULED || e.status === ConsultationStatus.CONFIRMED);
+        return eventDate > today && (e.status === ConsultationStatus.SCHEDULED);
       }).length,
     };
   }, [events]);
@@ -261,7 +360,7 @@ const Calendar = () => {
   return (
     <div className="space-y-6 pb-8">
       {/* Header */}
-      <PageHeader
+      <DashboardPageHeader
         title="Calendar"
         description="Manage your schedule, view upcoming consultations, and organize your appointments efficiently."
         action={
@@ -275,53 +374,34 @@ const Calendar = () => {
       {/* Stats Cards */}
       {!isLoading && !error && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Total Events</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.total}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <CalendarIcon className="h-6 w-6 text-primary" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Today</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.today}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-blue-500/10 flex items-center justify-center">
-                <Clock className="h-6 w-6 text-blue-600 dark:text-blue-500" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">This Week</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.thisWeek}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-purple-500/10 flex items-center justify-center">
-                <TrendingUp className="h-6 w-6 text-purple-600 dark:text-purple-500" />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground font-medium">Upcoming</p>
-                <p className="text-2xl font-bold text-foreground mt-1">{stats.upcoming}</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-green-500/10 flex items-center justify-center">
-                <CheckCircle2 className="h-6 w-6 text-green-600 dark:text-green-500" />
-              </div>
-            </div>
-          </Card>
+          <StatCard
+            title="Total Events"
+            value={stats.total}
+            icon={CalendarIcon}
+            iconBg="bg-primary/10"
+            iconColor="text-primary"
+          />
+          <StatCard
+            title="Today"
+            value={stats.today}
+            icon={Clock}
+            iconBg="bg-blue-500/10"
+            iconColor="text-blue-600 dark:text-blue-500"
+          />
+          <StatCard
+            title="This Week"
+            value={stats.thisWeek}
+            icon={TrendingUp}
+            iconBg="bg-purple-500/10"
+            iconColor="text-purple-600 dark:text-purple-500"
+          />
+          <StatCard
+            title="Upcoming"
+            value={stats.upcoming}
+            icon={CheckCircle2}
+            iconBg="bg-green-500/10"
+            iconColor="text-green-600 dark:text-green-500"
+          />
         </div>
       )}
 
@@ -362,7 +442,10 @@ const Calendar = () => {
               <ChevronRight className="h-4 w-4" />
             </Button>
             <h3 className="text-lg font-semibold ml-2">
-              {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              {currentView === 'timeGridDay'
+                ? currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+                : currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+              }
             </h3>
           </div>
 
@@ -371,7 +454,7 @@ const Calendar = () => {
             {/* Status Filter */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
+                <Button
                   variant={statusFilter !== 'all' ? 'default' : 'outline'}
                   className="h-9 gap-2"
                 >
@@ -408,7 +491,7 @@ const Calendar = () => {
             {/* Type Filter */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button 
+                <Button
                   variant={typeFilter !== 'all' ? 'default' : 'outline'}
                   className="h-9 gap-2"
                 >
@@ -444,28 +527,45 @@ const Calendar = () => {
             {/* View Toggle */}
             <div className="flex items-center gap-1 border border-border rounded-md p-1">
               <Button
-                variant={currentView === 'dayGridMonth' ? 'default' : 'ghost'}
+                variant={!showAgendaView && currentView === 'dayGridMonth' ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => handleViewChange('dayGridMonth')}
+                onClick={() => {
+                  setShowAgendaView(false);
+                  handleViewChange('dayGridMonth');
+                }}
                 className="h-7 px-3 text-xs"
               >
                 Month
               </Button>
               <Button
-                variant={currentView === 'timeGridWeek' ? 'default' : 'ghost'}
+                variant={!showAgendaView && currentView === 'timeGridWeek' ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => handleViewChange('timeGridWeek')}
+                onClick={() => {
+                  setShowAgendaView(false);
+                  handleViewChange('timeGridWeek');
+                }}
                 className="h-7 px-3 text-xs"
               >
                 Week
               </Button>
               <Button
-                variant={currentView === 'dayGridDay' ? 'default' : 'ghost'}
+                variant={!showAgendaView && currentView === 'timeGridDay' ? 'default' : 'ghost'}
                 size="sm"
-                onClick={() => handleViewChange('dayGridDay')}
+                onClick={() => {
+                  setShowAgendaView(false);
+                  handleViewChange('timeGridDay');
+                }}
                 className="h-7 px-3 text-xs"
               >
                 Day
+              </Button>
+              <Button
+                variant={showAgendaView ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setShowAgendaView(true)}
+                className="h-7 px-3 text-xs"
+              >
+                Agenda
               </Button>
             </div>
 
@@ -502,16 +602,26 @@ const Calendar = () => {
         )}
       </div>
 
-      {/* Calendar */}
-      <Card className="border-border overflow-hidden">
-        {isLoading ? (
+      {/* Calendar or Agenda View */}
+      {isLoading ? (
+        <Card className="border-border">
           <div className="flex items-center justify-center py-32">
             <div className="flex flex-col items-center gap-4">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
               <p className="text-muted-foreground">Loading calendar...</p>
             </div>
           </div>
-        ) : (
+        </Card>
+      ) : showAgendaView ? (
+        <AgendaView
+          events={events}
+          onEventClick={(event) => {
+            setSelectedEvent(event);
+            setIsModalOpen(true);
+          }}
+        />
+      ) : (
+        <Card className="border-border overflow-hidden">
           <div className="p-4 calendar-container">
             <FullCalendar
               ref={calendarRef}
@@ -524,6 +634,8 @@ const Calendar = () => {
               events={fullCalendarEvents}
               eventClick={handleEventClick}
               select={handleDateSelect}
+              eventDrop={handleEventDrop}
+              eventResize={handleEventDrop}
               dayMaxEvents={3}
               eventDisplay="block"
               nowIndicator={true}
@@ -544,31 +656,75 @@ const Calendar = () => {
               }}
             />
           </div>
-        )}
-      </Card>
+        </Card>
+      )}
 
-      {/* Legend */}
-      <Card className="border-border p-4">
-        <h4 className="text-sm font-semibold mb-3">Event Status Legend</h4>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.PENDING) }} />
-            <span className="text-sm text-muted-foreground">Pending</span>
+      {/* Legend and Shortcuts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="border-border p-4">
+          <h4 className="text-sm font-semibold mb-3">Event Status Legend</h4>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.PENDING) }} />
+              <span className="text-sm text-muted-foreground">Pending</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.SCHEDULED) }} />
+              <span className="text-sm text-muted-foreground">Scheduled</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.IN_PROGRESS) }} />
+              <span className="text-sm text-muted-foreground">In Progress</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.COMPLETED) }} />
+              <span className="text-sm text-muted-foreground">Completed</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.SCHEDULED) }} />
-            <span className="text-sm text-muted-foreground">Scheduled</span>
+        </Card>
+
+        <Card className="border-border p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-semibold">Keyboard Shortcuts</h4>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowShortcutsHelp(!showShortcutsHelp)}
+              className="h-6 text-xs"
+            >
+              {showShortcutsHelp ? 'Hide' : 'Show'}
+            </Button>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.IN_PROGRESS) }} />
-            <span className="text-sm text-muted-foreground">In Progress</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-4 rounded" style={{ backgroundColor: getEventColor(ConsultationStatus.COMPLETED) }} />
-            <span className="text-sm text-muted-foreground">Completed</span>
-          </div>
-        </div>
-      </Card>
+          {showShortcutsHelp && (
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Navigate</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">← →</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Today</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">T</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Month / Week / Day</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">M / W / D</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Agenda View</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">A</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">New Event</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">N</kbd>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Toggle Help</span>
+                <kbd className="px-2 py-0.5 bg-muted rounded text-xs">?</kbd>
+              </div>
+            </div>
+          )}
+        </Card>
+      </div>
 
       {/* Event Details Modal */}
       {isModalOpen && (

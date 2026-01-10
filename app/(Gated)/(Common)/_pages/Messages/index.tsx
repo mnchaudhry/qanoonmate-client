@@ -3,8 +3,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
-import { getMessages, getUserChatRooms, sendFileMessage, } from "@/store/reducers/chatSlice";
+import { getMessages, getUserChatRooms, sendFileMessage, setCurrentRoom } from "@/store/reducers/chatSlice";
 import { useSocketContext } from "@/context/useSocketContext";
+import { useRouter, useSearchParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 import MessagesHeader from "./_components/MessagesHeader";
 import ConversationList from "./_components/ConversationList";
 import ChatWindow from "./_components/ChatWindow";
@@ -15,17 +17,61 @@ import toast from "react-hot-toast";
 const MessagesPage = () => {
   //////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { currentRoom, rooms, messages } = useSelector((state: RootState) => state.chat);
   const { user } = useSelector((state: RootState) => state.auth);
   const { defaultSocket } = useSocketContext();
 
   //////////////////////////////////////////////// STATES /////////////////////////////////////////////////
   const [searchQuery, setSearchQuery] = useState("");
+  const [leftSidebarWidth, setLeftSidebarWidth] = useState(320); // 320px = w-80
+  const [isResizingLeft, setIsResizingLeft] = useState(false);
+
+  // Width constraints
+  const MIN_LEFT_WIDTH = 280;
+  const MAX_LEFT_WIDTH = 480;
 
   //////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////
   useEffect(() => {
     dispatch(getUserChatRooms());
   }, [dispatch]);
+
+  // Restore selected chat from URL query parameter
+  useEffect(() => {
+    const roomId = searchParams.get('roomId');
+    const consultationId = searchParams.get('consultationId');
+
+    if (rooms.length > 0) {
+      // First priority: find by roomId
+      if (roomId) {
+        // Only set if it's different from current room
+        if (!currentRoom || currentRoom._id !== roomId) {
+          const room = rooms.find(r => r._id === roomId);
+          if (room) {
+            dispatch(setCurrentRoom(room));
+          }
+        }
+        return;
+      }
+
+      // Second priority: find by consultationId
+      if (consultationId) {
+        const room = rooms.find(r => {
+          const consultation = r.consultation;
+          return typeof consultation === 'object' ? consultation._id === consultationId : consultation === consultationId;
+        });
+        if (room) {
+          // Only set if it's different from current room
+          if (!currentRoom || currentRoom._id !== room._id) {
+            dispatch(setCurrentRoom(room));
+            // Update URL to use roomId instead
+            router.replace(`?roomId=${room._id}`, { scroll: false });
+          }
+        }
+      }
+    }
+  }, [searchParams, rooms, currentRoom, dispatch, router]);
 
   // Load messages for all rooms, not just the selected one
   useEffect(() => {
@@ -61,6 +107,36 @@ const MessagesPage = () => {
       }
     };
   }, [rooms, defaultSocket.socket]);
+
+  const handleMouseDownLeft = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizingLeft(true);
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isResizingLeft) {
+        const newWidth = e.clientX;
+        if (newWidth >= MIN_LEFT_WIDTH && newWidth <= MAX_LEFT_WIDTH) {
+          setLeftSidebarWidth(newWidth);
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizingLeft(false);
+    };
+
+    if (isResizingLeft) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizingLeft]);
 
   //////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////
   const handleSendMessage = (content: string) => {
@@ -127,16 +203,22 @@ const MessagesPage = () => {
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
-    <div className="flex h-[calc(100vh-90px)] gap-3 p-4 bg-gradient-to-br from-background via-surface/20 to-background">
+    <div className={cn("flex h-[calc(100vh-90px)] gap-4 bg-background", isResizingLeft && "select-none cursor-ew-resize")}>
       {/* Sidebar */}
-      <aside className="w-80 flex flex-col bg-background border !border-border rounded-2xl overflow-hidden shadow-lg">
-        <MessagesHeader
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-        />
+      <aside
+        style={{ width: `${leftSidebarWidth}px` }}
+        className="flex flex-col bg-accent/30 border border-accent backdrop-blur-sm rounded-2xl overflow-hidden relative"
+      >
+        <MessagesHeader searchQuery={searchQuery} onSearchChange={setSearchQuery} />
         <div className="flex-1 min-h-0 overflow-y-auto">
-          <ConversationList searchQuery={searchQuery} />
+          <ConversationList searchQuery={searchQuery} onRoomSelect={(roomId) => router.push(`?roomId=${roomId}`, { scroll: false })} />
         </div>
+
+        {/* Resize Handle */}
+        <div onMouseDown={handleMouseDownLeft} className="absolute top-0 right-0 w-1.5 h-full cursor-ew-resize hover:bg-primary/30 active:bg-primary/50 transition-colors group">
+          <div className="absolute right-0.5 top-1/2 -translate-y-1/2 w-0.5 h-16 bg-border group-hover:bg-primary group-active:bg-primary transition-all rounded-full" />
+        </div>
+
       </aside>
       {/* Main Chat Area */}
       <main className="flex-1 flex flex-col min-h-0">
@@ -146,7 +228,7 @@ const MessagesPage = () => {
             onSendFile={handleSendFile}
           />
         ) : (
-          <div className="flex-1 rounded-2xl overflow-hidden shadow-lg">
+          <div className="flex-1 rounded-2xl overflow-hidden">
             <EmptyState />
           </div>
         )}

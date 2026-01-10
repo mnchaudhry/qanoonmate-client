@@ -11,9 +11,10 @@ import { setSelectedConsultation } from "@/store/reducers/consultationSlice";
 
 interface ConversationListProps {
   searchQuery: string;
+  onRoomSelect?: (roomId: string) => void;
 }
 
-const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
+const ConversationList: React.FC<ConversationListProps> = ({ searchQuery, onRoomSelect }) => {
 
   //////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
 
       if (reconnected) {
         dispatch(setCurrentRoom(room));
+        onRoomSelect?.(room._id);
       } else {
         toast.error("Unable to connect to chat server. Please refresh the page.");
       }
@@ -41,7 +43,8 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
     }
 
     dispatch(setCurrentRoom(room));
-    dispatch(setSelectedConsultation(room.consultation))
+    dispatch(setSelectedConsultation(room.consultation));
+    onRoomSelect?.(room._id);
   };
 
   // Filter conversations based on search query
@@ -76,7 +79,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
   }
 
   return (
-    <div className="overflow-y-auto h-full min-h-0 flex-1 space-y-1 px-2 py-2">
+    <div className="overflow-y-auto h-full min-h-0 flex-1 space-y-1.5 px-3 py-2">
       {filteredRooms.map((room, index) => {
         const isSelected = currentRoom?._id === room._id;
         const lawyer = room?.participants?.find((p) => p._id !== user?._id);
@@ -90,8 +93,8 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
             key={index}
             className={`relative group flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all duration-200
               ${isSelected 
-                ? 'bg-primary/10 border-2 !border-primary shadow-sm' 
-                : 'bg-background hover:bg-accent/50 border border-border hover:border-border/80'
+                ? 'bg-primary/10 shadow-sm' 
+                : 'hover:bg-accent/40'
               }
             `}
             style={{ minHeight: 72 }}
@@ -101,13 +104,13 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
           >
             {/* Avatar and status */}
             <div className="relative flex-shrink-0">
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 !border-border shadow-sm">
+              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center overflow-hidden shadow-sm">
                 {lawyer?.profilePicture ? (
                   <Image
                     src={lawyer.profilePicture}
                     alt={lawyer.firstname + " " + lawyer.lastname}
                     fill
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-full "
                   />
                 ) : (
                   <span className="text-sm font-bold text-muted-foreground">
@@ -116,7 +119,7 @@ const ConversationList: React.FC<ConversationListProps> = ({ searchQuery }) => {
                 )}
               </div>
               {isOtherUserOnline && (
-                <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-background shadow-sm" />
+                <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 rounded-full border-2 border-surface shadow-sm" />
               )}
               {unreadCount > 0 && (
                 <div className="absolute -top-1 -right-1 min-w-[20px] h-5 bg-primary rounded-full flex items-center justify-center shadow-md px-1.5">

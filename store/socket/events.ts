@@ -1,53 +1,9 @@
-import {
-  addAIMessage,
-  finalizeStreamingMessage,
-  incrementInteractionCount,
-  setCurrentSessionId,
-  setIsStreaming,
-  setIsMetadataLoading,
-  setStreamingMessage,
-  updateBotMessage,
-  updateLastModified,
-} from "../reducers/aiSessionSlice";
-import {
-  addMessage,
-  setOnlineStatus,
-  setTypingStatus,
-  setUnreadCount,
-  updateRoomState,
-} from "../reducers/chatSlice";
-import {
-  handleSummaryComplete,
-  handleSummaryError,
-  handleSummaryProgress,
-  handleSummaryStream,
-} from "../reducers/summarySlice";
+import { addAIMessage, finalizeStreamingMessage, incrementInteractionCount, setCurrentSessionId, setIsStreaming, setIsMetadataLoading, setStreamingMessage, updateBotMessage, updateLastModified, } from "../reducers/aiSessionSlice";
+import { addMessage, setOnlineStatus, setTypingStatus, setUnreadCount, updateRoomState, } from "../reducers/chatSlice";
+import { handleSummaryComplete, handleSummaryError, handleSummaryProgress, handleSummaryStream, } from "../reducers/summarySlice";
+import { socketNewNotification, socketMarkRead, socketMarkUnread, socketDeleteNotification, } from "../reducers/notificationSlice";
 import store, { AppDispatch } from "../store";
-import type {
-  AuthAuthenticateEmit,
-  ChatError,
-  ChatJoinRoomEmit,
-  ChatLeaveRoomEmit,
-  ChatMarkReadEmit,
-  ChatMessageRead,
-  ChatNewMessage,
-  ChatSendMessageEmit,
-  ChatStopTypingEmit,
-  ChatTypingEmit,
-  ChatUserJoined,
-  ChatUserStopTyping,
-  ChatUserTyping,
-  ModelChatMessageEmit,
-  ModelMessageReceived,
-  ModelMessageStream,
-  ModelSessionStarted,
-  ModelStartChatEmit,
-  ModelUpdateTitleEmit,
-  SummaryComplete,
-  SummaryError,
-  SummaryProgress,
-  SummarySubmitEmit,
-} from "../types/socket";
+import type { AuthAuthenticateEmit, ChatError, ChatJoinRoomEmit, ChatLeaveRoomEmit, ChatMarkReadEmit, ChatMessageRead, ChatNewMessage, ChatSendMessageEmit, ChatStopTypingEmit, ChatTypingEmit, ChatUserJoined, ChatUserStopTyping, ChatUserTyping, ModelChatMessageEmit, ModelMessageReceived, ModelMessageStream, ModelSessionStarted, ModelStartChatEmit, ModelUpdateTitleEmit, SummaryComplete, SummaryError, SummaryProgress, SummarySubmitEmit, } from "../types/socket";
 
 ///////////////////////////////////////////////// EMITTING EVENTS (Client to Server) /////////////////////////////////////////////////
 
@@ -94,7 +50,7 @@ export const socketEvents = {
     },
     regenerateResponse: (
       socket: any,
-      data: { sessionId: string; userMessageId: string; history: any[] }
+      data: { sessionId: string; userMessageId: string; history: any[]; mode: "chat" | "summarizer" | "drafting"; }
     ) => {
       if (socket) {
         socket.emit("regenerate_response", data);
@@ -154,7 +110,7 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     return;
   });
 
-  // Summary events
+  ///////////////////////////////////////////// SUMMARY EVENTS /////////////////////////////////////////////
   socket.on("summary:progress", (data: SummaryProgress) => {
     dispatch(handleSummaryProgress(data));
   });
@@ -169,14 +125,13 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
       })
     );
   });
-  socket.on(
-    "summary:stream",
+  socket.on("summary:stream",
     (data: { summaryId: string; content: string }) => {
       dispatch(handleSummaryStream(data));
     }
   );
 
-  // Model events
+  ///////////////////////////////////////////// MODEL EVENTS /////////////////////////////////////////////
   socket.on("model:message-received", (data: ModelMessageReceived) => {
     dispatch(addAIMessage(data));
     dispatch(incrementInteractionCount());
@@ -254,9 +209,9 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     dispatch(updateBotMessage(data));
   });
 
-  // Chat events
-  socket.on("chat:join-room-ack", () => {});
-  socket.on("chat:leave-room-ack", () => {});
+  ///////////////////////////////////////////// CHAT EVENTS /////////////////////////////////////////////
+  socket.on("chat:join-room-ack", () => { });
+  socket.on("chat:leave-room-ack", () => { });
   socket.on("chat:user-joined", (data: ChatUserJoined) => {
     dispatch(
       setOnlineStatus({
@@ -302,24 +257,16 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
 
   socket.on("chat:message-sent-ack", () => {
     return;
-    // Message was successfully sent and saved by the server
   });
+
   socket.on("chat:user-typing", (data: ChatUserTyping) => {
     dispatch(
-      setTypingStatus({
-        roomId: data.roomId,
-        userId: data.userId,
-        isTyping: true,
-      })
+      setTypingStatus({ roomId: data.roomId, userId: data.userId, isTyping: true, })
     );
   });
   socket.on("chat:user-stop-typing", (data: ChatUserStopTyping) => {
     dispatch(
-      setTypingStatus({
-        roomId: data.roomId,
-        userId: data.userId,
-        isTyping: false,
-      })
+      setTypingStatus({ roomId: data.roomId, userId: data.userId, isTyping: false, })
     );
   });
   socket.on("chat:message-read", (data: ChatMessageRead) => {
@@ -330,20 +277,12 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
   });
   socket.on("user-online", (data: any) => {
     dispatch(
-      setOnlineStatus({
-        roomId: data.roomId || "global",
-        userId: data.userId,
-        isOnline: true,
-      })
+      setOnlineStatus({ roomId: data.roomId || "global", userId: data.userId, isOnline: true, })
     );
   });
   socket.on("user-offline", (data: any) => {
     dispatch(
-      setOnlineStatus({
-        roomId: data.roomId || "global",
-        userId: data.userId,
-        isOnline: false,
-      })
+      setOnlineStatus({ roomId: data.roomId || "global", userId: data.userId, isOnline: false, })
     );
   });
   socket.on("chat:online-status", (data: any) => {
@@ -351,16 +290,13 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
       dispatch(
         updateRoomState({
           roomId: data.roomId,
-          updates: {
-            onlineUsers: data.onlineUserIds,
-            lastActivity: Date.now(),
-          },
+          updates: { onlineUsers: data.onlineUserIds, lastActivity: Date.now(), },
         })
       );
     }
   });
 
-  // Consultation reschedule events
+  ///////////////////////////////////////////// CONSULTATION RESCHEDULE EVENTS /////////////////////////////////////////////
   socket.on("consultation:reschedule-requested", () => {
     // toast.success(data.message); // Assuming toast is available globally or imported
     // You can dispatch an action to update consultation state if needed
@@ -377,6 +313,27 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     return;
     // toast.error(data.message); // Assuming toast is available globally or imported
     // You can dispatch an action to update consultation state if needed
+  });
+
+  ///////////////////////////////////////////// NOTIFICATION EVENTS /////////////////////////////////////////////
+  socket.on("notification:new", (data: any) => {
+    console.log("New notification received:", data);
+    dispatch(socketNewNotification(data.notification));
+  });
+
+  socket.on("notification:mark-read", (data: any) => {
+    console.log("Notification marked as read:", data);
+    dispatch(socketMarkRead(data.notificationId));
+  });
+
+  socket.on("notification:mark-unread", (data: any) => {
+    console.log("Notification marked as unread:", data);
+    dispatch(socketMarkUnread(data.notificationId));
+  });
+
+  socket.on("notification:delete", (data: any) => {
+    console.log("Notification deleted:", data);
+    dispatch(socketDeleteNotification(data.notificationId));
   });
 
   // Connect and disconnect events
@@ -411,6 +368,10 @@ export const listenOnSocketEvents = (socket: any, dispatch: AppDispatch) => {
     socket.off("consultation:reschedule-requested");
     socket.off("consultation:reschedule-approved");
     socket.off("consultation:reschedule-rejected");
+    socket.off("notification:new");
+    socket.off("notification:mark-read");
+    socket.off("notification:mark-unread");
+    socket.off("notification:delete");
     socket.off("connect");
     socket.off("disconnect");
   };

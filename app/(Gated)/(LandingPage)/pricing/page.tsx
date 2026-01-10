@@ -4,34 +4,20 @@ import PricingFAQs from "./_components/PricingFAQs";
 import ConsultationService from "./_components/ConsultationService";
 import ServicePricing from "./_components/ServicePricing";
 import Plan from "@/components/Plan";
-import { creditPackages } from "@/constants";
 import LandingPageHeader from "../_components/LandingPageHeader";
 import { Coins, Zap, Shield, Clock } from "lucide-react";
-import { useEffect, useState } from "react";
-import { creditsAPI } from "@/store/api/credits";
-import { QCPackage } from "@/store/types/credits.types";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { getQCPackages } from "@/store/reducers/creditSlice";
 
 export default function PricingPage() {
-  const [packages, setPackages] = useState<QCPackage[]>(creditPackages);
-  const [loading, setLoading] = useState(true);
-  console.log('loading', loading);
+
+  const dispatch = useAppDispatch();
+  const { packages } = useAppSelector(state => state.credits)
 
   useEffect(() => {
-    const fetchPackages = async () => {
-      try {
-        const apiPackages = await creditsAPI.getPackages();
-        setPackages(apiPackages);
-      } catch (error) {
-        console.error('Failed to fetch packages:', error);
-        // Fallback to static packages
-        setPackages(creditPackages);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPackages();
-  }, []);
+    dispatch(getQCPackages());
+  }, [dispatch]);
 
   return (
     <section className="relative bg-background antialiased min-h-screen !pt-0 ">

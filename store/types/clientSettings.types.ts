@@ -35,7 +35,7 @@ export interface ClientSettings {
   updatedAt: string;
 }
 
-export interface GetClientSettingsResponse extends APIResponse<ClientSettings> { }
+export type GetClientSettingsResponse = APIResponse<ClientSettings>
 
 export interface UpdateClientSettingsRequest {
   preferences?: Partial<ClientSettings['preferences']>;
@@ -44,7 +44,7 @@ export interface UpdateClientSettingsRequest {
   billing?: Partial<ClientSettings['billing']>;
 }
 
-export interface UpdateClientSettingsResponse extends APIResponse<ClientSettings> { }
+export type UpdateClientSettingsResponse = APIResponse<ClientSettings>
 
 export interface UpdateClientSecurityRequest {
   password?: string;
@@ -53,9 +53,9 @@ export interface UpdateClientSecurityRequest {
   passwordUpdatedAt?: string;
 }
 
-export interface UpdateClientSecurityResponse extends APIResponse<ClientSettings> { }
+export type UpdateClientSecurityResponse = APIResponse<ClientSettings>
 
-export interface UpdateClientNotificationsRequest extends NotificationPreferences { }
-export interface UpdateClientNotificationsResponse extends APIResponse<ClientSettings> { }
+export type UpdateClientNotificationsRequest = NotificationPreferences
+export type UpdateClientNotificationsResponse = APIResponse<ClientSettings>
 
-export interface DeleteClientSettingsResponse extends APIResponse<{ message: string }> { }
+export type DeleteClientSettingsResponse = APIResponse<{ message: string }> 

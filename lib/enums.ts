@@ -1,7 +1,8 @@
 export enum UserRole {
   ADMIN = "admin",
   CLIENT = "client",
-  LAWYER = "lawyer"
+  LAWYER = "lawyer",
+  ANY = "any",
 }
 
 export enum OtpVerificationType {
@@ -43,23 +44,23 @@ export enum ConsultationType {
   INITIAL = "initial"
 }
 
-export enum ConsultationMode {
-  IN_PERSON = "in_person",
-  VIDEO_CALL = "video_call",
-  PHONE_CALL = "phone_call",
-  CHAT = "chat"
-}
-
 export enum ConsultationStatus {
   PENDING = "pending",
   SCHEDULED = "scheduled",
-  CONFIRMED = "confirmed",
   IN_PROGRESS = "in_progress",
   COMPLETED = "completed",
   CANCELLED = "cancelled",
   NO_SHOW = "no_show",
   RESCHEDULED = "rescheduled"
 }
+export enum CancellationReason {
+  CLIENT_REQUEST = "client_request",
+  LAWYER_UNAVAILABLE = "lawyer_unavailable",
+  EMERGENCY = "emergency",
+  TECHNICAL_ISSUE = "technical_issue",
+  OTHER = "other"
+}
+
 export enum PaymentStatus {
   PENDING = "pending",
   PROCESSING = "processing",
@@ -139,7 +140,7 @@ export enum Courts {
   OTHER = "Other"
 }
 
-export enum LawyerLanguage {
+export enum Languages {
   ENGLISH = "english",
   URDU = "urdu",
   PASHTO = "pashto",
@@ -150,7 +151,7 @@ export enum LawyerLanguage {
   PERSIAN = "persian"
 }
 
-export enum AvailabilityDay {
+export enum Days {
   MONDAY = "monday",
   TUESDAY = "tuesday",
   WEDNESDAY = "wednesday",
@@ -163,7 +164,7 @@ export enum AvailabilityDay {
 export enum BarCouncils {
   PunjabBarCouncil = "Punjab Bar Council",
   SindhBarCouncil = "Sindh Bar Council",
-  KhyberPakhtunkhwaBarCouncil = "Khyber Pakhtunkhwa Bar Council",
+  KhyberPakhtunkhwaBarCouncil = "KP Bar Council",
   BalochistanBarCouncil = "Balochistan Bar Council",
   IslamabadBarCouncil = "Islamabad Bar Council",
   AzadJammuAndKashmirBarCouncil = "Azad Jammu and Kashmir Bar Council",
@@ -171,7 +172,7 @@ export enum BarCouncils {
 }
 
 
-export enum LawyerRating {
+export enum Ratings {
   FIVE = "5",
   FOUR = "4",
   THREE = "3",
@@ -194,15 +195,7 @@ export enum LawyerExperienceRange {
 }
 
 export enum PaymentMethod {
-  CREDIT_CARD = "credit_card",
-  DEBIT_CARD = "debit_card",
-  BANK_TRANSFER = "bank_transfer",
-  MOBILE_WALLET = "mobile_wallet",
-  CASH = "cash",
-  STRIPE = "stripe",
-  PAYPAL = "paypal",
-  EASYPAISA = "easypaisa",
-  JAZZCASH = "jazzcash",
+  SAFEPAY = "safepay",
 }
 
 export enum UserTheme {
@@ -217,36 +210,36 @@ export enum UserLanguagePreference {
 }
 
 export enum PakistanCities {
-    PESHAWAR = "peshawar",
-    ISLAMABAD = "islamabad",
-    RAWALPINDI = "rawalpindi",
-    LAHORE = "lahore",
-    KARACHI = "karachi",
-    QUETTA = "quetta",
-    MULTAN = "multan",
-    FAISALABAD = "faisalabad",
-    SIALKOT = "sialkot",
-    GUJRANWALA = "gujranwala",
-    SARGODHA = "sargodha",
-    BAHAWALPUR = "bahawalpur",
-    RAHIM_YAR_KHAN = "rahim_yar_khan",
-    DERA_GHAZI_KHAN = "dera_ghazi_khan",
-    SUKKUR = "sukkur",
-    HYDERABAD = "hyderabad",
-    MIRPUR_KHAS = "mirpur_khas",
-    NAWABSHAH = "nawabshah",
-    LARKANA = "larkana",
-    JACOBABAD = "jacobabad",
-    OTHER = "other"
+  PESHAWAR = "peshawar",
+  ISLAMABAD = "islamabad",
+  RAWALPINDI = "rawalpindi",
+  LAHORE = "lahore",
+  KARACHI = "karachi",
+  QUETTA = "quetta",
+  MULTAN = "multan",
+  FAISALABAD = "faisalabad",
+  SIALKOT = "sialkot",
+  GUJRANWALA = "gujranwala",
+  SARGODHA = "sargodha",
+  BAHAWALPUR = "bahawalpur",
+  RAHIM_YAR_KHAN = "rahim_yar_khan",
+  DERA_GHAZI_KHAN = "dera_ghazi_khan",
+  SUKKUR = "sukkur",
+  HYDERABAD = "hyderabad",
+  MIRPUR_KHAS = "mirpur_khas",
+  NAWABSHAH = "nawabshah",
+  LARKANA = "larkana",
+  JACOBABAD = "jacobabad",
+  OTHER = "other"
 }
 
 export enum PakistanProvinces {
-    KHYBER_PAKHTUNKHWA = "khyber_pakhtunkhwa",
-    PUNJAB = "punjab",
-    SINDH = "sindh",
-    BALOCHISTAN = "balochistan",
-    GILGIT_BALTISTAN = "gilgit_baltistan",
-    AZAD_JAMMU_AND_KASHMIR = "azad_jammu_and_kashmir"
+  KHYBER_PAKHTUNKHWA = "khyber_pakhtunkhwa",
+  PUNJAB = "punjab",
+  SINDH = "sindh",
+  BALOCHISTAN = "balochistan",
+  GILGIT_BALTISTAN = "gilgit_baltistan",
+  AZAD_JAMMU_AND_KASHMIR = "azad_jammu_and_kashmir"
 }
 
 
@@ -277,11 +270,13 @@ export enum NotificationType {
   SYSTEM = 'system',
   CHAT = 'chat',
   CONSULTATION = 'consultation',
+  CONSULTATION_REMINDER_24H = 'consultation_reminder_24h',
+  CONSULTATION_REMINDER_1H = 'consultation_reminder_1h',
+  CONSULTATION_REMINDER_15M = 'consultation_reminder_15m',
   PAYMENT = 'payment',
   REMINDER = 'reminder',
   CUSTOM = 'custom',
 }
-
 export enum NotificationContextType {
   CHAT = 'chat',
   CONSULTATION = 'consultation',
@@ -381,7 +376,7 @@ export enum QCServiceType {
 }
 
 // Payment Type Enum
-export enum PaymentTypeEnum {
+export enum PaymentType {
   CONSULTATION = 'consultation',
   SUBSCRIPTION = 'subscription',
   DOCUMENT_GENERATION = 'document_generation',

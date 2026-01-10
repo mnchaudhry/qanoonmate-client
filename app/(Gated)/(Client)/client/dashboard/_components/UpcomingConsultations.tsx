@@ -7,7 +7,6 @@ import { Badge } from '@/components/ui/badge'
 import { Calendar, Video, Clock, X } from 'lucide-react'
 import { format } from 'date-fns'
 import { getConsultations } from '@/store/reducers/consultationSlice'
-import { ConsultationStatus } from '@/lib/enums'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch } from '@/store/store'
 import { RootState } from '@/store/store'
@@ -16,16 +15,14 @@ const UpcomingConsultations = () => {
 
   /////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
-  const { consultations, isLoading, error } = useSelector((state: RootState) => state.consultation)
+  const { consultations, loading: isLoading, error } = useSelector((state: RootState) => state.consultation)
 
   /////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////
   useEffect(() => {
-    const today = new Date()
     dispatch(getConsultations({
-      status: ConsultationStatus.SCHEDULED,
-      dateFrom: today.toISOString(),
-      limit: 5,
-      page: 1
+      filters: {
+        limit: 5,
+      }
     }))
   }, [dispatch])
 
@@ -61,8 +58,8 @@ const UpcomingConsultations = () => {
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {/* Show lawyer or client name depending on user role */}
-                    {typeof consultation.lawyerId === 'object' && 'firstname' in consultation.lawyerId
-                      ? `${consultation.lawyerId.firstname} ${consultation.lawyerId.lastname}`
+                    {typeof consultation?.lawyer === 'object' && 'firstname' in consultation?.lawyer
+                      ? `${consultation?.lawyer.firstname} ${consultation?.lawyer.lastname}`
                       : ''}
                   </p>
                 </div>

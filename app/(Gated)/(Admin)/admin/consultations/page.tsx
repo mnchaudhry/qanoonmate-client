@@ -8,20 +8,21 @@ import { getConsultations, confirmConsultation, startConsultation, completeConsu
 import AlertModal from '@/components/alert-modal'
 import { ConsultationsFilterActionBar, ConsultationsTable, ConsultationsSummaryStats } from './_components'
 import { PageHeader } from '../../_components/PageHeader'
-import { Consultation } from '@/store/types/api'
 import AdminSkeleton from '@/components/skeletons/AdminPageSkeleton'
+import { IConsultation } from '@/store/types/consultation.types'
+import { ConsultationStatus } from '@/lib/enums'
 
 const PAGE_SIZE = 10;
 
 const ConsultationsPage = () => {
   //////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>()
-  const { consultations = [], isLoading, totalPages, totalCount } = useSelector((state: RootState) => state.consultation)
+  const { consultations = [], loading: isLoading, totalPages, totalCount } = useSelector((state: RootState) => state.consultation)
 
   //////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////
   const [search, setSearch] = useState('')
   const [viewModalOpen, setViewModalOpen] = useState(false)
-  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null)
+  const [selectedConsultation, setSelectedConsultation] = useState<IConsultation | null>(null)
   const [actionLoading, setActionLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [filterStatus, setFilterStatus] = useState('all')
@@ -35,11 +36,10 @@ const ConsultationsPage = () => {
   //////////////////////////////////////////////// USE EFFECTS ////////////////////////////////////////////////////
   useEffect(() => {
     dispatch(getConsultations({
-      page,
-      limit: PAGE_SIZE,
-      // search: search || undefined,
-      // status: filterStatus !== 'all' ? filterStatus : undefined,
-
+      filters: {
+        limit: PAGE_SIZE,
+      },
+      currentPage: page
     }))
   }, [dispatch, page, search, filterStatus])
 
@@ -47,7 +47,7 @@ const ConsultationsPage = () => {
   useEffect(() => { setPage(1) }, [search, filterStatus])
 
   //////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
-  const handleView = (consultation: Consultation) => {
+  const handleView = (consultation: IConsultation) => {
     setSelectedConsultation(consultation)
     setViewModalOpen(true)
   }
@@ -59,17 +59,17 @@ const ConsultationsPage = () => {
 
   const refreshConsultations = () => {
     dispatch(getConsultations({
-      page,
-      limit: PAGE_SIZE,
-      // search: search || undefined,
-      // status: filterStatus !== 'all' ? filterStatus : undefined,
+      filters: {
+        limit: PAGE_SIZE,
+      },
+      currentPage: page
     }))
   }
 
   const handleConfirm = async (id: string) => {
     setActionLoading(true)
     try {
-      await dispatch(confirmConsultation(id)).unwrap()
+      await dispatch(confirmConsultation({ id, updates: { status: ConsultationStatus.SCHEDULED }, })).unwrap()
       refreshConsultations()
       if (selectedConsultation && selectedConsultation._id === id) {
         setViewModalOpen(false)
@@ -85,7 +85,7 @@ const ConsultationsPage = () => {
   const handleStart = async (id: string, formData: any) => {
     setActionLoading(true)
     try {
-      await dispatch(startConsultation({ id, formData })).unwrap()
+      await dispatch(startConsultation({ id, updates: formData, })).unwrap()
       refreshConsultations()
       if (selectedConsultation && selectedConsultation._id === id) {
         setViewModalOpen(false)
@@ -101,7 +101,7 @@ const ConsultationsPage = () => {
   const handleComplete = async (id: string, formData: any) => {
     setActionLoading(true)
     try {
-      await dispatch(completeConsultation({ id, formData })).unwrap()
+      await dispatch(completeConsultation({ id, updates: formData, })).unwrap()
       refreshConsultations()
       if (selectedConsultation && selectedConsultation._id === id) {
         setViewModalOpen(false)
@@ -122,7 +122,7 @@ const ConsultationsPage = () => {
       onConfirm: async () => {
         setActionLoading(true)
         try {
-          await dispatch(markAsNoShow(id)).unwrap()
+          await dispatch(markAsNoShow({ id, updates: { status: ConsultationStatus.NO_SHOW }, })).unwrap()
           refreshConsultations()
           if (selectedConsultation && selectedConsultation._id === id) {
             setViewModalOpen(false)
@@ -141,7 +141,7 @@ const ConsultationsPage = () => {
   const handleCancel = async (id: string, formData: any) => {
     setActionLoading(true)
     try {
-      await dispatch(cancelConsultation({ id, reason: formData.reason })).unwrap()
+      await dispatch(cancelConsultation({ id, request: { reason: formData.reason }, })).unwrap()
       refreshConsultations()
       if (selectedConsultation && selectedConsultation._id === id) {
         setViewModalOpen(false)

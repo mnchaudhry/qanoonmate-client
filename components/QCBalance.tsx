@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/store/store';
-import { fetchBalance } from '@/store/reducers/credits';
+import { getQCBalance } from '@/store/reducers/creditSlice';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Wallet, Plus, Coins } from 'lucide-react';
@@ -26,7 +26,7 @@ export const QCBalance: React.FC<QCBalanceProps> = ({
   const { balance, loading } = useSelector((state: RootState) => state.credits);
 
   useEffect(() => {
-    dispatch(fetchBalance());
+    dispatch(getQCBalance());
   }, [dispatch]);
 
   const handleBuyCredits = () => {
@@ -108,7 +108,7 @@ export const QCBalance: React.FC<QCBalanceProps> = ({
   // Default variant
   return (
     <div className={cn("flex items-center space-x-2", className)}>
-      <Badge 
+      <Badge
         variant={balance.balance === 0 ? "destructive" : balance.balance < 10 ? "secondary" : "default"}
         className="flex items-center space-x-1"
       >
@@ -117,7 +117,7 @@ export const QCBalance: React.FC<QCBalanceProps> = ({
           {formatBalance(balance.balance)} QC
         </span>
       </Badge>
-      
+
       {showBuyButton && (
         <Button
           size="sm"

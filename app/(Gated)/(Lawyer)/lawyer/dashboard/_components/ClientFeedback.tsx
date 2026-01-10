@@ -2,7 +2,6 @@
 
 import { useEffect } from "react"
 import { useAppDispatch, useAppSelector } from "@/store/store"
-import { getMyReviews } from "@/store/reducers/lawyerSlice"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +10,6 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Star, ChevronRight, MessageSquare, AlertCircle } from "lucide-react"
 import { formatDistanceToNow, parseISO } from 'date-fns'
 import Link from "next/link"
-import { Review } from "@/store/types/lawyer.types"
 
 const renderStars = (rating: number) => {
   return Array.from({ length: 5 }, (_, i) => (
@@ -25,10 +23,10 @@ const renderStars = (rating: number) => {
 
 export default function ClientFeedback() {
   const dispatch = useAppDispatch()
-  const { reviews, isLoading, error, dashboardStats } = useAppSelector(state => state.lawyer)
+  const reviews: any = []
+  const { isLoading, error, dashboardStats } = useAppSelector(state => state.lawyer)
 
   useEffect(() => {
-    dispatch(getMyReviews(5))
   }, [dispatch])
 
   if (isLoading && reviews.length === 0) {
@@ -82,7 +80,7 @@ export default function ClientFeedback() {
               variant="outline"
               size="sm"
               className="mt-4"
-              onClick={() => dispatch(getMyReviews(5))}
+              onClick={() => { }}
             >
               Try Again
             </Button>
@@ -112,7 +110,7 @@ export default function ClientFeedback() {
 
   // Calculate average rating
   const averageRating = dashboardStats?.averageRating ||
-    (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length)
+    (reviews.reduce((sum: any, r: any) => sum + r.rating, 0) / reviews.length)
 
   return (
     <Card className="border-border h-full">
@@ -132,7 +130,7 @@ export default function ClientFeedback() {
       </CardHeader>
       <CardContent className="max-h-[29rem] overflow-y-auto">
         <div className="space-y-4">
-          {reviews.slice(0, 3).map((feedback: Review) => {
+          {reviews.slice(0, 3).map((feedback: any) => {
             const reviewerName = typeof feedback.reviewer === 'object'
               ? `${feedback.reviewer.firstname} ${feedback.reviewer.lastname}`
               : 'Client'

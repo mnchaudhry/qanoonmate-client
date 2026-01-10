@@ -9,12 +9,12 @@ import { getLawyers } from "@/store/reducers/lawyerSlice";
 import { AppDispatch } from "@/store/store";
 import LawyersSidebar from "./_components/LawyersSidebar";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useDebounce } from "@/hooks/use-debounce";
+import { useDebounce } from "@/hooks/useDebounce";
 import ViewToggle from "@/components/ViewToggle";
 import EmptyState from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LawCategory, LawyerLanguage, AvailabilityDay, PakistanCities, PakistanProvinces, LawyerRating, LawyerFeeRange, LawyerExperienceRange, AccountStatus } from "@/lib/enums";
+import { LawCategory, Languages, Days, PakistanCities, PakistanProvinces, Ratings, LawyerFeeRange, LawyerExperienceRange, AccountStatus } from "@/lib/enums";
 
 const PAGE_SIZE = 42;
 
@@ -39,23 +39,22 @@ const LawyersDirectory = () => {
   const urlSortBy = searchParams.get("sort") || "relevance";
   const urlOrder = searchParams.get("order") || "desc";
 
+  const filterOptions = {
+    specialization: Object.values(LawCategory),
+    language: Object.values(Languages),
+    availability: Object.values(Days),
+    city: Object.values(PakistanCities),
+    province: Object.values(PakistanProvinces),
+    rating: Object.values(Ratings),
+    fee_range: Object.values(LawyerFeeRange).map(fee => ({ label: fee, value: fee })),
+    experience_range: Object.values(LawyerExperienceRange).map(experience => ({ label: experience, value: experience }))
+  };
+
   /////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////
   const [searchTerm, setSearchTerm] = useState(urlSearch);
   const [currentPage, setCurrentPage] = useState(urlPage);
   const [view, setView] = useState<"list" | "grid">(urlView as "list" | "grid");
   const [selectedFilters, setSelectedFilters] = useState({ specialization: urlSpecialization, language: urlLanguage, availability: urlAvailability, city: urlCity, province: urlProvince, rating: urlRating, fee_range: urlFeeRange, experience_range: urlExperienceRange, sortBy: urlSortBy, order: urlOrder });
-
-  /////////////////////////////////////////////////// STATIC FILTER OPTIONS /////////////////////////////////////////////////////////
-  const filterOptions = {
-    specialization: Object.values(LawCategory),
-    language: Object.values(LawyerLanguage),
-    availability: Object.values(AvailabilityDay),
-    city: Object.values(PakistanCities),
-    province: Object.values(PakistanProvinces),
-    rating: Object.values(LawyerRating),
-    fee_range: Object.values(LawyerFeeRange).map(fee => ({ label: fee, value: fee })),
-    experience_range: Object.values(LawyerExperienceRange).map(experience => ({ label: experience, value: experience }))
-  };
 
   /////////////////////////////////////////////////// DEBOUNCED VALUES /////////////////////////////////////////////////////////
   const debouncedSearch = useDebounce(searchTerm, 500);
@@ -146,6 +145,16 @@ const LawyersDirectory = () => {
 
     dispatch(getLawyers(params));
   }, [selectedFilters, debouncedSearch, currentPage, dispatch]);
+
+  // Debug: Log lawyers to check structure
+  useEffect(() => {
+    if (lawyers && lawyers.length > 0) {
+      console.log('First lawyer:', lawyers[0]);
+      console.log('Lawyers type:', typeof lawyers[0]);
+      console.log('Has _id?', lawyers[0]?._id);
+      console.log('Has success?', lawyers[0]?.success);
+    }
+  }, [lawyers]);
 
   /////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
 

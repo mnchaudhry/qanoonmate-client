@@ -1,88 +1,75 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import { Lawyer, PaginatedLawyerResponse, SingleLawyerResponse, LawyerReviewsResponse, LawyerAvailabilityResponse, LawyerQuery, SubmitReviewResponse, MyClientsResponse, DashboardStats, Activity, Review } from '@/store/types/lawyer.types';
-import { Availability } from '@/store/types/lawyerSettings.types';
-import { Client } from '../types/client.types';
+import * as LawyerAPI from '../types/lawyer.types';
+import { IClient } from '../types/client.types';
 import { PaginationMeta } from '../types/api';
 
 interface LawyerState {
-    lawyers: Lawyer[];
-    selectedLawyer: Lawyer | null;
-    similarLawyers: Lawyer[];
+    lawyers: LawyerAPI.ILawyer[];
+    selectedLawyer: LawyerAPI.ILawyer | null;
+    similarLawyers: LawyerAPI.ILawyer[];
     isLoading: boolean;
     error: string | null;
-    reviews: Review[];
-    categories: string[];
-    availability: Availability[] | null;
     meta: PaginationMeta;
-    clients: Client[];
+    clients: IClient[];
     logs?: any[];
-    dashboardStats: DashboardStats | null;
+    dashboardStats: LawyerAPI.GetDashboardStatsResponse['data'] | null;
     statsLoading: boolean;
     statsError: string | null;
-    activities: Activity[];
+    activities: LawyerAPI.ActivityLog[];
     activitiesLoading: boolean;
     activitiesError: string | null;
 }
 
 ////////////////////////////////////////////////////////// LAWYER ////////////////////////////////////////////////////////////
 
-export const getLawyers = createAsyncThunk<PaginatedLawyerResponse, LawyerQuery>('lawyer/getLawyers', async (params, { rejectWithValue }) => {
+export const getLawyers = createAsyncThunk<LawyerAPI.GetAllLawyersResponse, LawyerAPI.GetAllLawyersRequest>('lawyer/getLawyers', async (params, { rejectWithValue }) => {
     try {
-        const { data } = await api.getLawyers(params);
+        const { data } = await api.getAllLawyers(params);
         return data;
     } catch (err: any) {
         return rejectWithValue(err.response?.data || 'Error fetching lawyers');
     }
 });
 
-export const getLawyerById = createAsyncThunk<SingleLawyerResponse, string>('lawyer/getLawyerById', async (id, { rejectWithValue }) => {
+export const getLawyerById = createAsyncThunk<LawyerAPI.GetLawyerByIdResponse, LawyerAPI.GetLawyerByIdRequest>('lawyer/getLawyerById', async ({ lawyerId }, { rejectWithValue }) => {
     try {
-        const { data } = await api.getLawyerById(id);
+        const { data } = await api.getLawyerById({ lawyerId });
         return data;
     } catch (err: any) {
         return rejectWithValue(err.response?.data || 'Error fetching lawyer details');
     }
 });
 
-export const getLawyerByUsername = createAsyncThunk<SingleLawyerResponse, string>('lawyer/getLawyerByUsername', async (username, { rejectWithValue }) => {
+export const getLawyerByUsername = createAsyncThunk<LawyerAPI.GetLawyerByUsernameResponse, LawyerAPI.GetLawyerByUsernameRequest>('lawyer/getLawyerByUsername', async (input, { rejectWithValue }) => {
     try {
-        const { data } = await api.getLawyerByUsername(username);
+        const { data } = await api.getLawyerByUsername(input);
         return data;
     } catch (err: any) {
         return rejectWithValue(err.response?.data || 'Error fetching lawyer details');
     }
 });
 
-export const getLawyerAvailability = createAsyncThunk<LawyerAvailabilityResponse, string>('lawyer/getLawyerAvailability', async (id, { rejectWithValue }) => {
+export const getLawyerAvailability = createAsyncThunk<LawyerAPI.GetLawyerAvailabilityResponse, LawyerAPI.GetLawyerAvailabilityRequest>('lawyer/getLawyerAvailability', async (input, { rejectWithValue }) => {
     try {
-        const { data } = await api.getLawyerAvailability(id);
+        const { data } = await api.getLawyerAvailability(input);
         return data;
     } catch (err: any) {
         return rejectWithValue(err.response?.data || 'Error fetching lawyer availability');
     }
 });
 
-export const getLawyerReviews = createAsyncThunk<LawyerReviewsResponse, string>('lawyer/getLawyerReviews', async (id, { rejectWithValue }) => {
+export const getMeLawyer = createAsyncThunk<LawyerAPI.GetLawyerByIdResponse, void>('lawyer/getMeLawyer', async (_, { rejectWithValue }) => {
     try {
-        const { data } = await api.getLawyerReviews(id);
-        return data;
-    } catch (err: any) {
-        return rejectWithValue(err.response?.data || 'Error fetching lawyer reviews');
-    }
-});
-
-export const getMeLawyer = createAsyncThunk<SingleLawyerResponse, void>('lawyer/getMeLawyer', async (_, { rejectWithValue }) => {
-    try {
-        const { data } = await api.getMeLawyer();
+        const { data } = await api.getMe();
         return data;
     } catch (err: any) {
         return rejectWithValue(err.response?.data || 'Error fetching your lawyer profile');
     }
 });
 
-export const getMyClients = createAsyncThunk<MyClientsResponse, void>('lawyer/getMyClients', async (_, { rejectWithValue }) => {
+export const getMyClients = createAsyncThunk<LawyerAPI.GetMyClientsResponse, void>('lawyer/getMyClients', async (_, { rejectWithValue }) => {
     try {
         const { data } = await api.getMyClients();
         return data;
@@ -91,9 +78,9 @@ export const getMyClients = createAsyncThunk<MyClientsResponse, void>('lawyer/ge
     }
 });
 
-export const updateMeLawyer = createAsyncThunk<SingleLawyerResponse, Partial<Lawyer>>('lawyer/updateMeLawyer', async (formData, { rejectWithValue }) => {
+export const updateMeLawyer = createAsyncThunk<LawyerAPI.UpdateLawyerResponse, Partial<LawyerAPI.ILawyer>>('lawyer/updateMeLawyer', async (formData, { rejectWithValue }) => {
     try {
-        const { data } = await api.updateMeLawyer(formData);
+        const { data } = await api.updateMe(formData);
         toast.success('Profile updated successfully');
         return data;
     } catch (err: any) {
@@ -102,9 +89,9 @@ export const updateMeLawyer = createAsyncThunk<SingleLawyerResponse, Partial<Law
     }
 });
 
-export const updateLawyerPassword = createAsyncThunk<SingleLawyerResponse, string>('lawyer/updateLawyerPassword', async (password, { rejectWithValue }) => {
+export const updateLawyerPassword = createAsyncThunk<any, string>('lawyer/updateLawyerPassword', async (password, { rejectWithValue }) => {
     try {
-        const { data } = await api.updateLawyerPassword(password);
+        const { data } = await api.changePassword({ oldPassword: '', newPassword: password });
         toast.success('Password updated successfully');
         return data;
     } catch (err: any) {
@@ -113,7 +100,7 @@ export const updateLawyerPassword = createAsyncThunk<SingleLawyerResponse, strin
     }
 });
 
-export const adminUpdateLawyerStatus = createAsyncThunk<SingleLawyerResponse, { id: string, isActive: boolean }>('lawyer/adminUpdateLawyerStatus', async ({ id, isActive }, { rejectWithValue }) => {
+export const adminUpdateLawyerStatus = createAsyncThunk<LawyerAPI.UpdateLawyerStatusResponse, { id: string, isActive: boolean }>('lawyer/adminUpdateLawyerStatus', async ({ id, isActive }, { rejectWithValue }) => {
     try {
         const { data } = await api.updateLawyerStatus(id, isActive);
         toast.success('Lawyer status updated');
@@ -126,8 +113,8 @@ export const adminUpdateLawyerStatus = createAsyncThunk<SingleLawyerResponse, { 
 
 export const adminDeleteLawyer = createAsyncThunk<string, string>('lawyer/adminDeleteLawyer', async (id, { rejectWithValue }) => {
     try {
-        const { data } = await api.deleteLawyer(id);
-        toast.success(data?.message || 'Lawyer deleted');
+        await api.deleteLawyer(id);
+        toast.success('Lawyer deleted');
         return id;
     } catch (err: any) {
         toast.error(err?.response?.data?.message || 'Failed to delete lawyer!');
@@ -135,19 +122,8 @@ export const adminDeleteLawyer = createAsyncThunk<string, string>('lawyer/adminD
     }
 });
 
-export const submitReview = createAsyncThunk<SubmitReviewResponse, { id: string, review: Review }>('lawyer/submitReview', async ({ id, review }, { rejectWithValue }) => {
-    try {
-        const { data } = await api.submitReview(id, review);
-        toast.success('Review submitted');
-        return data;
-    } catch (err: any) {
-        toast.error(err?.response?.data?.message || 'Failed to submit review!');
-        return rejectWithValue(err.response?.data || 'Error submitting review');
-    }
-}
-);
 
-export const searchLawyers = createAsyncThunk<PaginatedLawyerResponse, { query: string } & LawyerQuery>('lawyer/searchLawyers', async (params, { rejectWithValue }) => {
+export const searchLawyers = createAsyncThunk<LawyerAPI.SearchLawyersResponse, LawyerAPI.SearchLawyersRequest>('lawyer/searchLawyers', async (params, { rejectWithValue }) => {
     try {
         const { data } = await api.searchLawyers(params);
         return data;
@@ -156,9 +132,9 @@ export const searchLawyers = createAsyncThunk<PaginatedLawyerResponse, { query: 
     }
 });
 
-export const getSimilarLawyers = createAsyncThunk<PaginatedLawyerResponse, { lawyerId: string; params?: { limit?: number } & LawyerQuery }>('lawyer/getSimilarLawyers', async ({ lawyerId, params }, { rejectWithValue }) => {
+export const getSimilarLawyers = createAsyncThunk<LawyerAPI.GetSimilarLawyersResponse, { lawyerId: string; params?: { limit?: number } & LawyerAPI.LawyerQuery }>('lawyer/getSimilarLawyers', async ({ lawyerId }, { rejectWithValue }) => {
     try {
-        const { data } = await api.getSimilarLawyers(lawyerId, params);
+        const { data } = await api.getSimilarLawyers(lawyerId);
         return data;
     } catch (err: any) {
         return rejectWithValue(err.response?.data || 'Error fetching similar lawyers');
@@ -166,9 +142,9 @@ export const getSimilarLawyers = createAsyncThunk<PaginatedLawyerResponse, { law
 });
 
 // Admin helpers (replicating users module capabilities)
-export const exportLawyersCsv = createAsyncThunk<Blob, LawyerQuery | undefined>('lawyer/exportLawyersCsv', async (params, { rejectWithValue }) => {
+export const exportLawyersCsv = createAsyncThunk<Blob, LawyerAPI.LawyerQuery | undefined>('lawyer/exportLawyersCsv', async (params, { rejectWithValue }) => {
     try {
-        const { data } = await api.exportLawyersCsv(params as any);
+        const { data } = await api.exportLawyers(params);
         return data as unknown as Blob;
     } catch (err: any) {
         return rejectWithValue(err.message || 'Failed to export lawyers');
@@ -178,6 +154,7 @@ export const exportLawyersCsv = createAsyncThunk<Blob, LawyerQuery | undefined>(
 export const bulkUploadLawyers = createAsyncThunk<any, File>('lawyer/bulkUploadLawyers', async (file, { rejectWithValue }) => {
     try {
         const { data } = await api.bulkUploadLawyers(file);
+        toast.success('Lawyers uploaded successfully');
         return data;
     } catch (err: any) {
         return rejectWithValue(err.message || 'Failed to upload CSV');
@@ -187,6 +164,7 @@ export const bulkUploadLawyers = createAsyncThunk<any, File>('lawyer/bulkUploadL
 export const resetLawyerPassword = createAsyncThunk<any, { id: string; password?: string }>('lawyer/resetLawyerPassword', async ({ id, password }, { rejectWithValue }) => {
     try {
         const { data } = await api.resetLawyerPassword(id, password);
+        toast.success('Password reset successfully');
         return data;
     } catch (err: any) {
         return rejectWithValue(err.message || 'Failed to reset password');
@@ -202,28 +180,28 @@ export const getLawyerLogs = createAsyncThunk<any, string>('lawyer/getLawyerLogs
     }
 });
 
-export const getDashboardStats = createAsyncThunk<DashboardStats, void>('lawyer/getDashboardStats', async () => {
-    const { data } = await api.getDashboardStats();
-    if (data.success) {
-        return data.data!;
+export const getDashboardStats = createAsyncThunk<LawyerAPI.GetDashboardStatsResponse, void>('lawyer/getDashboardStats', async (_, { rejectWithValue }) => {
+    try {
+        const { data } = await api.getDashboardStats();
+        if (data.success) {
+            return data;
+        }
+        return rejectWithValue(data.message || 'Failed to fetch dashboard stats');
+    } catch (err: any) {
+        return rejectWithValue(err.response?.data?.message || 'Failed to fetch dashboard stats');
     }
-    throw new Error('Failed to fetch dashboard stats');
 });
 
-export const getActivityLog = createAsyncThunk<Activity[], number | undefined>('lawyer/getActivityLog', async (limit) => {
-    const { data } = await api.getActivityLog(limit);
-    if (data.success) {
-        return data.data!;
+export const getActivityLog = createAsyncThunk<LawyerAPI.ActivityLog[], number | undefined>('lawyer/getActivityLog', async (limit, { rejectWithValue }) => {
+    try {
+        const { data } = await api.getActivityLog(limit);
+        if (data.success && data.data) {
+            return data.data;
+        }
+        return rejectWithValue(data.message || 'Failed to fetch activity log');
+    } catch (err: any) {
+        return rejectWithValue(err.response?.data?.message || 'Failed to fetch activity log');
     }
-    throw new Error('Failed to fetch activity log');
-});
-
-export const getMyReviews = createAsyncThunk<Review[], number | undefined>('lawyer/getMyReviews', async (limit) => {
-    const { data } = await api.getMyReviews(limit);
-    if (data.success) {
-        return data.data!;
-    }
-    throw new Error('Failed to fetch reviews');
 });
 
 const initialState: LawyerState = {
@@ -232,9 +210,6 @@ const initialState: LawyerState = {
     similarLawyers: [],
     isLoading: false,
     error: null,
-    reviews: [],
-    categories: [],
-    availability: null,
     meta: { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 },
     clients: [],
     logs: [],
@@ -262,8 +237,9 @@ const lawyerSlice = createSlice({
             })
             .addCase(getLawyers.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.lawyers = action.payload.data || [];
-                state.meta = action.payload.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
+                const lawyersData = action.payload?.data?.lawyers;
+                state.lawyers = Array.isArray(lawyersData) ? lawyersData : [];
+                state.meta = action.payload?.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
                 state.error = null;
             })
             .addCase(getLawyers.rejected, (state, action) => {
@@ -275,7 +251,7 @@ const lawyerSlice = createSlice({
             })
             .addCase(getLawyerById.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.selectedLawyer = action.payload?.data || null;
+                state.selectedLawyer = action.payload.data || null;
             })
             .addCase(getLawyerById.rejected, (state, action) => {
                 state.isLoading = false;
@@ -286,59 +262,38 @@ const lawyerSlice = createSlice({
             })
             .addCase(getLawyerByUsername.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.selectedLawyer = action.payload?.data || null;
+                state.selectedLawyer = action.payload.data || null;
             })
             .addCase(getLawyerByUsername.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
             })
-            .addCase(getLawyerAvailability.fulfilled, (state, action) => {
-                state.availability = Array.isArray(action.payload?.data) ? action.payload.data : [];
-            })
-            .addCase(getLawyerReviews.fulfilled, (state, action) => {
-                state.reviews = Array.isArray(action.payload?.data)
-                    ? action.payload.data
-                    : [];
+            .addCase(getLawyerAvailability.fulfilled, () => {
+                // Availability is returned in the response
             })
             .addCase(getMeLawyer.fulfilled, (state, action) => {
-                state.selectedLawyer = action.payload?.data || null;
+                state.selectedLawyer = action.payload.data || null;
             })
             .addCase(getMyClients.fulfilled, (state, action) => {
-                state.clients = action.payload?.data || [];
-                // state.meta = action.payload?.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
+                state.clients = action.payload.data?.clients || [];
+                state.meta = action.payload.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
             })
             .addCase(updateMeLawyer.fulfilled, (state, action) => {
-                state.selectedLawyer = action.payload?.data || null;
+                state.selectedLawyer = action.payload.data || null;
             })
-            .addCase(updateLawyerPassword.fulfilled, (state, action) => {
-                state.selectedLawyer = action.payload?.data || null;
+            .addCase(updateLawyerPassword.fulfilled, () => {
+                // Password update doesn't return lawyer data
             })
             .addCase(adminUpdateLawyerStatus.fulfilled, (state, action) => {
-                state.selectedLawyer = action.payload?.data || null;
+                state.selectedLawyer = action.payload.data || null;
             })
             .addCase(adminDeleteLawyer.fulfilled, (state, action) => {
                 const deletedId = action.payload;
                 state.lawyers = state.lawyers.filter(lawyer => lawyer._id !== deletedId);
                 if (state.selectedLawyer?._id === deletedId) state.selectedLawyer = null;
             })
-            .addCase(submitReview.fulfilled, (state, action) => {
-                const r = action.payload.data;
-                if (r) {
-                    // Ensure reviewer is always an object matching Review.reviewer shape
-                    const reviewerObj = typeof r.reviewer === "string"
-                        ? { _id: r.reviewer, firstname: '', lastname: '' }
-                        : r.reviewer;
-                    state.reviews.unshift({
-                        ...r,
-                        reviewer: reviewerObj,
-                        context: (r.context === "chat" || r.context === "document" || r.context === "consultation" || r.context === "other")
-                            ? r.context
-                            : "other"
-                    });
-                }
-            })
             .addCase(searchLawyers.fulfilled, (state, action) => {
-                state.lawyers = action.payload.data || [];
+                state.lawyers = action.payload.data?.lawyers || [];
                 state.meta = action.payload.meta || { currentPage: 1, limit: 10, totalCount: 0, totalPages: 1 };
             })
             .addCase(getSimilarLawyers.pending, (state) => {
@@ -346,7 +301,7 @@ const lawyerSlice = createSlice({
             })
             .addCase(getSimilarLawyers.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.similarLawyers = action.payload.data || [];
+                state.similarLawyers = action.payload.data?.lawyers || [];
                 state.error = null;
             })
             .addCase(getSimilarLawyers.rejected, (state, action) => {
@@ -359,7 +314,7 @@ const lawyerSlice = createSlice({
             })
             .addCase(getDashboardStats.fulfilled, (state, action) => {
                 state.statsLoading = false;
-                state.dashboardStats = action.payload;
+                state.dashboardStats = action.payload.data;
                 state.statsError = null;
             })
             .addCase(getDashboardStats.rejected, (state, action) => {
@@ -378,17 +333,6 @@ const lawyerSlice = createSlice({
             .addCase(getActivityLog.rejected, (state, action) => {
                 state.activitiesLoading = false;
                 state.activitiesError = action.error.message || 'Failed to fetch activity log';
-            })
-            .addCase(getMyReviews.pending, (state) => {
-                state.isLoading = true;
-            })
-            .addCase(getMyReviews.fulfilled, (state, action) => {
-                state.isLoading = false;
-                state.reviews = action.payload;
-            })
-            .addCase(getMyReviews.rejected, (state, action) => {
-                state.isLoading = false;
-                state.error = action.error.message || 'Failed to fetch reviews';
             })
             .addCase(getLawyerLogs.fulfilled, (state, action) => {
                 state.logs = action.payload?.data?.logs || [];

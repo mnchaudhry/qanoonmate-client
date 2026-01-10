@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { User, Camera, X, Upload, Image as ImageIcon } from "lucide-react";
 import { toast } from "react-hot-toast";
 import Image from "next/image";
-import { User as UserType } from "@/store/types/user.types";
+import { IUser as UserType } from "@/store/types/user.types";
 
 interface ProfilePhotoProps {
   user: UserType | null;

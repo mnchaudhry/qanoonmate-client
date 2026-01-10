@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useDebounce } from '@/hooks/use-debounce'
+import { useDebounce } from '@/hooks/useDebounce'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { AppDispatch, RootState } from '@/store/store'
 import { fetchCommunications, setCurrentPage } from '@/store/reducers/communicationSlice'

@@ -22,15 +22,18 @@ export interface LocalStorageConfig {
 
 class LocalStorageManager {
     private prefix: string;
-    private isAvailable: boolean;
 
     constructor(config: LocalStorageConfig = {}) {
         this.prefix = config.prefix || 'le';
-        this.isAvailable = this.checkAvailability();
     }
 
     // Check if localStorage is available   
     private checkAvailability(): boolean {
+        // Only check in browser environment
+        if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+            return false;
+        }
+
         try {
             const test = '__localStorage_test__';
             localStorage.setItem(test, test);
@@ -49,7 +52,7 @@ class LocalStorageManager {
 
     // Set item in localStorage
     setItem<T>(key: string, value: T): boolean {
-        if (!this.isAvailable) {
+        if (!this.checkAvailability()) {
             console.warn('localStorage not available, cannot set item:', key);
             return false;
         }
@@ -67,7 +70,7 @@ class LocalStorageManager {
 
     // Get item from localStorage
     getItem<T>(key: string, defaultValue?: T): T | null {
-        if (!this.isAvailable) {
+        if (!this.checkAvailability()) {
             console.warn('localStorage not available, cannot get item:', key);
             return defaultValue || null;
         }
@@ -89,7 +92,7 @@ class LocalStorageManager {
 
     // Remove item from localStorage
     removeItem(key: string): boolean {
-        if (!this.isAvailable) {
+        if (!this.checkAvailability()) {
             console.warn('localStorage not available, cannot remove item:', key);
             return false;
         }
@@ -106,7 +109,7 @@ class LocalStorageManager {
 
     // Check if item exists in localStorage
     hasItem(key: string): boolean {
-        if (!this.isAvailable) {
+        if (!this.checkAvailability()) {
             return false;
         }
 
@@ -121,7 +124,7 @@ class LocalStorageManager {
 
     // Clear all items with prefix
     clear(): boolean {
-        if (!this.isAvailable) {
+        if (!this.checkAvailability()) {
             console.warn('localStorage not available, cannot clear items');
             return false;
         }
@@ -148,7 +151,7 @@ class LocalStorageManager {
 
     // Get all items with prefix
     getAllItems(): LocalStorageData {
-        if (!this.isAvailable) {
+        if (!this.checkAvailability()) {
             return {};
         }
 
@@ -207,7 +210,7 @@ class LocalStorageManager {
 
     // Utility methods
     getAvailability(): boolean {
-        return this.isAvailable;
+        return this.checkAvailability();
     }
 
     getPrefix(): string {

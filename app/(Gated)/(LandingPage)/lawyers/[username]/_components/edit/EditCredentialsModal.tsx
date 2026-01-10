@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useEditModal } from "./EditModalContext";
 import { X, Plus, Calendar, Award, GraduationCap } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BarCouncils } from "@/lib/enums";
 
 interface EditCredentialsModalProps {
   isOpen: boolean;
@@ -33,16 +35,11 @@ interface WorkHistory {
 }
 
 export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalProps) {
+
+  /////////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////////
   const { lawyer } = useEditModal();
-  const [formData, setFormData] = useState({
-    barCouncil: "",
-    licenseNumber: "",
-    barAssociation: "",
-    barCouncilEnrollmentDate: "",
-    preLicensedExperience: 0,
-    education: [] as Education[],
-    workHistory: [] as WorkHistory[],
-  });
+  /////////////////////////////////////////////////// STATES ///////////////////////////////////////////////////
+  const [formData, setFormData] = useState({ barCouncil: "", licenseNumber: "", barAssociation: "", barCouncilEnrollmentDate: "", preLicensedExperience: 0, education: [] as Education[], workHistory: [] as WorkHistory[], });
 
   const [newEducation, setNewEducation] = useState({
     degree: "",
@@ -60,6 +57,7 @@ export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalPr
     description: "",
   });
 
+  /////////////////////////////////////////////////// EFFECTS ///////////////////////////////////////////////////
   useEffect(() => {
     if (lawyer) {
       setFormData({
@@ -70,7 +68,7 @@ export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalPr
         preLicensedExperience: lawyer.preLicensedYearsOfExperience || 0,
         education: lawyer.education?.map(edu => {
           // Parse education string back to object format
-          const match = edu.match(/(.+?) from (.+?) \((\d+)\)/);
+          const match = edu?.match(/(.+?) from (.+?) \((\d+)\)/);
           if (match) {
             return { degree: match[1], institution: match[2], year: parseInt(match[3]), field: "", honors: "" };
           }
@@ -81,6 +79,7 @@ export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalPr
     }
   }, [lawyer]);
 
+  /////////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////
   const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({
       ...prev,
@@ -137,7 +136,7 @@ export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalPr
         education: formData.education.map(edu => `${edu.degree} from ${edu.institution} (${edu.year})`),
         // Note: workHistory might need to be stored in a different field or added to the Lawyer type
       });
-      
+
       console.log("Successfully saved credentials data:", formData);
     } catch (error) {
       console.error("Failed to save credentials data:", error);
@@ -145,6 +144,7 @@ export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalPr
     }
   };
 
+  /////////////////////////////////////////////////// RENDER ///////////////////////////////////////////////////
   return (
     <EditModal
       isOpen={isOpen}
@@ -166,12 +166,18 @@ export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalPr
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="bar-council">Bar Council</Label>
-                <Input
-                  id="bar-council"
-                  value={formData.barCouncil}
-                  onChange={(e) => handleInputChange("barCouncil", e.target.value)}
-                  placeholder="e.g., Punjab Bar Council"
-                />
+                <Select>
+                  <SelectTrigger id="bar-council" className="w-full">
+                    <SelectValue placeholder="e.g., Punjab Bar Council" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {
+                      Object.values(BarCouncils).map((b, i) => (
+                        <SelectItem key={i} value={b} onChange={() => handleInputChange("barCouncil", b)}>{b}</SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="license-number">License Number</Label>
@@ -198,6 +204,7 @@ export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalPr
                   type="date"
                   value={formData.barCouncilEnrollmentDate}
                   onChange={(e) => handleInputChange("barCouncilEnrollmentDate", e.target.value)}
+                  max={new Date().toISOString().split("T")[0]}
                 />
               </div>
             </div>
@@ -342,6 +349,7 @@ export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalPr
                   type="date"
                   value={newWork.startDate.toISOString().split('T')[0]}
                   onChange={(e) => setNewWork(prev => ({ ...prev, startDate: new Date(e.target.value) }))}
+                  max={new Date().toISOString().split("T")[0]}
                 />
               </div>
               <div className="space-y-2">
@@ -351,6 +359,7 @@ export function EditCredentialsModal({ isOpen, onClose }: EditCredentialsModalPr
                   type="date"
                   value={newWork.endDate.toISOString().split('T')[0]}
                   onChange={(e) => setNewWork(prev => ({ ...prev, endDate: new Date(e.target.value) }))}
+                  max={new Date().toISOString().split("T")[0]}
                 />
               </div>
             </div>

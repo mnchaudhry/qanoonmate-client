@@ -1,10 +1,9 @@
-import { BlogComment } from "@/store/types/api";
 import Image from "next/image";
 import React, { useState } from "react";
 
 interface CommentsSectionProps {
   blogId: string;
-  comments: BlogComment[];
+  comments: any[];
 }
 
 export default function CommentsSection({ comments }: CommentsSectionProps) {

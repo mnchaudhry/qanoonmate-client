@@ -5,37 +5,20 @@ import { EditModal } from "./EditModal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useEditModal } from "./EditModalContext";
-import { X, Plus } from "lucide-react";
 
 interface EditContactModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface ConsultationFee {
-  type: string;
-  price: number;
-  duration: string;
-}
 
 export function EditContactModal({ isOpen, onClose }: EditContactModalProps) {
+
+  /////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////
   const { lawyer } = useEditModal();
-  const [formData, setFormData] = useState({
-    responseTime: "",
-    consultationFees: [] as ConsultationFee[],
-    consultationModes: [] as string[],
-  });
-
-  const [newFee, setNewFee] = useState({
-    type: "",
-    price: "",
-    duration: "",
-  });
-
+  const { updateSection } = useEditModal();
   const consultationTypes = [
     "Initial Consultation",
     "Follow-up Consultation",
@@ -45,13 +28,6 @@ export function EditContactModal({ isOpen, onClose }: EditContactModalProps) {
     "Negotiation Session"
   ];
 
-  const consultationModes = [
-    "In-Person",
-    "Video Call",
-    "Phone Call",
-    "Email",
-    "Chat"
-  ];
 
   const durations = [
     "30 minutes",
@@ -62,78 +38,33 @@ export function EditContactModal({ isOpen, onClose }: EditContactModalProps) {
     "Full day"
   ];
 
+  /////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////////
+  const [formData, setFormData] = useState({ responseTime: "", hourlyRate: 0 });
+  const [newFee, setNewFee] = useState({ type: "", price: "", duration: "", });
+
+
+  /////////////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////////////
   useEffect(() => {
     if (lawyer) {
       setFormData({
         responseTime: "", // This field doesn't exist in Lawyer type yet
-        consultationModes: [], // This field doesn't exist in Lawyer type yet
-        consultationFees: [], // This field doesn't exist in Lawyer type yet
+        hourlyRate: lawyer.hourlyRate || 0,
       });
     }
   }, [lawyer]);
 
+  /////////////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////
   const handleResponseTimeChange = (value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      responseTime: value
-    }));
+    setFormData(prev => ({ ...prev, responseTime: value }));
   };
 
-  const handleConsultationModeChange = (mode: string) => {
-    if (!formData.consultationModes.includes(mode)) {
-      setFormData(prev => ({
-        ...prev,
-        consultationModes: [...prev.consultationModes, mode]
-      }));
-    }
-  };
-
-  const removeConsultationMode = (mode: string) => {
-    setFormData(prev => ({
-      ...prev,
-      consultationModes: prev.consultationModes.filter(m => m !== mode)
-    }));
-  };
-
-  const addConsultationFee = () => {
-    if (newFee.type && newFee.price && newFee.duration) {
-      const fee: ConsultationFee = {
-        type: newFee.type,
-        price: parseInt(newFee.price),
-        duration: newFee.duration,
-      };
-
-      setFormData(prev => ({
-        ...prev,
-        consultationFees: [...prev.consultationFees, fee]
-      }));
-
-      setNewFee({ type: "", price: "", duration: "" });
-    }
-  };
-
-  const removeConsultationFee = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      consultationFees: prev.consultationFees.filter((_, i) => i !== index)
-    }));
-  };
-
-  const { updateSection } = useEditModal();
 
   const handleSave = async () => {
     if (!lawyer) return;
 
     try {
       // Use the consultation settings update
-      await updateSection('consultation', {
-        modes: formData.consultationModes,
-        fees: formData.consultationFees.map(fee => ({
-          mode: fee.type,
-          amount: fee.price,
-        })),
-        // Note: responseTime might need to be stored in a different field
-      });
+      await updateSection('consultation', { hourlyRate: formData.hourlyRate, responseTime: formData.responseTime });
 
       console.log("Successfully saved contact data:", formData);
     } catch (error) {
@@ -142,6 +73,7 @@ export function EditContactModal({ isOpen, onClose }: EditContactModalProps) {
     }
   };
 
+  /////////////////////////////////////////////////////// RENDER /////////////////////////////////////////////////////////
   return (
     <EditModal
       isOpen={isOpen}
@@ -172,50 +104,6 @@ export function EditContactModal({ isOpen, onClose }: EditContactModalProps) {
                 </SelectContent>
               </Select>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Consultation Modes */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base font-medium">Available Consultation Methods</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Select consultation methods you offer</Label>
-              <Select onValueChange={handleConsultationModeChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Add consultation method" />
-                </SelectTrigger>
-                <SelectContent>
-                  {consultationModes
-                    .filter(mode => !formData.consultationModes.includes(mode))
-                    .map((mode) => (
-                      <SelectItem key={mode} value={mode}>
-                        {mode}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {formData.consultationModes.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {formData.consultationModes.map((mode) => (
-                  <Badge key={mode} variant="secondary" className="flex items-center gap-1">
-                    {mode}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
-                      onClick={() => removeConsultationMode(mode)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
-            )}
           </CardContent>
         </Card>
 
@@ -269,41 +157,17 @@ export function EditContactModal({ isOpen, onClose }: EditContactModalProps) {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label>&nbsp;</Label>
-                <Button onClick={addConsultationFee} className="w-full">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Fee
-                </Button>
-              </div>
             </div>
 
-            {formData.consultationFees.length > 0 && (
-              <div className="space-y-2">
-                <Label>Current Fees</Label>
-                <div className="space-y-2">
-                  {formData.consultationFees.map((fee, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                      <div className="flex-1">
-                        <div className="font-medium text-sm">{fee.type}</div>
-                        <div className="text-xs text-muted-foreground">{fee.duration}</div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <span className="font-semibold text-primary">{fee.price.toLocaleString()} PKR</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground"
-                          onClick={() => removeConsultationFee(index)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <div className="space-y-2">
+              <Label>Current Fees</Label>
+              <Input
+                value={formData.hourlyRate}
+                onChange={(e) => setFormData(prev => ({ ...prev, hourlyRate: Number(e.target.value) }))}
+                type="number"
+                placeholder="Hourly Rate in PKR"
+              />
+            </div>
           </CardContent>
         </Card>
       </div>

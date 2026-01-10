@@ -1,7 +1,6 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Clock, Calendar, CheckCircle, XCircle, Edit } from "lucide-react";
 import { LawyerProfile } from "@/lib/types/profile.types";
 import { useSelector } from "react-redux";
@@ -47,8 +46,8 @@ export function AvailabilityCard({ lawyer }: AvailabilityCardProps) {
             Availability
           </div>
           {isOwnProfile && (
-            <Edit 
-              className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary" 
+            <Edit
+              className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-primary"
               onClick={openAvailabilityModal}
             />
           )}
@@ -138,26 +137,13 @@ export function AvailabilityCard({ lawyer }: AvailabilityCardProps) {
           </div>
         </div>
 
-        {/* Consultation Modes */}
-        <div className="pt-4 border-t border-gray-100">
-          <h4 className="font-medium text-gray-900 mb-2 text-sm">Available Consultation Modes</h4>
-          <div className="flex flex-wrap gap-2">
-            {lawyer.services.consultationModes.map((mode, index) => (
-              <Badge key={index} variant="secondary" className="text-xs bg-gray-50 text-gray-700">
-                {mode === 'video' ? 'Video Call' :
-                  mode === 'phone' ? 'Phone Call' :
-                    mode === 'in-person' ? 'In-Person' :
-                      mode === 'chat' ? 'Chat' : mode}
-              </Badge>
-            ))}
-          </div>
-        </div>
+
       </CardContent>
-      
+
       {/* Edit Modal */}
-      <EditAvailabilityModal 
-        isOpen={isAvailabilityModalOpen} 
-        onClose={closeAllModals} 
+      <EditAvailabilityModal
+        isOpen={isAvailabilityModalOpen}
+        onClose={closeAllModals}
       />
     </Card>
   );

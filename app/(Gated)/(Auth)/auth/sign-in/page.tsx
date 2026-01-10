@@ -11,7 +11,6 @@ import Link from 'next/link';
 import { login } from '@/store/reducers/authSlice';
 import { UserRole } from '@/lib/enums';
 import { LoginRequest } from '@/store/types/auth.types';
-import AuthFlowGuard from '@/components/auth/AuthFlowGuard';
 
 const SignIn: React.FC = () => {
 
@@ -89,14 +88,13 @@ const SignIn: React.FC = () => {
 
   ////////////////////////////////////////////////////// RENDER ////////////////////////////////////////////////////////////////
   return (
-    <AuthFlowGuard allowedRoles={[UserRole.CLIENT, UserRole.LAWYER]}>
-      <div className="w-full border-stroke xl:border-l-2 lg:pl-12 py-20 ">
+    <div className="w-full border-stroke xl:border-l-2 lg:pl-12 py-20 ">
 
-        <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
+      <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
 
-          <h2 className="mb-9 text-2xl font-bold text-foreground sm:text-title-xl2">
-            Sign in{role in Object.values(UserRole) ? <> as a <span className="capitalize">{role}</span></> : ' to QanoonMate'}
-          </h2>
+        <h2 className="mb-9 text-2xl font-bold text-foreground sm:text-title-xl2">
+          Sign in{role in Object.values(UserRole) ? <> as a <span className="capitalize">{role}</span></> : ' to QanoonMate'}
+        </h2>
 
         <form onSubmit={onSubmit}>
 
@@ -174,9 +172,8 @@ const SignIn: React.FC = () => {
           </div>
 
         </form>
-        </div>
       </div>
-    </AuthFlowGuard>
+    </div>
   );
 };
 

@@ -1,23 +1,17 @@
 import React from 'react';
-import { Download, CreditCard, FileText, User, AlertCircle, CheckCircle, Clock, XCircle } from 'lucide-react';
-import { Payment } from '@/store/types/payments.types';
+import { Download, CreditCard, FileText, AlertCircle, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { IPayment } from '@/store/types/payments.types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 
 interface InvoiceDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  transaction: Payment | null;
+  transaction: IPayment | null;
 }
 
 const InvoiceDrawer: React.FC<InvoiceDrawerProps> = ({ isOpen, onClose, transaction }) => {
   if (!isOpen || !transaction) return null;
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  };
 
   const formatCurrency = (amount: number) => `PKR ${amount.toLocaleString()}`;
 
@@ -53,28 +47,19 @@ const InvoiceDrawer: React.FC<InvoiceDrawerProps> = ({ isOpen, onClose, transact
           <DialogTitle className="text-xl font-bold">Payment #{transaction.paymentId.slice(-8)}</DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto p-6">
-          {/* Payment Info */}
-          <Card className="bg-muted rounded-lg p-4 mb-2">
-            <div className="flex items-center gap-2 mb-2">
-              <User className="w-5 h-5 text-muted-foreground" />
-              <span className="font-medium text-foreground">{transaction.billingDetails.name}</span>
-            </div>
-            <div className="text-sm text-muted-foreground">{transaction.billingDetails.email}</div>
-          </Card>
-          
+
           {/* Payment Details */}
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground border-b !border-border pb-2">Payment Details</h3>
             <div className="grid grid-cols-1 gap-3">
               <div className="flex justify-between"><span className="text-muted-foreground">Description:</span><span className="font-medium">{transaction.description}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Payment Type:</span><span className="font-medium">{transaction.paymentType}</span></div>
-              <div className="flex justify-between"><span className="text-muted-foreground">Date:</span><span className="font-medium">{formatDate(transaction.createdAt)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Status:</span><span className="font-medium flex items-center gap-1">{getStatusIcon(transaction.status)} {getStatusText(transaction.status)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Payment Method:</span><span className="font-medium">{transaction.paymentMethod}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Gateway:</span><span className="font-medium">{transaction.gateway}</span></div>
             </div>
           </div>
-          
+
           {/* Amount Breakdown */}
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground border-b !border-border pb-2">Amount Breakdown</h3>

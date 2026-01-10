@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {   User,   Briefcase,   CheckCircle,   Clock,   Menu,   X,   ExternalLink,  Eye,  Shield,  Bell,  CreditCard,  MessageSquare,  Database} from "lucide-react";
+import { User, Briefcase, CheckCircle, Clock, Menu, X, ExternalLink, Eye, Shield, Bell, CreditCard, MessageSquare, Database } from "lucide-react";
 import { ProfileCompletionData } from "@/lib/types/profile.types";
 import { useIsMobile } from "@/lib/utils/mobile-optimization";
 
@@ -17,16 +17,16 @@ const settingsSections = [
   {
     title: 'Profile Management',
     items: [
-      { 
-        id: 'profile', 
-        title: 'Profile Settings', 
+      {
+        id: 'profile',
+        title: 'Profile Settings',
         description: 'Profile visibility and display settings',
         icon: User,
         required: true
       },
-      { 
-        id: 'edit-profile', 
-        title: 'Edit Profile', 
+      {
+        id: 'edit-profile',
+        title: 'Edit Profile',
         description: 'Update your professional information',
         icon: ExternalLink,
         isExternal: true,
@@ -115,15 +115,14 @@ const settingsSections = [
   }
 ];
 
-export function MobileSettingsSidebar({
-  activeSection,
-  onSectionChange,
-  completion
-}: MobileSettingsSidebarProps) {
+export function MobileSettingsSidebar({ activeSection, onSectionChange, completion }: MobileSettingsSidebarProps) {
+
+  ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////// 
   const isMobile = useIsMobile();
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
+  ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////// 
   const getStatusIcon = (itemId: string) => {
     if (!completion) return null;
 
@@ -158,9 +157,10 @@ export function MobileSettingsSidebar({
   };
 
   if (!isMobile) {
-    return null; // Use regular sidebar for desktop
+    return null;
   }
 
+  ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////// 
   return (
     <>
       {/* Mobile Menu Button */}
@@ -182,7 +182,8 @@ export function MobileSettingsSidebar({
 
           {/* Mobile Sidebar */}
           <div className="fixed left-0 top-0 h-full w-72 bg-card shadow-xl overflow-y-auto border-r border-border">
-            <div className="p-4 border-b border-border">
+
+            <div className="p-4 ">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-foreground">Settings</h2>
                 <Button
@@ -202,7 +203,7 @@ export function MobileSettingsSidebar({
                     {section.title}
                   </h3>
 
-                  <div className="space-y-1">
+                  <div className="">
                     {section.items.map((item) => {
                       const isActive = activeSection === item.id;
                       const statusIcon = getStatusIcon(item.id);
@@ -212,7 +213,7 @@ export function MobileSettingsSidebar({
                         <button
                           key={item.id}
                           onClick={() => handleItemClick(item)}
-                          className={`w-full flex items-center justify-between p-3 rounded-lg text-left transition-all duration-200 ${isActive
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-left transition-all duration-200 ${isActive
                             ? "bg-primary/10 text-primary border border-primary/20"
                             : "text-foreground hover:text-primary"
                             }`}

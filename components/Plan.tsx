@@ -1,28 +1,41 @@
 import { Button } from '@/components/ui/button'
 import { Check, Coins, Zap } from 'lucide-react'
-import React, { useState } from 'react'
-import { QCPackage } from '@/store/types/credits.types'
-import QCPurchaseModal from './wallet/QCPurchaseModal'
+import React from 'react'
+import { IQCPackage } from '@/store/types/credits.types'
 import { useAuthGuard } from '@/hooks/useAuthGuard'
 import SignInModal from './auth/SignInModal'
+import { useAppDispatch } from '@/store/store'
+import { purchaseQC } from '@/store/reducers/creditSlice'
+import { toast } from 'sonner'
 
-const Plan = ({ plan }: { plan: QCPackage }) => {
-    const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+const Plan = ({ plan }: { plan: IQCPackage }) => {
+    console.log('plan', plan);
+    ////////////////////////////////////////// VARIABLES ////////////////////////////////////////// 
     const { requireAuth, showSignInModal, modalConfig, handleSignInSuccess, handleSignInCancel } = useAuthGuard();
+    const dispatch = useAppDispatch();
 
-    const handlePurchase = () => {
-        requireAuth(() => {
-            setShowPurchaseModal(true);
+    ////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////// 
+    const handlePurchase = async () => {
+        requireAuth(async () => {
+            try {
+                const result = await dispatch(purchaseQC({ planId: plan.id })).unwrap();
+
+                toast.success('Payment initiated successfully!');
+
+                // Redirect to payment gateway
+                if (result?.data?.paymentUrl) {
+                    window.location.href = result.data.paymentUrl;
+                }
+            } catch (error: any) {
+                toast.error(error || 'Failed to initiate payment');
+            }
         }, {
             customMessage: 'Please sign in to purchase Qanoon Credits',
             showBenefits: true
         });
     };
 
-    const handleClosePurchaseModal = () => {
-        setShowPurchaseModal(false);
-    };
-
+    ////////////////////////////////////////// RENDER ////////////////////////////////////////// 
     return (
         <div className={`relative p-8 rounded-lg border shadow-sm hover:shadow-xl transition-all duration-300 ${plan.popular ? "bg-primary/5 border-primary shadow-md scale-105" : "bg-neutral !border-border"}`}>
             {plan.popular && (
@@ -35,25 +48,25 @@ const Plan = ({ plan }: { plan: QCPackage }) => {
                     {plan.savings}
                 </div>
             )}
-            
+
             <div className="text-center mb-6">
                 <div className="flex items-center justify-center mb-2">
                     <Coins className="h-6 w-6 text-primary mr-2" />
                     <h3 className="font-bold text-xl">{plan.name}</h3>
                 </div>
-                
+
                 <div className="text-4xl font-bold mb-2 text-primary">
                     {plan.qcAmount} QC
                 </div>
-                
+
                 <div className="text-2xl font-semibold mb-2">
                     ${plan.price}
                     <span className="text-lg text-muted-foreground"> one-time</span>
                 </div>
-                
+
                 <p className="text-muted-foreground text-sm">{plan.description}</p>
             </div>
-            
+
             <ul className="space-y-3 mb-6">
                 {plan.features.map((feature: string, idx: number) => (
                     <li className="flex items-start" key={idx}>
@@ -62,22 +75,15 @@ const Plan = ({ plan }: { plan: QCPackage }) => {
                     </li>
                 ))}
             </ul>
-            
-            <Button 
-                className="w-full py-2.5" 
+
+            <Button
+                className="w-full py-2.5"
                 onClick={handlePurchase}
                 variant={plan.popular ? "default" : "outline"}
             >
                 <Zap className="h-4 w-4 mr-2" />
                 Purchase Credits
             </Button>
-
-            {/* Purchase Modal */}
-            <QCPurchaseModal
-                isOpen={showPurchaseModal}
-                onClose={handleClosePurchaseModal}
-                package={plan}
-            />
 
             {/* Sign In Modal */}
             <SignInModal

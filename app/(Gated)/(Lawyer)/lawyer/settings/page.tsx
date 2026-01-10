@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { ProfileCompletionData } from "@/lib/types/profile.types";
 import { calculateProfileCompletion } from "@/lib/utils/profileCompletion";
 import { SettingsSidebar } from "./_components/SettingsSidebar";
@@ -13,15 +13,19 @@ import { SettingsContent } from "./_components/SettingsContent";
 
 
 export default function LawyerSettings() {
-    const searchParams = useSearchParams();
-  const { user } = useSelector((state: RootState) => state.auth);
-  const lawyer = user as Lawyer;
 
+  ///////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////// 
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const lawyer = user as ILawyer;
+
+  ///////////////////////////////////////////////// STATES ///////////////////////////////////////////////// 
   const [activeSection, setActiveSection] = useState("profile");
   const [completion, setCompletion] = useState<ProfileCompletionData | null>(null);
 
-    useEffect(() => {
-    // Get section from URL params
+  ///////////////////////////////////////////////// EFFECTS ///////////////////////////////////////////////// 
+  useEffect(() => {
     const section = searchParams.get('section');
     if (section) {
       setActiveSection(section);
@@ -35,14 +39,16 @@ export default function LawyerSettings() {
     }
   }, [lawyer]);
 
+  ///////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////// 
   const handleSectionChange = (section: string) => {
     setActiveSection(section);
+    router.push(`/lawyer/settings?section=${section}`, { scroll: false });
   };
 
-
-    return (
+  ///////////////////////////////////////////////// RENDER ///////////////////////////////////////////////// 
+  return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 pb-8 pt-2">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Mobile Sidebar */}
           <MobileSettingsSidebar
@@ -50,7 +56,7 @@ export default function LawyerSettings() {
             onSectionChange={handleSectionChange}
             completion={completion}
           />
-          
+
           {/* Desktop Sidebar */}
           <div className="hidden lg:block">
             <SettingsSidebar
@@ -59,15 +65,13 @@ export default function LawyerSettings() {
               completion={completion}
             />
           </div>
-          
+
           {/* Content */}
           <div className="flex-1">
-            <SettingsContent 
-              activeSection={activeSection}
-            />
+            <SettingsContent activeSection={activeSection} />
           </div>
         </div>
       </div>
     </div>
-    );
+  );
 }

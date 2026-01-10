@@ -1,13 +1,13 @@
 "use client";
 
 import { ConsultationStatus } from "@/lib/enums";
-import { Consultation } from "@/store/types/api";
+import { IConsultation } from "@/store/types/consultation.types";
 import { format } from "date-fns";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 interface HeaderProps {
-  consultation: Consultation;
+  consultation: IConsultation;
 }
 
 export default function Header({ consultation }: HeaderProps) {

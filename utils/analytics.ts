@@ -12,13 +12,19 @@ let flushTimer: any = null;
 const FLUSH_MS = 3000;
 const MAX_BATCH = 50;
 
-const getBackendUrl = () => {
-  const base = process.env.NEXT_PUBLIC_BACKEND_URL;
-  return `${base}/api/analytics/track`;
-};
+// Commented out - not currently used
+// const getBackendUrl = () => {
+//   const base = process.env.NEXT_PUBLIC_BACKEND_URL;
+//   return `${base}/api/analytics/track`;
+// };
 
 const getClientSessionId = (): string => {
   try {
+    // Check if we're in browser environment
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return 'ssr-session';
+    }
+
     const key = 'qm_client_session_id';
     let sid = localStorage.getItem(key);
     if (!sid) {
@@ -88,7 +94,7 @@ export const trackClientError = (error: { message: string; stack?: string; sourc
   track('error', { scope: 'client', ...error });
 
 export const startHeartbeat = () => {
-  if (!ANALYTICS_ENABLED) return () => {};
+  if (!ANALYTICS_ENABLED) return () => { };
   let active = true;
   const onVisibility = () => {
     active = document.visibilityState === 'visible';
@@ -110,12 +116,12 @@ export const initGlobalErrorHandlers = () => {
   window.addEventListener('error', (event) => {
     try {
       trackClientError({ message: event.message, filename: (event as any).filename, lineno: (event as any).lineno, colno: (event as any).colno, source: 'window.onerror', stack: (event.error && event.error.stack) || undefined });
-    } catch {}
+    } catch { }
   });
   window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
     try {
       trackClientError({ message: event.reason?.message || 'unhandledrejection', reason: event.reason, source: 'unhandledrejection', stack: event.reason?.stack });
-    } catch {}
+    } catch { }
   });
 };
 

@@ -3,6 +3,7 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/components/ui/select";
 import SearchBar from "@/components/SearchBar";
 import ViewToggle from "@/components/ViewToggle";
+import { ConsultationStatus } from "@/lib/enums";
 
 interface FiltersAndSearchProps {
   searchQuery: string;
@@ -21,7 +22,7 @@ export default function FiltersAndSearch({ searchQuery, setSearchQuery, statusFi
 
   //////////////////////////////////////////////// RENDER /////////////////////////////////////////////////
   return (
-    <div className="flex flex-col md:flex-row justify-between gap-4 mt-6 mb-4">
+    <div className="flex flex-col md:flex-row justify-between gap-4 mb-4">
       {/* Search */}
       <SearchBar
         value={searchQuery}
@@ -41,10 +42,13 @@ export default function FiltersAndSearch({ searchQuery, setSearchQuery, statusFi
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
-              <SelectItem value="confirmed">Confirmed</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value={ConsultationStatus.PENDING}>Pending</SelectItem>
+              <SelectItem value={ConsultationStatus.SCHEDULED}>Scheduled</SelectItem>
+              <SelectItem value={ConsultationStatus.IN_PROGRESS}>In Progress</SelectItem>
+              <SelectItem value={ConsultationStatus.COMPLETED}>Completed</SelectItem>
+              <SelectItem value={ConsultationStatus.CANCELLED}>Cancelled</SelectItem>
+              <SelectItem value={ConsultationStatus.RESCHEDULED}>Rescheduled</SelectItem>
+              <SelectItem value={ConsultationStatus.NO_SHOW}>No Show</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -67,23 +71,7 @@ export default function FiltersAndSearch({ searchQuery, setSearchQuery, statusFi
           </Select>
         </div>
 
-        {/* View */}
-        <div className="w-full md:w-40">
-          <Select
-            value={view}
-            onValueChange={setView}
-          >
-            <SelectTrigger className="h-10">
-              <SelectValue placeholder="View" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="upcoming">Upcoming</SelectItem>
-              <SelectItem value="past">Past</SelectItem>
-              <SelectItem value="all">All</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
+        {/* View Toggle */}
         <ViewToggle onViewChange={setView} view={view} />
       </div>
     </div>

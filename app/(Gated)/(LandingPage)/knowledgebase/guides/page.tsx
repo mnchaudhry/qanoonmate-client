@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RootState, AppDispatch } from '@/store/store';
 import { getGuides } from '@/store/reducers/guideSlice';
-import { useDebounce } from '@/hooks/use-debounce';
+import { useDebounce } from '@/hooks/useDebounce';
 import LandingPageHeader from '../../_components/LandingPageHeader';
 import GuideSidebar from './_components/GuideSidebar';
 import GuidesList from './_components/GuidesList';

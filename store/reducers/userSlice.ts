@@ -1,15 +1,15 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import * as api from '../api';
 import toast from 'react-hot-toast';
-import { User, GetUsersRequest, GetUsersResponse, SearchUsersRequest, SearchUsersResponse, CheckUsernameResponse, CheckEmailResponse, BlockUserResponse, UpdateAvatarResponse, UpdateUsernameResponse, GetUserRoleResponse, GetUserByUsernameOrIdResponse, GetUserByIdResponse, UpdateUserRequest, UpdateUserResponse, BlockUserRequest, AddUserResponse, AddUserRequest } from '../types/user.types';
+import { IUser, GetUsersRequest, GetUsersResponse, SearchUsersRequest, SearchUsersResponse, CheckUsernameResponse, CheckEmailResponse, BlockUserResponse, UpdateAvatarResponse, UpdateUsernameResponse, GetUserRoleResponse, GetUserByUsernameOrIdResponse, GetUserByIdResponse, UpdateUserRequest, UpdateUserResponse, BlockUserRequest, AddUserResponse, AddUserRequest } from '../types/user.types';
 import { PaginationMeta } from '../types/api';
 
 interface UserState {
-    users: User[];
-    currentUser: User | null;
+    users: IUser[];
+    currentUser: IUser | null;
     loading: boolean;
     error: string | null;
-    searchResults: User[];
+    searchResults: IUser[];
     meta: PaginationMeta;
 }
 
@@ -252,7 +252,7 @@ const userSlice = createSlice({
 
             .addCase(bulkUploadUsers.fulfilled, (state, action) => {
                 if (action.payload && action.payload.data && action.payload.data.users) {
-                    const created = action.payload.data.users as User[]
+                    const created = action.payload.data.users as IUser[]
                     // Prepend created users
                     state.users = [...created, ...state.users]
                 }
@@ -263,7 +263,7 @@ const userSlice = createSlice({
                 state.loading = false;
                 if (action.payload && action.payload.data && action.payload.data.user) {
                     state.currentUser = action.payload.data.user;
-                    state.users = state.users.map(u => u._id === action.payload.data?.user?._id ? action.payload.data?.user : u).filter(Boolean) as User[];
+                    state.users = state.users.map(u => u._id === action.payload.data?.user?._id ? action.payload.data?.user : u).filter(Boolean) as IUser[];
                 }
             })
             .addCase(updateUser.rejected, (state, action) => { state.loading = false; state.error = action.payload as string; })

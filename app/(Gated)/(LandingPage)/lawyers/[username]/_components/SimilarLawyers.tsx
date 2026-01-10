@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Users, MapPin, Star, ArrowRight, Loader2 } from "lucide-react";
 import { AppDispatch, RootState } from "@/store/store";
 import { getSimilarLawyers } from "@/store/reducers/lawyerSlice";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { enumToLabel } from "@/lib/utils";
 
 interface SimilarLawyersProps {
@@ -22,21 +22,19 @@ export function SimilarLawyers({ lawyerId }: SimilarLawyersProps) {
 
   useEffect(() => {
     if (lawyerId && !hasFetched) {
-      dispatch(getSimilarLawyers({ 
-        lawyerId, 
-        params: { limit: 3 } 
+      dispatch(getSimilarLawyers({
+        lawyerId,
+        params: { limit: 3 }
       }));
       setHasFetched(true);
     }
   }, [dispatch, lawyerId, hasFetched]);
 
-  const getLowestPrice = (lawyer: Lawyer) => {
-    if (!lawyer.settings?.consultation?.fees?.length) return "Contact for pricing";
-    const lowestPrice = Math.min(...lawyer.settings.consultation.fees.map(fee => fee.amount));
-    return `Starting from ${lowestPrice.toLocaleString()} PKR`;
+  const getLowestPrice = (lawyer: ILawyer) => {
+    return `Starting from ${lawyer.hourlyRate} PKR`;
   };
 
-  const getAverageRating = (lawyer: Lawyer) => {
+  const getAverageRating = (lawyer: ILawyer) => {
     if (!lawyer.reviews?.length) return 0;
     const totalRating = lawyer.reviews.reduce((sum, review) => sum + review.rating, 0);
     return totalRating / lawyer.reviews.length;
@@ -125,13 +123,13 @@ export function SimilarLawyers({ lawyerId }: SimilarLawyersProps) {
         <p className="text-sm text-gray-600 mb-4">
           Discover other lawyers with similar specializations and experience in your area.
         </p>
-        
+
         <div className="space-y-3">
           {similarLawyers.map((lawyer) => {
             const averageRating = getAverageRating(lawyer);
             const reviewCount = lawyer.reviews?.length || 0;
             const primarySpecialization = lawyer.primarySpecialization || lawyer.specializations?.[0] || "General Law";
-            
+
             return (
               <div key={lawyer._id} className="p-3 bg-gray-50 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors">
                 <div className="flex items-start justify-between mb-2">
@@ -161,9 +159,9 @@ export function SimilarLawyers({ lawyerId }: SimilarLawyersProps) {
                       <span>{lawyer.preLicensedYearsOfExperience || 0}+ years</span>
                     </div>
                   </div>
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
+                  <Button
+                    size="sm"
+                    variant="outline"
                     className="text-xs"
                     onClick={() => window.open(`/lawyers/${lawyer.username}`, '_blank')}
                   >
@@ -174,8 +172,8 @@ export function SimilarLawyers({ lawyerId }: SimilarLawyersProps) {
                   <span className="text-xs font-medium text-primary">
                     {getLowestPrice(lawyer)}
                   </span>
-                  <Button 
-                    size="sm" 
+                  <Button
+                    size="sm"
                     className="text-xs bg-primary hover:bg-primary/90 text-white"
                     onClick={() => window.open(`/lawyers/${lawyer.username}/book`, '_blank')}
                   >
@@ -188,8 +186,8 @@ export function SimilarLawyers({ lawyerId }: SimilarLawyersProps) {
         </div>
 
         <div className="pt-4 border-t border-gray-100">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full text-sm"
             onClick={() => window.open('/lawyers', '_blank')}
           >

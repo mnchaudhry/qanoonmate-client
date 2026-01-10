@@ -1,6 +1,6 @@
 import { OtpVerificationType } from "@/lib/enums";
 import { APIResponse } from "./api";
-import { User } from "./user.types";
+import { IUser } from "./user.types";
 
 // Client signup request (simple)
 export interface ClientSignupRequest {
@@ -76,7 +76,7 @@ export interface LoginRequest {
     email: string;
     password: string;
 }
-export type LoginResponse = APIResponse<User>;
+export type LoginResponse = APIResponse<IUser>;
 
 // POST /user/verify-otp, /lawyer/verify-otp
 export interface VerifyOtpRequest {
@@ -84,7 +84,7 @@ export interface VerifyOtpRequest {
     otp: string;
     type: OtpVerificationType;
 }
-export type VerifyOtpResponse = APIResponse<User>;
+export type VerifyOtpResponse = APIResponse<IUser>;
 
 // POST /user/forget-pw-request, /lawyer/forget-pw-request
 export interface ForgetPasswordRequest {

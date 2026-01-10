@@ -35,7 +35,7 @@ export interface LawyerProfile {
     secondarySpecializations: LawCategory[];
     jurisdictions?: {
       geography: {
-        province: PakistanProvinces;
+        province: string;
         district?: string | null;  // null = whole province
         tehsil?: string | null;
       };
@@ -68,11 +68,10 @@ export interface LawyerProfile {
 
   // Service Setup
   services: {
-    consultationFees: ConsultationFee[];
+    hourlyRate: number;
     availability: AvailabilitySchedule;
     responseTime: string;
     serviceAreas: string[];
-    consultationModes: string[];
   };
 
   // Verification & Documents
@@ -163,14 +162,6 @@ export interface CaseStudy {
   solution: string;
   outcome: string;
   anonymized: boolean;
-}
-
-export interface ConsultationFee {
-  mode: 'video' | 'phone' | 'in-person' | 'chat';
-  duration: number; // in minutes
-  price: number;
-  currency: string;
-  description?: string;
 }
 
 export interface AvailabilitySchedule {

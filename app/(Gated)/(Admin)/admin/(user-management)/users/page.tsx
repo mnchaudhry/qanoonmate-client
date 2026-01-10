@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useDebounce } from '@/hooks/use-debounce'
+import { useDebounce } from '@/hooks/useDebounce'
 import { useDispatch, useSelector } from 'react-redux'
 import { PageHeader } from '../../../_components/PageHeader'
 import { AppDispatch, RootState } from '@/store/store'
@@ -295,15 +295,18 @@ const AdminUsers = () => {
       {
         loading ? (
           <TableSkeleton />
-        ) : users.length === 0 ? (
-          <div className="bg-surface border !border-border rounded-lg p-10 text-center text-muted-foreground">
-            <div className="text-2xl mb-2">No users found</div>
-            <div className="mb-6">Try adjusting your search or filters.</div>
-            <Button variant="outline" size="sm" onClick={handleResetFilters} className="border-border">Reset filters</Button>
-          </div>
-        ) : (
-          <UsersTable setIsModalOpen={setIsModalOpen} />
-        )}
+        ) :
+          users.length === 0
+            ? (
+              <div className="bg-surface border !border-border rounded-lg p-10 text-center text-muted-foreground">
+                <div className="text-2xl mb-2">No users found</div>
+                <div className="mb-6">Try adjusting your search or filters.</div>
+                <Button variant="outline" size="sm" onClick={handleResetFilters} className="border-border">Reset filters</Button>
+              </div>
+            )
+            : (
+              <UsersTable setIsModalOpen={setIsModalOpen} />
+            )}
 
       <UserDetailsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       <AddUserModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />

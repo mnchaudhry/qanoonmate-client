@@ -12,7 +12,6 @@ import draft from './draftSlice'
 import summary from './summarySlice'
 import chat from './chatSlice';
 import client from './clientSlice';
-import blog from './blogSlice'
 import notification from './notificationSlice'
 import document from './documentSlice';
 import clientSettings from './clientSettingsSlice';
@@ -23,8 +22,8 @@ import betaRequest from './betaRequestSlice';
 import email from './emailSlice';
 import communication from './communicationSlice';
 import newsletter from './newsletterSlice';
-import credits from './credits';
-import payments from './payments';
+import credits from './creditSlice';
+import payments from './paymentSlice';
 import profile from './profileSlice';
 
 const rootReducer = combineReducers({
@@ -41,7 +40,6 @@ const rootReducer = combineReducers({
     summary,
     chat,
     client,
-    blog,
     notification,
     document,
     clientSettings,

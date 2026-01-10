@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { enumToLabel } from "@/lib/utils";
 
 export default function BookingHeader() {
 
@@ -38,7 +39,7 @@ export default function BookingHeader() {
             Book Consultation with {fullName}
           </h1>
           <p className="text-gray-600">
-            {lawyer?.specializations?.join(", ") || "Legal Professional"}
+            {lawyer?.specializations?.map(s => enumToLabel(s))?.join(", ") || "Legal Professional"}
           </p>
         </div>
       </div>

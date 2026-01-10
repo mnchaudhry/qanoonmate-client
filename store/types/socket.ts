@@ -8,6 +8,7 @@ import { ChatParticipant } from "./api";
 // Client emits
 export interface ModelStartChatEmit {
   userId: string | undefined;
+  mode?: "chat" | "summarizer" | "drafting";
 }
 export interface ModelUpdateTitleEmit {
   sessionId: string;
@@ -16,7 +17,8 @@ export interface ModelUpdateTitleEmit {
 export interface ModelChatMessageEmit {
   sessionId: string;
   history: AgentInputItem[];
-  newMessage: string
+  newMessage: string;
+  mode: "chat" | "summarizer" | "drafting";
 }
 
 // Server emits
@@ -27,7 +29,7 @@ export interface ModelSessionStarted {
 export interface ModelMessageReceived {
   _id: string;
   session: string;
-  sender: 'user' | 'bot' | 'model';
+  sender: "user" | "bot" | "model";
   content: string;
   isStreaming: boolean;
   createdAt?: string;
@@ -46,7 +48,7 @@ export interface ModelError {
 
 // Client emits
 export interface SummarySubmitEmit {
-  type: 'document' | 'text' | 'url' | 'file';
+  type: "document" | "text" | "url" | "file";
   title: string;
   content: string;
   language?: string;
@@ -87,16 +89,37 @@ export interface SummaryAbort {
 // ----------- CHAT MODULE -----------
 
 // Client emits
-export interface ChatJoinRoomEmit { roomId: string; }
-export interface ChatLeaveRoomEmit { roomId: string; }
-export interface ChatSendMessageEmit { roomId: string; content: string; type?: string; }
-export interface ChatTypingEmit { roomId: string; userId: string; }
-export interface ChatStopTypingEmit { roomId: string; userId: string; }
-export interface ChatMarkReadEmit { roomId: string; userId: string; }
+export interface ChatJoinRoomEmit {
+  roomId: string;
+}
+export interface ChatLeaveRoomEmit {
+  roomId: string;
+}
+export interface ChatSendMessageEmit {
+  roomId: string;
+  content: string;
+  type?: string;
+}
+export interface ChatTypingEmit {
+  roomId: string;
+  userId: string;
+}
+export interface ChatStopTypingEmit {
+  roomId: string;
+  userId: string;
+}
+export interface ChatMarkReadEmit {
+  roomId: string;
+  userId: string;
+}
 
 // Server emits
-export interface ChatJoinRoomAck { roomId: string; }
-export interface ChatLeaveRoomAck { roomId: string; }
+export interface ChatJoinRoomAck {
+  roomId: string;
+}
+export interface ChatLeaveRoomAck {
+  roomId: string;
+}
 export interface ChatUserJoined {
   userId: string;
   roomId: string;
@@ -130,4 +153,3 @@ export interface ChatError {
   message: string;
   error?: string;
 }
-

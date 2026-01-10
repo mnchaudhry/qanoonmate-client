@@ -3,24 +3,24 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ILawyer } from "@/store/types/lawyer.types";
 import { LawyerProfile, ProfileCompletionData } from "@/lib/types/profile.types";
 import { calculateProfileCompletion } from "@/lib/utils/profileCompletion";
 
-// Import section components
 import { PersonalInfoSection } from "./sections/PersonalInfoSection";
 import { ProfessionalOverviewSection } from "./sections/ProfessionalOverviewSection";
 import { LegalExpertiseSection } from "./sections/LegalExpertiseSection";
 import { CredentialsSection } from "./sections/CredentialsSection";
 import { ConsultationSettingsSection } from "./sections/ConsultationSettingsSection";
-import { AvailabilitySection } from "./sections/AvailabilitySection";
 import { SecuritySection } from "./sections/SecuritySection";
-import { NotificationsSection } from "./sections/NotificationsSection";
+import { PreferencesSection } from "./sections/PreferencesSection";
 import { BillingSection } from "./sections/BillingSection";
 import { VerificationSection } from "./sections/VerificationSection";
 import { ProfileSettings } from "./sections/ProfileSettings";
+import { CommunicationSection } from "./sections/CommunicationSection";
+import { DataPrivacySection } from "./sections/DataPrivacySection";
 import { PlaceholderSection } from "./sections/PlaceholderSection";
-import { Award, DollarSign, Eye, MessageSquare, Database } from "lucide-react";
+import { Award, DollarSign } from "lucide-react";
 import { PakistanProvinces } from "@/lib/enums";
 import { LawCategory } from "@/lib/enums";
 import { PakistanCities } from "@/lib/enums";
@@ -30,13 +30,17 @@ interface SettingsContentProps {
 }
 
 export function SettingsContent({ activeSection }: SettingsContentProps) {
-  const { user } = useSelector((state: RootState) => state.auth);
-  const lawyer = user as Lawyer;
 
+  ///////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////
+  const { user } = useSelector((state: RootState) => state.auth);
+  const lawyer = user as ILawyer;
+
+  ///////////////////////////////////////////////////////// STATES //////////////////////////////////////////////////////////////
   const [lawyerProfile, setLawyerProfile] = useState<LawyerProfile | null>(null);
   const [completion, setCompletion] = useState<ProfileCompletionData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  ///////////////////////////////////////////////////////// EFFECTS //////////////////////////////////////////////////////////////
   useEffect(() => {
     if (lawyer) {
       // Convert current lawyer data to new profile structure
@@ -67,7 +71,7 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
         legalExpertise: {
           primarySpecialization: lawyer.primarySpecialization || LawCategory.FAMILY_LAWS,
           secondarySpecializations: lawyer.specializations || [] as LawCategory[],
-          jurisdictions: lawyer.jurisdictions || [],
+          jurisdictions: lawyer.jurisdictions! || [],
           languages: lawyer.languages || [],
           certifications: lawyer.certifications || []
         },
@@ -79,7 +83,7 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
             field: '',
             honors: ''
           })) : [],
-          barCouncil: lawyer.barCouncil || '',
+          barCouncil: lawyer.barCouncil! || '',
           licenseNumber: lawyer.licenseNumber || '',
           licenseValidity: lawyer.licenseValidity || undefined,
           barAssociation: lawyer.barAssociation || '',
@@ -95,23 +99,16 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
           caseStudies: []
         },
         services: {
-          consultationFees: [],
+          hourlyRate: lawyer.hourlyRate || 0,
           availability: {
             timezone: 'Asia/Karachi',
             workingDays: {
-              monday: [],
-              tuesday: [],
-              wednesday: [],
-              thursday: [],
-              friday: [],
-              saturday: [],
-              sunday: []
+              monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: []
             },
             exceptions: []
           },
           responseTime: '24 hours',
           serviceAreas: [],
-          consultationModes: []
         },
         verification: {
           identityVerified: lawyer.identityVerified || false,
@@ -142,6 +139,7 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
     }
   }, [lawyer]);
 
+  ///////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////
   const handleProfileUpdate = (updatedProfile: Partial<LawyerProfile>) => {
     if (lawyerProfile) {
       const newProfile = { ...lawyerProfile, ...updatedProfile };
@@ -151,6 +149,7 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
     }
   };
 
+  ///////////////////////////////////////////////////////// STATE RENDER //////////////////////////////////////////////////////////////
   if (loading || !lawyerProfile || !completion) {
     return (
       <div className="p-6">
@@ -166,6 +165,7 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
     );
   }
 
+  ///////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////
   const renderSection = () => {
     const commonProps = {
       profile: lawyerProfile,
@@ -195,8 +195,6 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
         );
       case 'consultation':
         return <ConsultationSettingsSection {...commonProps} />;
-      case 'availability':
-        return <AvailabilitySection {...commonProps} />;
       case 'pricing':
         return (
           <PlaceholderSection
@@ -209,38 +207,15 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
       case 'security':
         return <SecuritySection {...commonProps} />;
       case 'notifications':
-        return <NotificationsSection {...commonProps} />;
+        return <PreferencesSection {...commonProps} />;
       case 'billing':
         return <BillingSection {...commonProps} />;
       case 'verification':
         return <VerificationSection {...commonProps} />;
-      case 'visibility':
-        return (
-          <PlaceholderSection
-            {...commonProps}
-            title="Profile Visibility"
-            description="Control who can see your profile and what information is visible."
-            icon={Eye}
-          />
-        );
       case 'communication':
-        return (
-          <PlaceholderSection
-            {...commonProps}
-            title="Communication Preferences"
-            description="Set your communication preferences and response settings."
-            icon={MessageSquare}
-          />
-        );
+        return <CommunicationSection {...commonProps} />;
       case 'data':
-        return (
-          <PlaceholderSection
-            {...commonProps}
-            title="Data & Privacy"
-            description="Manage your data privacy settings and download your information."
-            icon={Database}
-          />
-        );
+        return <DataPrivacySection {...commonProps} />;
       default:
         return (
           <div className="p-6">
@@ -258,7 +233,7 @@ export function SettingsContent({ activeSection }: SettingsContentProps) {
   };
 
   return (
-    <div className="flex-1 bg-card rounded-lg border border-border shadow-sm">
+    <div className="flex-1">
       {renderSection()}
     </div>
   );

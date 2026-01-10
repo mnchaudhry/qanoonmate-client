@@ -1,89 +1,47 @@
 import React, { useEffect, useState } from "react";
 import Logo from "@/components/Logo";
 import { AIChatSession } from "@/store/types/api";
-import {
-  deleteSession,
-  getMyChatSessions,
-  newChat,
-  renameSession,
-  setCurrentSession,
-  setCurrentSessionId,
-} from "@/store/reducers/aiSessionSlice";
+import { deleteSession, getMyChatSessions, newChat, renameSession, setCurrentSession, setCurrentSessionId, setChatMode, ChatMode, } from "@/store/reducers/aiSessionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  MoreVertical,
-  Clock,
-  MessageSquare,
-  Settings,
-  Plus,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import ModeSelector from "./ModeSelector";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu";
+import { MoreVertical, Settings, Plus, ChevronLeft, Search, } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 import AlertModal from "@/components/alert-modal";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
-import { format } from "date-fns";
+import { Input } from "@/components/ui/input";
 
 interface ChatSidebarProps {
-  sessionMetadata?: {
-    interactionCount: number;
-    lastModified: string; // Store as ISO string for serializability
-    sessionDuration: number;
-  };
   sidebarOpen?: boolean;
   setSidebarOpen?: (open: boolean) => void;
 }
 
-const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
-  sessionMetadata,
-  sidebarOpen: sidebarOpenProp,
-  setSidebarOpen: setSidebarOpenProp,
-}: ChatSidebarProps) => {
+const ChatbotSidebar: React.FC<ChatSidebarProps> = ({ sidebarOpen: sidebarOpenProp, setSidebarOpen: setSidebarOpenProp, }: ChatSidebarProps) => {
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { sidebarSessions: sessions, currentSessionId: sessionId } =
-    useSelector((state: RootState) => state.aiSession);
+  const { sidebarSessions: sessions, currentSessionId: sessionId, chatMode, } = useSelector((state: RootState) => state.aiSession);
   const router = useRouter();
   const searchParams = useSearchParams();
   const paramSessionId = searchParams.get("id");
 
   ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
-  const [loading, setLoading] = useState<{
-    fetch: boolean;
-    rename: boolean;
-    delete: boolean;
-  }>({ fetch: false, rename: false, delete: false });
+  const [loading, setLoading] = useState<{ fetch: boolean; rename: boolean; delete: boolean; }>({ fetch: false, rename: false, delete: false });
   const [renaming, setRenaming] = useState<string>("");
-  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(
-    null
-  );
+  const [sessionToDelete, setSessionToDelete] = useState<AIChatSession | null>(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(
-    sidebarOpenProp ?? true
-  );
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(sidebarOpenProp ?? true);
 
+  ///////////////////////////////////////////////////////////// USE EFFECTS //////////////////////////////////////////////////////////////////////
   // keep internal state in sync with controlled prop if provided
   useEffect(() => {
     if (typeof sidebarOpenProp === "boolean") setSidebarOpen(sidebarOpenProp);
   }, [sidebarOpenProp]);
 
-  const updateSidebarOpen = (open: boolean) => {
-    setSidebarOpen(open);
-    if (setSidebarOpenProp) setSidebarOpenProp(open);
-  };
-
-  ///////////////////////////////////////////////////////////// USE EFFECTS //////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (paramSessionId) {
       dispatch(setCurrentSessionId(paramSessionId));
@@ -98,6 +56,11 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
   }, [dispatch, user]);
 
   ///////////////////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////////////////////////////
+  const updateSidebarOpen = (open: boolean) => {
+    setSidebarOpen(open);
+    if (setSidebarOpenProp) setSidebarOpenProp(open);
+  };
+
   const onRename = (id: string, newTitle: string) => {
     setLoading((pre) => ({ ...pre, rename: true }));
     dispatch(renameSession({ id, title: newTitle })).finally(() =>
@@ -133,6 +96,13 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
       .finally(() => setLoading((pre) => ({ ...pre, delete: false })));
   };
 
+  const handleModeChange = (mode: ChatMode) => {
+    dispatch(setChatMode(mode));
+    toast.success(
+      `Switched to ${mode.charAt(0).toUpperCase() + mode.slice(1)} mode`
+    );
+  };
+
   ///////////////////////////////////////////////////////////// RENDER //////////////////////////////////////////////////////////////////////
   return (
     <>
@@ -148,7 +118,7 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
       <aside
         className={cn(
           // Desktop / tablet behavior
-          "hidden md:flex relative border-r flex-col justify-between h-screen overflow-y-auto transition-all duration-300 bg-sidebar border-sidebar-border shadow-sm",
+          "hidden md:flex bg-surface relative border-r flex-col justify-between h-screen overflow-hidden transition-all duration-500 ease-in-out border-border shadow-lg",
           sidebarOpen
             ? "md:flex-[2] md:min-w-[260px]"
             : "md:flex-[0] md:w-[64px] md:min-w-[64px]",
@@ -157,35 +127,19 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
         )}
         style={{
           width: sidebarOpen ? undefined : 64,
-          minWidth: sidebarOpen ? 260 : 64,
+          minWidth: sidebarOpen ? 300 : 64,
           maxWidth: sidebarOpen ? 400 : 64,
         }}
       >
         {/* Header: Toggle button and logo side by side in expanded, vertical in mini */}
         <div
           className={cn(
-            "sticky top-0 z-20 bg-neutral border-b border-border shadow-sm",
+            "sticky top-0 z-20",
             sidebarOpen
-              ? "flex flex-row items-center justify-between pt-4 pb-3 h-[84px] px-4"
-              : "flex flex-col items-center justify-center pt-4 pb-3 px-0"
+              ? "flex flex-row items-center justify-between pt-4 pb-4 px-4"
+              : "flex flex-col items-center justify-center pt-4 pb-2 px-0"
           )}
         >
-          <Button
-            size="icon"
-            variant="ghost"
-            className={cn(
-              "transition-all duration-200 hover:bg-accent rounded-full hover:scale-105",
-              sidebarOpen ? "mr-2" : "mb-2"
-            )}
-            onClick={() => updateSidebarOpen(!sidebarOpen)}
-            aria-label={sidebarOpen ? "Close sidebar" : "Open sidebar"}
-          >
-            {sidebarOpen ? (
-              <ChevronLeft className="w-4 h-4" />
-            ) : (
-              <ChevronRight className="w-4 h-4" />
-            )}
-          </Button>
           {sidebarOpen ? (
             <div className="flex-1 flex justify-center items-center">
               <Logo size="md" type="green" />
@@ -199,196 +153,220 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
 
         {/* Render */}
         {sidebarOpen ? (
-          <div className="flex flex-col justify-between h-full gap-4 ">
-            <div className="flex flex-col gap-4 p-4">
+          <div
+            className={cn(
+              "transition-all px-4 flex flex-col justify-between h-full overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+            )}
+          >
+            <div className="flex flex-col gap-4 pb-4">
               {/* Search Bar and New Session Button */}
-              <div className="flex items-center gap-2 px-1 sticky top-[64px] bg-neutral z-10 pb-2">
-                <input
-                  type="text"
-                  placeholder="Search sessions..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-xl border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-200 hover:border-primary/50"
-                />
+              <div className="flex flex-col gap-2 sticky top-0 z-10 bg-surface/95 backdrop-blur-sm pb-4">
                 <Button
-                  size="icon"
-                  variant="outline"
+                  variant="ghost"
                   onClick={handleCreateSession}
                   title="Create new session"
-                  className="h-9 w-9 rounded-full hover:bg-primary hover:text-primary-foreground transition-all duration-200 hover:scale-105 shadow-sm"
+                  className="bg-secondary flex justify-start text-sm h-[40px] "
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus size={18} />
+                  <span>New Chat</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={handleCreateSession}
+                  title="Global search"
+                  className="bg-secondary flex justify-start text-sm h-[40px] "
+                >
+                  <Search size={18} className="text-primary" />
+                  <span>Global Search</span>
                 </Button>
               </div>
 
-              {/* Session Metadata */}
-              {sessionMetadata && sessionMetadata.interactionCount > 0 && (
-                <div className="p-3 bg-primary/5 rounded-xl border border-primary/10 shadow-sm animate-in fade-in slide-in-from-top-4 duration-300">
-                  <h3 className="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4" />
-                    Session Info
-                  </h3>
-                  <div className="space-y-1.5 text-sm text-primary/80">
-                    <div className="flex items-center gap-2">
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      <span className="text-xs">
-                        {sessionMetadata.interactionCount} interactions
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span className="text-xs">
-                        Last:{" "}
-                        {format(sessionMetadata.lastModified, "MMM d, yyyy")}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* Mode Selector */}
+              <div className="pb-4">
+                <ModeSelector
+                  currentMode={chatMode}
+                  onModeChange={handleModeChange}
+                />
+              </div>
 
               {/* Chat Sessions */}
-              <div className="flex-1">
+              <div className="flex-1 space-y-4">
                 {loading.fetch
                   ? Array.from({ length: 5 }).map((_, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3 rounded-xl hover:bg-accent cursor-pointer text-sm flex justify-between items-center animate-pulse mb-2 border border-border"
-                      >
-                        <span className="h-3 bg-muted-foreground/30 rounded w-3/4"></span>
+                    <div
+                      key={idx}
+                      className="p-3 rounded-xl bg-accent/30 animate-pulse mb-2 border border-border/50 shadow-sm"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="h-4 bg-muted-foreground/20 rounded w-3/4"></span>
                         <div className="w-5 h-5 bg-muted-foreground/20 rounded-full"></div>
                       </div>
-                    ))
+                    </div>
+                  ))
                   : sessions
-                      .filter((section) =>
-                        section.items.some((session) =>
-                          session.title
-                            .toLowerCase()
-                            .includes(searchTerm.toLowerCase())
-                        )
+                    .filter((section) =>
+                      section.items.some((session) =>
+                        session.title
+                          .toLowerCase()
+                          .includes(searchTerm.toLowerCase())
                       )
-                      .map((section, index) => (
-                        <div key={index} className="mt-4">
-                          <h2 className="text-muted-foreground text-xs font-semibold mb-3 uppercase tracking-wider px-2">
-                            {section.section}
-                          </h2>
-                          {section.items
-                            .filter((session) =>
-                              session.title
-                                .toLowerCase()
-                                .includes(searchTerm.toLowerCase())
-                            )
-                            .map((session, i) => (
-                              <div
-                                key={i}
-                                onClick={() => onChatSelect(session)}
-                                className={cn(
-                                  "p-3 rounded-xl hover:bg-accent cursor-pointer text-sm flex justify-between items-center mb-2 transition-all duration-200 hover:shadow-sm",
-                                  String(sessionId) == String(session._id)
-                                    ? "bg-primary/10 text-primary border-2 border-primary/30 shadow-sm"
-                                    : "bg-transparent border border-transparent hover:border-border"
-                                )}
-                              >
-                                {renaming === session._id ? (
-                                  <input
-                                    autoFocus
-                                    defaultValue={session.title}
-                                    onKeyDown={(e) => {
-                                      if (e.key === "Enter") {
-                                        onRename(
-                                          session._id,
-                                          (e.target as HTMLInputElement).value
-                                        );
-                                      }
-                                    }}
-                                    onBlur={(e) =>
+                    )
+                    .map((section, index) => (
+                      <div
+                        key={index}
+                        className="animate-in fade-in slide-in-from-left-2"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <h2 className="mb-2 text-foreground text-xs font-medium uppercase tracking-wider px-3 flex items-center gap-2">
+                          <div className="w-[3px] h-4 bg-primary rounded-full"></div>
+                          {section.section}
+                        </h2>
+                        {section.items
+                          .filter((session) =>
+                            session.title
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                          )
+                          .map((session, i) => (
+                            <div
+                              key={i}
+                              onClick={() => onChatSelect(session)}
+                              className={cn(
+                                "group p-3 py-2 rounded-xl cursor-pointer text-sm flex justify-between items-center transition-all duration-200 active:scale-[0.98]",
+                                String(sessionId) == String(session._id)
+                                  ? "bg-primary/10 text-primary border border-primary/30 shadow-md hover:shadow-lg"
+                                  : "hover:bg-secondary hover:shadow-sm"
+                              )}
+                            >
+                              {renaming === session._id ? (
+                                <input
+                                  autoFocus
+                                  defaultValue={session.title}
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
                                       onRename(
                                         session._id,
                                         (e.target as HTMLInputElement).value
-                                      )
+                                      );
                                     }
-                                    className={cn(
-                                      "w-full bg-transparent border !border-border px-2 py-1 rounded-md text-sm",
-                                      loading.rename
-                                        ? "animate-pulse cursor-not-allowed"
-                                        : ""
-                                    )}
-                                    disabled={loading.rename}
-                                  />
-                                ) : (
-                                  <>
-                                    <span className="truncate font-medium">
-                                      {session.title}
-                                    </span>
-                                    <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                        <Button
-                                          variant="ghost"
-                                          size="icon"
-                                          className="w-6 h-6 hover:bg-accent"
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
-                                          <MoreVertical className="w-3 h-3" />
-                                        </Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent align="end">
-                                        <DropdownMenuItem
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setRenaming(session._id);
-                                          }}
-                                        >
-                                          Rename
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setSessionToDelete(session);
-                                            setOpenDeleteModal(true);
-                                          }}
-                                        >
-                                          Delete
-                                        </DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                    </DropdownMenu>
-                                  </>
-                                )}
-                              </div>
-                            ))}
-                        </div>
-                      ))}
+                                  }}
+                                  onBlur={(e) =>
+                                    onRename(
+                                      session._id,
+                                      (e.target as HTMLInputElement).value
+                                    )
+                                  }
+                                  className={cn(
+                                    "w-full bg-background border border-border px-3 py-1.5 rounded-lg text-sm focus:ring-2 focus:ring-primary/30 focus:outline-none transition-all",
+                                    loading.rename
+                                      ? "animate-pulse cursor-not-allowed opacity-50"
+                                      : ""
+                                  )}
+                                  disabled={loading.rename}
+                                />
+                              ) : (
+                                <>
+                                  <span className="text-muted-foreground truncate font-medium group-hover:text-primary transition-colors">
+                                    {session.title}
+                                  </span>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="w-7 h-7 hover:bg-accent/80 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-200"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        <MoreVertical className="w-3.5 h-3.5" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent
+                                      align="end"
+                                      className="w-40"
+                                    >
+                                      <DropdownMenuItem
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setRenaming(session._id);
+                                        }}
+                                        className="cursor-pointer"
+                                      >
+                                        Rename
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSessionToDelete(session);
+                                          setOpenDeleteModal(true);
+                                        }}
+                                        className="cursor-pointer text-destructive focus:text-destructive"
+                                      >
+                                        Delete
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+                    ))}
               </div>
             </div>
 
-            <div className="mt-4 border-t !border-border pt-3 sticky bottom-0 bg-neutral pb-4">
-              <div className="p-2 flex items-center gap-2 hover:bg-accent cursor-pointer rounded-lg transition-colors">
-                <Settings className="w-3 h-3" />
-                <span className="text-sm font-medium">Settings</span>
+            <div className="mt-auto pt-2 sticky bottom-0 pb-2 bg-surface/95 backdrop-blur-sm">
+              <div className="px-4 py-3 flex items-center gap-3 hover:bg-accent/50 cursor-pointer rounded-lg transition-all duration-200 hover:shadow-sm group">
+                <Settings className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors group-hover:rotate-45 duration-300" />
+                <span className="text-sm font-medium group-hover:text-primary transition-colors">
+                  Settings
+                </span>
               </div>
             </div>
           </div>
         ) : (
           // Mini sidebar: logo and icons in vertical orientation
-          <div className="flex flex-col items-center justify-between h-full py-2">
-            <div className="flex flex-col items-center gap-4 flex-1">
+          <div
+            className={cn(
+              "transition-all flex flex-col items-center justify-between h-full pb-4 overflow-y-auto"
+            )}
+          >
+            <div className="flex flex-col items-center gap-2 flex-1">
               <Button
                 size="icon"
-                variant="outline"
+                variant="ghost"
+                onClick={handleCreateSession}
+                title="Global search"
+              >
+                <Search className="w-4 h-4" />
+              </Button>
+              <Button
+                size="icon"
+                variant="ghost"
                 onClick={handleCreateSession}
                 title="Create new session"
-                className="mb-2"
               >
                 <Plus className="w-4 h-4" />
               </Button>
+
+              {/* Mode Selector - Collapsed */}
+              <div className="pt-4 border-t border-border/50 mt-2 w-full flex flex-col items-center">
+                <ModeSelector
+                  currentMode={chatMode}
+                  onModeChange={handleModeChange}
+                  collapsed
+                />
+              </div>
+            </div>
+            <div className="mb-2">
               <Button
                 size="icon"
-                variant="outline"
+                variant="ghost"
                 title="Settings"
-                className="mb-2"
+                className="hover:scale-110 transition-all duration-300 hover:bg-accent/50 w-11 h-11"
               >
-                <Settings className="w-4 h-4" />
+                <Settings className="w-4 h-4 hover:rotate-45 transition-transform duration-300" />
               </Button>
             </div>
-            <div className="mb-2" />
           </div>
         )}
       </aside>
@@ -396,50 +374,60 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
       {/* Mobile overlay aside */}
       <aside
         className={cn(
-          "md:hidden fixed inset-y-0 left-0 z-40 bg-neutral border-r !border-border w-[85%] max-w-[20rem] transform transition-transform duration-200",
+          "md:hidden fixed inset-y-0 left-0 z-40 bg-surface border-r border-border w-[85%] max-w-[20rem] transform transition-transform duration-300 ease-in-out shadow-2xl",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Header: Toggle button and logo */}
-        <div className="flex flex-row items-center justify-between pt-4 pb-3 h-[64px] border-b !border-border px-4 bg-neutral sticky top-0 z-20">
+        <div className="flex flex-row items-center justify-between pt-4 pb-3 h-[64px] border-b border-border px-4 bg-surface/95 backdrop-blur-sm sticky top-0 z-20">
           <Button
             size="icon"
             variant="ghost"
-            className="transition-transform z-40"
+            className="transition-transform hover:scale-110 duration-200 z-40 rounded-full"
             onClick={() => updateSidebarOpen(false)}
             aria-label="Close sidebar"
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <div>
+          <div className="transition-transform hover:scale-110 duration-200">
             <Logo size="sm" type="mini_green" />
           </div>
         </div>
 
         {/* Body (reuse main content) */}
-        <div className="flex flex-col justify-between h-[calc(100vh-64px)]">
+        <div className="flex flex-col justify-between h-[calc(100vh-64px)] overflow-y-auto scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
           <div className="flex flex-col gap-4 p-4">
             {/* Search and New session */}
-            <div className="flex items-center gap-2 px-1 sticky top-0 bg-neutral z-10 pb-2">
-              <input
+            <div className="flex flex-col gap-2 sticky top-0 bg-surface/95 backdrop-blur-sm z-10 pb-3">
+              <Input
                 type="text"
                 placeholder="Search sessions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1 px-3 py-2 rounded-md border !border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+                className="flex-1 px-4 py-2.5 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all duration-200 hover:border-primary/50"
               />
               <Button
-                size="icon"
-                variant="outline"
+                size="sm"
+                variant="default"
                 onClick={handleCreateSession}
                 title="Create new session"
+                className="w-full justify-start gap-2 shadow-sm hover:shadow-md transition-all duration-200"
               >
-                <Plus className="w-3 h-3" />
+                <Plus className="w-4 h-4" />
+                <span>New Chat</span>
               </Button>
             </div>
 
+            {/* Mode Selector - Mobile */}
+            <div className="pb-2">
+              <ModeSelector
+                currentMode={chatMode}
+                onModeChange={handleModeChange}
+              />
+            </div>
+
             {/* Sessions list (simplified reuse) */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 space-y-4">
               {sessions
                 .filter((section) =>
                   section.items.some((session) =>
@@ -449,8 +437,13 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
                   )
                 )
                 .map((section, index) => (
-                  <div key={index} className="mt-4">
-                    <h2 className="text-muted-foreground text-xs font-medium mb-2 uppercase tracking-wide">
+                  <div
+                    key={index}
+                    className="space-y-2 animate-in fade-in slide-in-from-left-2"
+                    style={{ animationDelay: `${index * 50}ms` }}
+                  >
+                    <h2 className="text-muted-foreground text-xs font-semibold mb-2 uppercase tracking-wide flex items-center gap-2 px-2">
+                      <div className="w-1 h-3 bg-primary rounded-full"></div>
                       {section.section}
                     </h2>
                     {section.items
@@ -467,10 +460,10 @@ const ChatbotSidebar: React.FC<ChatSidebarProps> = ({
                             updateSidebarOpen(false);
                           }}
                           className={cn(
-                            "p-2 rounded-lg hover:bg-accent cursor-pointer text-sm flex justify-between items-center mb-1.5 transition-colors",
+                            "p-3 rounded-lg cursor-pointer text-sm flex justify-between items-center transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]",
                             String(sessionId) == String(session._id)
-                              ? "bg-primary/10 text-primary border border-primary/20"
-                              : "bg-transparent"
+                              ? "bg-primary/10 text-primary border border-primary/20 shadow-md"
+                              : "bg-transparent hover:bg-accent/50 hover:border-border/50 hover:shadow-sm border border-transparent"
                           )}
                         >
                           <span className="truncate font-medium">

@@ -1,13 +1,13 @@
 import React from 'react';
 import { CheckCircle, Clock, XCircle, AlertCircle } from 'lucide-react';
-import { Payment } from '@/store/types/payments.types';
+import { IPayment } from '@/store/types/payments.types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, } from '@/components/ui/table';
 import { Pagination } from '@/components/ui/pagination';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface PaymentTableProps {
-  payments: Payment[];
-  onTransactionClick: (payment: Payment) => void;
+  payments: IPayment[];
+  onTransactionClick: (payment: IPayment) => void;
   loading: boolean;
   pagination: {
     currentPage: number;
@@ -18,12 +18,12 @@ interface PaymentTableProps {
   onPageChange: (page: number) => void;
 }
 
-const PaymentTable: React.FC<PaymentTableProps> = ({ 
-  payments, 
-  onTransactionClick, 
-  loading, 
-  pagination, 
-  onPageChange 
+const PaymentTable: React.FC<PaymentTableProps> = ({
+  payments,
+  onTransactionClick,
+  loading,
+  pagination,
+  onPageChange
 }) => {
 
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
@@ -142,7 +142,7 @@ const PaymentTable: React.FC<PaymentTableProps> = ({
                     {payment.paymentMethod}
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
-                    {formatDate(payment.createdAt)}
+                    {formatDate(new Date(payment.createdAt!)?.toDateString() || '')}
                   </TableCell>
                   <TableCell className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                     {formatCurrency(payment.amount)}

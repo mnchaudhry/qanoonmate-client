@@ -1,15 +1,12 @@
 "use client";
 
-import { Consultation } from "@/store/types/api";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { format } from "date-fns";
-import { Video, Phone, MapPin } from "lucide-react";
-import { ConsultationMode, ConsultationStatus } from "@/lib/enums";
-import { Lawyer } from "@/store/types/lawyer.types";
+import { ConsultationStatus } from "@/lib/enums";
+import { IConsultation } from "@/store/types/consultation.types";
 
 interface ConsultationDetailsProps {
-  consultation: Consultation;
+  consultation: IConsultation;
 }
 
 export default function ConsultationDetails({ consultation }: ConsultationDetailsProps) {
@@ -18,68 +15,26 @@ export default function ConsultationDetails({ consultation }: ConsultationDetail
     ? format(new Date(consultation.scheduledDate), "EEEE, dd MMMM")
     : "Date not available";
 
-  const formattedTime = consultation.scheduledDate
-    ? format(new Date(consultation.scheduledDate), "hh:mm") + " – " +
-    format(
-      new Date(new Date(consultation.scheduledDate).getTime() + (consultation.duration || 30) * 60000),
-      "hh:mm a"
-    )
-    : "Time not available";
+  // Parse scheduledTime (24-hour format) and calculate end time
+  const formattedTime = (() => {
+    if (!consultation.scheduledTime) return "Time not available";
+    
+    const [hours, minutes] = consultation.scheduledTime.split(':').map(Number);
+    const startDate = new Date();
+    startDate.setHours(hours, minutes, 0, 0);
+    
+    const endDate = new Date(startDate.getTime() + (consultation.duration || 30) * 60000);
+    
+    return `${consultation.scheduledTime} – ${endDate.getHours().toString().padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`;
+  })();
 
-  // Get consultation mode icon
-  const getModeIcon = () => {
-    switch (consultation.mode) {
-      case ConsultationMode.VIDEO_CALL:
-        return <Video className="h-5 w-5" />;
-      case ConsultationMode.PHONE_CALL:
-        return <Phone className="h-5 w-5" />;
-      case ConsultationMode.IN_PERSON:
-        return <MapPin className="h-5 w-5" />;
-      default:
-        return <Video className="h-5 w-5" />;
-    }
-  };
-
-  // Get consultation mode display name
-  const getModeName = () => {
-    switch (consultation.mode) {
-      case ConsultationMode.VIDEO_CALL:
-        return "Video Call";
-      case ConsultationMode.PHONE_CALL:
-        return "Phone Call";
-      case ConsultationMode.IN_PERSON:
-        return "In-Person";
-      default:
-        return "Not specified";
-    }
-  };
-
-  // Get platform based on mode
-  const getPlatform = () => {
-    switch (consultation.mode) {
-      case ConsultationMode.VIDEO_CALL:
-        return "Zoom";
-      case ConsultationMode.PHONE_CALL:
-        return consultation.type || "Phone";
-      case ConsultationMode.IN_PERSON:
-        return "Office Location";
-      default:
-        return "Not specified";
-    }
-  };
 
   return (
     <Card className="mb-6">
       <CardHeader className="bg-gray-50 border-b px-4 py-3">
         <div className="grid grid-cols-2">
-          <div className="flex items-center">
-            <div className="mr-2">
-              {getModeIcon()}
-            </div>
-            <CardTitle className="text-base">Consultation Type: {getModeName()}</CardTitle>
-          </div>
           <div className="text-right">
-            Platform: {getPlatform()}
+            Platform: Office Location
           </div>
         </div>
       </CardHeader>
@@ -99,28 +54,6 @@ export default function ConsultationDetails({ consultation }: ConsultationDetail
           <div className="p-4">
             <p className="text-gray-600 font-medium mb-1">Duration:</p>
             <p>{consultation.duration || 30} Minutes</p>
-          </div>
-          <div className="p-4">
-            {consultation.mode === ConsultationMode.VIDEO_CALL && (
-              <>
-                <p className="text-gray-600 font-medium mb-1">Link:</p>
-                <Button variant="outline" size="sm" className="text-blue-600">
-                  Join Meeting
-                </Button>
-              </>
-            )}
-            {consultation.mode === ConsultationMode.PHONE_CALL && (
-              <>
-                <p className="text-gray-600 font-medium mb-1">Phone:</p>
-                <p>{(consultation.lawyerId as Lawyer).phone || "+92-XXX-XXXXXXX"}</p>
-              </>
-            )}
-            {consultation.mode === ConsultationMode.IN_PERSON && (
-              <>
-                <p className="text-gray-600 font-medium mb-1">Address:</p>
-                <p>{(consultation.lawyerId as Lawyer).location?.city || "Office address"}</p>
-              </>
-            )}
           </div>
         </div>
 

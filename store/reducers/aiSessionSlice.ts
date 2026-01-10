@@ -5,6 +5,8 @@ import { AIChatSession } from "@/store/types/api";
 import { getErrorMessage, groupChatsByDate } from "@/lib/utils";
 import { AIChatMessage } from "@/lib/interfaces";
 
+export type ChatMode = "chat" | "summarizer" | "drafting";
+
 interface SessionState {
   aiConfidence: number;
   quickAction: string;
@@ -29,6 +31,7 @@ interface SessionState {
   };
   streamingMessage: AIChatMessage | null;
   regeneratingMessageId: string | null;
+  chatMode: ChatMode;
 }
 
 export interface SidebarChatItem {
@@ -234,6 +237,7 @@ const initialState: SessionState = {
   },
   streamingMessage: null,
   regeneratingMessageId: null,
+  chatMode: "chat",
 };
 
 const aiSessionSlice = createSlice({
@@ -260,6 +264,10 @@ const aiSessionSlice = createSlice({
       state.currentSessionId = null;
       state.messages = [];
       state.referencedLinks = [];
+      // Keep the current mode when creating a new chat
+    },
+    setChatMode: (state, action) => {
+      state.chatMode = action.payload;
     },
     setChatMetadata: (state, action) => {
       state.aiConfidence = action.payload.aiConfidence;
@@ -554,6 +562,7 @@ export default aiSessionSlice.reducer;
 export const {
   resetState,
   newChat,
+  setChatMode,
   setChatMetadata,
   addAIMessage,
   clearError,

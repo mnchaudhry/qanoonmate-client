@@ -1,31 +1,19 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { servicePricing } from '@/constants';
-import { creditsAPI } from '@/store/api/credits';
+import { useAppDispatch, useAppSelector } from '@/store/store';
+import { getQCServiceRates } from '@/store/reducers/creditSlice';
 
 const ServicePricing: React.FC = () => {
-  const [pricing, setPricing] = useState(servicePricing);
-  const [loading, setLoading] = useState(true);
-  console.log('loading', loading);
+
+  const dispatch = useAppDispatch();
+  const { serviceRates } = useAppSelector(state => state.credits);
 
   useEffect(() => {
-    const fetchServicePricing = async () => {
-      try {
-        const apiPricing = await creditsAPI.getServicePricing();
-        setPricing(apiPricing);
-      } catch (error) {
-        console.error('Failed to fetch service pricing:', error);
-        // Fallback to static pricing
-        setPricing(servicePricing);
-      } finally {
-        setLoading(false);
-      }
-    };
+    dispatch(getQCServiceRates())
+  }, [dispatch]);
 
-    fetchServicePricing();
-  }, []);
   return (
     <div className="py-16 bg-neutral">
       <div className="container px-4 mx-auto md:px-6">
@@ -39,13 +27,13 @@ const ServicePricing: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pricing.map((service, index) => (
+          {serviceRates.map((service, index) => (
             <Card key={index} className="hover:shadow-lg transition-shadow duration-300">
               <CardHeader className="text-center">
-                <div className="text-4xl mb-2">{service.icon}</div>
-                <CardTitle className="text-lg">{service.service}</CardTitle>
+                <div className="text-4xl mb-2">{service.unit}</div>
+                <CardTitle className="text-lg">{service.serviceName}</CardTitle>
                 <CardDescription className="text-primary font-semibold text-xl">
-                  {service.price}
+                  {service.qcCost}
                 </CardDescription>
               </CardHeader>
               <CardContent>

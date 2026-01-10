@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { cn, enumToLabel } from '@/lib/utils'
 import * as api from '@/store/api'
-import type { Lawyer, PaginatedLawyerResponse } from '@/store/types/lawyer.types'
+import type { ILawyer } from '@/store/types/lawyer.types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import SearchBar from '@/components/SearchBar'
 import { AccountStatus, LawCategory, PakistanCities } from '@/lib/enums'
@@ -27,14 +27,14 @@ const Consultations: React.FC = () => {
   const [page, setPage] = useState<number>(1)
   const pageSize = 9
   const [isLoading, setIsLoading] = useState<boolean>(true)
-  const [allLawyers, setAllLawyers] = useState<Lawyer[]>([])
+  const [allLawyers, setAllLawyers] = useState<ILawyer[]>([])
 
   /////////////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////////////
   useEffect(() => {
     const load = async () => {
       try {
-        const { data } = await api.getLawyers({ page: 1, limit: 100, accountStatus: AccountStatus.ACTIVE })
-        const list = (data as PaginatedLawyerResponse).data || []
+        const { data } = await api.getAllLawyers({ page: 1, limit: 100, accountStatus: AccountStatus.ACTIVE })
+        const list = data.data?.lawyers || []
         setAllLawyers(list)
       } finally {
         setIsLoading(false)
@@ -226,7 +226,7 @@ function CardSkeleton() {
   )
 }
 
-function LawyerCard({ lawyer }: { lawyer: Lawyer }) {
+function LawyerCard({ lawyer }: { lawyer: ILawyer }) {
 
   return (
     <div className={cn(
@@ -258,19 +258,6 @@ function LawyerCard({ lawyer }: { lawyer: Lawyer }) {
               <p className="text-[11px] text-muted-foreground">{lawyer.avgRating?.toFixed(1)} / 5</p>
             </div>
 
-            {lawyer.settings?.consultation?.modes && lawyer.settings?.consultation?.modes?.length > 0 && (
-              <div className="mt-3 flex flex-wrap justify-start gap-1">
-                {lawyer.settings?.consultation.modes.map(t => (
-                  <Badge
-                    key={t}
-                    variant="secondary"
-                    className="text-[11px] px-2 py-0.5 bg-secondary/80 backdrop-blur"
-                  >
-                    {enumToLabel(t)}
-                  </Badge>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 

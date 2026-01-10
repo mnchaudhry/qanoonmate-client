@@ -6,6 +6,7 @@ import { AIChatSession } from "@/store/types/api"
 import { logout } from "@/store/reducers/authSlice"
 import { AppDispatch } from "@/store/store"
 import localStorageManager from "@/utils/localStorage"
+import { format, isToday, isTomorrow, isYesterday, parseISO } from 'date-fns'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -165,6 +166,7 @@ export const formatFileType = (fileType: string): string => {
 };
 
 export const enumToLabel = (enumValue: string) => {
+  if (!enumValue) return '';
   return enumValue.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
 }
 
@@ -174,4 +176,46 @@ export const onLogout = (dispatch: AppDispatch, callback: () => void) => {
       callback();
       localStorageManager.clear();
     });
+}
+
+export const formatPhoneNumber = (value: string): string => {
+  // Remove all non-digits
+  const digits = value.replace(/\D/g, '');
+
+  // Format as +92 XXX XXXXXXX
+  if (digits.startsWith('92')) {
+    const rest = digits.slice(2);
+    if (rest.length <= 3) return `+92 ${rest}`;
+    return `+92 ${rest.slice(0, 3)} ${rest.slice(3, 10)}`;
+  } else if (digits.startsWith('0')) {
+    const rest = digits.slice(1);
+    if (rest.length <= 3) return `+92 ${rest}`;
+    return `+92 ${rest.slice(0, 3)} ${rest.slice(3, 10)}`;
+  }
+
+  if (digits.length <= 3) return `+92 ${digits}`;
+  return `+92 ${digits.slice(0, 3)} ${digits.slice(3, 10)}`;
+};
+
+export const formattedPrice = (price: number) => {
+  return new Intl.NumberFormat("en-PK", {
+    style: "currency",
+    currency: "PKR",
+    minimumFractionDigits: 0,
+  }).format(price);
+}
+
+export const formatConsultationDate = (dateString: string | Date) => {
+  if (dateString instanceof Date) {
+    dateString = dateString.toISOString()
+  }
+  const date = parseISO(dateString)
+  if (isToday(date)) {
+    return `Today ${format(date, 'h:mm a')}`
+  } else if (isTomorrow(date)) {
+    return `Tomorrow ${format(date, 'h:mm a')}`
+  } else if (isYesterday(date)) {
+    return `Yesterday ${format(date, 'h:mm a')}`
+  }
+  return format(date, 'MMM dd, yyyy h:mm a')
 }
