@@ -20,7 +20,7 @@ export const generateAnonymousUserId = (): string => {
  * Persists the ID in localStorage for future sessions
  */
 export const getOrCreateAnonymousUserId = (): string => {
-  if (typeof window === "undefined") {
+  if (typeof window === "undefined" || typeof localStorage === "undefined") {
     // Server-side rendering - generate temporary ID
     return generateAnonymousUserId();
   }
@@ -47,7 +47,7 @@ export const getOrCreateAnonymousUserId = (): string => {
  * Clears the anonymous user ID (useful when user signs in)
  */
 export const clearAnonymousUserId = (): void => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== "undefined" && typeof localStorage !== "undefined") {
     try {
       localStorage.removeItem(ANONYMOUS_USER_KEY);
     } catch (error) {
