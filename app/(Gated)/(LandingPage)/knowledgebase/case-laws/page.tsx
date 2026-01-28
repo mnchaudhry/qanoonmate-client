@@ -253,19 +253,22 @@ const CaseLaws = () => {
                     <section className="md:col-span-3 col-span-1 !pt-0">
                         {/* View Toggle and Count */}
                         {caseLaws.length > 0 && (
-                        <div className="flex justify-between items-center mb-6">
-                            <div className="text-sm text-muted-foreground">
-                                Showing {caseLaws.length} of {totalCaseLaws} case laws
-                                {(isSearching || isYearRangeChanging) && (
-                                    <span className="ml-2 text-xs text-muted-foreground">
-                                        • Updating...
-                                    </span>
-                                )}
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="text-sm text-muted-foreground">
+                                    {process.env.NODE_ENV == 'development' &&
+                                        <>
+                                            Showing {caseLaws.length} of {totalCaseLaws} case laws
+                                            {(isSearching || isYearRangeChanging) && (
+                                                <span className="ml-2 text-xs text-muted-foreground">
+                                                    • Updating...
+                                                </span>
+                                            )}
+                                        </>}
+                                </div>
+                                <div className="hidden md:flex">
+                                    <ViewToggle view={view} onViewChange={handleViewChange} />
+                                </div>
                             </div>
-                            <div className="hidden md:flex">
-                              <ViewToggle view={view} onViewChange={handleViewChange} />
-                            </div>
-                        </div>
                         )}
 
                         {/* Loading */}
@@ -289,18 +292,18 @@ const CaseLaws = () => {
                         ) : (
                             <>
                                 {(view === 'list' && !(typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches)) ? (
-                                  <CaseLawList
-                                      caseLaws={caseLaws}
-                                      loading={loading}
-                                      onCourtClick={handleCourtClick}
-                                      onCategoryClick={handleCategoryClick}
-                                  />
+                                    <CaseLawList
+                                        caseLaws={caseLaws}
+                                        loading={loading}
+                                        onCourtClick={handleCourtClick}
+                                        onCategoryClick={handleCategoryClick}
+                                    />
                                 ) : (
-                                  <CaseLawGrid
-                                      caseLaws={caseLaws}
-                                      onCourtClick={handleCourtClick}
-                                      onCategoryClick={handleCategoryClick}
-                                  />
+                                    <CaseLawGrid
+                                        caseLaws={caseLaws}
+                                        onCourtClick={handleCourtClick}
+                                        onCategoryClick={handleCategoryClick}
+                                    />
                                 )}
                                 <div className="mt-8">
                                     <Pagination

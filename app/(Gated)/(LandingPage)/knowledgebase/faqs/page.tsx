@@ -182,12 +182,15 @@ const FAQs = () => {
             {faqs.length > 0 && (
               <div className="flex justify-between items-center mb-6">
                 <div className="text-sm text-muted-foreground">
-                  Showing {faqs.length} of {total} FAQs
-                  {isSearching && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      • Updating...
-                    </span>
-                  )}
+                  {process.env.NODE_ENV == 'development' &&
+                    <>
+                        Showing {faqs.length} of {total} FAQs
+                        {isSearching && (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                                • Updating...
+                            </span>
+                        )}
+                    </>}
                 </div>
                 <ViewToggle view={view} onViewChange={handleViewChange} />
               </div>

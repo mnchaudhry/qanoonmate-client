@@ -219,12 +219,15 @@ const Drafts = () => {
             {drafts.length > 0 && (
               <div className="flex justify-between items-center mb-6">
                 <div className="text-sm text-muted-foreground">
-                  Showing {drafts.length} of {totalCount} drafts
-                  {isSearching && (
-                    <span className="ml-2 text-xs text-muted-foreground">
-                      • Updating...
-                    </span>
-                  )}
+                  {process.env.NODE_ENV == 'development' &&
+                    <>
+                        Showing {drafts.length} of {totalCount} drafts
+                        {isSearching && (
+                            <span className="ml-2 text-xs text-muted-foreground">
+                                • Updating...
+                            </span>
+                        )}
+                    </>}
                 </div>
                 <div className="hidden md:flex">
                   <ViewToggle view={view} onViewChange={handleViewChange} />

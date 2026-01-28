@@ -225,19 +225,22 @@ const LegalDictionary = () => {
                     <section className="md:col-span-3 col-span-1 !pt-0">
                         {/* View Toggle and Count */}
                         {terms.length > 0 && (
-                        <div className="flex justify-between items-center mb-6">
-                            <div className="text-sm text-muted-foreground">
-                                Showing {terms.length} of {totalCount} terms
-                                {isSearching && (
-                                    <span className="ml-2 text-xs text-muted-foreground">
-                                        • Updating...
-                                    </span>
-                                )}
+                            <div className="flex justify-between items-center mb-6">
+                                <div className="text-sm text-muted-foreground">
+                                    {process.env.NODE_ENV == 'development' &&
+                                        <>
+                                            Showing {terms.length} of {totalCount} terms
+                                            {isSearching && (
+                                                <span className="ml-2 text-xs text-muted-foreground">
+                                                    • Updating...
+                                                </span>
+                                            )}
+                                        </>}
+                                </div>
+                                <div className="hidden md:flex">
+                                    <ViewToggle view={view} onViewChange={handleViewChange} />
+                                </div>
                             </div>
-                            <div className="hidden md:flex">
-                              <ViewToggle view={view} onViewChange={handleViewChange} />
-                            </div>
-                        </div>
                         )}
 
                         {/* Loading */}
@@ -260,22 +263,22 @@ const LegalDictionary = () => {
                         ) : (
                             <>
                                 {(view === 'list' && !(typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches)) ? (
-                                  <div className="grid gap-3">
-                                      {terms.map(term => (
-                                          <TermCard
-                                              key={term._id}
-                                              {...term}
-                                              onRelatedTermClick={handleRelatedTermClick}
-                                              onCategoryClick={handleCategoryClick}
-                                          />
-                                      ))}
-                                  </div>
+                                    <div className="grid gap-3">
+                                        {terms.map(term => (
+                                            <TermCard
+                                                key={term._id}
+                                                {...term}
+                                                onRelatedTermClick={handleRelatedTermClick}
+                                                onCategoryClick={handleCategoryClick}
+                                            />
+                                        ))}
+                                    </div>
                                 ) : (
-                                  <DictionaryGrid
-                                      terms={terms}
-                                      onRelatedTermClick={handleRelatedTermClick}
-                                      onCategoryClick={handleCategoryClick}
-                                  />
+                                    <DictionaryGrid
+                                        terms={terms}
+                                        onRelatedTermClick={handleRelatedTermClick}
+                                        onCategoryClick={handleCategoryClick}
+                                    />
                                 )}
                                 <div className="mt-8">
                                     <Pagination
