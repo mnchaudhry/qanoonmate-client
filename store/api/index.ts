@@ -1,19 +1,20 @@
+import type * as AdminAPI from "../types/admin.types";
 import type * as API from "../types/api";
-import type * as UserAPI from "../types/user.types";
 import type * as AuthAPI from "../types/auth.types";
-import type * as ClientAPI from "../types/client.types";
-import type * as LawyerAPI from "../types/lawyer.types";
-import type * as ClientSettingsAPI from "../types/clientSettings.types";
-import type * as LawyerSettingsAPI from "../types/lawyerSettings.types";
 import type * as BetaRequestAPI from "../types/beta-request.types";
-import type * as EmailAPI from "../types/email.types";
+import type * as ClientAPI from "../types/client.types";
+import type * as ClientSettingsAPI from "../types/clientSettings.types";
 import type * as CommAPI from "../types/communication.types";
-import type * as CreditsAPI from "../types/credits.types";
-import type * as PaymentsAPI from "../types/payments.types";
 import type * as ConsultationAPI from "../types/consultation.types";
+import type * as CreditsAPI from "../types/credits.types";
+import type * as EmailAPI from "../types/email.types";
+import type * as LawyerAPI from "../types/lawyer.types";
+import type * as LawyerSettingsAPI from "../types/lawyerSettings.types";
+import type * as PaymentsAPI from "../types/payments.types";
+import type * as UserAPI from "../types/user.types";
 
-import { APIClient, FormDataAPI } from "./axios";
 import { UserRole } from "@/lib/enums";
+import { APIClient, FormDataAPI } from "./axios";
 
 ////////////////////////////////////////////////////////// AUTH ////////////////////////////////////////////////////////////
 export const clientSignup = (data: AuthAPI.ClientSignupRequest) => APIClient.post<AuthAPI.SignupResponse>("/auth/signup/client", data);
@@ -32,6 +33,13 @@ export const listSessions = () => APIClient.get(`/auth/sessions`);
 export const revokeSession = (sessionId: string) => APIClient.post(`/auth/sessions/revoke`, { sessionId });
 export const getCSRFToken = () => APIClient.get("/csrf-token");
 export const deactivate = () => APIClient.put("/auth/deactivate");
+
+// ////////////////////////////////////////////////////////// ADMIN ////////////////////////////////////////////////////////////
+export const getAdminDashboardStats = () => APIClient.get<AdminAPI.GetDashboardStatsResponse>("/admin/dashboard/stats");
+
+// ////////////////////////////////////////////////////////// ANALYTICS ////////////////////////////////////////////////////////////
+export const getAnalyticsPlatformUsage = (params: { from?: string; to?: string }) => APIClient.get("/analytics/usage", { params });
+export const getAnalyticsSearchTrends = (params: { from?: string; to?: string }) => APIClient.get("/analytics/search-trends", { params });
 
 ////////////////////////////////////////////////////////// USERS ////////////////////////////////////////////////////////////
 export const getUsers = (params?: UserAPI.GetUsersRequest) => APIClient.get<UserAPI.GetUsersResponse>("/user", { params });

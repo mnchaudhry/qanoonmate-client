@@ -1,61 +1,62 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, Upload, UserCheck, BookOpen, Book, Hash } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DashboardStats } from "@/store/types/admin.types"
+import { Book, BookOpen, Hash, Plus, Upload, UserCheck } from "lucide-react"
 
-const quickActions = [
-  {
-    title: "Add New Law",
-    icon: Plus,
-    description: "Create a new legal act",
-    action: () => console.log("Add new law"),
-    bgColor: "bg-primary/10",
-    iconColor: "text-primary"
-  },
-  {
-    title: "Bulk Upload PDFs",
-    icon: Upload,
-    description: "Upload multiple legal documents",
-    action: () => console.log("Bulk upload"),
-    bgColor: "bg-emerald-50",
-    iconColor: "text-emerald-600"
-  },
-  {
-    title: "Review Pending Lawyers",
-    icon: UserCheck,
-    description: "Verify lawyer applications",
-    action: () => console.log("Review lawyers"),
-    bgColor: "bg-amber-50",
-    iconColor: "text-amber-600"
-  },
-  {
-    title: "Verify Legal FAQs",
-    icon: BookOpen,
-    description: "Approve submitted FAQs",
-    action: () => console.log("Verify FAQs"),
-    bgColor: "bg-purple-50",
-    iconColor: "text-purple-600"
-  },
-  {
-    title: "Approve Legal Guides",
-    icon: Book,
-    description: "Review and approve guides",
-    action: () => console.log("Approve guides"),
-    bgColor: "bg-blue-50",
-    iconColor: "text-blue-600"
-  },
-  {
-    title: "Moderate Dictionary Terms",
-    icon: Hash,
-    description: "Review dictionary submissions",
-    action: () => console.log("Moderate terms"),
-    bgColor: "bg-rose-50",
-    iconColor: "text-rose-600"
-  }
-]
+export default function QuickActions({ stats }: { stats: DashboardStats | null }) {
+  const quickActions = [
+    {
+      title: "Add New Law",
+      icon: Plus,
+      description: "Create a new legal act",
+      action: () => console.log("Add new law"),
+      bgColor: "bg-primary/10",
+      iconColor: "text-primary"
+    },
+    {
+      title: "Bulk Upload PDFs",
+      icon: Upload,
+      description: "Upload multiple legal documents",
+      action: () => console.log("Bulk upload"),
+      bgColor: "bg-emerald-50",
+      iconColor: "text-emerald-600"
+    },
+    {
+      title: `Review Pending Lawyers (${stats?.lawyers?.pendingVerification ?? 0})`,
+      icon: UserCheck,
+      description: "Verify lawyer applications",
+      action: () => console.log("Review lawyers"),
+      bgColor: "bg-amber-50",
+      iconColor: "text-amber-600"
+    },
+    {
+      title: "Verify Legal FAQs",
+      icon: BookOpen,
+      description: "Approve submitted FAQs",
+      action: () => console.log("Verify FAQs"),
+      bgColor: "bg-purple-50",
+      iconColor: "text-purple-600"
+    },
+    {
+      title: "Approve Legal Guides",
+      icon: Book,
+      description: "Review and approve guides",
+      action: () => console.log("Approve guides"),
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-600"
+    },
+    {
+      title: "Moderate Dictionary Terms",
+      icon: Hash,
+      description: "Review dictionary submissions",
+      action: () => console.log("Moderate terms"),
+      bgColor: "bg-rose-50",
+      iconColor: "text-rose-600"
+    }
+  ]
 
-export default function QuickActions() {
   return (
     <Card className="border-border mb-6">
       <CardHeader>

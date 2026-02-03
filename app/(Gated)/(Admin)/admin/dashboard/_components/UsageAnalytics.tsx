@@ -1,43 +1,60 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronRight, TrendingUp, Search, Eye, FileText } from "lucide-react"
-
-const metrics = [
-  {
-    title: "Top Searched Terms",
-    value: "2,200",
-    icon: Search,
-    color: "text-primary"
-  },
-  {
-    title: "FAQ Views",
-    value: "1,500",
-    icon: Eye,
-    color: "text-emerald-600"
-  },
-  {
-    title: "Dictionary Lookups",
-    value: "1,100",
-    icon: FileText,
-    color: "text-blue-600"
-  },
-  {
-    title: "Draft Usage",
-    value: "900",
-    icon: TrendingUp,
-    color: "text-purple-600"
-  }
-]
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
+import { getAnalyticsPlatformUsage, getAnalyticsSearchTrends } from "@/store/api"
+import { ChevronRight, Search } from "lucide-react"
+import { useEffect, useState } from 'react'
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 export default function UsageAnalytics() {
+  const [usageData, setUsageData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [topSearch, setTopSearch] = useState<string>("...");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [usageRes, searchRes] = await Promise.all([
+          getAnalyticsPlatformUsage({}),
+          getAnalyticsSearchTrends({})
+        ]);
+
+        const types = usageRes.data.data.byType || [];
+        setUsageData(types.map((t: any) => ({ name: t.type.replace('_', ' '), count: t.count })));
+
+        const searches = searchRes.data.data.topSearches || [];
+        if (searches.length > 0) {
+          setTopSearch(`${searches[0].term} (${searches[0].count})`);
+        } else {
+          setTopSearch("No data");
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const metrics = [
+    {
+      title: "Top Searched Term",
+      value: topSearch,
+      icon: Search,
+      color: "text-primary"
+    },
+    // Keep other mocks for now or remove if irrelevant
+  ]
+
   return (
     <Card className="border-border mb-6">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-foreground">
-            Usage Analytics
+            System Usage
           </CardTitle>
           <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
             View Details
@@ -46,17 +63,28 @@ export default function UsageAnalytics() {
         </div>
       </CardHeader>
       <CardContent>
-        {/* Mock Chart Area */}
+        {/* Chart Area */}
         <div className="h-64 bg-surface rounded-lg border border-border p-4 mb-4">
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center">
-              <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-              <p className="text-foreground font-medium">Analytics Chart</p>
-              <p className="text-sm text-muted-foreground mt-1">Interactive chart showing usage trends will appear here</p>
+          {loading ? (
+            <div className="flex items-center justify-center h-full">
+              <Skeleton className="h-full w-full" />
             </div>
-          </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={usageData}>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
+                <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
+                <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}`} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: 'var(--background)', borderColor: 'var(--border)' }}
+                  itemStyle={{ color: 'var(--foreground)' }}
+                />
+                <Bar dataKey="count" fill="currentColor" className="fill-primary" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
-        
+
         {/* Metrics Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {metrics.map((metric, index) => (

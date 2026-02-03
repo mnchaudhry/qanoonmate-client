@@ -1,57 +1,59 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TrendingUp, Users, UserCheck, Scale, FileText, BookOpen, Gavel } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { DashboardStats } from "@/store/types/admin.types"
+import { BookOpen, FileText, Gavel, Scale, TrendingUp, UserCheck, Users } from "lucide-react"
 
-const iconMap = {
-  Users,
-  UserCheck,
-  Scale,
-  FileText,
-  BookOpen,
-  Gavel
-}
-
-const statsData = [
-  {
-    title: "Total Users",
-    value: "13,292",
-    icon: "Users",
-    trend: "+12% from last month"
-  },
-  {
-    title: "Verified Users",
-    value: "11,480",
-    icon: "UserCheck",
-    trend: "+8% from last month"
-  },
-  {
-    title: "Lawyers",
-    value: "742",
-    icon: "Scale",
-    trend: "+15% from last month"
-  },
-  {
-    title: "Consultations",
-    value: "3,023",
-    icon: "FileText",
-    trend: "+23% from last month"
-  },
-  {
-    title: "Legal Acts",
-    value: "627",
-    icon: "BookOpen",
-    trend: "+5% from last month"
-  },
-  {
-    title: "Case Laws",
-    value: "1,031",
-    icon: "Gavel",
-    trend: "+18% from last month"
+export default function PlatformStatistics({ stats }: { stats: DashboardStats | null }) {
+  const iconMap = {
+    Users,
+    UserCheck,
+    Scale,
+    FileText,
+    BookOpen,
+    Gavel
   }
-]
 
-export default function PlatformStatistics() {
+  const statsData = [
+    {
+      title: "Total Users",
+      value: stats?.users?.total.toLocaleString() ?? "...",
+      icon: "Users",
+      trend: stats?.users?.trend ?? "..."
+    },
+    {
+      title: "Verified Users",
+      value: stats?.users?.verified.toLocaleString() ?? "...",
+      icon: "UserCheck",
+      trend: "ID Verified"
+    },
+    {
+      title: "Lawyers",
+      value: stats?.lawyers?.total.toLocaleString() ?? "...",
+      icon: "Scale",
+      trend: stats?.lawyers?.trend ?? "..."
+    },
+    {
+      title: "Consultations",
+      value: stats?.consultations?.total.toLocaleString() ?? "...",
+      icon: "FileText",
+      trend: stats?.consultations?.trend ?? "..."
+    },
+    {
+      title: "Legal Acts",
+      value: stats?.knowledgeBase?.acts.toLocaleString() ?? "...",
+      icon: "BookOpen",
+      trend: "Active Acts"
+    },
+    {
+      title: "Case Laws",
+      value: stats?.knowledgeBase?.caseLaws.toLocaleString() ?? "...",
+      icon: "Gavel",
+      trend: "Indexed Cases"
+    }
+  ]
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
       {statsData.map((stat, index) => (
@@ -66,11 +68,20 @@ export default function PlatformStatistics() {
             })()}
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-            <div className="flex items-center mt-2">
-              <TrendingUp className="h-3 w-3 text-primary mr-1" />
-              <span className="text-xs text-primary">{stat.trend}</span>
-            </div>
+            {stats ? (
+              <>
+                <div className="text-2xl font-bold text-foreground">{stat.value}</div>
+                <div className="flex items-center mt-2">
+                  <TrendingUp className="h-3 w-3 text-primary mr-1" />
+                  <span className="text-xs text-primary">{stat.trend}</span>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-3 w-30" />
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}

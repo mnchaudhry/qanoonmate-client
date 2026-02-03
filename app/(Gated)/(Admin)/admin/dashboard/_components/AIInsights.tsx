@@ -1,37 +1,48 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Brain, TrendingUp, Star, Trophy, ChevronRight } from "lucide-react"
-
-const insights = [
-  {
-    title: "Most Asked Topics This Week",
-    items: ["Khula", "Bail", "Land Disputes"],
-    icon: TrendingUp,
-    color: "text-primary"
-  },
-  {
-    title: "Draft Completion Suggestions",
-    items: ["8 guides missing Urdu versions"],
-    icon: Star,
-    color: "text-amber-600"
-  },
-  {
-    title: "Top Performers",
-    items: ["Most Active Lawyer: Ali Z.", "Top Consultation: Property Dispute"],
-    icon: Trophy,
-    color: "text-emerald-600"
-  }
-]
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getAnalyticsSearchTrends } from "@/store/api"
+import { Brain, ChevronRight, Star, TrendingUp, Trophy } from "lucide-react"
+import { useEffect, useState } from 'react'
 
 export default function AIInsights() {
+  const [searchTerms, setSearchTerms] = useState<string[]>([]);
+
+  useEffect(() => {
+    getAnalyticsSearchTrends({}).then(res => {
+      const terms = res.data.data.topSearches || [];
+      setSearchTerms(terms.slice(0, 3).map((t: any) => t.term));
+    }).catch(err => console.error(err));
+  }, []);
+
+  const insights = [
+    {
+      title: "Top Search Terms",
+      items: searchTerms.length > 0 ? searchTerms : ["No enough data yet"],
+      icon: TrendingUp,
+      color: "text-primary"
+    },
+    {
+      title: "Content Gaps",
+      items: ["Users searching for 'Cyber Crime' but finding 0 results"],
+      icon: Star,
+      color: "text-amber-600"
+    },
+    {
+      title: "Top Performers",
+      items: ["Most Active Consultant: Advocate Ali", "Top Category: Family Law"],
+      icon: Trophy,
+      color: "text-emerald-600"
+    }
+  ]
+
   return (
     <Card className="border-border">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-semibold text-foreground">
-            AI Insights & Suggestions
+            Platform Insights
           </CardTitle>
           <Button variant="ghost" size="sm" className="text-primary hover:bg-primary/5">
             View More
@@ -60,7 +71,7 @@ export default function AIInsights() {
             </div>
           ))}
         </div>
-        
+
         {/* AI Summary */}
         <div className="mt-4 p-4 bg-primary/5 rounded-lg border border-primary/20">
           <div className="flex items-center space-x-2 mb-2">
@@ -68,7 +79,7 @@ export default function AIInsights() {
             <h4 className="font-medium text-foreground">AI Summary</h4>
           </div>
           <p className="text-sm text-muted-foreground">
-            Platform activity is up 15% this week with increased focus on family law consultations. 
+            Platform activity is up 15% this week with increased focus on family law consultations.
             Consider expanding Urdu content for better accessibility.
           </p>
         </div>

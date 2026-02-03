@@ -1,9 +1,20 @@
 "use client"
 
-import { PlatformStatistics, QuickActions, RecentActivityFeed, ModerationStatus, UsageAnalytics, CalendarLogsPanel, AIInsights } from './_components'
+import { getAdminDashboardStats } from '@/store/api'
+import { DashboardStats } from '@/store/types/admin.types'
+import { useEffect, useState } from 'react'
 import { PageHeader } from '../../_components/PageHeader'
+import { AIInsights, CalendarLogsPanel, ModerationStatus, PlatformStatistics, QuickActions, RecentActivityFeed, UsageAnalytics } from './_components'
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null)
+
+  useEffect(() => {
+    getAdminDashboardStats().then(res => {
+      setStats(res.data.data!);
+    }).catch(err => console.error(err));
+  }, []);
+
   return (
     <div className="space-y-6">
       {/* Overview Header */}
@@ -13,10 +24,10 @@ export default function AdminDashboard() {
       />
 
       {/* Platform Statistics */}
-      <PlatformStatistics />
+      <PlatformStatistics stats={stats} />
 
       {/* Quick Actions */}
-      <QuickActions />
+      <QuickActions stats={stats} />
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -27,7 +38,7 @@ export default function AdminDashboard() {
 
         {/* Right Column - Moderation & Analytics */}
         <div className="lg:col-span-2 space-y-6">
-          <ModerationStatus />
+          <ModerationStatus stats={stats} />
           <UsageAnalytics />
         </div>
       </div>

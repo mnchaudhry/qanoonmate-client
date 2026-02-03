@@ -1,44 +1,45 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { AlertTriangle, Ban, Flag, ChevronRight } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DashboardStats } from "@/store/types/admin.types"
+import { AlertTriangle, Ban, ChevronRight, Flag } from "lucide-react"
 
-const moderationStats = [
-  {
-    title: "Unverified Lawyers",
-    count: "19",
-    status: "pending",
-    description: "pending",
-    icon: AlertTriangle,
-    bgColor: "bg-amber-50",
-    textColor: "text-amber-700",
-    badgeColor: "bg-amber-100 text-amber-700"
-  },
-  {
-    title: "Flagged Consultations",
-    count: "6",
-    status: "flagged",
-    description: "cases",
-    icon: Ban,
-    bgColor: "bg-red-50",
-    textColor: "text-red-700",
-    badgeColor: "bg-red-100 text-red-700"
-  },
-  {
-    title: "Flagged Case Laws",
-    count: "4",
-    status: "flagged",
-    description: "reports",
-    icon: Flag,
-    bgColor: "bg-orange-50",
-    textColor: "text-orange-700",
-    badgeColor: "bg-orange-100 text-orange-700"
-  }
-]
+export default function ModerationStatus({ stats }: { stats: DashboardStats | null }) {
+  const moderationStats = [
+    {
+      title: "Unverified Lawyers",
+      count: stats?.lawyers?.pendingVerification ?? "...",
+      status: "pending",
+      description: "pending",
+      icon: AlertTriangle,
+      bgColor: "bg-amber-50",
+      textColor: "text-amber-700",
+      badgeColor: "bg-amber-100 text-amber-700"
+    },
+    {
+      title: "Flagged Consultations",
+      count: stats?.consultations?.flagged ?? "...",
+      status: "flagged",
+      description: "cases",
+      icon: Ban,
+      bgColor: "bg-red-50",
+      textColor: "text-red-700",
+      badgeColor: "bg-red-100 text-red-700"
+    },
+    {
+      title: "Flagged Case Laws",
+      count: "0", // Not implemented yet
+      status: "flagged",
+      description: "reports",
+      icon: Flag,
+      bgColor: "bg-orange-50",
+      textColor: "text-orange-700",
+      badgeColor: "bg-orange-100 text-orange-700"
+    }
+  ]
 
-export default function ModerationStatus() {
   return (
     <Card className="border-border mb-6">
       <CardHeader>
