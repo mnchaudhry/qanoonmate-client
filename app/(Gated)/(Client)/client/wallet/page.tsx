@@ -15,6 +15,7 @@ import { QuickStats } from './_components/QuickStats';
 import { CreditPackageCard } from './_components/CreditPackageCard';
 import { TransactionItem } from './_components/TransactionItem';
 import { EmptyTransactions } from './_components/EmptyTransactions';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const WalletPage = () => {
 
@@ -22,6 +23,7 @@ const WalletPage = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { balance, packages, transactionHistory } = useSelector((state: RootState) => state.credits);
   const { requireAuth, showSignInModal, modalConfig, handleSignInSuccess, handleSignInCancel } = useAuthGuard();
+  const { trackWalletTopupInitiated, trackPricingPlanClick } = useAnalytics();
 
   //////////////////////////////////////////////// STATES //////////////////////////////////////////////
   const [loading, setLoading] = useState({ purchase: false, transactions: false });
@@ -35,12 +37,24 @@ const WalletPage = () => {
 
   //////////////////////////////////////////////// FUNCTIONS //////////////////////////////////////////////
   const handlePurchase = async (pkg: IQCPackage) => {
+    trackPricingPlanClick({
+      packageName: pkg.name,
+      price: pkg.price,
+      qcAmount: pkg.qcAmount,
+    });
+
     requireAuth(async () => {
       try {
         setLoading(prev => ({ ...prev, purchase: true }));
         await dispatch(purchaseQC({ planId: pkg.id })).unwrap()
           .then((result) => {
             toast.success('Payment initiated successfully!');
+            trackWalletTopupInitiated({
+              planId: pkg.id,
+              packageName: pkg.name,
+              price: pkg.price,
+              qcAmount: pkg.qcAmount,
+            });
             if (result?.data?.paymentUrl) {
               window.location.href = result.data.paymentUrl;
             }

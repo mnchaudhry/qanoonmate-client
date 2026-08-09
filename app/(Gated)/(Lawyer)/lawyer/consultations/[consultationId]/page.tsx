@@ -16,6 +16,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ConsultationStatus } from "@/lib/enums";
 import toast from "react-hot-toast";
 import AlertModal from "@/components/alert-modal";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 export default function ConsultationDetailPage() {
 
@@ -26,6 +27,7 @@ export default function ConsultationDetailPage() {
   const consultationId = params.consultationId as string;
   const { selectedConsultation, loading: isLoading, error } = useAppSelector((state) => state.consultation);
   const { selectedLawyer } = useAppSelector((state) => state.lawyer);
+  const { trackConsultationAction } = useAnalytics();
 
   /////////////////////////////////////////////// STATES /////////////////////////////////////////////// 
   const [actionLoading, setActionLoading] = useState(false);
@@ -48,6 +50,7 @@ export default function ConsultationDetailPage() {
       await dispatch(
         confirmConsultation({ id: consultationId, updates: { status: ConsultationStatus.SCHEDULED } })
       ).unwrap();
+      trackConsultationAction({ action: 'confirm', consultationId });
       toast.success("Consultation confirmed successfully");
       dispatch(getConsultationById({ id: consultationId }));
     } catch (err: any) {
@@ -68,6 +71,7 @@ export default function ConsultationDetailPage() {
           updates: { status: ConsultationStatus.IN_PROGRESS }
         })
       ).unwrap();
+      trackConsultationAction({ action: 'start', consultationId });
       toast.success("Consultation started");
       dispatch(getConsultationById({ id: consultationId }));
     } catch (err: any) {
@@ -88,6 +92,7 @@ export default function ConsultationDetailPage() {
           updates: { status: ConsultationStatus.COMPLETED }
         })
       ).unwrap();
+      trackConsultationAction({ action: 'complete', consultationId });
       toast.success("Consultation marked as complete");
       dispatch(getConsultationById({ id: consultationId }));
     } catch (err: any) {
@@ -111,6 +116,7 @@ export default function ConsultationDetailPage() {
           }
         })
       ).unwrap();
+      trackConsultationAction({ action: 'cancel', consultationId, reason: cancelNote });
       toast.success("Consultation cancelled");
       setShowCancelDialog(false);
       setCancelNote("");

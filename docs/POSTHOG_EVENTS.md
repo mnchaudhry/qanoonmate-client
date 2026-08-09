@@ -146,7 +146,18 @@ Every event (custom, automatic `$pageview`, and `$autocapture`) automatically ca
 
 ---
 
-## 10. How to Track New Events
+## 10. Client & Lawyer Dashboard Portals (`/client/*` & `/lawyer/*`)
+
+| Event Name | Trigger Surface | Properties | Type | Example / Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **`wallet_topup_initiated`** | Client Dashboard Wallet (`/client/wallet`) | `plan_id`<br>`package_name`<br>`price`<br>`qc_amount` | `string`<br>`string`<br>`number \| string`<br>`number \| string` | Initiating QC topup from client dashboard. |
+| **`consultation_joined_call`** | Consultation Detail / Room Page | `consultation_id`<br>`user_role` | `string`<br>`"client" \| "lawyer"` | Client or lawyer joining video room. |
+| **`consultation_action`** | Lawyer Consultation Hub | `action`<br>`consultation_id`<br>`reason` | `"confirm" \| "start" \| "complete" \| "cancel"`<br>`string`<br>`string?` | Lawyer confirming, starting, completing, or cancelling a consultation. |
+| **`payout_withdrawal_requested`** | Lawyer Earnings (`/lawyer/earnings/withdraw`) | `amount`<br>`payout_method` | `number`<br>`string?` | Lawyer requesting earnings withdrawal. |
+
+---
+
+## 11. How to Track New Events
 
 To track an event anywhere in a client component, import the `useAnalytics` hook:
 

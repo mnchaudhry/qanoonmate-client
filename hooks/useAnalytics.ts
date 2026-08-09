@@ -429,6 +429,52 @@ export function useAnalytics() {
     });
   }, [trackEvent]);
 
+  const trackConsultationAction = useCallback((params: {
+    action: 'confirm' | 'start' | 'complete' | 'cancel';
+    consultationId: string;
+    reason?: string;
+  }) => {
+    trackEvent('consultation_action', {
+      action: params.action,
+      consultation_id: params.consultationId,
+      reason: params.reason,
+    });
+  }, [trackEvent]);
+
+  const trackConsultationJoinCall = useCallback((params: {
+    consultationId: string;
+    userRole?: string;
+  }) => {
+    trackEvent('consultation_joined_call', {
+      consultation_id: params.consultationId,
+      user_role: params.userRole,
+    });
+  }, [trackEvent]);
+
+  const trackPayoutRequested = useCallback((params: {
+    amount: number;
+    method?: string;
+  }) => {
+    trackEvent('payout_withdrawal_requested', {
+      amount: params.amount,
+      payout_method: params.method,
+    });
+  }, [trackEvent]);
+
+  const trackWalletTopupInitiated = useCallback((params: {
+    planId: string;
+    packageName: string;
+    price: number | string;
+    qcAmount: number | string;
+  }) => {
+    trackEvent('wallet_topup_initiated', {
+      plan_id: params.planId,
+      package_name: params.packageName,
+      price: params.price,
+      qc_amount: params.qcAmount,
+    });
+  }, [trackEvent]);
+
   const identifyUser = useCallback((userId: string, traits?: Record<string, any>) => {
     posthogIdentify(userId, traits);
   }, []);
@@ -474,6 +520,10 @@ export function useAnalytics() {
     trackPaymentFailed,
     trackPaymentCancelled,
     trackAuthStep,
+    trackConsultationAction,
+    trackConsultationJoinCall,
+    trackPayoutRequested,
+    trackWalletTopupInitiated,
     identifyUser,
     resetUser,
   };
