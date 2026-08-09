@@ -65,6 +65,7 @@ const PaymentSuccessPage = () => {
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
   const handleDownloadReceipt = () => {
     if (!paymentDetails) return;
+    trackCTA({ section: 'payment_success', ctaName: 'download_receipt' });
     // Open printable receipt in a new window and trigger print
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     if (printWindow) {
