@@ -44,13 +44,22 @@ const SignIn: React.FC = () => {
     if (!formData?.password) return toast.error('Password is required')
 
     setLoading(true)
-    trackAuthStep({ step: 'submit_signin', role: role || 'user', method: 'password' });
+    trackAuthStep({ step: 'submit_signin', status: 'attempt', role: role || 'user', method: 'password' });
 
     dispatch(login({ role, data: formData }))
-      .then(({ meta }) => {
+      .then(({ meta, payload }: any) => {
         if (meta.requestStatus === 'fulfilled') {
+          trackAuthStep({ step: 'submit_signin', status: 'success', role: role || 'user', method: 'password' });
           router.push(redirect);
           setFormData(initialData);
+        } else {
+          trackAuthStep({
+            step: 'submit_signin',
+            status: 'failure',
+            role: role || 'user',
+            method: 'password',
+            errorMessage: typeof payload === 'string' ? payload : payload?.message || 'Login failed',
+          });
         }
       })
       .finally(() => {

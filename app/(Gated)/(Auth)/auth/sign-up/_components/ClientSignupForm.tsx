@@ -100,7 +100,7 @@ const ClientSignupForm = () => {
     if (!validateForm()) return;
 
     setLoading(true);
-    trackAuthStep({ step: 'submit_client_signup', role: 'client' });
+    trackAuthStep({ step: 'submit_client_signup', status: 'attempt', role: 'client' });
     try {
       const result = await dispatch(clientSignup({
         ...formData,
@@ -108,10 +108,24 @@ const ClientSignupForm = () => {
       }));
 
       if (result.meta.requestStatus === 'fulfilled') {
+        trackAuthStep({ step: 'submit_client_signup', status: 'success', role: 'client' });
         setOTPType(OtpVerificationType.SIGNUP);
         router.push(`/auth/verify-otp?role=${UserRole.CLIENT}`);
+      } else {
+        trackAuthStep({
+          step: 'submit_client_signup',
+          status: 'failure',
+          role: 'client',
+          errorMessage: (result as any)?.payload?.message || 'Signup failed',
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
+      trackAuthStep({
+        step: 'submit_client_signup',
+        status: 'failure',
+        role: 'client',
+        errorMessage: error?.message || 'Signup failed',
+      });
       console.error('Client signup error:', error);
     } finally {
       setLoading(false);

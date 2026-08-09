@@ -287,15 +287,30 @@ export function useAnalytics() {
   }, []);
 
   const trackAuthStep = useCallback((params: {
-    step: 'view_signup' | 'switch_role' | 'submit_client_signup' | 'submit_lawyer_signup' | 'view_signin' | 'submit_signin' | 'otp_attempt' | 'otp_success' | 'google_oauth';
+    step:
+      | 'view_signup'
+      | 'switch_role'
+      | 'submit_client_signup'
+      | 'submit_lawyer_signup'
+      | 'view_signin'
+      | 'submit_signin'
+      | 'forgot_password_request'
+      | 'otp_verify'
+      | 'otp_resend'
+      | 'reset_password'
+      | 'google_oauth';
+    status?: 'attempt' | 'success' | 'failure';
     role?: string;
     method?: string;
+    errorMessage?: string;
     extra?: Record<string, any>;
   }) => {
     posthogCapture('auth_funnel_step', {
       funnel_step: params.step,
+      status: params.status ?? 'attempt',
       role: params.role,
       auth_method: params.method,
+      error_message: params.errorMessage,
       ...params.extra,
     });
   }, []);

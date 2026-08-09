@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { OtpVerificationType, UserRole, BarCouncils } from '@/lib/enums';
 import { lawyerSignupStep } from '@/store/reducers/authSlice';
 import { LawyerFormData } from './types';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 // Validation rules
 const cnicRegex = /^\d{5}-\d{7}-\d{1}$/;
@@ -45,6 +46,7 @@ const LawyerSignupForm = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const { setOTPType } = useStateContext();
+  const { trackAuthStep } = useAnalytics();
 
   ////////////////////////////////////////////////// STATES //////////////////////////////////////////////////
   const [formData, setFormData] = useState<LawyerFormData>({
@@ -142,6 +144,7 @@ const LawyerSignupForm = () => {
     if (!validateBasicInfo()) return;
 
     setLoading(true);
+    trackAuthStep({ step: 'submit_lawyer_signup', status: 'attempt', role: 'lawyer' });
     try {
       const result = await dispatch(lawyerSignupStep({
         firstname: formData.firstname,
@@ -158,10 +161,24 @@ const LawyerSignupForm = () => {
       }));
 
       if (result.meta.requestStatus === 'fulfilled') {
+        trackAuthStep({ step: 'submit_lawyer_signup', status: 'success', role: 'lawyer' });
         setOTPType(OtpVerificationType.SIGNUP);
         router.push(`/auth/verify-otp?role=${UserRole.LAWYER}`);
+      } else {
+        trackAuthStep({
+          step: 'submit_lawyer_signup',
+          status: 'failure',
+          role: 'lawyer',
+          errorMessage: (result as any)?.payload?.message || 'Lawyer signup failed',
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
+      trackAuthStep({
+        step: 'submit_lawyer_signup',
+        status: 'failure',
+        role: 'lawyer',
+        errorMessage: error?.message || 'Lawyer signup failed',
+      });
       console.error('Lawyer signup error:', error);
     } finally {
       setLoading(false);

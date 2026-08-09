@@ -9,7 +9,7 @@ import { OtpVerificationType, UserRole } from '@/lib/enums';
 import { useStateContext } from '@/context/useStateContext';
 import { AppDispatch } from '@/store/store';
 import { forgetPasswordRequest } from '@/store/reducers/authSlice';
-
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const ForgotPassword: React.FC = () => {
 
@@ -20,6 +20,7 @@ const ForgotPassword: React.FC = () => {
   const searchParams = useSearchParams()
   const roleParam = searchParams.get('role');
   const role = Object.values(UserRole).includes(roleParam as UserRole) ? roleParam as UserRole : UserRole.CLIENT;
+  const { trackAuthStep } = useAnalytics();
 
   //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////
   const [loading, setLoading] = useState(false)
@@ -35,12 +36,21 @@ const ForgotPassword: React.FC = () => {
     if (!validate(email)) return toast.error('Please enter a valid email')
 
     setLoading(true)
+    trackAuthStep({ step: 'forgot_password_request', status: 'attempt', role });
 
     dispatch(forgetPasswordRequest({ role, data: { email } }))
-      .then(({ meta }) => {
+      .then(({ meta, payload }: any) => {
         if (meta.requestStatus === 'fulfilled') {
+          trackAuthStep({ step: 'forgot_password_request', status: 'success', role });
           setOTPType(OtpVerificationType.FORGETPASSWORD)
           router.push(`/auth/verify-otp?role=${role || ''}`)
+        } else {
+          trackAuthStep({
+            step: 'forgot_password_request',
+            status: 'failure',
+            role,
+            errorMessage: typeof payload === 'string' ? payload : payload?.message || 'Failed to request OTP',
+          });
         }
       })
       .finally(() => {

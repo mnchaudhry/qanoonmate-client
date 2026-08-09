@@ -8,7 +8,7 @@ import { resetPassword } from '@/store/reducers/authSlice';
 import { AppDispatch } from '@/store/store';
 import { UserRole } from '@/lib/enums';
 import localStorageManager from '@/utils/localStorage';
-
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const NewPassword: React.FC = () => {
 
@@ -18,6 +18,7 @@ const NewPassword: React.FC = () => {
   const searchParams = useSearchParams();
   const roleParam = searchParams.get('role');
   const role = Object.values(UserRole).includes(roleParam as UserRole) ? roleParam as UserRole : UserRole.CLIENT;
+  const { trackAuthStep } = useAnalytics();
 
   //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////
   const [loading, setLoading] = useState(false)
@@ -37,16 +38,24 @@ const NewPassword: React.FC = () => {
     if (!otpEmail) return toast.error("We've lost your email. Pleaes go back and signup again.")
 
     setLoading(true)
+    trackAuthStep({ step: 'reset_password', status: 'attempt', role });
 
     dispatch(resetPassword({ role, data: { newPassword: password, email: JSON.parse(otpEmail) } }))
-      .then(({ meta }) => {
+      .then(({ meta, payload }: any) => {
         if (meta.requestStatus === 'fulfilled') {
+          trackAuthStep({ step: 'reset_password', status: 'success', role });
           router.push(`/auth/sign-in`)
           localStorageManager.removeItem('OTP_EMAIL')
           setPassword('');
           setConfirmPassword('');
         }
         else {
+          trackAuthStep({
+            step: 'reset_password',
+            status: 'failure',
+            role,
+            errorMessage: typeof payload === 'string' ? payload : payload?.message || 'Password reset failed',
+          });
           setLoading(false)
           return;
         }
