@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/compon
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Filter } from 'lucide-react'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 const PAGE_SIZE = 42;
 
@@ -27,6 +28,7 @@ const LegalGuides = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { guides, loading, currentPage: page, totalPages, totalCount: total } = useSelector((state: RootState) => state.guide);
+  const { trackKBSearch } = useAnalytics();
 
   const urlSearch = searchParams.get('search') || '';
   const urlCategory = searchParams.get('category') || 'all';
@@ -71,7 +73,15 @@ const LegalGuides = () => {
       page: currentPage,
       limit: PAGE_SIZE,
     }));
-  }, [debouncedSearch, category, sort, currentPage, dispatch]);
+
+    if (debouncedSearch || category !== 'all') {
+      trackKBSearch({
+        section: 'guides',
+        query: debouncedSearch,
+        filters: { category, sort }
+      });
+    }
+  }, [debouncedSearch, category, sort, currentPage, dispatch, trackKBSearch]);
 
   // Sync local state with URL on mount
   useEffect(() => {

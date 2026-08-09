@@ -10,8 +10,12 @@ import { Wallet, DollarSign, CheckCircle, Clock, XCircle, CreditCard, Building2 
 import { format } from 'date-fns';
 import DashboardPageHeader from '@/components/DashboardPageHeader';
 import { toast } from 'sonner';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const WithdrawPaymentsPage = () => {
+
+    //////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////////
+    const { trackPayoutRequested } = useAnalytics();
 
     //////////////////////////////////////////////// STATES //////////////////////////////////////////////////
     const [withdrawAmount, setWithdrawAmount] = useState('');
@@ -70,6 +74,11 @@ const WithdrawPaymentsPage = () => {
             toast.error('Insufficient balance');
             return;
         }
+
+        trackPayoutRequested({
+            amount,
+            method: 'bank_transfer',
+        });
 
         // TODO: Implement actual withdrawal request
         toast.success('Withdrawal request submitted successfully!');

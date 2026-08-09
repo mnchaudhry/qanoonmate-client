@@ -9,12 +9,14 @@ import { CheckCircle2, Loader2, Receipt } from 'lucide-react';
 import dynamic from 'next/dynamic';
 const ReceiptComponent = dynamic(() => import('@/components/Receipt'), { ssr: false });
 import LandingPageNavbar from '../../(LandingPage)/_components/LandingPageNavbar';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const PaymentSuccessPage = () => {
 
   ///////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { trackPaymentCompleted, trackCTA } = useAnalytics();
 
   ///////////////////////////////////////////// STATES /////////////////////////////////////////////////
   const [isVerifying, setIsVerifying] = useState(true);
@@ -43,6 +45,11 @@ const PaymentSuccessPage = () => {
             amount: 'PKR 5,000', // This should come from your backend
             timestamp: new Date().toLocaleString(),
           });
+          trackPaymentCompleted({
+            orderId: orderId || undefined,
+            tracker: tracker || undefined,
+            amount: 'PKR 5,000',
+          });
           setIsVerifying(false);
         }, 2000);
 
@@ -53,7 +60,7 @@ const PaymentSuccessPage = () => {
     };
 
     verifyPayment();
-  }, [searchParams]);
+  }, [searchParams, trackPaymentCompleted]);
 
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
   const handleDownloadReceipt = () => {

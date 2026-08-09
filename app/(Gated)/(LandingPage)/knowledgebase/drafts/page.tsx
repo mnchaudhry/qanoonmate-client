@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/compon
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Filter } from 'lucide-react'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 const PAGE_SIZE = 42
 
@@ -26,6 +27,7 @@ const Drafts = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { drafts, isLoading, currentPage, totalPages, totalCount } = useSelector((state: RootState) => state.draft)
+  const { trackKBSearch } = useAnalytics()
 
   const urlSearch = searchParams.get('search') || ''
   const urlCategory = searchParams.get('category') || 'all'
@@ -79,7 +81,15 @@ const Drafts = () => {
     if (isFree !== 'all') params.isFree = isFree === 'true'
 
     dispatch(getDrafts(params))
-  }, [dispatch, page, debouncedSearch, category, format, isFree, sort])
+
+    if (debouncedSearch || category !== 'all' || format !== 'all' || isFree !== 'all') {
+      trackKBSearch({
+        section: 'drafts',
+        query: debouncedSearch,
+        filters: { category, format, is_free: isFree, sort }
+      })
+    }
+  }, [dispatch, page, debouncedSearch, category, format, isFree, sort, trackKBSearch])
 
   useEffect(() => {
     setSearch(urlSearch)

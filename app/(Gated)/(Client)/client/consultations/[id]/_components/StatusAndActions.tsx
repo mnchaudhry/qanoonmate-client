@@ -11,6 +11,7 @@ import { AppDispatch } from "@/store/store";
 import { cancelConsultation } from "@/store/reducers/consultationSlice";
 import { CancellationReason, ConsultationStatus } from "@/lib/enums";
 import { IConsultation } from "@/store/types/consultation.types";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface StatusAndActionsProps {
   consultation: IConsultation;
@@ -21,6 +22,7 @@ export default function StatusAndActions({ consultation }: StatusAndActionsProps
   const dispatch = useDispatch<AppDispatch>();
   const [cancelReason, setCancelReason] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { trackConsultationJoinCall, trackConsultationAction } = useAnalytics();
 
   // Determine the status of each step in the timeline
   const getStepStatus = (step: string) => {
@@ -71,12 +73,27 @@ export default function StatusAndActions({ consultation }: StatusAndActionsProps
       return;
     }
 
+    trackConsultationAction({
+      action: 'cancel',
+      consultationId: consultation._id,
+      reason: cancelReason,
+    });
+
     dispatch(cancelConsultation({
       id: consultation._id || "",
-      request: { reason: CancellationReason.CLIENT_REQUEST },
+      request: {
+        reason: cancelReason as CancellationReason,
+      }
     }));
 
     setIsDialogOpen(false);
+  };
+
+  const handleJoinCall = () => {
+    trackConsultationJoinCall({
+      consultationId: consultation._id,
+      userRole: 'client',
+    });
   };
 
   return (
@@ -109,7 +126,7 @@ export default function StatusAndActions({ consultation }: StatusAndActionsProps
 
         <div className="flex flex-wrap gap-2 justify-center">
           {consultation.status === ConsultationStatus.SCHEDULED && (
-            <Button className="bg-green-600 hover:bg-green-700">
+            <Button onClick={handleJoinCall} className="bg-green-600 hover:bg-green-700">
               <Video className="h-4 w-4 mr-2" />
               Join Meeting
             </Button>

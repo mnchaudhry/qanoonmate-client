@@ -7,30 +7,33 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { XCircle, RefreshCcw, Home, HelpCircle } from 'lucide-react';
 import LandingPageNavbar from '../../(LandingPage)/_components/LandingPageNavbar';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const PaymentCancelPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order_id');
   const tracker = searchParams.get('tracker');
+  const { trackPaymentCancelled, trackCTA } = useAnalytics();
 
   //////////////////////////////////////////////// EFFECTS /////////////////////////////////////////////////
   useEffect(() => {
-    // Log the cancellation for analytics
-    console.log('Payment cancelled:', { orderId, tracker });
-  }, [orderId, tracker]);
+    trackPaymentCancelled({ orderId: orderId || undefined });
+  }, [orderId, trackPaymentCancelled]);
 
   //////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
   const handleRetryPayment = () => {
-    // Redirect to wallet or payment page to retry
-    router.push('/client/wallet');
+    trackCTA({ section: 'payment_cancelled', ctaName: 'retry_payment', destination: '/pricing' });
+    router.push('/pricing');
   };
 
   const handleGoToDashboard = () => {
+    trackCTA({ section: 'payment_cancelled', ctaName: 'go_to_dashboard', destination: '/client/dashboard' });
     router.push('/client/dashboard');
   };
 
   const handleContactSupport = () => {
+    trackCTA({ section: 'payment_cancelled', ctaName: 'contact_support', destination: '/support' });
     router.push('/support');
   };
 

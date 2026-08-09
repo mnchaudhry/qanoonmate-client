@@ -10,12 +10,14 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { XCircle } from 'lucide-react';
 import LandingPageNavbar from '../../(LandingPage)/_components/LandingPageNavbar';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const PaymentFailedPage = () => {
 
     ///////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { trackPaymentFailed, trackCTA } = useAnalytics();
 
     ///////////////////////////////////////////// STATES /////////////////////////////////////////////////
     const [errorDetails, setErrorDetails] = useState<any>(null);
@@ -31,16 +33,28 @@ const PaymentFailedPage = () => {
             orderId: orderId || 'N/A',
             reason: reason || 'Payment was not completed. Please try again.'
         });
-    }, [searchParams]);
+
+        trackPaymentFailed({
+            errorMessage: reason || 'Payment was not completed',
+            tracker: tracker || undefined,
+        });
+    }, [searchParams, trackPaymentFailed]);
 
     ///////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////
     const handleRetryPayment = () => {
-        // Redirect to payments or checkout page — adjust to your app flow
+        trackCTA({ section: 'payment_failed', ctaName: 'retry_payment', destination: '/pricing' });
+        router.push('/pricing');
+    };
+
+    const handleViewTransactions = () => {
+        trackCTA({ section: 'payment_failed', ctaName: 'view_transactions', destination: '/client/payments' });
         router.push('/client/payments');
     };
 
-    const handleViewTransactions = () => router.push('/client/payments');
-    const handleContactSupport = () => router.push('/support');
+    const handleContactSupport = () => {
+        trackCTA({ section: 'payment_failed', ctaName: 'contact_support', destination: '/support' });
+        router.push('/support');
+    };
 
     ///////////////////////////////////////////// RENDER /////////////////////////////////////////////////
     return (

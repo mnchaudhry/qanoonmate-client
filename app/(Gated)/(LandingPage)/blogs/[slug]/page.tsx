@@ -8,6 +8,7 @@ import AuthorInfo from "../_components/AuthorInfo";
 import EngagementBar from "../_components/EngagementBar";
 import CommentsSection from "../_components/CommentsSection";
 import Breadcrumb from "@/components/Breadcrumb";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 export default function BlogDetailPage() {
 
@@ -16,6 +17,7 @@ export default function BlogDetailPage() {
   const [blog, setBlog] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { trackBlogRead } = useAnalytics();
 
   useEffect(() => {
     if (!slug) return;
@@ -24,12 +26,18 @@ export default function BlogDetailPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data.error) throw new Error(data.error);
-        setBlog(data.data || data); // handle both {data: blog} and blog
+        const blogData = data.data || data;
+        setBlog(blogData);
+        trackBlogRead({
+          slug: String(slug),
+          title: blogData?.title,
+          author: blogData?.author?.name || blogData?.author,
+        });
         setError(null);
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, trackBlogRead]);
 
   if (loading) {
     return (

@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '@/store/store'
 import { uploadDocument, createSummary, clearError } from '@/store/reducers/summarySlice'
 import { useSocketContext } from '@/context/useSocketContext'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import toast from 'react-hot-toast'
 
 interface DropboxProps {
@@ -21,6 +22,7 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating, initialExample }
     const dispatch = useDispatch<AppDispatch>()
     const { error, currentSummary, progress, streamingSummary } = useSelector((state: RootState) => state.summary)
     const { defaultSocket: { isConnected, isAuthenticated }, connectAgain } = useSocketContext()
+    const { trackSummaryInitiated, trackSummaryCompleted } = useAnalytics()
 
     /////////////////////////////////////////////// STATES /////////////////////////////////////////////////////
     const [input, setInput] = useState('')
@@ -47,13 +49,15 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating, initialExample }
         if (currentSummary) {
             if (currentSummary.status === 'completed') {
                 setIsGenerating(false)
+                trackSummaryCompleted({ summarizerType: selectedType, status: 'completed' })
                 toast.success('Summary generated successfully!')
             } else if (currentSummary.status === 'failed') {
                 setIsGenerating(false)
+                trackSummaryCompleted({ summarizerType: selectedType, status: 'failed', errorMessage: currentSummary.error })
                 toast.error(currentSummary.error || 'Failed to generate summary')
             }
         }
-    }, [currentSummary, setIsGenerating])
+    }, [currentSummary, setIsGenerating, selectedType, trackSummaryCompleted])
 
     // Handle errors
     useEffect(() => {
@@ -71,6 +75,7 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating, initialExample }
         }
 
         setIsGenerating(true)
+        trackSummaryInitiated({ summarizerType: selectedType, inputType: 'file', fileName: file.name })
 
         try {
             const formData = new FormData()
@@ -85,8 +90,9 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating, initialExample }
 
             await dispatch(uploadDocument(formData))
             toast.success('Document uploaded successfully! Processing started...')
-        } catch (error) {
+        } catch (error: any) {
             console.error('Upload error:', error)
+            trackSummaryCompleted({ summarizerType: selectedType, status: 'failed', errorMessage: error?.message || 'Upload failed' })
             setIsGenerating(false)
         }
     }
@@ -98,6 +104,7 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating, initialExample }
         }
 
         setIsGenerating(true)
+        trackSummaryInitiated({ summarizerType: selectedType, inputType: 'text', characterCount: input.length })
 
         try {
             const summaryData = {
@@ -114,8 +121,9 @@ const Dropbox = ({ selectedType, isGenerating, setIsGenerating, initialExample }
 
             await dispatch(createSummary(summaryData)).unwrap()
             toast.success('Summary creation started!')
-        } catch (error) {
+        } catch (error: any) {
             console.error('Summary creation error:', error)
+            trackSummaryCompleted({ summarizerType: selectedType, status: 'failed', errorMessage: error?.message || 'Creation failed' })
             setIsGenerating(false)
         }
     }

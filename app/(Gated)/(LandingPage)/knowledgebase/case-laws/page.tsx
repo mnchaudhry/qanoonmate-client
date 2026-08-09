@@ -18,6 +18,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/compon
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Filter } from 'lucide-react'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 const PAGE_SIZE = 42;
 
@@ -27,6 +28,7 @@ const CaseLaws = () => {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { caseLaws, loading, currentPage, totalPages, totalCount: totalCaseLaws } = useSelector((state: RootState) => state.caseLaw)
+    const { trackKBSearch } = useAnalytics()
     const minYear = 1947;
     const maxYear = new Date().getFullYear();
 
@@ -74,7 +76,15 @@ const CaseLaws = () => {
             maxYear: debouncedYearRange[1],
             sort: sort || undefined,
         }))
-    }, [dispatch, page, court, category, debouncedSearch, debouncedYearRange, sort])
+
+        if (debouncedSearch || court || category) {
+            trackKBSearch({
+                section: 'case-laws',
+                query: debouncedSearch,
+                filters: { court, category, min_year: debouncedYearRange[0], max_year: debouncedYearRange[1], sort }
+            })
+        }
+    }, [dispatch, page, court, category, debouncedSearch, debouncedYearRange, sort, trackKBSearch])
 
     ///////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////////////
     const updateURL = (newParams: Record<string, string | number | boolean>) => {
