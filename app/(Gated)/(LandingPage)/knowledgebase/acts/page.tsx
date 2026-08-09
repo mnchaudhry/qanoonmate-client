@@ -18,6 +18,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/compon
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Filter } from 'lucide-react'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 const PAGE_SIZE = 42;
 
@@ -27,6 +28,7 @@ const Acts = () => {
   const dispatch = useDispatch<AppDispatch>()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { trackKBSearch } = useAnalytics()
   const { acts = [], isLoading, currentPage, totalPages, totalCount: totalActs } = useSelector((state: RootState) => state.act)
   const minYear = 1857;
   const maxYear = new Date().getFullYear();
@@ -60,6 +62,14 @@ const Acts = () => {
 
   ////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////////////////////
   useEffect(() => {
+    if (debouncedSearch || category) {
+      trackKBSearch({
+        section: 'acts',
+        query: debouncedSearch || '',
+        filters: { category, minYear: debouncedYearRange[0], maxYear: debouncedYearRange[1] },
+      });
+    }
+
     dispatch(getActs({
       page,
       limit: PAGE_SIZE,

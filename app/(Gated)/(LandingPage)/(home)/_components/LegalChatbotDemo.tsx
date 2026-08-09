@@ -6,10 +6,12 @@ import { SendHorizonal } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import ChatFeatures from "../../chatbot/_components/ChatFeatures";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 function LegalChatbotDemo() {
     const router = useRouter();
     const [inputValue, setInputValue] = useState("");
+    const { trackChatbotDemoQuery, trackCTA } = useAnalytics();
     
     const fadeUpVariants: Variants = {
         hidden: { opacity: 0, y: 30 },
@@ -20,17 +22,12 @@ function LegalChatbotDemo() {
         },
     };
 
-    // const exampleQuestions = [
-    //     "What are my rights if I get fired without notice?",
-    //     "How do I file a property dispute case?",
-    //     "What is the process for getting a divorce in Pakistan?",
-    //     "Can I sue for medical negligence?",
-    //     "How do I protect my intellectual property?",
-    //     "What are the requirements for starting a business?"
-    // ];
-
     const handleSendMessage = () => {
         if (inputValue.trim()) {
+            trackChatbotDemoQuery({
+                queryLength: inputValue.trim().length,
+                redirectedToChat: true,
+            });
             const searchParams = new URLSearchParams();
             searchParams.set('message', encodeURIComponent(inputValue.trim()));
             router.push(`/chat?${searchParams.toString()}`);
@@ -115,7 +112,21 @@ function LegalChatbotDemo() {
                                             <p>
                                                 Yes, you may file a complaint with the <span className="font-semibold">Labour Department</span> or pursue civil litigation if your rights were violated.
                                             </p>
-                                            <p className="text-xs text-muted-foreground mt-2">Quick Action: <span className="underline cursor-pointer">Book Consultation</span></p>
+                                            <p className="text-xs text-muted-foreground mt-2">
+                                                Quick Action: <span
+                                                    className="underline cursor-pointer hover:text-primary transition-colors"
+                                                    onClick={() => {
+                                                        trackCTA({
+                                                            section: 'chatbot_demo_preview',
+                                                            ctaName: 'book_consultation_quick_action',
+                                                            destination: '/lawyers',
+                                                        });
+                                                        router.push('/lawyers');
+                                                    }}
+                                                >
+                                                    Book Consultation
+                                                </span>
+                                            </p>
                                         </div>
                                         <div className="bg-primary text-background rounded-full p-2 w-9 h-9 flex items-center justify-center">
                                             <span className="text-xs font-medium">AI</span>

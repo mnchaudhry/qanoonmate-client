@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { login } from '@/store/reducers/authSlice';
 import { UserRole } from '@/lib/enums';
 import { LoginRequest } from '@/store/types/auth.types';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const SignIn: React.FC = () => {
 
@@ -21,6 +22,7 @@ const SignIn: React.FC = () => {
   const role = searchParams.get('role') as UserRole;
   const redirect = searchParams.get('redirect') as string || '/';
   const initialData = { email: '', password: '' } as LoginRequest;
+  const { trackAuthStep } = useAnalytics();
 
   ////////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////////////
   const [formData, setFormData] = useState<typeof initialData>(initialData);
@@ -42,6 +44,7 @@ const SignIn: React.FC = () => {
     if (!formData?.password) return toast.error('Password is required')
 
     setLoading(true)
+    trackAuthStep({ step: 'submit_signin', role: role || 'user', method: 'password' });
 
     dispatch(login({ role, data: formData }))
       .then(({ meta }) => {

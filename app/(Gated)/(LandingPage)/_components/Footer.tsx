@@ -1,6 +1,9 @@
+"use client";
+
 import Logo from '@/components/Logo';
 import { Facebook, Instagram, Mail, MapPin, Phone, Twitter, Linkedin } from 'lucide-react';
 import Link from 'next/link';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const data = {
   facebookLink: 'https://www.facebook.com/qanoonmateofficial/',
@@ -77,6 +80,8 @@ const contactInfo = [
 ];
 
 const Footer = () => {
+  const { trackCTA } = useAnalytics();
+
   return (
     <footer className="bg-primary-dark dark:bg-secondary/20 mt-16 w-full place-self-end rounded-t-xl">
       <div className="mx-auto max-w-screen-xl px-4 pt-16 pb-6 sm:px-6 lg:px-8 lg:pt-24">
@@ -93,7 +98,9 @@ const Footer = () => {
                 <li key={label}>
                   <Link
                     href={href}
+                    target="_blank"
                     className="text-primary hover:text-primary/80 transition"
+                    onClick={() => trackCTA({ section: 'footer', ctaName: 'social_link', destination: href, buttonText: label })}
                   >
                     <span className="sr-only">{label}</span>
                     <Icon className="h-5 w-5" />
@@ -109,12 +116,13 @@ const Footer = () => {
               <ul className="mt-8 space-y-4 text-sm">
                 {aboutLinks.map(({ text, href }) => (
                   <li key={text}>
-                    <a
+                    <Link
                       className="text-secondary-foreground/70 hover:text-secondary-foreground transition"
                       href={href}
+                      onClick={() => trackCTA({ section: 'footer_about', ctaName: 'about_link', destination: href, buttonText: text })}
                     >
                       {text}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -125,12 +133,13 @@ const Footer = () => {
               <ul className="mt-8 space-y-4 text-sm">
                 {serviceLinks.map(({ text, href }) => (
                   <li key={text}>
-                    <a
+                    <Link
                       className="text-secondary-foreground/70 hover:text-secondary-foreground transition"
                       href={href}
+                      onClick={() => trackCTA({ section: 'footer_products', ctaName: 'product_link', destination: href, buttonText: text })}
                     >
                       {text}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -141,12 +150,13 @@ const Footer = () => {
               <ul className="mt-8 space-y-4 text-sm">
                 {helpfulLinks.map(({ text, href, hasIndicator }) => (
                   <li key={text}>
-                    <a
+                    <Link
                       href={href}
                       className={`${hasIndicator
                         ? 'group flex justify-center gap-1.5 sm:justify-start'
                         : 'text-secondary-foreground/70 hover:text-secondary-foreground transition'
                         }`}
+                      onClick={() => trackCTA({ section: 'footer_helpful', ctaName: 'helpful_link', destination: href, buttonText: text })}
                     >
                       <span className="text-secondary-foreground/70 group-hover:text-secondary-foreground transition">
                         {text}
@@ -157,7 +167,7 @@ const Footer = () => {
                           <span className="bg-primary relative inline-flex size-2 rounded-full" />
                         </span>
                       )}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

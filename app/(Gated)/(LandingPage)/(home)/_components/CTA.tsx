@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { About } from "@/constants/images";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 
 
 function CTA() {
+    const { trackCTA } = useAnalytics();
     const fadeUpVariants: Variants = {
         hidden: { opacity: 0, y: 30 },
         visible: {
@@ -102,7 +104,15 @@ function CTA() {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-4">
-                            <Link href="/auth/sign-up">
+                            <Link
+                                href="/auth/sign-up"
+                                onClick={() => trackCTA({
+                                    section: 'bottom_cta_banner',
+                                    ctaName: 'start_free_trial',
+                                    destination: '/auth/sign-up',
+                                    buttonText: 'Start Your Free Trial'
+                                })}
+                            >
                                 <Button
                                     size="lg"
                                     variant="secondary"
@@ -113,7 +123,15 @@ function CTA() {
                                 </Button>
                             </Link>
 
-                            <Link href="/pricing">
+                            <Link
+                                href="/pricing"
+                                onClick={() => trackCTA({
+                                    section: 'bottom_cta_banner',
+                                    ctaName: 'view_pricing',
+                                    destination: '/pricing',
+                                    buttonText: 'View Pricing Plans'
+                                })}
+                            >
                                 <Button
                                     size="lg"
                                     variant="outline"

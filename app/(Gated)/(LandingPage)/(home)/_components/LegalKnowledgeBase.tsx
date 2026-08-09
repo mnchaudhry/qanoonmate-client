@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 import {
   BookText,
@@ -90,6 +91,7 @@ const CATEGORIES: Category[] = [
 
 function CategoryCard({ category }: { category: Category }) {
   const Icon = category.icon
+  const { trackKBCardClick } = useAnalytics()
   return (
     <Card className="group overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/20">
       <div className="relative h-32 sm:h-40 w-full overflow-hidden">
@@ -120,6 +122,11 @@ function CategoryCard({ category }: { category: Category }) {
             href={category.href}
             className="inline-flex items-center gap-1 text-primary hover:text-primary/90 text-sm"
             aria-label={`Browse ${category.title}`}
+            onClick={() => trackKBCardClick({
+              categoryKey: category.key,
+              title: category.title,
+              destination: category.href,
+            })}
           >
             Browse
             <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -147,15 +154,26 @@ function Stat({ label, value, icon: Icon }: { label: string; value: string; icon
 
 const LegalKnowledgeBase: React.FC = () => {
   const router = useRouter()
+  const { trackKBSearch, trackKBTabSwitch } = useAnalytics()
   const [query, setQuery] = React.useState('')
   const [active, setActive] = React.useState<string>('all')
 
   const onSearch = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const trimmed = query.trim()
+    trackKBSearch({
+      section: active as any,
+      query: trimmed,
+      filters: { source: 'landing_kb_preview' },
+    })
     const target = active === 'all' ? '/knowledgebase' : `/knowledgebase/${active}`
     const href = trimmed ? `${target}?q=${encodeURIComponent(trimmed)}` : target
     router.push(href)
+  }
+
+  const handleTabChange = (val: string) => {
+    setActive(val)
+    trackKBTabSwitch({ tabKey: val })
   }
 
   return (
@@ -173,7 +191,7 @@ const LegalKnowledgeBase: React.FC = () => {
             <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-primary/15 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-accent/20 blur-3xl" />
 
-            <Tabs value={active} onValueChange={setActive}>
+            <Tabs value={active} onValueChange={handleTabChange}>
               <div className="flex flex-col gap-4">
                 {/* Scrollable tabs on mobile */}
                 <div className="relative">

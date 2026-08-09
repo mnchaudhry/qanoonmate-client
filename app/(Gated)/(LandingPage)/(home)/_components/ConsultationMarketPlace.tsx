@@ -14,10 +14,13 @@ import type { ILawyer } from '@/store/types/lawyer.types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import SearchBar from '@/components/SearchBar'
 import { AccountStatus, LawCategory, PakistanCities } from '@/lib/enums'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 type SortKey = 'relevance' | 'rating'
 
 const Consultations: React.FC = () => {
+
+  const { trackMarketplaceFilter, trackCTA } = useAnalytics()
 
   /////////////////////////////////////////////////////// STATE /////////////////////////////////////////////////////////
   const [searchQuery, setSearchQuery] = useState('')
@@ -115,7 +118,13 @@ const Consultations: React.FC = () => {
           />
 
           <div className="flex items-center gap-2">
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortKey)}>
+            <Select
+              value={sortBy}
+              onValueChange={(v) => {
+                setSortBy(v as SortKey);
+                trackMarketplaceFilter({ filterType: 'sort', value: v });
+              }}
+            >
               <SelectTrigger className="min-w-[140px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
@@ -125,7 +134,13 @@ const Consultations: React.FC = () => {
               </SelectContent>
             </Select>
 
-            <Select value={selectedPractice} onValueChange={setSelectedPractice}>
+            <Select
+              value={selectedPractice}
+              onValueChange={(v) => {
+                setSelectedPractice(v);
+                trackMarketplaceFilter({ filterType: 'practice', value: v });
+              }}
+            >
               <SelectTrigger className="min-w-[160px] bg-white">
                 <SelectValue placeholder="Practice area" />
               </SelectTrigger>
@@ -137,7 +152,13 @@ const Consultations: React.FC = () => {
               </SelectContent>
             </Select>
 
-            <Select value={selectedCity} onValueChange={setSelectedCity}>
+            <Select
+              value={selectedCity}
+              onValueChange={(v) => {
+                setSelectedCity(v);
+                trackMarketplaceFilter({ filterType: 'city', value: v });
+              }}
+            >
               <SelectTrigger className="min-w-[140px] bg-white hidden md:block ">
                 <SelectValue placeholder="City" />
               </SelectTrigger>
@@ -172,7 +193,15 @@ const Consultations: React.FC = () => {
           )}
 
           {!isLoading && (
-            <Link href="/lawyers" className="flex items-center gap-2">
+            <Link
+              href="/lawyers"
+              className="flex items-center gap-2"
+              onClick={() => trackCTA({
+                section: 'lawyer_marketplace_preview',
+                ctaName: 'view_all_lawyers',
+                destination: '/lawyers',
+              })}
+            >
               <Button variant="outline" size="sm" className="w-full">
                 View All Lawyers
               </Button>
@@ -227,6 +256,7 @@ function CardSkeleton() {
 }
 
 function LawyerCard({ lawyer }: { lawyer: ILawyer }) {
+  const { trackMarketplaceLawyerClick, trackLawyerConsultationBook } = useAnalytics()
 
   return (
     <div className={cn(
@@ -276,10 +306,26 @@ function LawyerCard({ lawyer }: { lawyer: ILawyer }) {
 
       {/* Actions */}
       <div className="px-4 py-3 border-t flex gap-2">
-        <Link href={`/lawyers/${lawyer?.username}`} className="flex-1">
+        <Link
+          href={`/lawyers/${lawyer?.username}`}
+          className="flex-1"
+          onClick={() => trackMarketplaceLawyerClick({
+            lawyerId: lawyer._id,
+            lawyerName: lawyer.fullName,
+            specialization: lawyer.primarySpecialization,
+            city: lawyer.location.city || undefined,
+          })}
+        >
           <Button variant="outline" size="sm" className="w-full">View Profile</Button>
         </Link>
-        <Button size="sm" className="flex-1">
+        <Button
+          size="sm"
+          className="flex-1"
+          onClick={() => trackLawyerConsultationBook({
+            lawyerId: lawyer._id,
+            lawyerName: lawyer.fullName,
+          })}
+        >
           Book Now
         </Button>
       </div>

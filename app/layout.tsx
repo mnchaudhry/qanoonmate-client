@@ -8,6 +8,7 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
 import AnalyticsProvider from "@/wrappers/AnalyticsProvider";
+import PostHogProvider from "@/wrappers/PostHogProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -89,12 +90,14 @@ export default function RootLayout({ children, }: { children: React.ReactNode; }
         style={{ fontFamily: 'var(--font-inter), ui-sans-serif, system-ui, sans-serif' }}
         suppressHydrationWarning={true}
       >
-        <StateProvider>
-          <AnalyticsProvider>
-            <Toaster />
-            {children}
-          </AnalyticsProvider>
-        </StateProvider>
+        <PostHogProvider>
+          <StateProvider>
+            <AnalyticsProvider>
+              <Toaster />
+              {children}
+            </AnalyticsProvider>
+          </StateProvider>
+        </PostHogProvider>
         <GoogleAnalytics gaId={'G-FFX5P5E4Z7'} />
         <SpeedInsights />
       </body>
