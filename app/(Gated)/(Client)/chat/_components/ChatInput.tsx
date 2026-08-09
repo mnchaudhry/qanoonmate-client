@@ -21,6 +21,7 @@ import { getOrCreateAnonymousUserId } from "@/utils/anonymousUser";
 import { File, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface Props {
   isConnected: boolean;
@@ -45,6 +46,7 @@ const ChatInput: React.FC<Props> = memo(
     isNewSession,
   }) => {
     ///////////////////////////////////////////////////////////// VARIABLES //////////////////////////////////////////////////////////////////////
+    const { trackChatMessageSent } = useAnalytics();
     const {
       isStreaming,
       isLoading,
@@ -150,6 +152,13 @@ const ChatInput: React.FC<Props> = memo(
         socket.emit("abort_chat");
         return;
       }
+
+      trackChatMessageSent({
+        mode: chatMode,
+        messageLength: input.length,
+        hasAttachments: uploadedFiles.length > 0 || Boolean(extractedText),
+        sessionId: sessionId || undefined,
+      });
 
       // if everything is ok move on
       dispatch(setIsStreaming(true));

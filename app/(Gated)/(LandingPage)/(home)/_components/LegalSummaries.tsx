@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import SectionHeading from './SectionHeading';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useRouter } from 'next/navigation';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 type SummaryModeKey = 'act' | 'case' | 'document' | 'topic';
 
@@ -98,16 +99,27 @@ const MODES: Array<{
 const LegalSummaries: React.FC = () => {
   const [active, setActive] = useState<SummaryModeKey>('act');
   const router = useRouter();
+  const { trackSummariesTabSwitch, trackCTA } = useAnalytics();
 
   const handleNavigateToSummarizer = () => {
-    // Navigate to the summarizer page with the current mode pre-selected
+    trackCTA({
+      section: 'summaries_preview',
+      ctaName: 'start_using_summarizer',
+      destination: `/summarizers?mode=${active}`,
+      extra: { mode: active },
+    });
     const searchParams = new URLSearchParams();
     searchParams.set('mode', active);
     router.push(`/summarizers?${searchParams.toString()}`);
   };
 
   const handleTryExample = (example: string) => {
-    // Navigate to summarizer with pre-filled example
+    trackCTA({
+      section: 'summaries_preview',
+      ctaName: 'try_example',
+      destination: `/summarizers?mode=${active}`,
+      extra: { example, mode: active },
+    });
     const searchParams = new URLSearchParams();
     searchParams.set('mode', active);
     searchParams.set('example', encodeURIComponent(example));
@@ -125,7 +137,13 @@ const LegalSummaries: React.FC = () => {
 
         {/* Studio Shell */}
         <div className="bg-neutral rounded-xl border !border-border shadow-sm p-4 md:p-6">
-          <Tabs value={active} onValueChange={(v) => setActive(v as SummaryModeKey)}>
+          <Tabs
+            value={active}
+            onValueChange={(v) => {
+              setActive(v as SummaryModeKey);
+              trackSummariesTabSwitch({ tab: v });
+            }}
+          >
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
               <TabsList className="grid w-full grid-cols-4">
                 {MODES.map(({ key, title, icon: Icon }) => (
@@ -293,7 +311,14 @@ const LegalSummaries: React.FC = () => {
                 Start Using Summarizer
                 <ArrowRight className="h-4 w-4" />
               </Button>
-              <Link href="/summarizers#pricing">
+              <Link
+                href="/summarizers#pricing"
+                onClick={() => trackCTA({
+                  section: 'summaries_preview',
+                  ctaName: 'view_pricing',
+                  destination: '/summarizers#pricing',
+                })}
+              >
                 <Button variant="outline" size="lg" className="px-8 py-3">
                   View Pricing
                 </Button>

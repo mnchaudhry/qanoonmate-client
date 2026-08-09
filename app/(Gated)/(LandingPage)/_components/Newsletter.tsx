@@ -7,11 +7,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { subscribeNewsletter } from "@/store/reducers/newsletterSlice";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const NewsLetter = () => {
 
   //////////////////////////////////////////////////// VARIABLES ////////////////////////////////////////////////////
   const dispatch = useDispatch<AppDispatch>();
+  const { trackNewsletterSubscribe } = useAnalytics();
 
   //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////
   const [email, setEmail] = useState("");
@@ -21,6 +23,7 @@ const NewsLetter = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    trackNewsletterSubscribe({ sourceSection: 'landing_newsletter_card' });
     dispatch(subscribeNewsletter({ email }))
       .then(() => {
         setEmail("");

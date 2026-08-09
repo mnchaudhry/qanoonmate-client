@@ -14,6 +14,7 @@ import { ReleaseChannel, UserRole } from '@/lib/enums';
 import { Menu, X, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 import NotificationDropdown from '@/components/NotificationDropdown';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const LandingPageNavbar: React.FC = () => {
 
@@ -21,6 +22,7 @@ const LandingPageNavbar: React.FC = () => {
   const pathname = usePathname();
   const { isScrolled } = useStateContext();
   const { isAuthenticated, user } = useSelector((state: RootState) => state.auth);
+  const { trackNavigation, trackCTA } = useAnalytics();
 
   //////////////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////////////////
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -87,10 +89,22 @@ const LandingPageNavbar: React.FC = () => {
             ) : (
               <div className="flex gap-2">
                 <Button variant="outline" asChild className="flex-1 h-10">
-                  <Link href={`/auth/sign-in`} prefetch={true}>Sign In</Link>
+                  <Link
+                    href={`/auth/sign-in`}
+                    prefetch={true}
+                    onClick={() => trackCTA({ section: 'navbar_mobile', ctaName: 'sign_in', destination: '/auth/sign-in' })}
+                  >
+                    Sign In
+                  </Link>
                 </Button>
                 <Button variant="default" asChild className="flex-1 h-10">
-                  <Link href={`/auth/sign-up?role=${UserRole.LAWYER}`} prefetch={true}>Register</Link>
+                  <Link
+                    href={`/auth/sign-up?role=${UserRole.LAWYER}`}
+                    prefetch={true}
+                    onClick={() => trackCTA({ section: 'navbar_mobile', ctaName: 'register_lawyer', destination: `/auth/sign-up?role=${UserRole.LAWYER}` })}
+                  >
+                    Register
+                  </Link>
                 </Button>
               </div>
             )}
@@ -115,7 +129,14 @@ const LandingPageNavbar: React.FC = () => {
                             <NavigationMenuContent>
                               <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] ">
                                 {item.subLinks.map((subLink, index) => (
-                                  <Link key={index} prefetch={true} href={subLink.link} passHref className='cursor-pointer' >
+                                  <Link
+                                    key={index}
+                                    prefetch={true}
+                                    href={subLink.link}
+                                    passHref
+                                    className='cursor-pointer'
+                                    onClick={() => trackNavigation({ label: subLink.label, destination: subLink.link, isSubLink: true })}
+                                  >
                                     <span className={cn("group block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-muted focus:bg-accent focus:text-accent-foreground",)}>
                                       <div className="text-sm font-medium leading-none">{subLink.label}</div>
                                       <p className="line-clamp-2 text-xs leading-snug text-muted-foreground ">
@@ -128,7 +149,13 @@ const LandingPageNavbar: React.FC = () => {
                             </NavigationMenuContent>
                           </>
                           :
-                          <Link prefetch={true} href={item.link} passHref className='cursor-pointer' >
+                          <Link
+                            prefetch={true}
+                            href={item.link}
+                            passHref
+                            className='cursor-pointer'
+                            onClick={() => trackNavigation({ label: item.label, destination: item.link, isSubLink: false })}
+                          >
                             <span className={cn(navigationMenuTriggerStyle(), isActive ? 'bg-muted' : 'bg-transparent')}>
                               {item.label}
                             </span>
@@ -153,7 +180,13 @@ const LandingPageNavbar: React.FC = () => {
                   variant="outline"
                   asChild
                 >
-                  <Link href={`/auth/sign-in`} prefetch={true} passHref className='cursor-pointer'>
+                  <Link
+                    href={`/auth/sign-in`}
+                    prefetch={true}
+                    passHref
+                    className='cursor-pointer'
+                    onClick={() => trackCTA({ section: 'navbar', ctaName: 'sign_in', destination: '/auth/sign-in' })}
+                  >
                     Sign In
                   </Link>
                 </Button>
@@ -161,7 +194,13 @@ const LandingPageNavbar: React.FC = () => {
                   variant="default"
                   asChild
                 >
-                  <Link href={`/auth/sign-up?role=${UserRole.LAWYER}`} prefetch={true} passHref className='cursor-pointer'>
+                  <Link
+                    href={`/auth/sign-up?role=${UserRole.LAWYER}`}
+                    prefetch={true}
+                    passHref
+                    className='cursor-pointer'
+                    onClick={() => trackCTA({ section: 'navbar', ctaName: 'register_lawyer', destination: `/auth/sign-up?role=${UserRole.LAWYER}` })}
+                  >
                     Register as Lawyer
                   </Link>
                 </Button>
@@ -177,8 +216,15 @@ const LandingPageNavbar: React.FC = () => {
                   const isActive = item.subLinks?.length > 0 ? pathname.includes(item.link) : pathname === item.link;
                   if (item.subLinks.length === 0) {
                     return (
-                      <Link key={index} href={item.link} prefetch={true} className={cn("px-3 py-2 rounded-md text-sm", isActive ? "bg-muted" : "")}
-                        onClick={() => setMobileOpen(false)}
+                      <Link
+                        key={index}
+                        href={item.link}
+                        prefetch={true}
+                        className={cn("px-3 py-2 rounded-md text-sm", isActive ? "bg-muted" : "")}
+                        onClick={() => {
+                          trackNavigation({ label: item.label, destination: item.link, isMobile: true });
+                          setMobileOpen(false);
+                        }}
                       >
                         {item.label}
                       </Link>
@@ -189,8 +235,15 @@ const LandingPageNavbar: React.FC = () => {
                       <div className={cn("px-3 py-2 rounded-md text-sm font-medium flex items-center gap-1", isActive ? "bg-muted" : "")}>{item.label}</div>
                       <div className="pl-4 flex flex-col">
                         {item.subLinks.map((sub, idx) => (
-                          <Link key={idx} href={sub.link} prefetch={true} className="px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-accent flex items-center gap-2"
-                            onClick={() => setMobileOpen(false)}
+                          <Link
+                            key={idx}
+                            href={sub.link}
+                            prefetch={true}
+                            className="px-3 py-2 rounded-md text-sm text-muted-foreground hover:bg-accent flex items-center gap-2"
+                            onClick={() => {
+                              trackNavigation({ label: sub.label, destination: sub.link, isMobile: true, isSubLink: true });
+                              setMobileOpen(false);
+                            }}
                           >
                             <ChevronRight className="w-3 h-3" />{sub.label}
                           </Link>

@@ -11,7 +11,7 @@ import { AppDispatch } from '@/store/store';
 import { verifyOTP } from '@/store/reducers/authSlice';
 import { forgetPasswordRequest } from '@/store/reducers/authSlice';
 import localStorageManager from '@/utils/localStorage';
-
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const VerifyOTP: React.FC = () => {
 
@@ -22,6 +22,7 @@ const VerifyOTP: React.FC = () => {
   const searchParams = useSearchParams();
   const roleParam = searchParams.get('role');
   const role = Object.values(UserRole).includes(roleParam as UserRole) ? roleParam as UserRole : UserRole.CLIENT;
+  const { trackAuthStep } = useAnalytics();
 
   //////////////////////////////////////////////////// STATES ////////////////////////////////////////////////////////
   const [otp, setOtp] = useState('');
@@ -40,11 +41,12 @@ const VerifyOTP: React.FC = () => {
     if (!otpEmail) return toast.error("We've lost your email. Pleaes go back and signup again.")
 
     setLoading(true)
+    trackAuthStep({ step: 'otp_verify', status: 'attempt', role, extra: { otp_type: OTPType } });
 
     dispatch(verifyOTP({ role, data: { otp, email: JSON.parse(otpEmail), type: OTPType } }))
-      .then(({ meta }: any) => {
+      .then(({ meta, payload }: any) => {
         if (meta.requestStatus === 'fulfilled') {
-
+          trackAuthStep({ step: 'otp_verify', status: 'success', role, extra: { otp_type: OTPType } });
           if (OTPType == OtpVerificationType.SIGNUP) {
             router.push(`/lawyer/dashboard`)
             localStorageManager.removeItem('OTP_EMAIL')
@@ -55,6 +57,13 @@ const VerifyOTP: React.FC = () => {
           setOtp('')
         }
         else {
+          trackAuthStep({
+            step: 'otp_verify',
+            status: 'failure',
+            role,
+            extra: { otp_type: OTPType },
+            errorMessage: typeof payload === 'string' ? payload : payload?.message || 'OTP verification failed',
+          });
           setLoading(false)
           return;
         }
@@ -71,15 +80,23 @@ const VerifyOTP: React.FC = () => {
     if (!otpEmail) return toast.error("We've lost your email. Pleaes go back and signup again.")
 
     setLoading(true)
+    trackAuthStep({ step: 'otp_resend', status: 'attempt', role });
 
     dispatch(forgetPasswordRequest({ role, data: { email: JSON.parse(otpEmail) } }))
-      .then(({ meta }) => {
+      .then(({ meta, payload }: any) => {
         if (meta.requestStatus === 'fulfilled') {
+          trackAuthStep({ step: 'otp_resend', status: 'success', role });
           setOTPType(OtpVerificationType.FORGETPASSWORD)
           router.push(`/auth/verify-otp?role=${role}`)
           setOtp('')
         }
         else {
+          trackAuthStep({
+            step: 'otp_resend',
+            status: 'failure',
+            role,
+            errorMessage: typeof payload === 'string' ? payload : payload?.message || 'OTP resend failed',
+          });
           setLoading(false)
           return;
         }

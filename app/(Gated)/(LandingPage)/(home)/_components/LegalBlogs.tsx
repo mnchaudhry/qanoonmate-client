@@ -1,7 +1,10 @@
+"use client";
+
 import React from 'react';
 import { Star, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import SectionHeading from './SectionHeading';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const LegalBlogs: React.FC = () => {
     return (
@@ -85,13 +88,21 @@ const BlogCard = ({
     date: string;
     link: string;
 }) => {
+    const { trackBlogTeaserClick } = useAnalytics();
+
     return (
         <div className="bg-neutral p-6 rounded-lg shadow-md hover:shadow-xl transition-all">
             <h4 className="text-xl font-semibold text-foreground mb-2">{title}</h4>
             <p className="text-muted-foreground mb-4">{description}</p>
             <div className="flex items-center justify-between">
                 <div className="text-sm text-muted-foreground">{author} | {date}</div>
-                <Link href={link}>
+                <Link
+                    href={link}
+                    onClick={() => trackBlogTeaserClick({
+                        blogSlug: link,
+                        blogTitle: title,
+                    })}
+                >
                     <span className="text-primary hover:underline text-sm">Read More</span>
                 </Link>
             </div>

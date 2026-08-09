@@ -7,10 +7,13 @@ import Link from "next/link";
 import ElegantShape from "@/components/ui/elegant-shape";
 import { FloatingIcon } from "@/components/floating-icon";
 import { useEffect, useMemo, useState } from "react";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 
 
 function HeroGeometric() {
+
+    const { trackHeroCTA } = useAnalytics();
 
     ///////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////
     const titles = useMemo(() => ["powerful", "reliable", "dynamic", "secure", "modern"], []);
@@ -178,7 +181,10 @@ function HeroGeometric() {
                         >
                             {/* Primary CTA - Get Started */}
                             <Button size="lg" asChild className="cursor-pointer">
-                                <Link href="/auth/sign-up">
+                                <Link
+                                    href="/auth/sign-up"
+                                    onClick={() => trackHeroCTA({ buttonText: 'Get Started Free', destination: '/auth/sign-up', ctaType: 'primary' })}
+                                >
                                     Get Started Free
                                     <ArrowRight className="ml-2 h-5 w-5" />
                                 </Link>
@@ -186,7 +192,10 @@ function HeroGeometric() {
 
                             {/* Secondary CTA - Try AI Chatbot */}
                             <Button variant="outline" size="lg" asChild className="cursor-pointer">
-                                <Link href="/chat">
+                                <Link
+                                    href="/chat"
+                                    onClick={() => trackHeroCTA({ buttonText: 'Try AI Chatbot', destination: '/chat', ctaType: 'secondary' })}
+                                >
                                     Try AI Chatbot
                                 </Link>
                             </Button>

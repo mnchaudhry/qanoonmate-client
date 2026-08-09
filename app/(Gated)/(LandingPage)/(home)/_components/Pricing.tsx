@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { getQCPackages } from "@/store/reducers/creditSlice";
 import { useAppDispatch, useAppSelector } from "@/store/store";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 function Pricing() {
 
@@ -15,6 +16,7 @@ function Pricing() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { packages } = useAppSelector(state => state.credits)
+  const { trackPricingPlanClick } = useAnalytics();
 
   /////////////////////////////////////////////////////// STATES /////////////////////////////////////////////////////// 
 
@@ -23,7 +25,13 @@ function Pricing() {
     dispatch(getQCPackages())
   }, [dispatch]);
 
-  const handlePurchase = () => {
+  const handlePurchase = (plan: any) => {
+    trackPricingPlanClick({
+      packageName: plan.name,
+      price: plan.price,
+      qcAmount: plan.qcAmount,
+      isPopular: plan.popular,
+    });
     router.push('/wallet');
   };
 
@@ -80,7 +88,7 @@ function Pricing() {
                   <Button
                     className="gap-4"
                     variant={plan.popular ? "default" : "outline"}
-                    onClick={handlePurchase}
+                    onClick={() => handlePurchase(plan)}
                   >
                     <Zap className="w-4 h-4" />
                     Purchase Credits

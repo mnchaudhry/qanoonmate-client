@@ -10,6 +10,7 @@ import { useStateContext } from '@/context/useStateContext';
 import Link from 'next/link';
 import { OtpVerificationType, UserRole } from '@/lib/enums';
 import { clientSignup } from '@/store/reducers/authSlice';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 // Validation rules
 const phoneRegex = /^(\+92|0)?[0-9]{10}$/;
@@ -29,6 +30,7 @@ const ClientSignupForm = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
   const { setOTPType } = useStateContext();
+  const { trackAuthStep } = useAnalytics();
 
   ////////////////////////////////////////////////// STATES //////////////////////////////////////////////////
   const [formData, setFormData] = useState<ClientFormData>({ firstname: '', lastname: '', email: '', password: '', phone: '' });
@@ -98,6 +100,7 @@ const ClientSignupForm = () => {
     if (!validateForm()) return;
 
     setLoading(true);
+    trackAuthStep({ step: 'submit_client_signup', status: 'attempt', role: 'client' });
     try {
       const result = await dispatch(clientSignup({
         ...formData,
@@ -105,10 +108,24 @@ const ClientSignupForm = () => {
       }));
 
       if (result.meta.requestStatus === 'fulfilled') {
+        trackAuthStep({ step: 'submit_client_signup', status: 'success', role: 'client' });
         setOTPType(OtpVerificationType.SIGNUP);
         router.push(`/auth/verify-otp?role=${UserRole.CLIENT}`);
+      } else {
+        trackAuthStep({
+          step: 'submit_client_signup',
+          status: 'failure',
+          role: 'client',
+          errorMessage: (result as any)?.payload?.message || 'Signup failed',
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
+      trackAuthStep({
+        step: 'submit_client_signup',
+        status: 'failure',
+        role: 'client',
+        errorMessage: error?.message || 'Signup failed',
+      });
       console.error('Client signup error:', error);
     } finally {
       setLoading(false);

@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,8 +11,20 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FaEnvelope, FaMapMarkerAlt, FaPhoneAlt, FaWhatsapp, FaClock, FaExternalLinkAlt } from 'react-icons/fa';
 import SectionHeading from './SectionHeading';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const Contact: React.FC = () => {
+  const [reason, setReason] = useState('general');
+  const [message, setMessage] = useState('');
+  const { trackContactFormSubmit, trackCTA } = useAnalytics();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    trackContactFormSubmit({
+      inquiryType: reason,
+      subject: message.slice(0, 50),
+    });
+  };
   return (
     <section id="Contact" className="bg-surface relative overflow-hidden py-24">
 
@@ -27,7 +42,7 @@ const Contact: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Left: Sleek Contact Form */}
           <div className="bg-background rounded-xl border !border-border shadow-sm p-6 md:p-8">
-            <form className="flex flex-col gap-6">
+            <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-sm font-semibold text-neutral-foreground">Name</Label>
@@ -45,7 +60,7 @@ const Contact: React.FC = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="reason" className="text-sm font-semibold text-neutral-foreground">Reason</Label>
-                  <Select>
+                  <Select value={reason} onValueChange={setReason}>
                     <SelectTrigger id="reason" className="w-full">
                       <SelectValue placeholder="Select a reason" />
                     </SelectTrigger>
@@ -73,7 +88,14 @@ const Contact: React.FC = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="message" className="text-sm font-semibold text-neutral-foreground">Message</Label>
-                <Textarea id="message" placeholder="How can we help you?" rows={6} className="w-full !border-border" />
+                <Textarea
+                  id="message"
+                  placeholder="How can we help you?"
+                  rows={6}
+                  className="w-full !border-border"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
               </div>
               <div className="flex items-start gap-3">
                 <Checkbox id="consent" />
@@ -94,19 +116,32 @@ const Contact: React.FC = () => {
             <div className="rounded-2xl border-0 shadow-lg bg-gradient-to-br from-primary/5 to-accent/5 p-6">
               <h3 className="font-bold text-lg mb-4 text-foreground">Contact methods</h3>
               <div className="space-y-4">
-                <Link href="mailto:contact@qanoonmate.com" className="flex items-center gap-3 text-muted-foreground hover:underline">
+                <Link
+                  href="mailto:contact@qanoonmate.com"
+                  className="flex items-center gap-3 text-muted-foreground hover:underline"
+                  onClick={() => trackCTA({ section: 'contact_page', ctaName: 'email_direct', destination: 'mailto:contact@qanoonmate.com' })}
+                >
                   <span className="h-9 w-9 grid place-items-center rounded-full bg-primary/10 text-primary">
                     <FaEnvelope />
                   </span>
                   <span>contact@qanoonmate.com</span>
                 </Link>
-                <Link href="tel:+923001234567" className="flex items-center gap-3 text-muted-foreground hover:underline">
+                <Link
+                  href="tel:+923001234567"
+                  className="flex items-center gap-3 text-muted-foreground hover:underline"
+                  onClick={() => trackCTA({ section: 'contact_page', ctaName: 'phone_direct', destination: 'tel:+923001234567' })}
+                >
                   <span className="h-9 w-9 grid place-items-center rounded-full bg-primary/10 text-primary">
                     <FaPhoneAlt />
                   </span>
                   <span>+92 300 1234567</span>
                 </Link>
-                <Link href="https://wa.me/923001234567" target="_blank" className="flex items-center gap-3 text-muted-foreground hover:underline">
+                <Link
+                  href="https://wa.me/923001234567"
+                  target="_blank"
+                  className="flex items-center gap-3 text-muted-foreground hover:underline"
+                  onClick={() => trackCTA({ section: 'contact_page', ctaName: 'whatsapp_direct', destination: 'https://wa.me/923001234567' })}
+                >
                   <span className="h-9 w-9 grid place-items-center rounded-full bg-primary/10 text-primary">
                     <FaWhatsapp />
                   </span>

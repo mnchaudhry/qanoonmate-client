@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserRole } from '@/lib/enums';
 import ClientSignupForm from './_components/ClientSignupForm';
 import LawyerSignupForm from './_components/LawyerSignupForm';
+import { useAnalytics } from '@/hooks/useAnalytics';
 
 const SignUp: React.FC = () => {
 
@@ -13,6 +14,7 @@ const SignUp: React.FC = () => {
   const searchParams = useSearchParams();
   const roleParam = searchParams.get('role');
   const typeParam = searchParams.get('type');
+  const { trackAuthStep } = useAnalytics();
 
   // Use role from URL query, fallback to type, then default to client
   const role = Object.values(UserRole).includes(roleParam as UserRole) ? roleParam as UserRole :
@@ -22,6 +24,7 @@ const SignUp: React.FC = () => {
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
+    trackAuthStep({ step: 'switch_role', role: value });
     if (value === 'client') {
       router.push('/auth/sign-up?role=client');
     } else {

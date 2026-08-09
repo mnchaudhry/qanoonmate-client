@@ -34,8 +34,10 @@ import ModeBadge from "./ModeBadge";
 import { AIChatMessage } from "@/lib/interfaces";
 import { assistant, user as userRes } from "@openai/agents";
 import { cn } from "@/lib/utils";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const ChatbotClient = () => {
+  const { trackChatSuggestedPrompt } = useAnalytics();
   ///////////////////////////////////////////////////////////// VARIABLES /////////////////////////////////////////////////////////////////////
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -365,6 +367,10 @@ const ChatbotClient = () => {
                           <button
                             key={index}
                             onClick={() => {
+                              trackChatSuggestedPrompt({
+                                promptText: p.description,
+                                mode: chatMode,
+                              });
                               if (textareaRef.current) {
                                 textareaRef.current.value = p.description;
                                 textareaRef.current.focus();
