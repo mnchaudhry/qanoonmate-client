@@ -90,14 +90,14 @@ export default function RootLayout({ children, }: { children: React.ReactNode; }
         style={{ fontFamily: 'var(--font-inter), ui-sans-serif, system-ui, sans-serif' }}
         suppressHydrationWarning={true}
       >
-        <PostHogProvider>
-          <StateProvider>
+        <StateProvider>
+          <PostHogProvider>
             <AnalyticsProvider>
               <Toaster />
               {children}
             </AnalyticsProvider>
-          </StateProvider>
-        </PostHogProvider>
+          </PostHogProvider>
+        </StateProvider>
         <GoogleAnalytics gaId={'G-FFX5P5E4Z7'} />
         <SpeedInsights />
       </body>
