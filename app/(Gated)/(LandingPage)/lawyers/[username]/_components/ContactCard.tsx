@@ -12,6 +12,7 @@ import { EditContactModal } from "./edit/EditContactModal";
 import { enumToLabel } from "@/lib/utils";
 import { useRouter, useParams } from "next/navigation";
 import { ILawyer } from "@/store/types/lawyer.types";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 interface ContactCardProps {
   lawyer: LawyerProfile;
@@ -25,14 +26,24 @@ export function ContactCard({ lawyer }: ContactCardProps) {
   const { selectedLawyer } = useSelector((state: RootState) => state.lawyer);
   const isOwnProfile = user?.email === lawyer.personalInfo.email;
   const { isContactModalOpen, openContactModal, closeAllModals } = useEditModal();
+  const { trackLawyerConsultationBook, trackCTA } = useAnalytics();
+
+  //////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////
+  const lowestPrice = lawyer.services.hourlyRate;
 
   //////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////
   const handleSendMessage = () => {
     if (isOwnProfile) return;
 
     // Navigate to messages with the lawyer
-    const lawyerId = selectedLawyer?._id;
+    const lawyerId = selectedLawyer?._id || (lawyer as any)._id;
     if (lawyerId) {
+      trackCTA({
+        section: 'lawyer_profile_contact',
+        ctaName: 'send_message',
+        destination: `/messages?lawyerId=${lawyerId}`,
+        extra: { lawyer_name: lawyer.personalInfo.fullName, lawyer_id: lawyerId },
+      });
       router.push(`/messages?lawyerId=${lawyerId}`);
     }
   };
@@ -40,12 +51,15 @@ export function ContactCard({ lawyer }: ContactCardProps) {
   const handleBookConsultation = () => {
     if (isOwnProfile) return;
 
+    trackLawyerConsultationBook({
+      lawyerId: selectedLawyer?._id || (lawyer as any)._id,
+      lawyerName: lawyer.personalInfo.fullName,
+      fee: lowestPrice,
+    });
+
     // Navigate to booking page
     router.push(`/lawyers/${username}/book`);
   };
-
-  //////////////////////////////////////////////// VARIABLES ///////////////////////////////////////////
-  const lowestPrice = lawyer.services.hourlyRate
 
   //////////////////////////////////////////////// RENDER ///////////////////////////////////////////
   return (

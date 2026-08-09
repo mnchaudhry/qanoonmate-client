@@ -7,6 +7,7 @@ import BlogCard from "./BlogCard";
 import BlogFilters from "./BlogFilters";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const Blogs = () => {
     const router = useRouter();
@@ -15,6 +16,7 @@ const Blogs = () => {
     const [blogs, setBlogs] = useState<any[]>([]);
     const [filteredBlogs, setFilteredBlogs] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const { trackBlogSearch, trackCTA } = useAnalytics();
 
     useEffect(() => {
         setBlogs(blogsData);
@@ -41,9 +43,18 @@ const Blogs = () => {
 
     useEffect(() => {
         filterBlogs();
-    }, [blogs, search, selectedCategory, filterBlogs]);
+
+        if (search.trim() || selectedCategory !== "all") {
+            trackBlogSearch({ query: search.trim(), category: selectedCategory });
+        }
+    }, [blogs, search, selectedCategory, filterBlogs, trackBlogSearch]);
 
     const handleWriteBlog = () => {
+        trackCTA({
+            section: 'blogs',
+            ctaName: 'write_blog',
+            destination: '/blogs/write',
+        });
         router.push("/blogs/write");
     };
 

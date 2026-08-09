@@ -11,6 +11,7 @@ import Summary from './_components/Summary'
 import Dropbox from './_components/Dropbox'
 import EmptyState from './_components/EmptyState'
 import { ScrollText, Gavel, FileText, BookOpenText } from 'lucide-react'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 const Summarizers = () => {
 
@@ -18,6 +19,7 @@ const Summarizers = () => {
     const dispatch = useDispatch<AppDispatch>()
     const { stats, currentSummary } = useSelector((state: RootState) => state.summary)
     const searchParams = useSearchParams()
+    const { trackSummaryModeSwitched } = useAnalytics()
 
     /////////////////////////////////////////////// STATES /////////////////////////////////////////////////////
     const [selectedType, setSelectedType] = useState('act')
@@ -47,6 +49,7 @@ const Summarizers = () => {
     /////////////////////////////////////////////// FUNCTIONS /////////////////////////////////////////////////////
     const handleTypeChange = (type: string) => {
         setSelectedType(type)
+        trackSummaryModeSwitched({ mode: type })
         dispatch(clearCurrentSummary())
     }
 

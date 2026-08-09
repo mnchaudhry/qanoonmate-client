@@ -18,6 +18,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/compon
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Filter } from 'lucide-react'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 const PAGE_SIZE = 42;
 
@@ -28,6 +29,7 @@ const LegalDictionary = () => {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { terms, loading, currentPage: page, totalPages, totalCount } = useSelector((state: RootState) => state.dictionary)
+    const { trackKBSearch } = useAnalytics()
 
     ///////////////////////////////////////////////////////////// STATES ///////////////////////////////////////////////////////////////////
     const [searchTerm, setSearchTerm] = useState(() => searchParams.get('search') || '')
@@ -54,7 +56,15 @@ const LegalDictionary = () => {
             limit: PAGE_SIZE,
             sort: sort || undefined,
         }))
-    }, [debouncedSearch, category, urdu, letter, currentPage, sort, dispatch])
+
+        if (debouncedSearch || letter || category || urdu) {
+            trackKBSearch({
+                section: 'dictionary',
+                query: debouncedSearch,
+                filters: { letter, category, urdu, sort }
+            })
+        }
+    }, [debouncedSearch, category, urdu, letter, currentPage, sort, dispatch, trackKBSearch])
 
     ///////////////////////////////////////////////////////////// FUNCTIONS ///////////////////////////////////////////////////////////////////
     const updateURL = (newParams: Record<string, string | number | boolean>) => {

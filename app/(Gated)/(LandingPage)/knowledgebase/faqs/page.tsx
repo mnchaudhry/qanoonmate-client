@@ -16,6 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/compon
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Filter } from 'lucide-react'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 const PAGE_SIZE = 42;
 
@@ -26,6 +27,7 @@ const FAQs = () => {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { faqs, loading, currentPage: page, totalPages, totalCount: total } = useSelector((state: RootState) => state.faq)
+  const { trackKBSearch } = useAnalytics()
 
   const urlSearch = searchParams.get('search') || ''
   const urlCategory = searchParams.get('category') || 'all'
@@ -67,7 +69,15 @@ const FAQs = () => {
       page: currentPage,
       limit: PAGE_SIZE,
     }))
-  }, [debouncedSearch, category, sort, currentPage, dispatch])
+
+    if (debouncedSearch || category !== 'all') {
+      trackKBSearch({
+        section: 'faqs',
+        query: debouncedSearch,
+        filters: { category, sort }
+      })
+    }
+  }, [debouncedSearch, category, sort, currentPage, dispatch, trackKBSearch])
 
   useEffect(() => {
     setSearch(urlSearch)

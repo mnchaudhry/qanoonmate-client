@@ -15,6 +15,7 @@ import EmptyState from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LawCategory, Languages, Days, PakistanCities, PakistanProvinces, Ratings, LawyerFeeRange, LawyerExperienceRange, AccountStatus } from "@/lib/enums";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 const PAGE_SIZE = 42;
 
@@ -24,6 +25,7 @@ const LawyersDirectory = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { lawyers, error, meta: { totalPages: reduxTotalPages, totalCount }, isLoading } = useSelector((state: any) => state.lawyer);
+  const { trackLawyerSearch } = useAnalytics();
 
   const urlSearch = searchParams.get("search") || "";
   const urlView = searchParams.get("view") || "list";
@@ -144,7 +146,22 @@ const LawyersDirectory = () => {
     params.limit = PAGE_SIZE;
 
     dispatch(getLawyers(params));
-  }, [selectedFilters, debouncedSearch, currentPage, dispatch]);
+
+    if (debouncedSearch || hasActiveFilters) {
+      trackLawyerSearch({
+        query: debouncedSearch,
+        city: selectedFilters.city.join(','),
+        specialization: selectedFilters.specialization.join(','),
+        sortBy: selectedFilters.sortBy,
+        filters: {
+          province: selectedFilters.province.join(','),
+          rating: selectedFilters.rating.join(','),
+          fee_range: selectedFilters.fee_range,
+          experience_range: selectedFilters.experience_range,
+        }
+      });
+    }
+  }, [selectedFilters, debouncedSearch, currentPage, dispatch, hasActiveFilters, trackLawyerSearch]);
 
   // Debug: Log lawyers to check structure
   useEffect(() => {

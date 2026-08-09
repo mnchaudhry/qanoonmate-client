@@ -18,6 +18,7 @@ import { getLawyerByUsername } from "@/store/reducers/lawyerSlice";
 import { RootState, AppDispatch } from "@/store/store";
 import { ILawyer } from "@/store/types/lawyer.types";
 import { PakistanCities, PakistanProvinces, LawCategory } from "@/lib/enums";
+import { useAnalytics } from "@/hooks/useAnalytics";
 
 export default function LawyerProfilePage() {
 
@@ -27,12 +28,24 @@ export default function LawyerProfilePage() {
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth) as { user: ILawyer };
   const { selectedLawyer } = useSelector((state: RootState) => state.lawyer);
+  const { trackLawyerProfileView } = useAnalytics();
 
   //////////////////////////////////////////////// STATES ///////////////////////////////////////////
   const [lawyerProfile, setLawyerProfile] = useState<LawyerProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   //////////////////////////////////////////////// USE EFFECTS ///////////////////////////////////////////
+  useEffect(() => {
+    if (lawyerProfile) {
+      trackLawyerProfileView({
+        lawyerId: selectedLawyer?._id || (lawyerProfile as any)._id,
+        lawyerName: lawyerProfile.personalInfo?.fullName,
+        specialization: lawyerProfile.legalExpertise?.primarySpecialization,
+        city: lawyerProfile.personalInfo?.location?.city,
+      });
+    }
+  }, [lawyerProfile, selectedLawyer, trackLawyerProfileView]);
+
   const fetchLawyerProfile = useCallback(async () => {
     try {
       setLoading(true);

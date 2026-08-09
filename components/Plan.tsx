@@ -7,20 +7,35 @@ import SignInModal from './auth/SignInModal'
 import { useAppDispatch } from '@/store/store'
 import { purchaseQC } from '@/store/reducers/creditSlice'
 import { toast } from 'sonner'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 const Plan = ({ plan }: { plan: IQCPackage }) => {
-    console.log('plan', plan);
     ////////////////////////////////////////// VARIABLES ////////////////////////////////////////// 
     const { requireAuth, showSignInModal, modalConfig, handleSignInSuccess, handleSignInCancel } = useAuthGuard();
     const dispatch = useAppDispatch();
+    const { trackPricingPlanClick, trackCheckoutInitiated } = useAnalytics();
 
     ////////////////////////////////////////// FUNCTIONS ////////////////////////////////////////// 
     const handlePurchase = async () => {
+        trackPricingPlanClick({
+            packageName: plan.name,
+            price: plan.price,
+            qcAmount: plan.qcAmount,
+            isPopular: plan.popular,
+        });
+
         requireAuth(async () => {
             try {
                 const result = await dispatch(purchaseQC({ planId: plan.id })).unwrap();
 
                 toast.success('Payment initiated successfully!');
+
+                trackCheckoutInitiated({
+                    planId: plan.id,
+                    packageName: plan.name,
+                    price: plan.price,
+                    qcAmount: plan.qcAmount,
+                });
 
                 // Redirect to payment gateway
                 if (result?.data?.paymentUrl) {
