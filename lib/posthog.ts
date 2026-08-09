@@ -6,6 +6,8 @@ export const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.
 export const initPostHog = () => {
   if (typeof window === 'undefined') return;
 
+  (window as any).posthog = posthog;
+
   posthog.init(POSTHOG_KEY, {
     api_host: POSTHOG_HOST,
     capture_pageview: false,
@@ -17,11 +19,20 @@ export const initPostHog = () => {
       maskTextSelector: '[data-ph-mask]',
     },
     person_profiles: 'identified_only',
+    loaded: (ph) => {
+      if (process.env.NODE_ENV === 'development') {
+        ph.debug(true);
+      }
+    },
   });
 };
 
 export const posthogCapture = (eventName: string, properties?: Record<string, any>) => {
   try {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`%c[PostHog Track]%c ${eventName}`, 'color: #0080FF; font-weight: bold;', 'color: #333;', properties || {});
+    }
+
     if (typeof window !== 'undefined' && (posthog as any).__loaded) {
       posthog.capture(eventName, properties);
     }
